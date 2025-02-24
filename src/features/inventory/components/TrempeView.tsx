@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Plus, Edit2, Package, Info, PieChart, History, Eye, X, Save } from 'lucide-react';
 import { format } from 'date-fns';
@@ -163,6 +163,27 @@ const TrempeView: React.FC = () => {
       });
     }
   };
+
+  // Gestionnaire pour fermer le modal
+  const handleCloseModal = () => {
+    setSelectedSquare(null);
+    setEditMode(false);
+    setEditedSquare(null);
+  };
+
+  // Gestionnaire pour la touche Echap
+  React.useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCloseModal();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, []);
 
   // Styles pour la scrollbar personnalisée et le modal
   const customStyles = `
@@ -499,7 +520,15 @@ const TrempeView: React.FC = () => {
         {/* Modal de détail au clic */}
         <AnimatePresence>
           {selectedSquare && (
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div 
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+              onClick={(e) => {
+                // Ferme le modal uniquement si on clique sur l'arrière-plan
+                if (e.target === e.currentTarget) {
+                  handleCloseModal();
+                }
+              }}
+            >
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -509,11 +538,7 @@ const TrempeView: React.FC = () => {
               >
                 {/* Bouton fermer */}
                 <button
-                  onClick={() => {
-                    setSelectedSquare(null);
-                    setEditMode(false);
-                    setEditedSquare(null);
-                  }}
+                  onClick={handleCloseModal}
                   className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/5 transition-colors"
                 >
                   <X size={20} className="text-white/60" />
@@ -670,10 +695,7 @@ const TrempeView: React.FC = () => {
                         <span>Sauvegarder</span>
                       </button>
                       <button 
-                        onClick={() => {
-                          setEditMode(false);
-                          setEditedSquare(null);
-                        }}
+                        onClick={handleCloseModal}
                         className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
                       >
                         <X size={16} className="text-white/60" />

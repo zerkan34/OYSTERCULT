@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Droplets, 
@@ -19,7 +19,8 @@ import {
   MapPin,
   Eye,
   Shell,
-  Package
+  Package,
+  X
 } from 'lucide-react';
 
 interface Table {
@@ -196,6 +197,25 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
   const [hoveredTable, setHoveredTable] = useState<Table | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
+  // Gestionnaire pour fermer le modal
+  const handleCloseModal = () => {
+    setSelectedTable(null);
+  };
+
+  // Gestionnaire pour la touche Echap
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCloseModal();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, []);
+
   const cellVariants = {
     initial: { opacity: 0.6, scale: 0.95 },
     animate: (custom: number) => ({
@@ -228,7 +248,14 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
     <div className="space-y-6">
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-9 glass-effect rounded-xl">
-          <div className="relative h-[800px] bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 rounded-lg overflow-hidden border border-white/10">
+          <div 
+            className="relative h-[800px] bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 rounded-lg overflow-hidden border border-white/10"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                handleCloseModal();
+              }
+            }}
+          >
             <div className="absolute inset-0">
               <div className="absolute inset-0 bg-gradient-to-b from-brand-burgundy/5 to-brand-burgundy/10" />
               <div className="absolute inset-0 bg-[url('data:image/svg+xml,...')] opacity-10" />
@@ -354,8 +381,16 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="glass-effect rounded-xl p-6 space-y-6"
+                className="glass-effect rounded-xl p-6 space-y-6 relative"
               >
+                {/* Bouton fermer */}
+                <button
+                  onClick={handleCloseModal}
+                  className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/5 transition-colors"
+                >
+                  <X size={20} className="text-white/60" />
+                </button>
+
                 <div>
                   <h3 className="text-xl font-bold text-white mb-2">
                     {(hoveredTable || selectedTable)?.name}
