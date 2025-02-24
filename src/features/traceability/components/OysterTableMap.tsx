@@ -18,7 +18,8 @@ import {
   Compass,
   MapPin,
   Eye,
-  Shell
+  Shell,
+  Package
 } from 'lucide-react';
 
 interface Table {
@@ -193,6 +194,7 @@ const mockTables: Table[] = [
 export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [hoveredTable, setHoveredTable] = useState<Table | null>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const cellVariants = {
     initial: { opacity: 0.6, scale: 0.95 },
@@ -288,11 +290,17 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
                     height: `${table.size.height}px`,
                   }}
                   whileHover={{ scale: 1.02 }}
-                  onHoverStart={() => setHoveredTable(table)}
-                  onHoverEnd={() => setHoveredTable(null)}
+                  onMouseEnter={() => setHoveredTable(table)}
+                  onMouseLeave={() => {
+                    setHoveredTable(null);
+                    setMousePosition({ x: 0, y: 0 });
+                  }}
+                  onMouseMove={(e: React.MouseEvent) => {
+                    setMousePosition({ x: e.clientX, y: e.clientY });
+                  }}
                   onClick={() => {
                     setSelectedTable(table);
-                    onTableSelect(table);
+                    onTableSelect?.(table);
                   }}
                 >
                   <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 glass-effect px-3 py-1 rounded-full">
@@ -460,6 +468,43 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
           </AnimatePresence>
         </div>
       </div>
+      <AnimatePresence>
+        {hoveredTable && (
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 5 }}
+            className="fixed glass-effect rounded-lg p-3 z-50 min-w-[200px]"
+            style={{
+              left: mousePosition.x + 10,
+              top: mousePosition.y + 10
+            }}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <Package size={16} className="text-brand-primary" />
+              <span className="text-sm text-white font-medium">Table {hoveredTable.tableNumber}</span>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-white/60">État</span>
+                <span className={`text-xs font-medium ${
+                  hoveredTable.status === 'optimal' 
+                    ? 'text-green-400' 
+                    : hoveredTable.status === 'warning'
+                    ? 'text-yellow-400'
+                    : 'text-blue-400'
+                }`}>
+                  {hoveredTable.status === 'optimal' ? 'Optimal' : hoveredTable.status === 'warning' ? 'Avertissement' : 'Critique'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-white/60">Lots</span>
+                <span className="text-xs text-white">{hoveredTable.cells.filter(cell => cell.filled).length}</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

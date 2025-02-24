@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatedCard } from '@/components/ui/AnimatedCard';
 import { 
   Droplets, 
   Settings, 
@@ -352,21 +353,15 @@ function PoolDetail({ pool, onClose }: PoolDetailProps) {
 
 export function PurificationPools() {
   const [selectedPool, setSelectedPool] = useState<Pool | null>(null);
-  const [hoveredPool, setHoveredPool] = useState<string | null>(null);
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-6">
         {mockPools.map((pool) => (
-          <motion.div
+          <AnimatedCard
             key={pool.id}
-            className={`bg-white/5 border border-white/10 rounded-lg p-6 hover:border-white/20 transition-all duration-200 cursor-pointer relative overflow-hidden ${
-              hoveredPool === pool.id ? 'ring-2 ring-brand-burgundy shadow-neon' : ''
-            }`}
             onClick={() => setSelectedPool(pool)}
-            onHoverStart={() => setHoveredPool(pool.id)}
-            onHoverEnd={() => setHoveredPool(null)}
-            whileHover={{ y: -4 }}
+            className="bg-white/5 border border-white/10 rounded-lg p-6 hover:border-white/20 transition-all duration-200 cursor-pointer"
           >
             <div className="flex items-start justify-between mb-4">
               <div>
@@ -423,15 +418,7 @@ export function PurificationPools() {
                 </div>
               ))}
             </div>
-
-            {/* Effet de surbrillance au survol */}
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-brand-burgundy/5 to-transparent pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: hoveredPool === pool.id ? 1 : 0 }}
-              transition={{ duration: 0.2 }}
-            />
-          </motion.div>
+          </AnimatedCard>
         ))}
       </div>
 
