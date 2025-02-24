@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   Search, 
@@ -19,10 +19,12 @@ import { NetworkChat } from '../components/NetworkChat';
 import { NewPostModal } from '../components/NewPostModal';
 import { AddFriendModal } from '../components/AddFriendModal';
 import { useStore } from '@/lib/store';
+import { useLocation } from 'react-router-dom';
 
 type NetworkTab = 'feed' | 'contacts' | 'directory' | 'forum' | 'messages';
 
 export function NetworkPage() {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<NetworkTab>('feed');
   const [showNewPost, setShowNewPost] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
@@ -30,6 +32,12 @@ export function NetworkPage() {
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
   const { unreadCount } = useStore();
+
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location.state]);
 
   return (
     <div className="space-y-6">

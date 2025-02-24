@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Settings, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useStore } from '@/lib/store';
@@ -10,13 +11,36 @@ const inputVariants = {
 };
 
 export function AuthForm() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<AuthMode>('login');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const { setSession } = useStore();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSession({ user: 'test' });
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // Pour la démo, on simule une connexion réussie
+      const demoSession = {
+        user: {
+          id: '1',
+          email: 'demo@example.com',
+          name: 'Utilisateur Démo'
+        },
+        token: 'demo-token'
+      };
+
+      setSession(demoSession);
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Échec de la connexion. Veuillez réessayer.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -46,6 +70,7 @@ export function AuthForm() {
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
               <input
                 type="email"
+                defaultValue="demo@example.com"
                 className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-burgundy/50 focus:ring-1 focus:ring-brand-burgundy/50 transition-all duration-300"
                 required
               />
@@ -60,6 +85,7 @@ export function AuthForm() {
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
               <input
                 type={showPassword ? "text" : "password"}
+                defaultValue="demo"
                 className="w-full pl-10 pr-12 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-burgundy/50 focus:ring-1 focus:ring-brand-burgundy/50 transition-all duration-300"
                 required
               />
@@ -73,27 +99,24 @@ export function AuthForm() {
             </div>
           </motion.div>
 
+          {error && (
+            <p className="text-red-400 text-sm">{error}</p>
+          )}
+
           <motion.button
             type="submit"
+            disabled={isLoading}
             className="w-full px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors relative overflow-hidden group"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <span className="relative z-10">Se connecter</span>
+            <span className="relative z-10">{isLoading ? 'Connexion en cours...' : 'Se connecter'}</span>
             <div className="absolute inset-0 bg-gradient-to-r from-brand-burgundy to-brand-purple opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </motion.button>
 
-          <div className="text-center">
-            <motion.button
-              type="button"
-              onClick={() => setMode('register')}
-              className="text-sm text-white/60 hover:text-white transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Nouvel utilisateur ? S'enregistrer
-            </motion.button>
-          </div>
+          <p className="text-sm text-center text-gray-400 mt-4">
+            Utilisez n'importe quel email/mot de passe pour la démo
+          </p>
         </form>
       </motion.div>
     </div>

@@ -15,12 +15,7 @@ export function ModernHeader() {
   const navigate = useNavigate();
 
   const handleMessageClick = () => {
-    navigate('/network');
-    // Activer automatiquement l'onglet messages
-    const messagesTab = document.querySelector('[data-tab="messages"]');
-    if (messagesTab) {
-      (messagesTab as HTMLElement).click();
-    }
+    navigate('/network', { state: { activeTab: 'messages' } });
   };
 
   return (
