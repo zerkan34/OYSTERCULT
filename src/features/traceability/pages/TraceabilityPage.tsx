@@ -7,6 +7,7 @@ import { PurificationPools } from '../components/PurificationPools';
 import { MarketPurchases } from '../components/MarketPurchases';
 import { QRCodeGenerator } from '../components/QRCodeGenerator';
 import { TrempeView } from '../components/TrempeView';
+import { OysterTableMap } from '../components/OysterTableMap';
 import { useStore } from '@/lib/store';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
@@ -222,7 +223,12 @@ export function TraceabilityPage() {
       )}
 
       {activeTab === 'batches' && <BatchList searchQuery="" />}
-      {activeTab === 'pools' && <PurificationPools />}
+      {activeTab === 'pools' && (
+        <div className="space-y-6">
+          <OysterTableMap onTableSelect={(table) => console.log('Selected table:', table)} />
+          <PurificationPools />
+        </div>
+      )}
       {activeTab === 'market' && <MarketPurchases />}
       {activeTab === 'history' && <BatchHistory searchQuery="" />}
 
