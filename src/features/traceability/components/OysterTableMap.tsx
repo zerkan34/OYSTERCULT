@@ -196,6 +196,7 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [hoveredTable, setHoveredTable] = useState<Table | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [showTooltip, setShowTooltip] = useState(false);
 
   // Gestionnaire pour fermer le modal
   const handleCloseModal = () => {
@@ -215,6 +216,17 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
       document.removeEventListener('keydown', handleEscapeKey);
     };
   }, []);
+
+  // Gestionnaire pour le survol
+  const handleTableHover = (table: Table | null, e?: React.MouseEvent) => {
+    setHoveredTable(table);
+    if (e) {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+      setShowTooltip(true);
+    } else {
+      setShowTooltip(false);
+    }
+  };
 
   const cellVariants = {
     initial: { opacity: 0.6, scale: 0.95 },
@@ -317,13 +329,12 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
                     height: `${table.size.height}px`,
                   }}
                   whileHover={{ scale: 1.02 }}
-                  onMouseEnter={() => setHoveredTable(table)}
-                  onMouseLeave={() => {
-                    setHoveredTable(null);
-                    setMousePosition({ x: 0, y: 0 });
-                  }}
+                  onMouseEnter={(e) => handleTableHover(table, e)}
+                  onMouseLeave={() => handleTableHover(null)}
                   onMouseMove={(e: React.MouseEvent) => {
-                    setMousePosition({ x: e.clientX, y: e.clientY });
+                    if (hoveredTable) {
+                      setMousePosition({ x: e.clientX, y: e.clientY });
+                    }
                   }}
                   onClick={() => {
                     setSelectedTable(table);
@@ -504,7 +515,7 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
         </div>
       </div>
       <AnimatePresence>
-        {hoveredTable && (
+        {hoveredTable && showTooltip && (
           <motion.div
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
@@ -512,7 +523,8 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
             className="fixed glass-effect rounded-lg p-3 z-50 min-w-[200px]"
             style={{
               left: mousePosition.x + 10,
-              top: mousePosition.y + 10
+              top: mousePosition.y + 10,
+              pointerEvents: 'none'
             }}
           >
             <div className="flex items-center gap-2 mb-2">
@@ -535,6 +547,14 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
               <div className="flex justify-between items-center">
                 <span className="text-xs text-white/60">Lots</span>
                 <span className="text-xs text-white">{hoveredTable.cells.filter(cell => cell.filled).length}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-white/60">Température</span>
+                <span className="text-xs text-white">{hoveredTable.temperature}°C</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-white/60">Salinité</span>
+                <span className="text-xs text-white">{hoveredTable.salinity}g/L</span>
               </div>
             </div>
           </motion.div>
