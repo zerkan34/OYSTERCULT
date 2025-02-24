@@ -2,22 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'Industry';
-  src: url('https://fonts.cdnfonts.com/css/industry-inc-base') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('https://fonts.cdnfonts.com/css/sf-pro-display');
-}
-
-@font-face {
-  font-family: 'SF Mono';
-  src: url('https://fonts.cdnfonts.com/css/sf-mono');
-}
+@import url('https://fonts.cdnfonts.com/css/industry-inc-base');
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+@import url('https://fonts.cdnfonts.com/css/sf-mono');
 
 /* Base styles */
 @layer base {

@@ -136,7 +136,7 @@ const mockSquares: TrempeSquare[] = [
   }
 ];
 
-const TrempeView: React.FC = () => {
+export function TrempeView() {
   const [hoveredSquare, setHoveredSquare] = useState<TrempeSquare | null>(null);
   const [selectedSquare, setSelectedSquare] = useState<TrempeSquare | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -736,6 +736,4 @@ const TrempeView: React.FC = () => {
       </div>
     </>
   );
-};
-
-export default TrempeView;
+}
