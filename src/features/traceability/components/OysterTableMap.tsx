@@ -306,7 +306,7 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
                     <div className={`absolute inset-0 backdrop-blur-sm ${
                       table.status === 'optimal' ? 'bg-green-500/10' :
                       table.status === 'warning' ? 'bg-yellow-500/10' :
-                      'bg-red-500/10'
+                      'bg-blue-500/10'
                     }`}>
                       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
                     </div>
@@ -402,7 +402,7 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
                         <span className="text-white/60">Taux de mortalité estimé</span>
                         <span className={`text-lg font-medium ${
                           ((hoveredTable || selectedTable)?.mortalityRate || 0) > 3
-                            ? 'text-red-400'
+                            ? 'text-blue-400'
                             : ((hoveredTable || selectedTable)?.mortalityRate || 0) > 2
                             ? 'text-yellow-400'
                             : 'text-green-400'

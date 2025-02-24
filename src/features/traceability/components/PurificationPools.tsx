@@ -188,7 +188,7 @@ function PoolDetail({ pool, onClose }: PoolDetailProps) {
                   <div className={`text-2xl font-bold ${
                     pool.waterQuality >= 95 ? 'text-green-400' :
                     pool.waterQuality >= 90 ? 'text-yellow-400' :
-                    'text-red-400'
+                    'text-blue-400'
                   }`}>
                     {pool.waterQuality}%
                   </div>
@@ -379,7 +379,7 @@ export function PurificationPools() {
               <div className={`px-3 py-1 rounded-full text-xs ${
                 pool.filterStatus === 'active' ? 'bg-green-500/20 text-green-300' :
                 pool.filterStatus === 'maintenance' ? 'bg-yellow-500/20 text-yellow-300' :
-                'bg-red-500/20 text-red-300'
+                'bg-blue-500/20 text-blue-300'
               }`}>
                 {pool.filterStatus === 'active' ? 'Actif' :
                  pool.filterStatus === 'maintenance' ? 'Maintenance' : 'Erreur'}
@@ -401,7 +401,7 @@ export function PurificationPools() {
                 <div className={`text-xl font-bold ${
                   pool.waterQuality >= 95 ? 'text-green-400' :
                   pool.waterQuality >= 90 ? 'text-yellow-400' :
-                  'text-red-400'
+                  'text-blue-400'
                 }`}>
                   {pool.waterQuality}%
                 </div>

@@ -1,172 +1,194 @@
 import React, { useState } from 'react';
-import { Tag, MapPin, Calendar, AlertTriangle, MoreVertical, Edit2, Trash2, FileText, QrCode } from 'lucide-react';
+import { Tag, MapPin, Calendar, MoreVertical, Edit2, Trash2, FileText, QrCode, Anchor } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-
-interface Batch {
-  id: string;
-  batchNumber: string;
-  type: string;
-  quantity: number;
-  location: string;
-  status: 'growing' | 'ready' | 'alert';
-  startDate: string;
-  harvestDate: string;
-  supplier: string;
-  qualityScore: number;
-  lastCheck: string;
-}
-
-const mockBatches: Batch[] = [
-  {
-    id: '1',
-    batchNumber: 'LOT-2025-001',
-    type: 'Huîtres Plates N°3',
-    quantity: 5000,
-    location: 'Zone Nord - Table A1',
-    status: 'growing',
-    startDate: '2025-01-15',
-    harvestDate: '2025-06-15',
-    supplier: 'Naissain Express',
-    qualityScore: 92,
-    lastCheck: '2025-02-19'
-  },
-  {
-    id: '2',
-    batchNumber: 'LOT-2025-002',
-    type: 'Huîtres Creuses N°2',
-    quantity: 8000,
-    location: 'Zone Sud - Table B3',
-    status: 'alert',
-    startDate: '2025-01-20',
-    harvestDate: '2025-06-20',
-    supplier: 'Naissain Express',
-    qualityScore: 78,
-    lastCheck: '2025-02-19'
-  }
-];
-
-const statusColors = {
-  growing: 'bg-green-500/20 text-green-300',
-  ready: 'bg-blue-500/20 text-blue-300',
-  alert: 'bg-red-500/20 text-red-300'
-};
+import { useStore } from '@/lib/store';
+import { Batch } from '../types';
 
 interface BatchListProps {
   searchQuery: string;
 }
 
-export function BatchList({ searchQuery }: BatchListProps) {
-  const [selectedBatch, setSelectedBatch] = useState<string | null>(null);
+const statusColors = {
+  table1: 'bg-blue-500/20 text-blue-300',
+  table2: 'bg-purple-500/20 text-purple-300',
+  table3: 'bg-teal-500/20 text-teal-300'
+};
 
-  const filteredBatches = mockBatches.filter(batch =>
-    batch.batchNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    batch.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    batch.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+export function BatchList({ searchQuery }: BatchListProps) {
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingBatch, setEditingBatch] = useState<Batch | null>(null);
+  const { batches, updateBatch } = useStore();
+
+  const handleEdit = (batch: Batch) => {
+    console.log('Edit clicked', batch);
+    setEditingBatch(batch);
+    setShowEditModal(true);
+  };
+
+  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const updatedBatch = {
+      ...editingBatch,
+      type: formData.get('type') as string,
+      quantity: Number(formData.get('quantity')),
+      location: formData.get('location') as string,
+      status: formData.get('status') as string,
+      perchNumber: Number(formData.get('perchNumber')),
+    };
+    updateBatch(updatedBatch.id, updatedBatch);
+    setShowEditModal(false);
+  };
 
   return (
     <div className="space-y-4">
-      {filteredBatches.map((batch) => (
-        <div
-          key={batch.id}
-          className="bg-white/5 border border-white/10 rounded-lg hover:border-white/20 transition-colors"
-        >
-          <div className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 rounded-lg bg-brand-burgundy/20 flex items-center justify-center">
-                  <Tag size={20} className="text-brand-burgundy" />
-                </div>
-                
-                <div>
-                  <div className="flex items-center space-x-3">
-                    <h3 className="text-lg font-medium text-white">{batch.batchNumber}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs ${statusColors[batch.status]}`}>
-                      {batch.status === 'growing' ? 'En croissance' : batch.status === 'ready' ? 'Prêt' : 'Alerte'}
-                    </span>
-                  </div>
-                  
-                  <p className="text-sm text-white/60 mt-1">{batch.type}</p>
-                  
-                  <div className="mt-4 grid grid-cols-3 gap-6">
-                    <div>
-                      <div className="text-sm text-white/60">Quantité</div>
-                      <div className="text-white">{batch.quantity} unités</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-white/60">Emplacement</div>
-                      <div className="flex items-center text-white">
-                        <MapPin size={16} className="mr-1 text-white/60" />
-                        {batch.location}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-white/60">Date de récolte</div>
-                      <div className="flex items-center text-white">
-                        <Calendar size={16} className="mr-1 text-white/60" />
-                        {format(new Date(batch.harvestDate), 'PP', { locale: fr })}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex items-center space-x-6">
-                    <div>
-                      <div className="text-sm text-white/60">Fournisseur</div>
-                      <div className="text-white">{batch.supplier}</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-white/60">Score qualité</div>
-                      <div className={`text-lg font-medium ${
-                        batch.qualityScore >= 90 ? 'text-green-400' :
-                        batch.qualityScore >= 80 ? 'text-yellow-400' : 'text-red-400'
-                      }`}>
-                        {batch.qualityScore}%
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-white/60">Dernier contrôle</div>
-                      <div className="text-white">
-                        {format(new Date(batch.lastCheck), 'PP', { locale: fr })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+      {batches.map((batch) => (
+        <div key={batch.id} className="bg-white/5 border border-white/10 rounded-lg p-6">
+          <div className="flex justify-between items-start">
+            <div className="flex gap-4">
+              <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
+                <Tag className="text-brand-blue" size={20} />
               </div>
-              
-              <div className="relative">
-                <button
-                  onClick={() => setSelectedBatch(selectedBatch === batch.id ? null : batch.id)}
-                  className="p-2 hover:bg-white/5 rounded-lg transition-colors"
-                >
-                  <MoreVertical size={20} className="text-white/60" />
-                </button>
-                
-                {selectedBatch === batch.id && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white/10 backdrop-blur-md rounded-lg shadow-lg py-1 z-10">
-                    <button className="w-full px-4 py-2 text-left text-white hover:bg-white/5 flex items-center">
-                      <FileText size={16} className="mr-2" />
-                      Détails
-                    </button>
-                    <button className="w-full px-4 py-2 text-left text-white hover:bg-white/5 flex items-center">
-                      <QrCode size={16} className="mr-2" />
-                      QR Code
-                    </button>
-                    <button className="w-full px-4 py-2 text-left text-white hover:bg-white/5 flex items-center">
-                      <Edit2 size={16} className="mr-2" />
-                      Modifier
-                    </button>
-                    <button className="w-full px-4 py-2 text-left text-red-400 hover:bg-white/5 flex items-center">
-                      <Trash2 size={16} className="mr-2" />
-                      Supprimer
-                    </button>
-                  </div>
-                )}
+              <div className="flex items-center space-x-3">
+                <h3 className="text-lg font-medium text-white">{batch.batchNumber}</h3>
+                <div className="flex items-center gap-2">
+                  <span className={`px-2 py-1 rounded-full text-xs ${statusColors[batch.status]}`}>
+                    Table de trempe {batch.status.replace('table', '')}
+                  </span>
+                  <span className="flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-white/10 text-white">
+                    <Anchor size={12} />
+                    Perche {batch.perchNumber}
+                  </span>
+                </div>
               </div>
             </div>
+            
+            <button
+              onClick={() => handleEdit(batch)}
+              className="p-2 hover:bg-white/5 rounded-lg"
+            >
+              <Edit2 className="text-white/60" size={20} />
+            </button>
           </div>
         </div>
       ))}
+
+      {showEditModal && editingBatch && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[rgb(var(--color-brand-surface)_/_var(--glass-opacity))] backdrop-blur-md border border-white/10 rounded-lg p-6 w-full max-w-lg">
+            <h2 className="text-xl font-semibold text-white mb-4">
+              Modifier le lot {editingBatch.batchNumber}
+            </h2>
+            
+            <form onSubmit={handleSave}>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-1">
+                      Type
+                    </label>
+                    <input
+                      name="type"
+                      defaultValue={editingBatch.type}
+                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-1">
+                      Quantité
+                    </label>
+                    <input
+                      name="quantity"
+                      type="number"
+                      defaultValue={editingBatch.quantity}
+                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-1">
+                      Table de trempe
+                    </label>
+                    <select
+                      name="status"
+                      defaultValue={editingBatch.status}
+                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                      required
+                    >
+                      <option value="table1">Table 1</option>
+                      <option value="table2">Table 2</option>
+                      <option value="table3">Table 3</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-1">
+                      Numéro de perche
+                    </label>
+                    <input
+                      name="perchNumber"
+                      type="number"
+                      min="1"
+                      max="30"
+                      defaultValue={editingBatch.perchNumber}
+                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Emplacement
+                  </label>
+                  <input
+                    name="location"
+                    defaultValue={editingBatch.location}
+                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Score de qualité
+                  </label>
+                  <div className={`text-lg font-medium ${
+                    editingBatch.qualityScore >= 90 ? 'text-green-400' :
+                    editingBatch.qualityScore >= 80 ? 'text-blue-400' : 'text-blue-300'
+                  }`}>
+                    {editingBatch.qualityScore}%
+                  </div>
+                  {editingBatch.qualityScore < 80 && (
+                    <span className="px-2 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded-full">
+                      Attention requise
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end gap-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 bg-white/5 text-white rounded-lg hover:bg-white/10"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-brand-primary/20 text-brand-primary rounded-lg hover:bg-brand-primary/30"
+                >
+                  Enregistrer
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

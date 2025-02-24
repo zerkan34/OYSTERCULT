@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Plus, Filter, Search, BarChart2, Package, AlertTriangle, Droplets } from 'lucide-react';
 import { OysterTableMap } from '../components/OysterTableMap';
 import { PurificationPools } from '../components/PurificationPools';
+import { TrempeView } from '../components/TrempeView';
 import { useStore } from '@/lib/store';
 import { TableDetail } from '../components/TableDetail';
 import { InventoryForm } from '../components/InventoryForm';
 import { InventoryFilters } from '../components/InventoryFilters';
 import { useTouchGestures } from '@/lib/hooks';
 
-type TabType = 'tables' | 'pools' | 'history';
+type TabType = 'tables' | 'pools' | 'trempes' | 'history';
 
 export function InventoryPage() {
   const [activeTab, setActiveTab] = useState<TabType>('tables');
@@ -74,6 +75,19 @@ export function InventoryPage() {
           </div>
         </button>
         <button
+          onClick={() => setActiveTab('trempes')}
+          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'trempes'
+              ? 'border-brand-primary text-white'
+              : 'border-transparent text-white/60 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center">
+            <Droplets size={16} className="mr-2" />
+            Trempes
+          </div>
+        </button>
+        <button
           onClick={() => setActiveTab('pools')}
           className={`py-4 text-sm font-medium border-b-2 transition-colors ${
             activeTab === 'pools'
@@ -135,20 +149,18 @@ export function InventoryPage() {
       </div>
 
       {activeTab === 'tables' && (
-        <div className="bg-white/5 border border-white/10 rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-white/10">
-            <h2 className="text-lg font-medium text-white">Vue satellite - Lagune de Thau</h2>
-          </div>
-          <OysterTableMap 
-            onTableSelect={handleTableSelect} 
+        <div className="space-y-6">
+          <OysterTableMap
+            onTableSelect={handleTableSelect}
             onTableHover={handleTableHover}
-            hoveredTable={hoveredTable}
-            selectedTable={selectedTable}
           />
         </div>
       )}
-
       {activeTab === 'pools' && <PurificationPools />}
+      {activeTab === 'trempes' && <TrempeView />}
+      {activeTab === 'history' && (
+        <div>Historique des alertes</div>
+      )}
 
       {selectedTable && (
         <TableDetail 

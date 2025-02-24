@@ -17,7 +17,7 @@ export function TasksPage() {
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setShowNewTaskForm(true)}
-            className="flex items-center px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
+            className="flex items-center px-4 py-2 bg-brand-primary/20 rounded-lg text-brand-primary hover:bg-brand-primary/30 transition-colors"
           >
             <Plus size={20} className="mr-2" />
             Nouvelle Tâche

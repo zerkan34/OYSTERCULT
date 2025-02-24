@@ -50,7 +50,7 @@ const mockPurchases: MarketPurchase[] = [
 const statusColors = {
   fresh: 'bg-green-500/20 text-green-300',
   warning: 'bg-yellow-500/20 text-yellow-300',
-  expired: 'bg-red-500/20 text-red-300'
+  expired: 'bg-blue-500/20 text-blue-300'
 };
 
 export function MarketPurchases() {

@@ -54,7 +54,7 @@ const mockChecks: QualityCheck[] = [
 const statusColors = {
   passed: 'bg-green-500/20 text-green-300',
   warning: 'bg-yellow-500/20 text-yellow-300',
-  failed: 'bg-red-500/20 text-red-300'
+  failed: 'bg-blue-500/20 text-blue-300'
 };
 
 interface QualityChecksProps {
@@ -97,7 +97,7 @@ export function QualityChecks({ searchQuery }: QualityChecksProps) {
                       <div className="text-sm text-white/60">Score global</div>
                       <div className={`text-lg font-medium ${
                         check.score >= 90 ? 'text-green-400' :
-                        check.score >= 80 ? 'text-yellow-400' : 'text-red-400'
+                        check.score >= 80 ? 'text-yellow-400' : 'text-blue-400'
                       }`}>
                         {check.score}%
                       </div>
@@ -155,7 +155,7 @@ export function QualityChecks({ searchQuery }: QualityChecksProps) {
                       <Edit2 size={16} className="mr-2" />
                       Modifier
                     </button>
-                    <button className="w-full px-4 py-2 text-left text-red-400 hover:bg-white/5 flex items-center">
+                    <button className="w-full px-4 py-2 text-left text-blue-400 hover:bg-white/5 flex items-center">
                       <Trash2 size={16} className="mr-2" />
                       Supprimer
                     </button>

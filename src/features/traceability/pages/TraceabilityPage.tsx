@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { Filter, Calendar, QrCode, Tag, FileText, Package, Download } from 'lucide-react';
+import { Filter, Calendar, QrCode, Tag, FileText, Package, Download, Droplets, Waves, Grid, History } from 'lucide-react';
 import { BatchList } from '../components/BatchList';
 import { BatchHistory } from '../components/BatchHistory';
 import { QualityChecks } from '../components/QualityChecks';
 import { PurificationPools } from '../components/PurificationPools';
 import { MarketPurchases } from '../components/MarketPurchases';
 import { QRCodeGenerator } from '../components/QRCodeGenerator';
+import { TrempeView } from '../components/TrempeView';
 import { useStore } from '@/lib/store';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
@@ -139,6 +140,13 @@ export function TraceabilityPage() {
     doc.save(`tracabilite_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
   };
 
+  const tabs = [
+    { id: 'batches', label: 'Lots en cours', icon: Package },
+    { id: 'pools', label: 'Bassins', icon: Waves },
+    { id: 'market', label: 'Achats', icon: Grid },
+    { id: 'history', label: 'Historique', icon: History }
+  ];
+
   return (
     <div ref={pageRef} className="space-y-6">
       <div className="flex items-center justify-between">
@@ -162,58 +170,22 @@ export function TraceabilityPage() {
       </div>
 
       <div className="flex items-center space-x-4 border-b border-white/10">
-        <button
-          onClick={() => setActiveTab('batches')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'batches'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
-          }`}
-        >
-          <div className="flex items-center">
-            <Tag size={16} className="mr-2" />
-            Lots en cours
-          </div>
-        </button>
-        <button
-          onClick={() => setActiveTab('pools')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'pools'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
-          }`}
-        >
-          <div className="flex items-center">
-            <FileText size={16} className="mr-2" />
-            Bassins
-          </div>
-        </button>
-        <button
-          onClick={() => setActiveTab('market')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'market'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
-          }`}
-        >
-          <div className="flex items-center">
-            <Package size={16} className="mr-2" />
-            Achats
-          </div>
-        </button>
-        <button
-          onClick={() => setActiveTab('history')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'history'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
-          }`}
-        >
-          <div className="flex items-center">
-            <Calendar size={16} className="mr-2" />
-            Historique
-          </div>
-        </button>
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as TabType)}
+            className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === tab.id
+                ? 'border-brand-primary text-white'
+                : 'border-transparent text-white/60 hover:text-white'
+            }`}
+          >
+            <div className="flex items-center">
+              <tab.icon size={16} className="mr-2" />
+              {tab.label}
+            </div>
+          </button>
+        ))}
       </div>
 
       {activeTab === 'history' && (

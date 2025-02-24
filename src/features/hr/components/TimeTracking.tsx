@@ -65,7 +65,7 @@ export function TimeTracking() {
           ) : (
             <button
               onClick={startTracking}
-              className="flex items-center px-4 py-2 bg-green-500/20 text-green-300 rounded-lg hover:bg-green-500/30 transition-colors"
+              className="flex items-center px-4 py-2 bg-brand-primary/20 text-brand-primary rounded-lg hover:bg-brand-primary/30 transition-colors"
             >
               <Play size={20} className="mr-2" />
               Démarrer

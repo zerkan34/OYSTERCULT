@@ -138,7 +138,7 @@ export function SecuritySettings() {
                 <div className="text-sm text-white/60">Dernière activité: Il y a 1 heure</div>
                 <div className="text-sm text-white/60">IP: 192.168.1.2</div>
               </div>
-              <button className="text-red-400 hover:text-red-300 transition-colors">
+              <button className="text-brand-primary hover:text-brand-primary/80 transition-colors">
                 Déconnecter
               </button>
             </div>
@@ -146,8 +146,8 @@ export function SecuritySettings() {
         </div>
       </div>
 
-      <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
-        <h3 className="text-lg font-medium text-red-400 mb-4">Zone dangereuse</h3>
+      <div className="bg-brand-primary/10 border border-brand-primary/20 rounded-lg p-6">
+        <h3 className="text-lg font-medium text-brand-primary mb-4">Zone dangereuse</h3>
         
         <div className="flex items-center justify-between">
           <div>
@@ -156,7 +156,7 @@ export function SecuritySettings() {
               Cette action est irréversible et supprimera toutes vos données
             </div>
           </div>
-          <button className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors">
+          <button className="px-4 py-2 bg-brand-primary/20 text-brand-primary rounded-lg hover:bg-brand-primary/30 transition-colors">
             Supprimer mon compte
           </button>
         </div>
