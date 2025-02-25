@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TableDetail } from './TableDetail';
 import { 
   Droplets, 
   Settings, 
@@ -346,6 +347,7 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 className="glass-effect rounded-xl p-6 space-y-6"
+                onClick={(e) => e.stopPropagation()}
               >
                 <div>
                   <h3 className="text-xl font-bold text-white mb-2">

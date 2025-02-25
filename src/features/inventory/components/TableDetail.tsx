@@ -223,8 +223,24 @@ function CellModal({ cell, onClose, onUpdate }: CellModalProps) {
   );
 }
 
+import TableDetailComponent from './TableDetailComponent';
+
+interface TableDetailProps {
+  table: any;
+  onClose: () => void;
+}
+
 export function TableDetail({ table, onClose }: TableDetailProps) {
-  const modalRef = useClickOutside(onClose);
+  const handleModalClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Empêche la propagation du clic
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   const [selectedCell, setSelectedCell] = useState<any | null>(null);
   const [showLegend, setShowLegend] = useState(true);
 
@@ -233,62 +249,134 @@ export function TableDetail({ table, onClose }: TableDetailProps) {
     console.log('Updating cell:', cellId, data);
   };
 
-  const cellVariants = {
-    initial: { opacity: 0.6, scale: 0.95 },
-    animate: (custom: number) => ({
-      opacity: [0.6, 1, 0.6],
-      scale: [0.95, 1, 0.95],
-      transition: {
-        duration: 3,
-        repeat: Infinity,
-        delay: custom * 0.1,
-        ease: "easeInOut"
-      }
-    })
-  };
-
-  const filledCellVariants = {
-    initial: { opacity: 0.8, scale: 0.95 },
-    animate: (custom: number) => ({
-      opacity: [0.8, 1, 0.8],
-      scale: [0.95, 1.05, 0.95],
-      transition: {
-        duration: 4,
-        repeat: Infinity,
-        delay: custom * 0.2,
-        ease: "easeInOut"
-      }
-    })
-  };
-
-  const oystersTypes = [
-    { 
-      type: 'triplo', 
-      label: 'Triploïdes', 
-      color: 'bg-brand-burgundy',
-      description: 'Huîtres stériles à croissance rapide'
-    },
-    { 
-      type: 'diplo', 
-      label: 'Diploïdes', 
-      color: 'bg-brand-primary',
-      description: 'Huîtres naturelles améliorées'
-    },
-    { 
-      type: 'naturelle', 
-      label: 'Naturelles', 
-      color: 'bg-brand-tertiary',
-      description: 'Huîtres sauvages traditionnelles'
-    }
-  ];
-
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center gap-6"
+    <div 
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+      onClick={handleBackdropClick}
     >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md p-6 rounded-lg w-full max-w-2xl"
+        onClick={handleModalClick}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-bold text-white">{table?.name || 'Détails de la table'}</h3>
+          <button
+            onClick={onClose}
+            className="text-white/60 hover:text-white transition-colors"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        <div className="space-y-6">
+          {/* Informations principales */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="glass-effect rounded-lg p-4">
+              <div className="flex items-center text-white/80 mb-2">
+                <ThermometerSun size={20} className="mr-2 text-brand-burgundy" />
+                Température
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {table?.temperature}°C
+              </div>
+            </div>
+
+            <div className="glass-effect rounded-lg p-4">
+              <div className="flex items-center text-white/80 mb-2">
+                <Droplets size={20} className="mr-2 text-brand-primary" />
+                Salinité
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {table?.salinity}g/L
+              </div>
+            </div>
+
+            <div className="glass-effect rounded-lg p-4">
+              <div className="flex items-center text-white/80 mb-2">
+                <AlertCircle size={20} className="mr-2 text-brand-tertiary" />
+                Mortalité
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {table?.mortalityRate}%
+              </div>
+            </div>
+          </div>
+
+          {/* Détails du lot */}
+          {table?.currentBatch && (
+            <div className="glass-effect rounded-lg p-4">
+              <div className="flex items-center text-white/80 mb-4">
+                <Shell size={20} className="mr-2 text-brand-burgundy" />
+                Lot en cours
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-white/60">Calibre</span>
+                  <span className="text-white font-medium">N°{table.currentBatch.size}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-white/60">Quantité</span>
+                  <span className="text-white font-medium">{table.currentBatch.quantity} unités</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-white/60">Date de récolte estimée</span>
+                  <span className="text-white font-medium">
+                    {new Date(table.currentBatch.estimatedHarvestDate).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Échantillonnage */}
+          <div className="glass-effect rounded-lg p-4">
+            <div className="flex items-center text-white/80 mb-4">
+              <Calendar size={20} className="mr-2 text-brand-tertiary" />
+              Échantillonnage
+            </div>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-white/60">Dernier échantillonnage</span>
+                <span className="text-white font-medium">
+                  {new Date(table?.lastCheck || '').toLocaleDateString()}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-white/60">Prochain échantillonnage</span>
+                <span className="text-white font-medium">
+                  {new Date(table?.nextCheck || '').toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end space-x-4 pt-4">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+              }}
+              className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+            >
+              Fermer
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                // Gérer la sauvegarde ici
+              }}
+              className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
+            >
+              Enregistrer les modifications
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
       {/* Légende des types d'huîtres */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -317,7 +405,26 @@ export function TableDetail({ table, onClose }: TableDetailProps) {
               exit={{ height: 0, opacity: 0 }}
               className="space-y-3 overflow-hidden"
             >
-              {oystersTypes.map((type) => (
+              {[
+                { 
+                  type: 'triplo', 
+                  label: 'Triploïdes', 
+                  color: 'bg-brand-burgundy',
+                  description: 'Huîtres stériles à croissance rapide'
+                },
+                { 
+                  type: 'diplo', 
+                  label: 'Diploïdes', 
+                  color: 'bg-brand-primary',
+                  description: 'Huîtres naturelles améliorées'
+                },
+                { 
+                  type: 'naturelle', 
+                  label: 'Naturelles', 
+                  color: 'bg-brand-tertiary',
+                  description: 'Huîtres sauvages traditionnelles'
+                }
+              ].map((type) => (
                 <div key={type.type} className="flex items-center space-x-3">
                   <div className={`w-6 h-6 rounded-lg ${type.color} shadow-neon flex-shrink-0`} />
                   <div>
@@ -333,7 +440,6 @@ export function TableDetail({ table, onClose }: TableDetailProps) {
 
       {/* Vue principale de la table en portrait */}
       <motion.div 
-        ref={modalRef}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
@@ -353,7 +459,19 @@ export function TableDetail({ table, onClose }: TableDetailProps) {
                     }`
                   : 'bg-white/5 hover:bg-white/10'
               }`}
-              variants={cell.filled ? filledCellVariants : cellVariants}
+              variants={{
+                initial: { opacity: 0.6, scale: 0.95 },
+                animate: (custom: number) => ({
+                  opacity: [0.6, 1, 0.6],
+                  scale: [0.95, 1, 0.95],
+                  transition: {
+                    duration: 3,
+                    repeat: Infinity,
+                    delay: custom * 0.1,
+                    ease: "easeInOut"
+                  }
+                })
+              }}
               initial="initial"
               animate="animate"
               custom={index}
@@ -493,6 +611,6 @@ export function TableDetail({ table, onClose }: TableDetailProps) {
           />
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }
