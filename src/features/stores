@@ -1,0 +1,55 @@
+import { create } from 'zustand';
+
+interface Location {
+  type: 'table' | 'trempe';
+  id: string;
+  position: number;
+}
+
+interface Batch {
+  id: string;
+  type: 'triplo' | 'diplo' | 'naturelle';
+  location: Location;
+}
+
+interface BatchStore {
+  batches: Batch[];
+  selectedBatch: Batch | null;
+  setBatches: (batches: Batch[]) => void;
+  selectBatch: (batch: Batch | null) => void;
+  addBatch: (batch: Batch) => void;
+  removeBatch: (batchId: string) => void;
+  updateBatchLocation: (batchId: string, newLocation: Location) => void;
+}
+
+export const useBatchStore = create<BatchStore>((set) => ({
+  batches: [
+    {
+      id: '1',
+      type: 'triplo',
+      location: { type: 'table', id: '1', position: 0 }
+    },
+    {
+      id: '2',
+      type: 'diplo',
+      location: { type: 'table', id: '1', position: 1 }
+    },
+    {
+      id: '3',
+      type: 'naturelle',
+      location: { type: 'table', id: '2', position: 0 }
+    }
+  ],
+  selectedBatch: null,
+  setBatches: (batches) => set({ batches }),
+  selectBatch: (batch) => set({ selectedBatch: batch }),
+  addBatch: (batch) => set((state) => ({ batches: [...state.batches, batch] })),
+  removeBatch: (batchId) => set((state) => ({
+    batches: state.batches.filter((b) => b.id !== batchId)
+  })),
+  updateBatchLocation: (batchId, newLocation) => set((state) => ({
+    batches: state.batches.map((b) => 
+      b.id === batchId ? { ...b, location: newLocation } : b
+    )
+  }))
+}));

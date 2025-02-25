@@ -1,10 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import url('https://fonts.cdnfonts.com/css/industry-inc-base');
 @import url('https://fonts.cdnfonts.com/css/sf-pro-display');
 @import url('https://fonts.cdnfonts.com/css/sf-mono');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Base styles */
 @layer base {
