@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
@@ -34,13 +34,36 @@ export function NotificationsPanel({ onClose }: NotificationsPanelProps) {
   const [showSearch, setShowSearch] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState<string | null>(null);
 
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const panel = document.querySelector('.notifications-panel');
+      if (panel && !panel.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [onClose]);
+
   const handleMarkAsRead = (id: string) => {
     markAsRead(id);
   };
 
   return (
     <motion.div
-      className="fixed inset-y-0 right-0 w-full max-w-md bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md shadow-2xl z-[9999]"
+      className="notifications-panel fixed inset-y-0 right-0 w-full max-w-md bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md shadow-2xl z-[9999]"
       initial={{ x: '100%', opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: '100%', opacity: 0 }}

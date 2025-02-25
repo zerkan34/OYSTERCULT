@@ -47,10 +47,39 @@ interface CompanyInfo {
   website?: string;
 }
 
+interface Role {
+  id: string;
+  name: string;
+  description: string;
+}
+
 interface User {
   id: string;
   role?: string;
   // Add user properties here
+}
+
+interface Supplier {
+  id: string;
+  name: string;
+  contact: string;
+  phone: string;
+  email: string;
+  address: string;
+}
+
+interface Purchase {
+  id: string;
+  productName: string;
+  supplier: string; // ID du fournisseur
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  expiryDate: string;
+  storageLocation: string;
+  purchaseDate: string;
+  invoiceNumber: string;
+  notes?: string;
 }
 
 interface Store {
@@ -63,6 +92,9 @@ interface Store {
   batches: Batch[];
   companyInfo: CompanyInfo | null;
   users: User[];
+  roles: Role[];
+  suppliers: Supplier[];
+  purchases: Purchase[];
   setSession: (session: any | null) => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
@@ -77,6 +109,15 @@ interface Store {
   addUser: (userData: Omit<User, 'id'>) => void;
   updateUser: (id: string, userData: Partial<User>) => void;
   deleteUser: (id: string) => void;
+  addRole: (roleData: Omit<Role, 'id'>) => void;
+  updateRole: (id: string, roleData: Partial<Role>) => void;
+  deleteRole: (id: string) => void;
+  addSupplier: (supplier: Omit<Supplier, 'id'>) => void;
+  updateSupplier: (id: string, supplier: Partial<Supplier>) => void;
+  deleteSupplier: (id: string) => void;
+  addPurchase: (purchase: Omit<Purchase, 'id'>) => void;
+  updatePurchase: (id: string, purchase: Partial<Purchase>) => void;
+  deletePurchase: (id: string) => void;
 }
 
 export const useStore = create<Store>()(
@@ -91,6 +132,25 @@ export const useStore = create<Store>()(
       batches: [],
       companyInfo: null,
       users: [],
+      roles: [
+        {
+          id: '1',
+          name: 'Administrateur',
+          description: 'Gestion complète de l\'application'
+        },
+        {
+          id: '2',
+          name: 'Manager',
+          description: 'Gestion des équipes et des tâches'
+        },
+        {
+          id: '3',
+          name: 'Opérateur',
+          description: 'Gestion des lots et des tâches quotidiennes'
+        }
+      ],
+      suppliers: [],
+      purchases: [],
 
       setSession: (session) => set({ session }),
       
@@ -154,6 +214,48 @@ export const useStore = create<Store>()(
       deleteUser: (id) => set((state) => ({
         users: state.users.filter(user => user.id !== id)
       })),
+
+      addRole: (roleData) => set((state) => ({
+        roles: [...state.roles, { ...roleData, id: crypto.randomUUID() }]
+      })),
+
+      updateRole: (id, roleData) => set((state) => ({
+        roles: state.roles.map(role => 
+          role.id === id ? { ...role, ...roleData } : role
+        )
+      })),
+
+      deleteRole: (id) => set((state) => ({
+        roles: state.roles.filter(role => role.id !== id)
+      })),
+
+      addSupplier: (supplierData) => set((state) => ({
+        suppliers: [...state.suppliers, { ...supplierData, id: crypto.randomUUID() }]
+      })),
+
+      updateSupplier: (id, supplierData) => set((state) => ({
+        suppliers: state.suppliers.map(supplier => 
+          supplier.id === id ? { ...supplier, ...supplierData } : supplier
+        )
+      })),
+
+      deleteSupplier: (id) => set((state) => ({
+        suppliers: state.suppliers.filter(supplier => supplier.id !== id)
+      })),
+
+      addPurchase: (purchaseData) => set((state) => ({
+        purchases: [...state.purchases, { ...purchaseData, id: crypto.randomUUID() }]
+      })),
+
+      updatePurchase: (id, purchaseData) => set((state) => ({
+        purchases: state.purchases.map(purchase => 
+          purchase.id === id ? { ...purchase, ...purchaseData } : purchase
+        )
+      })),
+
+      deletePurchase: (id) => set((state) => ({
+        purchases: state.purchases.filter(purchase => purchase.id !== id)
+      })),
     }),
     {
       name: 'oyster-cult-storage',
@@ -162,6 +264,9 @@ export const useStore = create<Store>()(
         users: state.users,
         batches: state.batches,
         theme: state.theme,
+        roles: state.roles,
+        suppliers: state.suppliers,
+        purchases: state.purchases,
       })
     }
   )

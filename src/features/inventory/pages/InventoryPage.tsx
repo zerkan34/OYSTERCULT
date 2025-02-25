@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Filter, Search, BarChart2, Package, AlertTriangle, Droplets } from 'lucide-react';
+import { Plus, Filter, Search, BarChart2, Package, AlertTriangle, Droplets, ShoppingCart } from 'lucide-react';
 import { OysterTableMap } from '../components/OysterTableMap';
 import { PurificationPools } from '../components/PurificationPools';
 import { TrempeView } from '../components/TrempeView';
@@ -8,8 +8,9 @@ import { TableDetail } from '../components/TableDetail';
 import { InventoryForm } from '../components/InventoryForm';
 import { InventoryFilters } from '../components/InventoryFilters';
 import { useTouchGestures } from '@/lib/hooks';
+import { PurchaseConfiguration } from '@/features/purchases/components/PurchaseConfiguration';
 
-type TabType = 'tables' | 'pools' | 'trempes' | 'history';
+type TabType = 'tables' | 'pools' | 'trempes' | 'achats';
 
 export function InventoryPage() {
   const [activeTab, setActiveTab] = useState<TabType>('tables');
@@ -27,19 +28,6 @@ export function InventoryPage() {
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
   );
-
-  const handleTableSelect = (table: any) => {
-    setSelectedTable(table);
-  };
-
-  const handleTableHover = (table: any) => {
-    setHoveredTable(table);
-  };
-
-  const handleCloseTableDetail = () => {
-    setSelectedTable(null);
-    setHoveredTable(null);
-  };
 
   return (
     <div 
@@ -75,19 +63,6 @@ export function InventoryPage() {
           </div>
         </button>
         <button
-          onClick={() => setActiveTab('trempes')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'trempes'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
-          }`}
-        >
-          <div className="flex items-center">
-            <Droplets size={16} className="mr-2" />
-            Trempes
-          </div>
-        </button>
-        <button
           onClick={() => setActiveTab('pools')}
           className={`py-4 text-sm font-medium border-b-2 transition-colors ${
             activeTab === 'pools'
@@ -101,16 +76,29 @@ export function InventoryPage() {
           </div>
         </button>
         <button
-          onClick={() => setActiveTab('history')}
+          onClick={() => setActiveTab('trempes')}
           className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'history'
+            activeTab === 'trempes'
               ? 'border-brand-primary text-white'
               : 'border-transparent text-white/60 hover:text-white'
           }`}
         >
           <div className="flex items-center">
-            <BarChart2 size={16} className="mr-2" />
-            Historique des alertes
+            <Droplets size={16} className="mr-2" />
+            Trempes
+          </div>
+        </button>
+        <button
+          onClick={() => setActiveTab('achats')}
+          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'achats'
+              ? 'border-brand-primary text-white'
+              : 'border-transparent text-white/60 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center">
+            <ShoppingCart size={16} className="mr-2" />
+            Achats
           </div>
         </button>
       </div>
@@ -135,44 +123,29 @@ export function InventoryPage() {
         </button>
       </div>
 
-      {/* Alertes Critiques */}
-      <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-        <div className="flex items-center space-x-3 text-red-400">
-          <AlertTriangle size={24} />
-          <div>
-            <div className="font-medium">3 alertes actives</div>
-            <div className="text-sm">
-              Qualité dégradée • Position incorrecte • Maintenance bassin requise
-            </div>
-          </div>
-        </div>
-      </div>
-
       {activeTab === 'tables' && (
-        <div className="space-y-6">
-          <OysterTableMap
-            onTableSelect={handleTableSelect}
-            onTableHover={handleTableHover}
-          />
-        </div>
+        <OysterTableMap
+          onTableSelect={setSelectedTable}
+          onTableHover={setHoveredTable}
+          hoveredTable={hoveredTable}
+          selectedTable={selectedTable}
+        />
       )}
       {activeTab === 'pools' && <PurificationPools />}
       {activeTab === 'trempes' && <TrempeView />}
-      {activeTab === 'history' && (
-        <div>Historique des alertes</div>
-      )}
+      {activeTab === 'achats' && <PurchaseConfiguration />}
 
       {selectedTable && (
-        <TableDetail 
-          table={selectedTable} 
-          onClose={handleCloseTableDetail} 
+        <TableDetail
+          table={selectedTable}
+          onClose={() => setSelectedTable(null)}
         />
       )}
 
       {showNewItem && (
-        <InventoryForm 
-          isOpen={showNewItem} 
-          onClose={() => setShowNewItem(false)} 
+        <InventoryForm
+          isOpen={showNewItem}
+          onClose={() => setShowNewItem(false)}
         />
       )}
 
@@ -180,7 +153,6 @@ export function InventoryPage() {
         <InventoryFilters
           isOpen={showFilters}
           onClose={() => setShowFilters(false)}
-          onApplyFilters={() => {}}
         />
       )}
 
