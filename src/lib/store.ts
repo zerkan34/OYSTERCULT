@@ -36,6 +36,23 @@ interface Notification {
   };
 }
 
+interface CompanyInfo {
+  name: string;
+  siret: string;
+  logo?: string;
+  description?: string;
+  email: string;
+  phone: string;
+  address: string;
+  website?: string;
+}
+
+interface User {
+  id: string;
+  role?: string;
+  // Add user properties here
+}
+
 interface Store {
   session: any | null;
   sidebarCollapsed: boolean;
@@ -44,6 +61,8 @@ interface Store {
   unreadCount: number;
   theme: 'dark' | 'light';
   batches: Batch[];
+  companyInfo: CompanyInfo | null;
+  users: User[];
   setSession: (session: any | null) => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
@@ -51,9 +70,13 @@ interface Store {
   markAllAsRead: () => void;
   setTheme: (theme: 'dark' | 'light') => void;
   toggleTheme: () => void;
-  addBatch: (batch: Batch) => void;
-  updateBatch: (id: string, updatedBatch: Partial<Batch>) => void;
+  addBatch: (batch: Omit<Batch, 'id'>) => void;
+  updateBatch: (id: string, batch: Partial<Batch>) => void;
   deleteBatch: (id: string) => void;
+  setCompanyInfo: (info: CompanyInfo) => void;
+  addUser: (userData: Omit<User, 'id'>) => void;
+  updateUser: (id: string, userData: Partial<User>) => void;
+  deleteUser: (id: string) => void;
 }
 
 export const useStore = create<Store>()(
@@ -65,89 +88,81 @@ export const useStore = create<Store>()(
       notifications: [],
       unreadCount: 0,
       theme: 'dark',
-      batches: [
-        {
-          id: '1',
-          batchNumber: 'LOT-2025-001',
-          type: 'Huîtres Plates N°3',
-          quantity: 5000,
-          location: 'Zone Nord - Table A1',
-          status: 'table1',
-          perchNumber: 12,
-          startDate: '2025-01-15',
-          harvestDate: '2025-06-15',
-          supplier: 'Naissain Express',
-          qualityScore: 92,
-          lastCheck: '2025-02-19'
-        },
-        {
-          id: '2',
-          batchNumber: 'LOT-2025-002',
-          type: 'Huîtres Creuses N°2',
-          quantity: 8000,
-          location: 'Zone Sud - Table B3',
-          status: 'table2',
-          perchNumber: 25,
-          startDate: '2025-01-20',
-          harvestDate: '2025-06-20',
-          supplier: 'Naissain Express',
-          qualityScore: 78,
-          lastCheck: '2025-02-19'
-        }
-      ],
+      batches: [],
+      companyInfo: null,
+      users: [],
 
       setSession: (session) => set({ session }),
       
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
 
-      addNotification: (notification) => {
+      addNotification: (notification) => set((state) => {
         const newNotification = {
           ...notification,
           id: crypto.randomUUID(),
           timestamp: new Date().toISOString(),
-          read: false
+          read: false,
         };
-
-        set((state) => ({
-          notifications: [newNotification, ...state.notifications],
-          unreadCount: state.unreadCount + 1
-        }));
-      },
+        return {
+          notifications: [...state.notifications, newNotification],
+          unreadCount: state.unreadCount + 1,
+        };
+      }),
 
       markAsRead: (id) => set((state) => ({
         notifications: state.notifications.map((n) =>
           n.id === id ? { ...n, read: true } : n
         ),
-        unreadCount: state.unreadCount - 1
+        unreadCount: state.unreadCount - 1,
       })),
 
       markAllAsRead: () => set((state) => ({
         notifications: state.notifications.map((n) => ({ ...n, read: true })),
-        unreadCount: 0
+        unreadCount: 0,
       })),
 
       setTheme: (theme) => set({ theme }),
-      
-      toggleTheme: () => set((state) => ({ 
-        theme: state.theme === 'dark' ? 'light' : 'dark' 
-      })),
+
+      toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
 
       addBatch: (batch) => set((state) => ({
-        batches: [...state.batches, batch]
+        batches: [...state.batches, { ...batch, id: crypto.randomUUID() }]
       })),
 
-      updateBatch: (id, updatedBatch) => set((state) => ({
-        batches: state.batches.map((batch) =>
-          batch.id === id ? { ...batch, ...updatedBatch } : batch
+      updateBatch: (id, batch) => set((state) => ({
+        batches: state.batches.map(batch => 
+          batch.id === id ? { ...batch, ...batch } : batch
         )
       })),
 
       deleteBatch: (id) => set((state) => ({
-        batches: state.batches.filter((batch) => batch.id !== id)
+        batches: state.batches.filter(batch => batch.id !== id)
+      })),
+
+      setCompanyInfo: (info) => set({ companyInfo: info }),
+
+      addUser: (userData) => set((state) => ({
+        users: [...state.users, { ...userData, id: crypto.randomUUID() }]
+      })),
+
+      updateUser: (id, userData) => set((state) => ({
+        users: state.users.map(user => 
+          user.id === id ? { ...user, ...userData } : user
+        )
+      })),
+
+      deleteUser: (id) => set((state) => ({
+        users: state.users.filter(user => user.id !== id)
       })),
     }),
     {
-      name: 'oyster-cult-storage'
+      name: 'oyster-cult-storage',
+      partialize: (state) => ({
+        companyInfo: state.companyInfo,
+        users: state.users,
+        batches: state.batches,
+        theme: state.theme,
+      })
     }
   )
 );

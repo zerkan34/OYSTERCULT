@@ -78,6 +78,11 @@ const navItems = [
     path: '/config', 
     label: 'Configuration', 
     icon: <Settings size={20} />
+  },
+  { 
+    path: '/profile', 
+    label: 'Mon Espace', 
+    icon: <UserCircle size={20} />
   }
 ];
 
