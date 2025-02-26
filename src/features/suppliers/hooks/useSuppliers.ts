@@ -67,115 +67,110 @@ const mockSuppliers = [
 ];
 
 // Données de test pour les produits
-const mockProducts = [
-  {
-    id: '1',
-    supplier_id: '1',
-    name: 'Huîtres Spéciales N°3',
-    description: 'Huîtres charnues de qualité supérieure, affinées en claire pendant 2 mois minimum',
-    price: 8.50,
-    unit: 'douzaine',
-    category: 'Spéciales',
-    image: '/placeholder.jpg',
-    available: true,
-    stock: 450,
-    minOrder: 5,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '2',
-    supplier_id: '1',
-    name: 'Huîtres Fines de Claire N°2',
-    description: 'Huîtres raffinées, affinées en claire pendant 3 semaines minimum',
-    price: 9.50,
-    unit: 'douzaine',
-    category: 'Fines de Claire',
-    image: '/placeholder.jpg',
-    available: true,
-    stock: 300,
-    minOrder: 5,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '3',
-    supplier_id: '1',
-    name: 'Huîtres Spéciales N°2',
-    description: 'Huîtres charnues de grande taille, parfaites pour les amateurs',
-    price: 11.00,
-    unit: 'douzaine',
-    category: 'Spéciales',
-    image: '/placeholder.jpg',
-    available: true,
-    stock: 200,
-    minOrder: 3,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '4',
-    supplier_id: '1',
-    name: 'Huîtres Plates',
-    description: 'Huîtres plates de Belon, au goût unique et iodé',
-    price: 14.50,
-    unit: 'douzaine',
-    category: 'Plates',
-    image: '/placeholder.jpg',
-    available: true,
-    stock: 150,
-    minOrder: 2,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '5',
-    supplier_id: '2',
-    name: 'Huîtres Label Rouge N°3',
-    description: 'Huîtres labellisées Label Rouge, garantie de qualité supérieure',
-    price: 12.00,
-    unit: 'douzaine',
-    category: 'Label Rouge',
-    image: '/placeholder.jpg',
-    available: true,
-    stock: 400,
-    minOrder: 4,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '6',
-    supplier_id: '2',
-    name: 'Huîtres Pousse en Claire',
-    description: 'Huîtres affinées en claire pendant 4 à 8 mois',
-    price: 15.50,
-    unit: 'douzaine',
-    category: 'Pousse en Claire',
-    image: '/placeholder.jpg',
-    available: true,
-    stock: 180,
-    minOrder: 2,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '7',
-    supplier_id: '2',
-    name: 'Huîtres Spéciales Gillardeau',
-    description: 'Les célèbres huîtres Gillardeau, reconnues mondialement',
-    price: 24.00,
-    unit: 'douzaine',
-    category: 'Premium',
-    image: '/placeholder.jpg',
-    available: true,
-    stock: 100,
-    minOrder: 1,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  }
-];
+const mockProducts = {
+  '1': [
+    {
+      id: '1',
+      supplier_id: '1',
+      name: 'Huîtres Spéciales N°3',
+      description: 'Huîtres charnues de qualité supérieure, affinées en claire pendant 2 mois minimum',
+      price: 8.50,
+      unit: 'douzaine',
+      category: 'Spéciales',
+      image: '/placeholder.jpg',
+      available: true,
+      stock: 450,
+      minOrder: 5,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    },
+    {
+      id: '2',
+      supplier_id: '1',
+      name: 'Huîtres Fines de Claire N°2',
+      description: 'Huîtres raffinées, affinées en claire pendant 3 semaines minimum',
+      price: 9.50,
+      unit: 'douzaine',
+      category: 'Fines de Claire',
+      image: '/placeholder.jpg',
+      available: true,
+      stock: 300,
+      minOrder: 5,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+  ],
+  '2': [
+    {
+      id: '3',
+      supplier_id: '2',
+      name: 'Huîtres Spéciales N°2',
+      description: 'Huîtres de qualité supérieure',
+      price: 10.50,
+      unit: 'douzaine',
+      category: 'Spéciales',
+      image: '/placeholder.jpg',
+      available: true,
+      stock: 200,
+      minOrder: 3,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+  ],
+  '3': [
+    {
+      id: '4',
+      supplier_id: '3',
+      name: 'Huîtres Plates de Belon',
+      description: 'Huîtres plates de Belon, goût unique et iodé',
+      price: 14.50,
+      unit: 'douzaine',
+      category: 'Plates',
+      image: '/placeholder.jpg',
+      available: true,
+      stock: 150,
+      minOrder: 2,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+  ],
+  '4': [
+    {
+      id: '5',
+      supplier_id: '4',
+      name: 'Huîtres Label Rouge',
+      description: 'Huîtres labellisées Label Rouge, qualité supérieure garantie',
+      price: 12.00,
+      unit: 'douzaine',
+      category: 'Label Rouge',
+      image: '/placeholder.jpg',
+      available: true,
+      stock: 400,
+      minOrder: 4,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+  ],
+  '5': [
+    {
+      id: '6',
+      supplier_id: '5',
+      name: 'Huîtres Gillardeau',
+      description: 'Les célèbres huîtres Gillardeau, reconnues mondialement',
+      price: 24.00,
+      unit: 'douzaine',
+      category: 'Premium',
+      image: '/placeholder.jpg',
+      available: true,
+      stock: 100,
+      minOrder: 1,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+  ]
+};
 
-interface Supplier {
+export interface Supplier {
   id: string;
   name: string;
   email: string;
@@ -188,7 +183,7 @@ interface Supplier {
   updated_at: string;
 }
 
-interface Product {
+export interface Product {
   id: string;
   supplier_id: string;
   name: string;
@@ -204,7 +199,7 @@ interface Product {
   updated_at: string;
 }
 
-interface CreateSupplierDTO {
+export interface CreateSupplierDTO {
   name: string;
   email: string;
   phone: string;
@@ -214,60 +209,29 @@ interface CreateSupplierDTO {
 export function useSuppliers() {
   const queryClient = useQueryClient();
 
-  const { data: suppliers = mockSuppliers, isLoading } = useQuery({
+  const { data: suppliers = mockSuppliers } = useQuery({
     queryKey: ['suppliers'],
     queryFn: async () => {
-      // Temporairement retourner les données de test
-      return mockSuppliers.filter(s => !s.deleted);
+      // Pour le moment, on utilise les données mockées
+      return mockSuppliers;
     }
   });
 
   const createSupplier = useMutation({
-    mutationFn: async (newSupplier: CreateSupplierDTO) => {
+    mutationFn: async (data: CreateSupplierDTO) => {
       const friendCode = generateFriendCode();
-      
-      // Temporairement simuler l'ajout
-      const supplier = {
-        id: Math.random().toString(),
-        ...newSupplier,
+      const newSupplier = {
+        ...data,
         friend_code: friendCode,
         is_friend: false,
         deleted: false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
-      mockSuppliers.push(supplier);
-      return supplier;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['suppliers'] });
-    }
-  });
 
-  const updateSupplier = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<Supplier> & { id: string }) => {
-      // Temporairement simuler la mise à jour
-      const index = mockSuppliers.findIndex(s => s.id === id);
-      if (index === -1) throw new Error('Supplier not found');
-      mockSuppliers[index] = { 
-        ...mockSuppliers[index], 
-        ...updates,
-        updated_at: new Date().toISOString()
-      };
-      return mockSuppliers[index];
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['suppliers'] });
-    }
-  });
-
-  const deleteSupplier = useMutation({
-    mutationFn: async (id: string) => {
-      // Temporairement simuler la suppression
-      const index = mockSuppliers.findIndex(s => s.id === id);
-      if (index === -1) throw new Error('Supplier not found');
-      mockSuppliers[index].deleted = true;
-      return mockSuppliers[index];
+      // Pour le moment, on simule l'ajout
+      mockSuppliers.push({ ...newSupplier, id: String(mockSuppliers.length + 1) });
+      return newSupplier;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['suppliers'] });
@@ -275,21 +239,13 @@ export function useSuppliers() {
   });
 
   const getSupplierProducts = async (supplierId: string): Promise<Product[]> => {
-    // Temporairement retourner les données de test
-    return mockProducts.filter(p => p.supplier_id === supplierId);
+    // Pour le moment, on retourne les données mockées
+    return mockProducts[supplierId as keyof typeof mockProducts] || [];
   };
-
-  const friendSuppliers = suppliers.filter(s => s.is_friend);
-  const regularSuppliers = suppliers.filter(s => !s.is_friend);
 
   return {
     suppliers,
-    friendSuppliers,
-    regularSuppliers,
-    isLoading,
     createSupplier,
-    updateSupplier,
-    deleteSupplier,
     getSupplierProducts
   };
 }

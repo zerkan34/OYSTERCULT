@@ -18,10 +18,12 @@ import { NetworkContacts } from '../components/NetworkContacts';
 import { NetworkChat } from '../components/NetworkChat';
 import { NewPostModal } from '../components/NewPostModal';
 import { AddFriendModal } from '../components/AddFriendModal';
+import { FriendSuppliers } from '../components/FriendSuppliers';
 import { useStore } from '@/lib/store';
 import { useLocation } from 'react-router-dom';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-type NetworkTab = 'feed' | 'contacts' | 'directory' | 'forum' | 'messages';
+type NetworkTab = 'feed' | 'contacts' | 'directory' | 'forum' | 'messages' | 'suppliers';
 
 export function NetworkPage() {
   const location = useLocation();
@@ -144,6 +146,19 @@ export function NetworkPage() {
             Forum
           </div>
         </button>
+        <button
+          onClick={() => setActiveTab('suppliers')}
+          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'suppliers'
+              ? 'border-brand-primary text-white'
+              : 'border-transparent text-white/60 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center">
+            <Users size={16} className="mr-2" />
+            Fournisseurs Amis
+          </div>
+        </button>
       </div>
 
       {activeTab !== 'messages' && (
@@ -196,6 +211,7 @@ export function NetworkPage() {
         />
       )}
       {activeTab === 'forum' && <Forum searchQuery={searchQuery} />}
+      {activeTab === 'suppliers' && <FriendSuppliers />}
 
       {showNewPost && (
         <NewPostModal onClose={() => setShowNewPost(false)} type={activeTab} />

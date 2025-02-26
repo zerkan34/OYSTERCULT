@@ -2,52 +2,97 @@
 CREATE TABLE IF NOT EXISTS suppliers (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name TEXT NOT NULL,
-    friend_code TEXT UNIQUE,
-    email TEXT UNIQUE,
+    email TEXT,
     phone TEXT,
     address TEXT,
+    friend_code TEXT UNIQUE,
     is_friend BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create supplier_products table
+-- Create supplier products table
 CREATE TABLE IF NOT EXISTS supplier_products (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     supplier_id UUID REFERENCES suppliers(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     description TEXT,
-    unit TEXT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
+    unit TEXT NOT NULL,
     min_order_quantity INTEGER DEFAULT 1,
+    category TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create supplier_orders table
+-- Create supplier orders table
 CREATE TABLE IF NOT EXISTS supplier_orders (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     supplier_id UUID REFERENCES suppliers(id) ON DELETE CASCADE,
     status TEXT NOT NULL DEFAULT 'pending',
     total_amount DECIMAL(10,2) NOT NULL,
-    delivery_date TIMESTAMP WITH TIME ZONE,
+    storage_location TEXT,
+    expiry_date DATE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    CONSTRAINT valid_status CHECK (status IN ('pending', 'accepted', 'rejected', 'delivering', 'completed'))
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create supplier_order_items table
+-- Create supplier order items table
 CREATE TABLE IF NOT EXISTS supplier_order_items (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     order_id UUID REFERENCES supplier_orders(id) ON DELETE CASCADE,
     product_id UUID REFERENCES supplier_products(id) ON DELETE CASCADE,
     quantity INTEGER NOT NULL,
     unit_price DECIMAL(10,2) NOT NULL,
-    storage_location TEXT,
-    expiry_date DATE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Create supplier order comments table
+CREATE TABLE IF NOT EXISTS supplier_order_comments (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    order_id UUID REFERENCES supplier_orders(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create function to update stock on order completion
+CREATE OR REPLACE FUNCTION update_stock(
+    product_id UUID,
+    quantity INTEGER,
+    storage_location TEXT,
+    expiry_date DATE
+) RETURNS void AS $$
+BEGIN
+    -- Update inventory
+    INSERT INTO inventory (
+        product_id,
+        quantity,
+        storage_location,
+        expiry_date
+    ) VALUES (
+        product_id,
+        quantity,
+        storage_location,
+        expiry_date
+    );
+
+    -- Add traceability record
+    INSERT INTO traceability (
+        product_id,
+        quantity,
+        type,
+        storage_location,
+        expiry_date
+    ) VALUES (
+        product_id,
+        quantity,
+        'supplier_delivery',
+        storage_location,
+        expiry_date
+    );
+END;
+$$ LANGUAGE plpgsql;
 
 -- Create function to generate friend code
 CREATE OR REPLACE FUNCTION generate_friend_code()

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { useStore } from '@/lib/store';
 
 interface SupplierOrder {
   id: string;
@@ -16,6 +17,12 @@ interface SupplierOrder {
   expiry_date?: string;
   created_at: string;
   updated_at: string;
+  comments?: Array<{
+    id: string;
+    content: string;
+    created_at: string;
+    user_id: string;
+  }>;
 }
 
 interface CreateOrderDTO {
@@ -32,8 +39,14 @@ interface UpdateOrderDTO {
   expiry_date?: string;
 }
 
+interface AddCommentDTO {
+  order_id: string;
+  content: string;
+}
+
 export function useSupplierOrders() {
   const queryClient = useQueryClient();
+  const { addNotification } = useStore();
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['supplier-orders'],
@@ -42,7 +55,13 @@ export function useSupplierOrders() {
         .from('supplier_orders')
         .select(`
           *,
-          supplier:suppliers(name)
+          supplier:suppliers(name),
+          comments:supplier_order_comments(
+            id,
+            content,
+            created_at,
+            user_id
+          )
         `)
         .order('created_at', { ascending: false });
       
@@ -74,6 +93,13 @@ export function useSupplierOrders() {
         .single();
       
       if (error) throw error;
+
+      addNotification({
+        title: 'Commande créée',
+        message: 'La commande a été créée avec succès',
+        type: 'success'
+      });
+
       return data;
     },
     onSuccess: () => {
@@ -93,6 +119,7 @@ export function useSupplierOrders() {
       if (error) throw error;
 
       if (updates.status === 'completed') {
+        // Mettre à jour le stock
         const order = await supabase
           .from('supplier_orders')
           .select('*')
@@ -101,33 +128,46 @@ export function useSupplierOrders() {
 
         if (order.data) {
           for (const product of order.data.products) {
-            await supabase.rpc('update_inventory', {
+            await supabase.rpc('update_stock', {
               product_id: product.id,
               quantity: product.quantity,
               storage_location: updates.storage_location,
               expiry_date: updates.expiry_date
             });
           }
-
-          await supabase
-            .from('traceability')
-            .insert(order.data.products.map(product => ({
-              product_id: product.id,
-              quantity: product.quantity,
-              type: 'supplier_delivery',
-              reference: order.data.id,
-              storage_location: updates.storage_location,
-              expiry_date: updates.expiry_date
-            })));
         }
+
+        addNotification({
+          title: 'Stock mis à jour',
+          message: 'Le stock a été mis à jour avec les produits livrés',
+          type: 'success'
+        });
       }
 
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['supplier-orders'] });
-      queryClient.invalidateQueries({ queryKey: ['inventory'] });
-      queryClient.invalidateQueries({ queryKey: ['traceability'] });
+    }
+  });
+
+  const addComment = useMutation({
+    mutationFn: async ({ order_id, content }: AddCommentDTO) => {
+      const { data, error } = await supabase
+        .from('supplier_order_comments')
+        .insert([{
+          order_id,
+          content,
+          user_id: (await supabase.auth.getUser()).data.user?.id
+        }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['supplier-orders'] });
     }
   });
 
@@ -135,6 +175,7 @@ export function useSupplierOrders() {
     orders,
     isLoading,
     createOrder,
-    updateOrder
+    updateOrder,
+    addComment
   };
 }

@@ -75,7 +75,7 @@ const navItems = [
       },
       { 
         path: '/purchases', 
-        label: 'Achats', 
+        label: 'Commandes', 
         icon: <ShoppingCart size={20} />
       },
       { 

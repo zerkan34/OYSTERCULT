@@ -1,41 +1,20 @@
-import React from 'react';
-import { LucideIcon } from 'lucide-react';
+import * as React from "react"
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
-  icon?: React.ReactNode;
-}
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-export function Input({ label, error, icon, className = '', ...props }: InputProps) {
-  return (
-    <div className="space-y-1">
-      {label && (
-        <label className="block text-sm font-medium text-white/80">
-          {label}
-        </label>
-      )}
-      <div className="relative">
-        {icon && (
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-white/40">
-            {icon}
-          </div>
-        )}
-        <input
-          {...props}
-          className={`
-            w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg 
-            text-white placeholder-white/40
-            focus:outline-none focus:ring-2 focus:ring-brand-primary/50
-            ${icon ? 'pl-10' : ''}
-            ${error ? 'border-red-500' : ''}
-            ${className}
-          `}
-        />
-      </div>
-      {error && (
-        <p className="text-sm text-red-500">{error}</p>
-      )}
-    </div>
-  );
-}
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, ...props }, ref) => {
+    return (
+      <input
+        type={type}
+        className={`flex h-10 w-full rounded-md border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] bg-[rgb(var(--color-brand-surface))] px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--color-brand-primary))] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className || ''}`}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+Input.displayName = "Input"
+
+export { Input }
