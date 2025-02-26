@@ -51,7 +51,7 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
                   Commande #{order.id}
                 </h3>
                 <Badge
-                  className={\`\${statusColors[order.status]} border backdrop-blur-sm\`}
+                  className={`${statusColors[order.status]} border backdrop-blur-sm`}
                 >
                   {statusLabels[order.status]}
                 </Badge>
