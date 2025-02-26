@@ -17,7 +17,8 @@ import {
   LogOut,
   Calculator,
   Tag,
-  Store
+  Store,
+  Truck
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { OysterLogo } from './OysterLogo';
@@ -61,6 +62,11 @@ const navItems = [
         path: '/network', 
         label: 'Entre Pro', 
         icon: <Globe size={20} />
+      },
+      { 
+        path: '/suppliers', 
+        label: 'Fournisseurs', 
+        icon: <Truck size={20} /> 
       },
       { 
         path: '/sales', 

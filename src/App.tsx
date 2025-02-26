@@ -20,6 +20,9 @@ import { HRPage } from '@/features/hr/pages/HRPage';
 import { ConfigPage } from '@/features/config/pages/ConfigPage';
 import { ProfilePage } from '@/features/profile/pages/ProfilePage';
 import { ShopPage } from '@/features/shop/pages/ShopPage';
+import { SuppliersPage } from '@/features/suppliers/pages/SuppliersPage';
+import { SupplierCatalogPage } from '@/features/suppliers/pages/SupplierCatalogPage';
+import { OrdersPage } from '@/features/suppliers/pages/OrdersPage';
 import { AnimatePresence } from 'framer-motion';
 
 const queryClient = new QueryClient();
@@ -49,34 +52,39 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         <div className="min-h-screen bg-gradient-to-br from-brand-dark via-brand-purple/20 to-brand-burgundy/20">
-          <ModernSidebar
-            showMobileMenu={showMobileMenu}
-            onCloseMobileMenu={() => setShowMobileMenu(false)}
+          <ModernHeader
+            onShowMobileMenu={() => setShowMobileMenu(true)}
+            onShowNotifications={() => setShowNotifications(true)}
+            onShowEmergency={() => setShowEmergency(true)}
           />
-          
-          <div className="lg:pl-72">
-            <ModernHeader
-              onShowMobileMenu={() => setShowMobileMenu(true)}
-              onShowNotifications={() => setShowNotifications(true)}
-              onShowEmergency={() => setShowEmergency(true)}
+          <div className="flex min-h-screen pt-16">
+            <ModernSidebar
+              showMobileMenu={showMobileMenu}
+              onCloseMobileMenu={() => setShowMobileMenu(false)}
             />
-            
-            <main className="p-8">
-              <Routes>
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/tasks" element={<TasksPage />} />
-                <Route path="/inventory" element={<InventoryPage />} />
-                <Route path="/traceability" element={<TraceabilityPage />} />
-                <Route path="/network" element={<NetworkPage />} />
-                <Route path="/sales" element={<SalesPage />} />
-                <Route path="/purchases" element={<PurchasesPage />} />
-                <Route path="/accounting" element={<AccountingPage />} />
-                <Route path="/hr" element={<HRPage />} />
-                <Route path="/config" element={<ConfigPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/shop" element={<ShopPage />} />
-              </Routes>
+            <main className="flex-1 p-6 overflow-x-hidden">
+              <div className="max-w-7xl mx-auto">
+                <AnimatePresence mode="wait">
+                  <Routes>
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/tasks" element={<TasksPage />} />
+                    <Route path="/inventory" element={<InventoryPage />} />
+                    <Route path="/traceability" element={<TraceabilityPage />} />
+                    <Route path="/network" element={<NetworkPage />} />
+                    <Route path="/suppliers" element={<SuppliersPage />} />
+                    <Route path="/suppliers/orders" element={<OrdersPage />} />
+                    <Route path="/suppliers/:supplierId/catalog" element={<SupplierCatalogPage />} />
+                    <Route path="/sales" element={<SalesPage />} />
+                    <Route path="/purchases" element={<PurchasesPage />} />
+                    <Route path="/accounting" element={<AccountingPage />} />
+                    <Route path="/hr" element={<HRPage />} />
+                    <Route path="/config" element={<ConfigPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/shop" element={<ShopPage />} />
+                  </Routes>
+                </AnimatePresence>
+              </div>
             </main>
           </div>
 

@@ -9,57 +9,63 @@
 /* Base styles */
 @layer base {
   :root {
-    /* Mode sombre */
-    --color-brand-dark: 10 10 12;
-    --color-brand-darker: 5 5 6;
-    --color-brand-surface: 17 17 20;
-    --color-brand-surface-light: 24 24 28;
-    --color-brand-primary: 0 209 255;
-    --color-brand-secondary: 255 51 102;
-    --color-brand-tertiary: 112 0 255;
-    --color-brand-burgundy: 139 0 0;
-    --color-text: 255 255 255;
-    --color-text-secondary: 255 255 255;
-    --color-text-tertiary: 255 255 255;
-    --color-text-opacity-secondary: 0.7;
-    --color-text-opacity-tertiary: 0.5;
-    --color-border: 255 255 255;
-    --color-border-opacity: 0.1;
-    --color-border-hover-opacity: 0.2;
-    --color-background-hover: 255 255 255;
-    --color-background-hover-opacity: 0.05;
-    --shadow-neon: 0 0 20px rgb(139 0 0 / 0.35);
-    --shadow-neon-hover: 0 0 30px rgb(139 0 0 / 0.5);
+    /* Mode sombre - Thème océanique */
+    --color-brand-dark: 15 23 42;      /* Bleu marine foncé */
+    --color-brand-darker: 8 12 22;     /* Bleu marine très foncé */
+    --color-brand-surface: 22 33 62;   /* Bleu profond */
+    --color-brand-surface-light: 30 45 84; /* Bleu océan */
+    --color-brand-primary: 56 189 248;    /* Bleu clair vif */
+    --color-brand-secondary: 14 165 233;  /* Bleu azur */
+    --color-brand-tertiary: 99 102 241;   /* Bleu indigo */
+    --color-brand-burgundy: 0 108 134;    /* Bleu pétrole */
+    
+    --color-text: 248 250 252;          /* Blanc cassé */
+    --color-text-secondary: 226 232 240; /* Gris clair */
+    --color-text-tertiary: 203 213 225;  /* Gris plus foncé */
+    
+    --color-text-opacity-secondary: 0.8;
+    --color-text-opacity-tertiary: 0.6;
+    --color-border: 248 250 252;
+    --color-border-opacity: 0.15;
+    --color-border-hover-opacity: 0.25;
+    --color-background-hover: 248 250 252;
+    --color-background-hover-opacity: 0.08;
+    
+    --shadow-neon: 0 0 20px rgb(56 189 248 / 0.35);
+    --shadow-neon-hover: 0 0 30px rgb(56 189 248 / 0.5);
     --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.2);
     --glass-opacity: 0.95;
-    --mesh-opacity: 0.03;
+    --mesh-opacity: 0.05;
   }
 
   [data-theme="light"] {
-    /* Mode clair modernisé */
-    --color-brand-dark: 250 250 250;
-    --color-brand-darker: 245 245 245;
-    --color-brand-surface: 255 255 255;
-    --color-brand-surface-light: 252 252 252;
-    --color-brand-primary: 0 122 255;
-    --color-brand-secondary: 200 32 82;
-    --color-brand-tertiary: 88 86 214;
-    --color-brand-burgundy: 128 0 32;
-    --color-text: 33 33 33;
-    --color-text-secondary: 82 82 82;
-    --color-text-tertiary: 130 130 130;
+    /* Mode clair - Thème côtier */
+    --color-brand-dark: 241 245 249;     /* Gris très clair */
+    --color-brand-darker: 226 232 240;   /* Gris clair */
+    --color-brand-surface: 248 250 252;  /* Blanc cassé */
+    --color-brand-surface-light: 255 255 255; /* Blanc pur */
+    --color-brand-primary: 14 165 233;     /* Bleu azur */
+    --color-brand-secondary: 2 132 199;    /* Bleu océan */
+    --color-brand-tertiary: 51 65 85;      /* Bleu gris */
+    --color-brand-burgundy: 0 98 114;      /* Bleu pétrole clair */
+    
+    --color-text: 15 23 42;             /* Bleu marine foncé */
+    --color-text-secondary: 51 65 85;    /* Bleu gris */
+    --color-text-tertiary: 71 85 105;    /* Gris bleuté */
+    
     --color-text-opacity-secondary: 1;
     --color-text-opacity-tertiary: 1;
-    --color-border: 230 230 230;
-    --color-border-opacity: 1;
-    --color-border-hover-opacity: 1;
-    --color-background-hover: 245 245 245;
-    --color-background-hover-opacity: 1;
-    --shadow-neon: 0 8px 24px rgb(128 0 32 / 0.08);
-    --shadow-neon-hover: 0 12px 32px rgb(128 0 32 / 0.12);
-    --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.06);
-    --glass-opacity: 1;
-    --mesh-opacity: 0.02;
+    --color-border: 51 65 85;
+    --color-border-opacity: 0.15;
+    --color-border-hover-opacity: 0.25;
+    --color-background-hover: 51 65 85;
+    --color-background-hover-opacity: 0.05;
+    
+    --shadow-neon: 0 0 20px rgb(14 165 233 / 0.25);
+    --shadow-neon-hover: 0 0 30px rgb(14 165 233 / 0.4);
+    --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.1);
+    --glass-opacity: 0.98;
+    --mesh-opacity: 0.03;
   }
 
   body {
