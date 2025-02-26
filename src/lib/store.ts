@@ -118,6 +118,7 @@ interface Store {
   addPurchase: (purchase: Omit<Purchase, 'id'>) => void;
   updatePurchase: (id: string, purchase: Partial<Purchase>) => void;
   deletePurchase: (id: string) => void;
+  resetSession: () => void;
 }
 
 export const useStore = create<Store>()(
@@ -129,7 +130,15 @@ export const useStore = create<Store>()(
       notifications: [],
       unreadCount: 0,
       theme: 'dark',
-      batches: [],
+      batches: [{
+        id: '1',
+        batchNumber: 'LOT-TEST-001',
+        type: 'Plates',
+        quantity: 100,
+        status: 'table1',
+        perchNumber: 1,
+        startDate: new Date().toISOString(),
+      }],
       companyInfo: null,
       users: [],
       roles: [
@@ -256,6 +265,8 @@ export const useStore = create<Store>()(
       deletePurchase: (id) => set((state) => ({
         purchases: state.purchases.filter(purchase => purchase.id !== id)
       })),
+
+      resetSession: () => set({ session: null }),
     }),
     {
       name: 'oyster-cult-storage',

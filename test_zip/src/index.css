@@ -1,0 +1,289 @@
+@import url('https://fonts.cdnfonts.com/css/industry-inc-base');
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+@import url('https://fonts.cdnfonts.com/css/sf-mono');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+@layer base {
+  :root {
+    /* Mode sombre - Thème océanique */
+    --color-brand-dark: 15 23 42;      /* Bleu marine foncé */
+    --color-brand-darker: 8 12 22;     /* Bleu marine très foncé */
+    --color-brand-surface: 22 33 62;   /* Bleu profond */
+    --color-brand-surface-light: 30 45 84; /* Bleu océan */
+    --color-brand-primary: 56 189 248;    /* Bleu clair vif */
+    --color-brand-secondary: 14 165 233;  /* Bleu azur */
+    --color-brand-tertiary: 99 102 241;   /* Bleu indigo */
+    --color-brand-burgundy: 0 108 134;    /* Bleu pétrole */
+    
+    --color-text: 248 250 252;          /* Blanc cassé */
+    --color-text-secondary: 226 232 240; /* Gris clair */
+    --color-text-tertiary: 203 213 225;  /* Gris plus foncé */
+    
+    --color-text-opacity-secondary: 0.8;
+    --color-text-opacity-tertiary: 0.6;
+    --color-border: 248 250 252;
+    --color-border-opacity: 0.15;
+    --color-border-hover-opacity: 0.25;
+    --color-background-hover: 248 250 252;
+    --color-background-hover-opacity: 0.08;
+    
+    --shadow-neon: 0 0 20px rgb(56 189 248 / 0.35);
+    --shadow-neon-hover: 0 0 30px rgb(56 189 248 / 0.5);
+    --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.2);
+    --glass-opacity: 0.95;
+    --mesh-opacity: 0.05;
+  }
+
+  [data-theme="light"] {
+    /* Mode clair - Thème côtier */
+    --color-brand-dark: 241 245 249;     /* Gris très clair */
+    --color-brand-darker: 226 232 240;   /* Gris clair */
+    --color-brand-surface: 248 250 252;  /* Blanc cassé */
+    --color-brand-surface-light: 255 255 255; /* Blanc pur */
+    --color-brand-primary: 14 165 233;     /* Bleu azur */
+    --color-brand-secondary: 2 132 199;    /* Bleu océan */
+    --color-brand-tertiary: 51 65 85;      /* Bleu gris */
+    --color-brand-burgundy: 0 98 114;      /* Bleu pétrole clair */
+    
+    --color-text: 15 23 42;             /* Bleu marine foncé */
+    --color-text-secondary: 51 65 85;    /* Bleu gris */
+    --color-text-tertiary: 71 85 105;    /* Gris bleuté */
+    
+    --color-text-opacity-secondary: 1;
+    --color-text-opacity-tertiary: 1;
+    --color-border: 51 65 85;
+    --color-border-opacity: 0.15;
+    --color-border-hover-opacity: 0.25;
+    --color-background-hover: 51 65 85;
+    --color-background-hover-opacity: 0.05;
+    
+    --shadow-neon: 0 0 20px rgb(14 165 233 / 0.25);
+    --shadow-neon-hover: 0 0 30px rgb(14 165 233 / 0.4);
+    --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.1);
+    --glass-opacity: 0.98;
+    --mesh-opacity: 0.03;
+  }
+
+  body {
+    @apply bg-brand-dark antialiased;
+    color: rgb(var(--color-text));
+    background-image: 
+      radial-gradient(circle at 0% 0%, rgb(var(--color-brand-burgundy) / 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgb(var(--color-brand-tertiary) / 0.05) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0V0zm20 20h20v20H20V20zM0 20h20v20H0V20z' fill='currentColor' fill-opacity='var(--mesh-opacity)'/%3E%3C/svg%3E");
+  }
+
+  .font-industry {
+    font-family: 'Industry', 'SF Pro Display', sans-serif;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .text-gradient-cool {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      to right,
+      rgb(var(--color-brand-burgundy)),
+      rgb(var(--color-brand-burgundy) / 0.8)
+    );
+  }
+}
+
+@layer components {
+  /* Glass effect modernisé */
+  .glass-effect {
+    background-color: rgb(var(--color-brand-surface) / var(--glass-opacity));
+    border: 1px solid rgb(var(--color-border) / var(--color-border-opacity));
+    @apply backdrop-blur-md transition-all duration-300;
+    box-shadow: var(--shadow-glass);
+  }
+
+  .glass-effect-hover {
+    @apply hover:border-[rgb(var(--color-brand-burgundy)_/_0.2)];
+    background-color: rgb(var(--color-brand-surface-light) / var(--glass-opacity));
+    box-shadow: var(--shadow-neon);
+  }
+
+  /* Buttons modernisés */
+  .btn-primary {
+    background-color: rgb(var(--color-brand-burgundy));
+    @apply flex items-center px-4 py-2 rounded-lg transition-all duration-300;
+    color: white !important;
+    box-shadow: var(--shadow-neon);
+  }
+
+  .btn-primary:hover {
+    background-color: rgb(var(--color-brand-burgundy) / 0.9);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-neon-hover);
+  }
+
+  .btn-secondary {
+    background-color: rgb(var(--color-background-hover));
+    border: 1px solid rgb(var(--color-border));
+    color: rgb(var(--color-text)) !important;
+    @apply flex items-center px-4 py-2 rounded-lg transition-all duration-300;
+  }
+
+  .btn-secondary:hover {
+    background-color: rgb(var(--color-background-hover));
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-glass);
+  }
+
+  /* Inputs modernisés */
+  .input-modern {
+    background-color: rgb(var(--color-background-hover));
+    border: 1px solid rgb(var(--color-border));
+    color: rgb(var(--color-text));
+    @apply w-full px-4 py-2 rounded-lg transition-all duration-300;
+  }
+
+  .input-modern::placeholder {
+    color: rgb(var(--color-text-tertiary));
+  }
+
+  .input-modern:focus {
+    border-color: rgb(var(--color-brand-burgundy));
+    box-shadow: 0 0 0 2px rgb(var(--color-brand-burgundy) / 0.1);
+    transform: translateY(-1px);
+  }
+
+  /* Adaptations mode clair */
+  [data-theme="light"] {
+    /* Conversion des textes blancs en textes sombres */
+    .text-white {
+      color: rgb(var(--color-text)) !important;
+    }
+    
+    .text-white\/60, .text-white\/70, .text-white\/80 {
+      color: rgb(var(--color-text-secondary)) !important;
+    }
+    
+    .text-white\/40, .text-white\/50 {
+      color: rgb(var(--color-text-tertiary)) !important;
+    }
+
+    /* Conversion des fonds blancs */
+    .bg-white\/5, .bg-white\/10, .bg-white\/20 {
+      background-color: rgb(var(--color-background-hover)) !important;
+    }
+
+    /* Conversion des bordures blanches */
+    .border-white\/5, .border-white\/10, .border-white\/20 {
+      border-color: rgb(var(--color-border)) !important;
+    }
+
+    /* Conversion des hovers */
+    .hover\:text-white:hover {
+      color: rgb(var(--color-text)) !important;
+    }
+
+    .hover\:bg-white\/5:hover, .hover\:bg-white\/10:hover {
+      background-color: rgb(var(--color-background-hover)) !important;
+    }
+
+    .hover\:border-white\/20:hover {
+      border-color: rgb(var(--color-border)) !important;
+    }
+
+    /* Statuts et badges */
+    .bg-green-500\/20 {
+      @apply bg-green-100 !important;
+    }
+    
+    .bg-yellow-500\/20 {
+      @apply bg-yellow-100 !important;
+    }
+    
+    .bg-red-500\/20 {
+      @apply bg-red-100 !important;
+    }
+    
+    .bg-blue-500\/20 {
+      @apply bg-blue-100 !important;
+    }
+
+    .text-green-300, .text-green-400 {
+      @apply text-green-700 !important;
+    }
+    
+    .text-yellow-300, .text-yellow-400 {
+      @apply text-yellow-700 !important;
+    }
+    
+    .text-red-300, .text-red-400 {
+      @apply text-red-700 !important;
+    }
+    
+    .text-blue-300, .text-blue-400 {
+      @apply text-blue-700 !important;
+    }
+
+    /* Placeholders */
+    ::placeholder {
+      color: rgb(var(--color-text-tertiary)) !important;
+    }
+
+    /* Modales */
+    .modal-content {
+      background-color: rgb(var(--color-brand-surface)) !important;
+      color: rgb(var(--color-text)) !important;
+    }
+
+    /* Boutons spéciaux */
+    .btn-emergency {
+      color: white !important;
+      background-color: rgb(220 38 38) !important;
+    }
+
+    .btn-emergency:hover {
+      background-color: rgb(185 28 28) !important;
+    }
+  }
+
+  /* Animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 10s linear infinite;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Shadows */
+  .shadow-neon {
+    box-shadow: var(--shadow-neon);
+  }
+
+  .shadow-neon-hover {
+    box-shadow: var(--shadow-neon-hover);
+  }
+
+  .shadow-glass {
+    box-shadow: var(--shadow-glass);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-[100];
+  }
+
+  .modal-content {
+    @apply fixed inset-0 flex items-center justify-center z-[101];
+  }
+}

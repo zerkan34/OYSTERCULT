@@ -1,12 +1,11 @@
-import React, { useState, useRef } from 'react';
-import { Filter, Calendar, QrCode, Tag, FileText, Package, Download, Droplets, Waves, Grid, History } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Filter, Calendar, QrCode, Tag, FileText, Package, Download, Droplets, Waves, Grid, History, Edit2 } from 'lucide-react';
 import { BatchList } from '../components/BatchList';
 import { BatchHistory } from '../components/BatchHistory';
 import { QualityChecks } from '../components/QualityChecks';
 import { PurificationPools } from '../components/PurificationPools';
 import { MarketPurchases } from '../components/MarketPurchases';
 import { QRCodeGenerator } from '../components/QRCodeGenerator';
-import { TrempeView } from '../components/TrempeView';
 import { useStore } from '@/lib/store';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
@@ -24,6 +23,38 @@ export function TraceabilityPage() {
     end: format(new Date(), 'yyyy-MM-dd')
   });
   const pageRef = useRef<HTMLDivElement>(null);
+  const { addBatch } = useStore();
+
+  useEffect(() => {
+    // Lots de test pour la table 1
+    addBatch({
+      batchNumber: "LOT-001",
+      type: "Plates",
+      quantity: 100,
+      status: "table1",
+      perchNumber: 1,
+      startDate: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 heures
+    });
+    
+    addBatch({
+      batchNumber: "LOT-002",
+      type: "Creuses",
+      quantity: 150,
+      status: "table1",
+      perchNumber: 2,
+      startDate: new Date(Date.now() - 1000 * 60 * 60 * 25).toISOString(), // 25 heures (alerte)
+    });
+
+    // Lot de test pour la table 2
+    addBatch({
+      batchNumber: "LOT-003",
+      type: "Plates",
+      quantity: 200,
+      status: "table2",
+      perchNumber: 1,
+      startDate: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(), // 12 heures
+    });
+  }, []);
 
   const generateTraceabilityPDF = () => {
     const doc = new jsPDF();
@@ -222,26 +253,67 @@ export function TraceabilityPage() {
       )}
 
       {activeTab === 'batches' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-medium text-white">Lots en cours</h2>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
+                <Package className="text-brand-blue" size={20} />
+              </div>
+              <h2 className="text-lg font-medium text-white">Lots en trempe</h2>
             </div>
-            <BatchList searchQuery="" />
+            <button
+              onClick={() => setShowQRCode(true)}
+              className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+            >
+              <Edit2 size={20} className="mr-2" />
+              Modifier
+            </button>
           </div>
-          <div>
-            <TrempeView />
-          </div>
+          <BatchList searchQuery="" />
         </div>
       )}
 
       {activeTab === 'pools' && (
         <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
+                <Waves className="text-brand-blue" size={20} />
+              </div>
+              <h2 className="text-lg font-medium text-white">Bassins de purification</h2>
+            </div>
+            <button
+              onClick={() => setShowQRCode(true)}
+              className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+            >
+              <Edit2 size={20} className="mr-2" />
+              Modifier
+            </button>
+          </div>
           <PurificationPools />
         </div>
       )}
       
-      {activeTab === 'market' && <MarketPurchases />}
+      {activeTab === 'market' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
+                <Grid className="text-brand-blue" size={20} />
+              </div>
+              <h2 className="text-lg font-medium text-white">Achats</h2>
+            </div>
+            <button
+              onClick={() => setShowQRCode(true)}
+              className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+            >
+              <Edit2 size={20} className="mr-2" />
+              Modifier
+            </button>
+          </div>
+          <MarketPurchases />
+        </div>
+      )}
       {activeTab === 'history' && (
         <BatchHistory searchQuery="" />
       )}
