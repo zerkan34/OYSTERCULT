@@ -6,22 +6,22 @@ import { QrCode, MessageSquare, MapPin, Calendar } from 'lucide-react';
 import type { Order } from '../types/order';
 
 const statusColors = {
-  pending: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
-  accepted: 'bg-green-500/10 text-green-500 border-green-500/20',
-  rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
-  delivering: 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+  pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+  accepted: "bg-green-500/10 text-green-500 border-green-500/20",
+  rejected: "bg-red-500/10 text-red-500 border-red-500/20",
+  delivering: "bg-blue-500/10 text-blue-500 border-blue-500/20"
 };
 
 const statusLabels = {
-  pending: 'En attente',
-  accepted: 'Accepté',
-  rejected: 'Refusé',
-  delivering: 'En livraison'
+  pending: "En attente",
+  accepted: "Accepté",
+  rejected: "Refusé",
+  delivering: "En livraison"
 };
 
 interface OrderListProps {
   orders: Order[];
-  onStatusChange: (orderId: string, status: Order['status']) => void;
+  onStatusChange: (orderId: string, status: Order["status"]) => void;
   onAddComment: (orderId: string, comment: string) => void;
   onScanQR: (orderId: string) => void;
 }
@@ -33,7 +33,7 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
     const comment = newComments[orderId];
     if (comment?.trim()) {
       onAddComment(orderId, comment);
-      setNewComments(prev => ({ ...prev, [orderId]: '' }));
+      setNewComments(prev => ({ ...prev, [orderId]: "" }));
     }
   };
 
@@ -50,12 +50,12 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
                 <h3 className="text-lg font-semibold mb-2">
                   Commande #{order.id}
                 </h3>
-                <Badge className={`${statusColors[order.status]} border backdrop-blur-sm`}>
+                <Badge className={statusColors[order.status] + " border backdrop-blur-sm"}>
                   {statusLabels[order.status]}
                 </Badge>
               </div>
               <div className="space-x-2">
-                {order.status === 'delivering' && (
+                {order.status === "delivering" && (
                   <Button
                     variant="outline"
                     size="sm"
@@ -100,19 +100,19 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
                 </div>
               )}
 
-              {order.status === 'pending' && (
+              {order.status === "pending" && (
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     className="flex-1 bg-green-500/10 text-green-500 border-green-500/20 hover:bg-green-500/20"
-                    onClick={() => onStatusChange(order.id, 'accepted')}
+                    onClick={() => onStatusChange(order.id, "accepted")}
                   >
                     Accepter
                   </Button>
                   <Button
                     variant="outline"
                     className="flex-1 bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20"
-                    onClick={() => onStatusChange(order.id, 'rejected')}
+                    onClick={() => onStatusChange(order.id, "rejected")}
                   >
                     Refuser
                   </Button>
@@ -134,7 +134,7 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
                 ))}
                 <div className="flex gap-2">
                   <Textarea
-                    value={newComments[order.id] || ''}
+                    value={newComments[order.id] || ""}
                     onChange={(e) => setNewComments((prev) => ({ ...prev, [order.id]: e.target.value }))}
                     placeholder="Ajouter un commentaire..."
                     className="text-sm"
