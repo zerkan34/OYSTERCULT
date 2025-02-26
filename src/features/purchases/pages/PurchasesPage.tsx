@@ -1,170 +1,176 @@
-import React from 'react';
-import { Package, TrendingUp, History, Settings, Search, Filter, Download } from 'lucide-react';
-import { PurchaseConfiguration } from '../components/PurchaseConfiguration';
-import { PageHeader } from '@/components/ui/PageHeader';
-import { Card } from '@/components/ui/Card';
+import React, { useState } from 'react';
+import { Package, Search, Filter, Calendar, Clock, AlertCircle, Plus, ChevronRight, Shell, Fish } from 'lucide-react';
+import { ModernCardBase } from '@/components/ui/ModernCardBase';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
+import { Dialog } from '@/components/ui/Dialog';
+import { PurchaseConfiguration } from '../components/PurchaseConfiguration';
 
 export function PurchasesPage() {
-  const stats = [
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('commandes');
+  const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+  const [isNewOrderDialogOpen, setIsNewOrderDialogOpen] = useState(false);
+
+  const orders = [
     {
-      label: 'Commandes en cours',
-      value: '3',
-      change: '+2',
-      icon: Package,
-      color: 'text-green-500',
-      bgColor: 'bg-green-500/10'
+      id: '2024-0123',
+      product: 'Moules de Méditerranée',
+      supplier: 'CDB',
+      deliveryDate: '28/02',
+      price: 450,
+      quantity: '100kg',
+      status: 'pending',
+      icon: Shell
     },
     {
-      label: 'Budget mensuel',
-      value: '15 420€',
-      change: '-8.1%',
-      icon: TrendingUp,
-      color: 'text-brand-burgundy',
-      bgColor: 'bg-brand-burgundy/10'
+      id: '2024-0122',
+      product: 'Huîtres Spéciales',
+      supplier: 'Cancale Huîtres',
+      deliveryDate: '27/02',
+      price: 780,
+      quantity: '150kg',
+      status: 'confirmed',
+      icon: Shell
     },
     {
-      label: 'Commandes du mois',
-      value: '24',
-      change: '+12',
-      icon: History,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-500/10'
+      id: '2024-0121',
+      product: 'Bar de ligne',
+      supplier: 'Pêcheurs Bretons',
+      deliveryDate: '26/02',
+      price: 890,
+      quantity: '45kg',
+      status: 'delivered',
+      icon: Fish
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-6 space-y-8">
-      <PageHeader
-        title="Achats"
-        description="Gérez vos commandes et suivez vos fournisseurs"
-      />
-
-      {/* Statistiques */}
-      <div className="grid gap-6 md:grid-cols-3">
-        {stats.map((stat, index) => (
-          <Card key={index} className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
-            <div className="relative p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-white/60">{stat.label}</p>
-                  <div className="flex items-baseline mt-2 space-x-3">
-                    <p className="text-2xl font-bold text-white">{stat.value}</p>
-                    <p className={`text-sm font-medium ${stat.color}`}>
-                      {stat.change}
-                    </p>
-                  </div>
-                </div>
-                <div className={`p-3 rounded-xl ${stat.bgColor}`}>
-                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                </div>
-              </div>
-            </div>
-          </Card>
-        ))}
+    <div>
+      {/* En-tête avec recherche */}
+      <div className="mb-8">
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Achats</h1>
+            <p className="text-sm text-white/60 mt-1">Gérez vos commandes et fournisseurs</p>
+          </div>
+          <Button 
+            onClick={() => setIsNewOrderDialogOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Nouvelle commande
+          </Button>
+        </div>
+        <div className="flex gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+            <Input
+              type="text"
+              placeholder="Rechercher une commande..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Button variant="outline" className="gap-2">
+            <Filter className="w-4 h-4" />
+            Filtres
+          </Button>
+        </div>
       </div>
 
-      {/* Contenu principal */}
-      <Card className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
-        <div className="relative p-6 space-y-6">
-          {/* Barre d'outils */}
-          <div className="flex items-center justify-between gap-4 pb-6 border-b border-white/10">
-            <div className="flex-1 flex items-center gap-4">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40 w-4 h-4" />
-                <Input
-                  placeholder="Rechercher une commande..."
-                  className="pl-10 bg-white/5 border-white/10 focus:border-brand-burgundy"
-                />
-              </div>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Filter className="w-4 h-4" />
-                Filtres
-              </Button>
-            </div>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Download className="w-4 h-4" />
-              Exporter
-            </Button>
-          </div>
+      {/* Onglets */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="commandes">Commandes</TabsTrigger>
+          <TabsTrigger value="fournisseurs">Fournisseurs</TabsTrigger>
+        </TabsList>
 
-          {/* Contenu des onglets */}
-          <Tabs defaultValue="commandes" className="space-y-6">
-            <TabsList className="bg-white/5 p-1 rounded-lg">
-              <TabsTrigger value="commandes" className="text-sm">
-                Commandes en cours
-              </TabsTrigger>
-              <TabsTrigger value="historique" className="text-sm">
-                Historique
-              </TabsTrigger>
-              <TabsTrigger value="fournisseurs" className="text-sm">
-                Fournisseurs
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="commandes" className="space-y-4">
-              {/* Liste des commandes en cours */}
-              <div className="space-y-4">
-                <div className="bg-white/5 p-4 rounded-xl hover:bg-white/10 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="p-2 bg-brand-burgundy/20 rounded-lg">
-                        <Package className="w-5 h-5 text-brand-burgundy" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-medium text-white">Moules de Méditerranée</h3>
-                          <span className="px-2 py-0.5 text-xs font-medium bg-yellow-500/20 text-yellow-500 rounded">
-                            En attente
-                          </span>
-                        </div>
-                        <p className="text-xs text-white/60 mt-1">CDB • Commande #2024-0123 • Livraison prévue le 28/02/2025</p>
-                      </div>
+        <TabsContent value="commandes">
+          <ModernCardBase>
+            <div className="p-6 space-y-4">
+              {orders.map((order) => (
+                <div 
+                  key={order.id}
+                  className="bg-white/5 p-4 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                  onClick={() => setSelectedOrder(order.id === selectedOrder ? null : order.id)}
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="p-3 bg-blue-500/20 rounded-lg">
+                      {order.icon && <order.icon className="w-5 h-5 text-blue-500" />}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-base font-medium text-white">{order.product}</h3>
+                      <p className="text-sm text-white/60">
+                        {order.supplier} • #{order.id} • Livraison le {order.deliveryDate}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium text-white">450€</p>
-                      <p className="text-xs text-white/60">100kg</p>
+                      <p className="text-base font-medium text-white">{order.price}€</p>
+                      <p className="text-sm text-white/60">{order.quantity}</p>
                     </div>
+                    <ChevronRight 
+                      className={`w-5 h-5 text-white/40 transition-transform ${
+                        selectedOrder === order.id ? 'rotate-90' : ''
+                      }`}
+                    />
                   </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="historique" className="space-y-4">
-              <div className="bg-white/5 p-4 rounded-xl hover:bg-white/10 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="p-2 bg-green-500/20 rounded-lg">
-                      <Package className="w-5 h-5 text-green-500" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-medium text-white">Palourdes de l'étang de Thau</h3>
-                        <span className="px-2 py-0.5 text-xs font-medium bg-green-500/20 text-green-500 rounded">
-                          Livré
-                        </span>
+                  {selectedOrder === order.id && (
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <div className="grid grid-cols-3 gap-4">
+                        <div>
+                          <p className="text-sm text-white/40">Statut</p>
+                          <p className="text-sm text-white mt-1">{order.status}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/40">Date de commande</p>
+                          <p className="text-sm text-white mt-1">25/02/2024</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/40">Fournisseur</p>
+                          <p className="text-sm text-white mt-1">{order.supplier}</p>
+                        </div>
                       </div>
-                      <p className="text-xs text-white/60 mt-1">CDB • Commande #2024-0122 • Livré le 24/02/2025</p>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-white">645€</p>
-                    <p className="text-xs text-white/60">50kg</p>
-                  </div>
+                  )}
                 </div>
-              </div>
-            </TabsContent>
+              ))}
+            </div>
+          </ModernCardBase>
+        </TabsContent>
 
-            <TabsContent value="fournisseurs">
-              <PurchaseConfiguration />
-            </TabsContent>
-          </Tabs>
+        <TabsContent value="fournisseurs">
+          <ModernCardBase>
+            <div className="p-6">
+              <p className="text-white/60">Liste des fournisseurs à venir...</p>
+            </div>
+          </ModernCardBase>
+        </TabsContent>
+      </Tabs>
+
+      {/* Modal de nouvelle commande */}
+      <Dialog
+        open={isNewOrderDialogOpen}
+        onClose={() => setIsNewOrderDialogOpen(false)}
+        title="Nouvelle commande"
+      >
+        <div className="space-y-4">
+          <PurchaseConfiguration />
+          <div className="flex justify-end gap-3">
+            <Button 
+              variant="outline"
+              onClick={() => setIsNewOrderDialogOpen(false)}
+            >
+              Annuler
+            </Button>
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              Créer la commande
+            </Button>
+          </div>
         </div>
-      </Card>
+      </Dialog>
     </div>
   );
 }
