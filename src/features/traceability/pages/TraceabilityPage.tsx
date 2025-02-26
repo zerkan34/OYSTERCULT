@@ -7,7 +7,6 @@ import { PurificationPools } from '../components/PurificationPools';
 import { MarketPurchases } from '../components/MarketPurchases';
 import { QRCodeGenerator } from '../components/QRCodeGenerator';
 import { TrempeView } from '../components/TrempeView';
-import { OysterTableMap } from '../components/OysterTableMap';
 import { useStore } from '@/lib/store';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
@@ -222,15 +221,30 @@ export function TraceabilityPage() {
         </div>
       )}
 
-      {activeTab === 'batches' && <BatchList searchQuery="" />}
+      {activeTab === 'batches' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-medium text-white">Lots en cours</h2>
+            </div>
+            <BatchList searchQuery="" />
+          </div>
+          <div>
+            <TrempeView />
+          </div>
+        </div>
+      )}
+
       {activeTab === 'pools' && (
         <div className="space-y-6">
-          <OysterTableMap onTableSelect={(table) => console.log('Selected table:', table)} />
           <PurificationPools />
         </div>
       )}
+      
       {activeTab === 'market' && <MarketPurchases />}
-      {activeTab === 'history' && <BatchHistory searchQuery="" />}
+      {activeTab === 'history' && (
+        <BatchHistory searchQuery="" />
+      )}
 
       {showQRCode && (
         <QRCodeGenerator onClose={() => setShowQRCode(false)} />
