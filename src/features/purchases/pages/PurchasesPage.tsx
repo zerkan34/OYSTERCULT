@@ -22,7 +22,9 @@ export function PurchasesPage() {
       price: 450,
       quantity: '100kg',
       status: 'pending',
-      icon: Shell
+      icon: Shell,
+      stockLocation: 'Bassin A3',
+      lastUpdate: '26/02/2024 14:30'
     },
     {
       id: '2024-0122',
@@ -32,7 +34,9 @@ export function PurchasesPage() {
       price: 780,
       quantity: '150kg',
       status: 'confirmed',
-      icon: Shell
+      icon: Shell,
+      stockLocation: 'Bassin B1',
+      lastUpdate: '26/02/2024 10:15'
     },
     {
       id: '2024-0121',
@@ -42,7 +46,9 @@ export function PurchasesPage() {
       price: 890,
       quantity: '45kg',
       status: 'delivered',
-      icon: Fish
+      icon: Fish,
+      stockLocation: 'Trempage T2',
+      lastUpdate: '25/02/2024 16:45'
     }
   ];
 
@@ -131,6 +137,14 @@ export function PurchasesPage() {
                         <div>
                           <p className="text-sm text-white/40">Fournisseur</p>
                           <p className="text-sm text-white mt-1">{order.supplier}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/40">Emplacement stock</p>
+                          <p className="text-sm text-white mt-1">{order.stockLocation}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/40">Dernière mise à jour</p>
+                          <p className="text-sm text-white mt-1">{order.lastUpdate}</p>
                         </div>
                       </div>
                     </div>
