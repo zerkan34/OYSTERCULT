@@ -1,117 +1,93 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import { useStore } from '@/lib/store';
 import { Batch } from '../types';
 
 interface EditBatchModalProps {
   batch: Batch;
+  isOpen: boolean;
   onClose: () => void;
-  onSave: (updatedBatch: Batch) => void;
 }
 
-export function EditBatchModal({ batch, onClose, onSave }: EditBatchModalProps) {
+export function EditBatchModal({ batch, isOpen, onClose }: EditBatchModalProps) {
+  const { updateBatch } = useStore();
+  const [formData, setFormData] = React.useState({
+    quantity: batch.quantity,
+    perchNumber: batch.perchNumber,
+    status: batch.status,
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const updatedBatch: Batch = {
+    updateBatch({
       ...batch,
-      type: formData.get('type') as string,
-      quantity: Number(formData.get('quantity')),
-      location: formData.get('location') as string,
-      harvestDate: formData.get('harvestDate') as string,
-      supplier: formData.get('supplier') as string,
-    };
-    onSave(updatedBatch);
+      ...formData,
+    });
+    onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-[rgb(var(--color-brand-surface)_/_var(--glass-opacity))] backdrop-blur-md border border-white/10 rounded-lg w-full max-w-2xl">
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <h2 className="text-xl font-semibold text-white">Modifier le lot {batch.batchNumber}</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-white/5 rounded-lg transition-colors"
-          >
-            <X size={20} className="text-white/60" />
-          </button>
-        </div>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-gray-900 rounded-lg p-6 w-full max-w-md relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-white/60 hover:text-white"
+        >
+          <X size={20} />
+        </button>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-white mb-2">
-              Type d'huîtres
-            </label>
-            <input
-              type="text"
-              name="type"
-              defaultValue={batch.type}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40"
-            />
-          </div>
+        <h2 className="text-xl font-medium text-white mb-6">
+          Modifier le lot {batch.batchNumber}
+        </h2>
 
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
+            <label className="block text-sm text-white/60 mb-1">
               Quantité
             </label>
             <input
               type="number"
-              name="quantity"
-              defaultValue={batch.quantity}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40"
+              value={formData.quantity}
+              onChange={(e) => setFormData(prev => ({ ...prev, quantity: parseInt(e.target.value) }))}
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
-              Emplacement
+            <label className="block text-sm text-white/60 mb-1">
+              Numéro de perche
             </label>
             <input
-              type="text"
-              name="location"
-              defaultValue={batch.location}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40"
+              type="number"
+              value={formData.perchNumber}
+              onChange={(e) => setFormData(prev => ({ ...prev, perchNumber: parseInt(e.target.value) }))}
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
-              Date de récolte prévue
+            <label className="block text-sm text-white/60 mb-1">
+              Table
             </label>
-            <input
-              type="date"
-              name="harvestDate"
-              defaultValue={batch.harvestDate}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-white mb-2">
-              Fournisseur
-            </label>
-            <input
-              type="text"
-              name="supplier"
-              defaultValue={batch.supplier}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40"
-            />
-          </div>
-
-          <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+            <select
+              value={formData.status}
+              onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
             >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-brand-primary/20 text-brand-primary rounded-lg hover:bg-brand-primary/30 transition-colors"
-            >
-              Enregistrer
-            </button>
+              <option value="table1">Table 1</option>
+              <option value="table2">Table 2</option>
+              <option value="table3">Table 3</option>
+            </select>
           </div>
+
+          <button
+            type="submit"
+            className="w-full bg-brand-blue hover:bg-brand-blue/90 text-white font-medium py-2 px-4 rounded-lg"
+          >
+            Enregistrer les modifications
+          </button>
         </form>
       </div>
     </div>

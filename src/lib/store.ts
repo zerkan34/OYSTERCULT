@@ -103,7 +103,7 @@ interface Store {
   setTheme: (theme: 'dark' | 'light') => void;
   toggleTheme: () => void;
   addBatch: (batch: Omit<Batch, 'id'>) => void;
-  updateBatch: (id: string, batch: Partial<Batch>) => void;
+  updateBatch: (updatedBatch: Batch) => void;
   deleteBatch: (id: string) => void;
   setCompanyInfo: (info: CompanyInfo) => void;
   addUser: (userData: Omit<User, 'id'>) => void;
@@ -198,11 +198,12 @@ export const useStore = create<Store>()(
         batches: [...state.batches, { ...batch, id: crypto.randomUUID() }]
       })),
 
-      updateBatch: (id, batch) => set((state) => ({
-        batches: state.batches.map(batch => 
-          batch.id === id ? { ...batch, ...batch } : batch
-        )
-      })),
+      updateBatch: (updatedBatch: Batch) =>
+        set((state) => ({
+          batches: state.batches.map((batch) =>
+            batch.id === updatedBatch.id ? updatedBatch : batch
+          ),
+        })),
 
       deleteBatch: (id) => set((state) => ({
         batches: state.batches.filter(batch => batch.id !== id)
