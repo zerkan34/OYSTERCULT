@@ -9,14 +9,14 @@ const statusColors = {
   pending: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
   accepted: 'bg-green-500/10 text-green-500 border-green-500/20',
   rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
-  delivering: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  delivering: 'bg-blue-500/10 text-blue-500 border-blue-500/20'
 };
 
 const statusLabels = {
   pending: 'En attente',
   accepted: 'Accepté',
   rejected: 'Refusé',
-  delivering: 'En livraison',
+  delivering: 'En livraison'
 };
 
 interface OrderListProps {
@@ -39,7 +39,7 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
 
   return (
     <div className="space-y-6">
-      {orders.map(order => (
+      {orders.map((order) => (
         <div
           key={order.id}
           className="bg-[rgb(var(--color-brand-surface)_/_0.5)] backdrop-blur-sm rounded-xl border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] overflow-hidden"
@@ -50,9 +50,7 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
                 <h3 className="text-lg font-semibold mb-2">
                   Commande #{order.id}
                 </h3>
-                <Badge
-                  className={`${statusColors[order.status]} border backdrop-blur-sm`}
-                >
+                <Badge className={`${statusColors[order.status]} border backdrop-blur-sm`}>
                   {statusLabels[order.status]}
                 </Badge>
               </div>
@@ -72,7 +70,7 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
 
             <div className="space-y-4">
               <div className="space-y-2">
-                {order.products.map(product => (
+                {order.products.map((product) => (
                   <div
                     key={product.id}
                     className="flex items-center justify-between text-sm"
@@ -126,7 +124,7 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
                   <MessageSquare className="w-4 h-4" />
                   <span>Commentaires</span>
                 </div>
-                {order.comments.map(comment => (
+                {order.comments.map((comment) => (
                   <div
                     key={comment.id}
                     className="text-sm bg-[rgb(var(--color-brand-surface))] rounded-lg p-3"
@@ -137,7 +135,7 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
                 <div className="flex gap-2">
                   <Textarea
                     value={newComments[order.id] || ''}
-                    onChange={e => setNewComments(prev => ({ ...prev, [order.id]: e.target.value }))}
+                    onChange={(e) => setNewComments((prev) => ({ ...prev, [order.id]: e.target.value }))}
                     placeholder="Ajouter un commentaire..."
                     className="text-sm"
                   />
