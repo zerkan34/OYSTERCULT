@@ -93,216 +93,182 @@ export function SupplierCatalogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-[rgb(var(--color-brand-surface))] text-[rgb(var(--color-text))]">
       {/* En-tête fixe */}
-      <div className="fixed top-0 left-0 right-0 z-10 bg-gray-900/80 backdrop-blur-lg border-b border-gray-800">
+      <div className="fixed top-0 left-0 right-0 z-10 bg-[rgb(var(--color-brand-surface)_/_0.8)] backdrop-blur-lg border-b border-[rgb(var(--color-border)_/_var(--color-border-opacity))]">
         <div className="max-w-[1400px] mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => navigate('/suppliers')}
-                className="p-2 hover:bg-gray-800 rounded-full transition-colors"
+                onClick={() => navigate(-1)}
+                className="p-2 hover:bg-[rgb(var(--color-brand-primary)_/_0.1)] rounded-lg transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
               <div>
-                <h1 className="text-xl font-bold">{supplier.name}</h1>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="outline" className="text-brand-primary border-brand-primary">
-                    {supplier.friend_code}
-                  </Badge>
-                  {supplier.is_friend && (
-                    <Badge variant="outline" className="text-green-400 border-green-400">
-                      Ami
-                    </Badge>
-                  )}
-                </div>
+                <h1 className="text-2xl font-bold">{supplier.name}</h1>
+                <p className="text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
+                  Catalogue des produits
+                </p>
               </div>
             </div>
 
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="relative p-2 hover:bg-gray-800 rounded-full transition-colors"
-            >
-              <ShoppingCart className="w-5 h-5" />
-              {getTotalItems() > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-primary text-white text-xs flex items-center justify-center rounded-full">
-                  {getTotalItems()}
-                </span>
-              )}
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsCartOpen(!isCartOpen)}
+                className="p-2 hover:bg-[rgb(var(--color-brand-primary)_/_0.1)] rounded-lg transition-colors relative"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {getTotalItems() > 0 && (
+                  <Badge
+                    className="absolute -top-1 -right-1 bg-[rgb(var(--color-brand-primary))]"
+                    variant="default"
+                  >
+                    {getTotalItems()}
+                  </Badge>
+                )}
+              </button>
+
+              {/* Panier */}
+              <AnimatePresence>
+                {isCartOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute right-0 mt-2 w-96 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg shadow-xl"
+                  >
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold mb-4">Panier</h3>
+                      {orderItems.length === 0 ? (
+                        <p className="text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))] text-center py-4">
+                          Votre panier est vide
+                        </p>
+                      ) : (
+                        <>
+                          <div className="space-y-3 mb-4">
+                            {orderItems.map(item => {
+                              const product = products.find(p => p.id === item.productId);
+                              if (!product) return null;
+                              return (
+                                <div key={item.productId} className="flex items-center justify-between">
+                                  <div>
+                                    <p className="font-medium">{product.name}</p>
+                                    <p className="text-sm text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
+                                      {item.quantity} × {product.price.toFixed(2)}€
+                                    </p>
+                                  </div>
+                                  <p className="font-medium">
+                                    {(product.price * item.quantity).toFixed(2)}€
+                                  </p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <div className="border-t border-[rgb(var(--color-border)_/_var(--color-border-opacity))] pt-4">
+                            <div className="flex justify-between font-semibold mb-4">
+                              <span>Total</span>
+                              <span>{getTotalPrice().toFixed(2)}€</span>
+                            </div>
+                            <button
+                              className="w-full py-2 bg-[rgb(var(--color-brand-primary))] hover:bg-[rgb(var(--color-brand-primary)_/_0.9)] text-white rounded-lg transition-colors"
+                              onClick={() => {
+                                // TODO: Implémenter la validation de la commande
+                                alert('Commande validée !');
+                                setOrderItems([]);
+                                setIsCartOpen(false);
+                              }}
+                            >
+                              Valider la commande
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
-          {/* Filtres */}
-          <div className="flex items-center gap-4 mt-4">
+          {/* Filtres et recherche */}
+          <div className="flex items-center gap-4 mt-6">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]" />
               <input
                 type="text"
                 placeholder="Rechercher un produit..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-gray-800 rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="w-full pl-10 pr-4 py-2 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg focus:outline-none focus:border-[rgb(var(--color-brand-primary))]"
               />
             </div>
             <div className="relative">
               <button
-                className="flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-full text-sm hover:bg-gray-700 transition-colors"
+                className="px-4 py-2 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg flex items-center gap-2"
+                onClick={() => setSelectedCategory(prev => prev === 'all' ? categories[1] || 'all' : 'all')}
               >
                 <Filter className="w-4 h-4" />
-                {selectedCategory === 'all' ? 'Toutes catégories' : selectedCategory}
+                <span className="capitalize">{selectedCategory}</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
-              <div className="absolute top-full right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-1">
-                {categories.map(category => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-700 transition-colors ${
-                      selectedCategory === category ? 'text-brand-primary' : 'text-gray-300'
-                    }`}
-                  >
-                    {category === 'all' ? 'Toutes catégories' : category}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Contenu principal */}
-      <div className="max-w-[1400px] mx-auto px-6 pt-40 pb-24">
+      <div className="max-w-[1400px] mx-auto px-6 pt-48 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map(product => (
-            <motion.div
+            <div
               key={product.id}
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="group bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-brand-primary/50 transition-all duration-300"
+              className="bg-[rgb(var(--color-brand-surface)_/_0.5)] backdrop-blur-sm rounded-xl border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] overflow-hidden hover:border-[rgb(var(--color-brand-primary)_/_0.5)] transition-all duration-300"
             >
-              {/* Image du produit */}
-              <div className="aspect-square bg-gray-900 relative overflow-hidden">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60" />
-                <Badge
-                  className="absolute top-4 right-4 bg-gray-900/80 text-brand-primary border-brand-primary"
-                >
-                  {product.category}
-                </Badge>
-              </div>
-
-              {/* Informations du produit */}
-              <div className="p-6">
-                <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
-                <p className="text-sm text-gray-400 mb-4">{product.description}</p>
-
-                <div className="flex items-end justify-between">
-                  <div>
-                    <div className="text-sm text-gray-400">Prix unitaire</div>
-                    <div className="text-2xl font-bold text-white">
-                      {product.price.toFixed(2)} €
-                      <span className="text-sm text-gray-400 ml-1">/ {product.unit}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleQuantityChange(product.id, getOrderQuantity(product.id) - 1)}
-                      className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      disabled={getOrderQuantity(product.id) === 0}
-                    >
-                      -
-                    </button>
-                    <div className="w-12 text-center font-medium">
-                      {getOrderQuantity(product.id)}
-                    </div>
-                    <button
-                      onClick={() => handleQuantityChange(product.id, getOrderQuantity(product.id) + 1)}
-                      className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 transition-colors"
-                    >
-                      +
-                    </button>
-                  </div>
+              <div className="aspect-square bg-gradient-to-br from-[rgb(var(--color-brand-primary)_/_0.2)] to-[rgb(var(--color-brand-secondary)_/_0.2)] relative">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Package2 className="w-16 h-16 text-[rgb(var(--color-brand-primary)_/_0.3)]" />
                 </div>
-
-                {getOrderQuantity(product.id) > 0 && (
-                  <div className="mt-4 text-right text-sm text-brand-primary font-medium">
-                    Sous-total: {(product.price * getOrderQuantity(product.id)).toFixed(2)} €
-                  </div>
-                )}
               </div>
-            </motion.div>
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-4 mb-2">
+                  <h3 className="font-semibold">{product.name}</h3>
+                  <Badge variant="outline" className="capitalize">
+                    {product.category}
+                  </Badge>
+                </div>
+                <p className="text-sm text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))] mb-4">
+                  {product.description}
+                </p>
+                <div className="flex items-center justify-between text-sm mb-4">
+                  <span className="text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
+                    Prix unitaire:
+                  </span>
+                  <span className="font-medium">
+                    {product.price.toFixed(2)}€ / {product.unit}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={product.min_order_quantity}
+                    step={product.min_order_quantity}
+                    value={getOrderQuantity(product.id)}
+                    onChange={(e) => handleQuantityChange(product.id, parseFloat(e.target.value))}
+                    className="w-20 px-3 py-2 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg"
+                  />
+                  <button
+                    onClick={() => handleQuantityChange(product.id, getOrderQuantity(product.id) + product.min_order_quantity)}
+                    className="flex-1 py-2 px-4 bg-[rgb(var(--color-brand-primary)_/_0.1)] hover:bg-[rgb(var(--color-brand-primary)_/_0.2)] text-[rgb(var(--color-brand-primary))] rounded-lg transition-colors"
+                  >
+                    Ajouter au panier
+                  </button>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
-
-      {/* Panier flottant */}
-      <AnimatePresence>
-        {isCartOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            className="fixed top-0 right-0 bottom-0 w-96 bg-gray-900 border-l border-gray-800 shadow-2xl z-50"
-          >
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold">Votre commande</h2>
-                <button
-                  onClick={() => setIsCartOpen(false)}
-                  className="p-2 hover:bg-gray-800 rounded-full transition-colors"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {orderItems.map(item => {
-                  const product = products.find(p => p.id === item.productId);
-                  if (!product) return null;
-
-                  return (
-                    <div key={item.productId} className="flex items-center gap-4">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-16 h-16 object-cover rounded-lg"
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-medium">{product.name}</h3>
-                        <div className="text-sm text-gray-400">
-                          {item.quantity} × {product.price.toFixed(2)} €
-                        </div>
-                      </div>
-                      <div className="font-medium">
-                        {(product.price * item.quantity).toFixed(2)} €
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="mt-8 pt-6 border-t border-gray-800">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="text-gray-400">Total</div>
-                  <div className="text-2xl font-bold">{getTotalPrice().toFixed(2)} €</div>
-                </div>
-
-                <button className="w-full py-3 bg-brand-primary hover:bg-brand-primary/90 text-white rounded-lg transition-colors">
-                  Valider la commande
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

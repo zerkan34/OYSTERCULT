@@ -30,94 +30,85 @@ export function SupplierCard({ supplier, onDelete, onViewCatalog }: SupplierCard
 
   return (
     <>
-      <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-gray-700/50 hover:border-brand-purple/50 transition-all duration-300">
+      <div className="w-[320px] h-[420px] bg-[rgb(var(--color-brand-surface)_/_0.5)] backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] hover:border-[rgb(var(--color-brand-primary)_/_0.5)] transition-all duration-300">
         <div className="relative">
           {/* En-tête avec dégradé */}
-          <div className="h-32 bg-gradient-to-br from-brand-purple/20 to-brand-burgundy/20 flex items-center justify-center">
+          <div className="h-32 bg-gradient-to-br from-[rgb(var(--color-brand-primary)_/_0.2)] to-[rgb(var(--color-brand-secondary)_/_0.2)] flex items-center justify-center">
             {/* Logo/Initiales de l'entreprise */}
-            <div className="w-24 h-24 rounded-2xl bg-gray-800 flex items-center justify-center text-3xl font-bold text-brand-purple border-2 border-brand-purple/30 shadow-xl transform hover:scale-105 transition-transform duration-300">
+            <div className="w-24 h-24 rounded-2xl bg-[rgb(var(--color-brand-surface))] flex items-center justify-center text-3xl font-bold text-[rgb(var(--color-brand-primary))] border-2 border-[rgb(var(--color-brand-primary)_/_0.3)] shadow-xl transform hover:scale-105 transition-transform duration-300">
               {supplier.name.split(' ').map(word => word[0]).join('')}
             </div>
           </div>
 
           {/* Badge "Ami" */}
           {supplier.is_friend && (
-            <div className="absolute top-4 right-4 bg-green-500/10 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1 border border-green-500/20">
-              <BadgeCheck className="w-4 h-4 text-green-400" />
-              <span className="text-sm font-medium text-green-400">Ami</span>
+            <div className="absolute top-4 right-4 bg-emerald-500/10 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1 border border-emerald-500/20">
+              <BadgeCheck className="w-4 h-4 text-emerald-400" />
+              <span className="text-sm font-medium text-emerald-400">Ami</span>
             </div>
           )}
         </div>
 
-        <div className="p-6">
-          {/* Nom et code ami */}
-          <div className="mb-6 text-center">
-            <h3 className="text-xl font-bold text-white mb-1">
-              {supplier.name}
-            </h3>
+        {/* Contenu */}
+        <div className="p-6 flex flex-col h-[calc(420px-128px)]">
+          <h3 className="text-xl font-semibold mb-4 text-center text-[rgb(var(--color-text))]">{supplier.name}</h3>
+          
+          <div className="space-y-3 flex-grow">
+            <div className="flex items-center gap-2 text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
+              <Mail className="w-4 h-4 shrink-0" />
+              <span className="text-sm truncate">{supplier.email}</span>
+            </div>
+            <div className="flex items-center gap-2 text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
+              <Phone className="w-4 h-4 shrink-0" />
+              <span className="text-sm">{supplier.phone}</span>
+            </div>
+            <div className="flex items-center gap-2 text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
+              <MapPin className="w-4 h-4 shrink-0" />
+              <span className="text-sm truncate">{supplier.address}</span>
+            </div>
             {supplier.friend_code && (
-              <p className="text-sm text-gray-400">
-                Code Ami: {supplier.friend_code}
-              </p>
+              <div className="flex items-center gap-2 text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
+                <Building2 className="w-4 h-4 shrink-0" />
+                <span className="text-sm font-mono">{supplier.friend_code}</span>
+              </div>
             )}
           </div>
 
-          {/* Informations de contact */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 text-gray-300 group">
-              <Building2 className="w-4 h-4 text-brand-purple group-hover:text-brand-burgundy transition-colors" />
-              <span className="text-sm">Fournisseur d'huîtres</span>
-            </div>
-            <div className="flex items-center gap-3 text-gray-300 group">
-              <Mail className="w-4 h-4 text-brand-purple group-hover:text-brand-burgundy transition-colors" />
-              <span className="text-sm">{supplier.email}</span>
-            </div>
-            <div className="flex items-center gap-3 text-gray-300 group">
-              <Phone className="w-4 h-4 text-brand-purple group-hover:text-brand-burgundy transition-colors" />
-              <span className="text-sm">{supplier.phone}</span>
-            </div>
-            <div className="flex items-center gap-3 text-gray-300 group">
-              <MapPin className="w-4 h-4 text-brand-purple group-hover:text-brand-burgundy transition-colors" />
-              <span className="text-sm">{supplier.address}</span>
-            </div>
+          {/* Actions */}
+          <div className="flex gap-2 mt-4 pt-4 border-t border-[rgb(var(--color-border)_/_var(--color-border-opacity))]">
+            <button
+              onClick={() => onViewCatalog(supplier.id)}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[rgb(var(--color-brand-primary)_/_0.1)] hover:bg-[rgb(var(--color-brand-primary)_/_0.2)] text-[rgb(var(--color-brand-primary))] rounded-lg transition-colors duration-200"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>Catalogue</span>
+            </button>
+            <button
+              onClick={() => setIsDeleteDialogOpen(true)}
+              className="flex items-center justify-center p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors duration-200"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
           </div>
-        </div>
-
-        {/* Actions */}
-        <div className="px-6 py-4 bg-gray-800/50 border-t border-gray-700/50 flex justify-end gap-2">
-          <button
-            onClick={() => setIsDeleteDialogOpen(true)}
-            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-colors"
-            title="Supprimer"
-          >
-            <Trash2 className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => onViewCatalog(supplier.id)}
-            className="flex items-center gap-2 px-4 py-2 bg-brand-purple hover:bg-brand-purple/90 text-white rounded-lg transition-colors"
-          >
-            <BookOpen className="w-5 h-5" />
-            Catalogue
-          </button>
         </div>
       </div>
 
-      {/* Dialog de confirmation de suppression */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-gray-800 border border-gray-700">
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Confirmer la suppression</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
-              Êtes-vous sûr de vouloir supprimer le fournisseur {supplier.name} ? Cette action est irréversible.
+            <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir supprimer ce fournisseur ? Cette action est irréversible.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-gray-700 text-white hover:bg-gray-600">
-              Annuler
-            </AlertDialogCancel>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-500 text-white hover:bg-red-600"
-              onClick={() => onDelete(supplier.id)}
+              onClick={() => {
+                onDelete(supplier.id);
+                setIsDeleteDialogOpen(false);
+              }}
+              className="bg-red-500 hover:bg-red-600"
             >
               Supprimer
             </AlertDialogAction>
