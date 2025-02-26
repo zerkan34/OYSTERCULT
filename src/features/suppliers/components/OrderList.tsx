@@ -71,7 +71,6 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
             </div>
 
             <div className="space-y-4">
-              {/* Produits */}
               <div className="space-y-2">
                 {order.products.map(product => (
                   <div
@@ -90,7 +89,6 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
                 </div>
               </div>
 
-              {/* Stockage et DLC */}
               {order.storage_location && (
                 <div className="flex items-center gap-2 text-sm text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
                   <MapPin className="w-4 h-4" />
@@ -104,7 +102,6 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
                 </div>
               )}
 
-              {/* Actions de statut */}
               {order.status === 'pending' && (
                 <div className="flex gap-2">
                   <Button
@@ -124,7 +121,6 @@ export function OrderList({ orders, onStatusChange, onAddComment, onScanQR }: Or
                 </div>
               )}
 
-              {/* Commentaires */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
                   <MessageSquare className="w-4 h-4" />
