@@ -33,14 +33,38 @@ const mockCashFlow = [
   { month: 'Juin', inflow: 63000, outflow: 44000 }
 ];
 
+// Formater les données pour ModernChart
+const formatChartData = (data: any[], key: string) => ({
+  data: data.map(item => ({
+    name: item.month,
+    value: item[key]
+  }))
+});
+
 const revenueChartSeries = [
-  { key: 'revenue', name: 'Revenus', color: '#00D1FF' },
-  { key: 'expenses', name: 'Dépenses', color: '#FF3366' }
+  { 
+    name: 'Revenus',
+    color: '#00D1FF',
+    ...formatChartData(mockRevenueData, 'revenue')
+  },
+  { 
+    name: 'Dépenses',
+    color: '#FF3366',
+    ...formatChartData(mockRevenueData, 'expenses')
+  }
 ];
 
 const cashflowChartSeries = [
-  { key: 'inflow', name: 'Entrées', color: '#00D1FF' },
-  { key: 'outflow', name: 'Sorties', color: '#FF3366' }
+  { 
+    name: 'Entrées',
+    color: '#00D1FF',
+    ...formatChartData(mockCashFlow, 'inflow')
+  },
+  { 
+    name: 'Sorties',
+    color: '#FF3366',
+    ...formatChartData(mockCashFlow, 'outflow')
+  }
 ];
 
 export function AccountingPage() {
@@ -54,13 +78,13 @@ export function AccountingPage() {
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setShowStats(!showStats)}
-            className="btn-secondary"
+            className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
           >
             <BarChart2 size={20} className="mr-2" />
             Statistiques
           </button>
           <button
-            className="btn-primary"
+            className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
           >
             <Receipt size={20} className="mr-2" />
             Nouvelle Facture
@@ -69,75 +93,68 @@ export function AccountingPage() {
       </div>
 
       {showStats && (
-        <>
-          <div className="grid grid-cols-4 gap-6">
-            <ModernStatCard
-              icon={<DollarSign size={24} />}
-              label="Chiffre d'affaires"
-              value="307,500€"
-              trend={{ value: 12.5, positive: true }}
-              color="primary"
-            />
-            <ModernStatCard
-              icon={<Wallet size={24} />}
-              label="Dépenses"
-              value="228,000€"
-              trend={{ value: 8.3, positive: false }}
-              color="secondary"
-            />
-            <ModernStatCard
-              icon={<Receipt size={24} />}
-              label="Factures en attente"
-              value="24"
-              color="tertiary"
-            />
-            <ModernStatCard
-              icon={<CreditCard size={24} />}
-              label="Paiements reçus"
-              value="52,800€"
-              color="primary"
-            />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="glass-effect p-6 rounded-lg">
+            <h3 className="text-lg font-medium text-white mb-6">Revenus et Dépenses</h3>
+            <ModernChart series={revenueChartSeries} height={300} />
           </div>
-
-          <div className="grid grid-cols-2 gap-6">
-            <ModernChart
-              title="Revenus vs Dépenses"
-              type="bar"
-              data={mockRevenueData}
-              series={revenueChartSeries}
-              height={320}
-            />
-
-            <ModernChart
-              title="Flux de trésorerie"
-              type="line"
-              data={mockCashFlow}
-              series={cashflowChartSeries}
-              height={320}
-            />
+          <div className="glass-effect p-6 rounded-lg">
+            <h3 className="text-lg font-medium text-white mb-6">Flux de Trésorerie</h3>
+            <ModernChart series={cashflowChartSeries} height={300} />
           </div>
-        </>
+        </div>
       )}
 
       <div className="flex items-center space-x-4 mb-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" />
           <input
             type="text"
-            placeholder="Rechercher des transactions..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Rechercher des transactions..."
+            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40"
           />
         </div>
-        <button className="btn-secondary">
+        <button className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors">
           <Filter size={20} className="mr-2" />
           Filtres
         </button>
-        <button className="btn-secondary">
+        <button className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors">
           <Calendar size={20} className="mr-2" />
           Période
         </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <ModernStatCard
+          title="Chiffre d'affaires"
+          value="58,000 €"
+          change="+12%"
+          trend="up"
+          icon={<DollarSign />}
+        />
+        <ModernStatCard
+          title="Bénéfice net"
+          value="24,500 €"
+          change="+8%"
+          trend="up"
+          icon={<TrendingUp />}
+        />
+        <ModernStatCard
+          title="Dépenses"
+          value="33,500 €"
+          change="-5%"
+          trend="down"
+          icon={<CreditCard />}
+        />
+        <ModernStatCard
+          title="Trésorerie"
+          value="125,000 €"
+          change="+15%"
+          trend="up"
+          icon={<Wallet />}
+        />
       </div>
 
       <div className="bg-gray-800 rounded-lg p-6">

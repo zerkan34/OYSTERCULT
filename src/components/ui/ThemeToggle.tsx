@@ -24,7 +24,7 @@ export function ThemeToggle() {
         className="absolute inset-0 flex items-center justify-center"
       >
         <Moon 
-          className="text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text))] transition-colors" 
+          className="text-[rgb(var(--color-text-secondary))] hover:text-blue-400 transition-colors" 
           size={24} 
         />
       </motion.div>

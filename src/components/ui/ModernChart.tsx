@@ -44,11 +44,22 @@ export class ModernChart extends PureComponent<ModernChartProps> {
   render() {
     const { series, height, showGrid, showLegend } = this.props;
 
+    // Vérifier si nous avons des données valides
+    if (!series || series.length === 0 || !series[0].data) {
+      return (
+        <div className="flex items-center justify-center h-full min-h-[200px] bg-white/5 rounded-lg border border-white/10">
+          <p className="text-white/60">Aucune donnée disponible</p>
+        </div>
+      );
+    }
+
     // Combine all data points from all series
     const data = series[0].data.map((point, i) => {
       const combinedPoint: CombinedDataPoint = { name: point.name };
       series.forEach((s) => {
-        combinedPoint[s.name] = s.data[i].value;
+        if (s.data[i]) {
+          combinedPoint[s.name] = s.data[i].value;
+        }
       });
       return combinedPoint;
     });

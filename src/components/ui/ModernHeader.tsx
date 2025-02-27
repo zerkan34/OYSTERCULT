@@ -1,8 +1,9 @@
 import { Button } from './Button';
-import { Bell, Menu, Phone } from 'lucide-react';
+import { Bell, Menu, Phone, Mail } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { useStore } from '@/lib/store';
 import { useNavigate } from 'react-router-dom';
+import { OysterLogo } from './OysterLogo';
 
 interface ModernHeaderProps {
   onShowMobileMenu: () => void;
@@ -31,17 +32,52 @@ export function ModernHeader({
           <Menu className="h-4 w-4" />
         </Button>
 
-        <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm" onClick={onShowNotifications}>
-            <Bell className="h-4 w-4" />
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <OysterLogo size={32} withText textPosition="right" />
+        </div>
+
+        <div className="flex items-center mr-[-1rem]">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleMessageClick}
+            className="relative group"
+          >
+            <div className="absolute inset-0 bg-cyan-500/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Mail className="h-4 w-4 text-cyan-500 drop-shadow-[0_0_3px_rgba(6,182,212,0.5)]" />
+          </Button>
+
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onShowNotifications}
+            className="relative group"
+          >
+            <div className="absolute inset-0 bg-blue-500/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Bell className="h-4 w-4 text-blue-500 drop-shadow-[0_0_3px_rgba(59,130,246,0.5)]" />
             {unreadCount > 0 && (
               <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full" />
             )}
           </Button>
-          <Button variant="ghost" size="sm" onClick={onEmergencyClick}>
-            <Phone className="h-4 w-4" />
+
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onEmergencyClick}
+            className="relative group"
+          >
+            <div className="absolute inset-0 bg-red-500/30 rounded-full blur-lg" />
+            <div className="relative flex items-center justify-center h-8 w-8 bg-red-500 rounded-full">
+              <Phone className="h-4 w-4 text-white drop-shadow-[0_0_3px_rgba(255,255,255,0.5)]" />
+            </div>
           </Button>
-          <ThemeToggle />
+
+          <div className="relative group">
+            <div className="absolute inset-0 bg-blue-800/50 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="p-1 relative z-10">
+              <ThemeToggle />
+            </div>
+          </div>
         </div>
       </div>
     </header>
