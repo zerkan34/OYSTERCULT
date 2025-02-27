@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Filter, Search, BarChart2, Package, AlertTriangle, Droplets, ShoppingCart } from 'lucide-react';
-import { OysterTableMap } from '../components/OysterTableMap';
+import { OysterTableMap, Table } from '../components/OysterTableMap';
 import { PurificationPools } from '../components/PurificationPools';
 import { TrempeView } from '../components/TrempeView';
 import { useStore } from '@/lib/store';
@@ -15,8 +15,8 @@ type TabType = 'tables' | 'pools' | 'trempes' | 'achats';
 export function InventoryPage() {
   const [activeTab, setActiveTab] = useState<TabType>('tables');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTable, setSelectedTable] = useState(null);
-  const [hoveredTable, setHoveredTable] = useState(null);
+  const [selectedTable, setSelectedTable] = useState<Table | null>(null);
+  const [hoveredTable, setHoveredTable] = useState<Table | null>(null);
   const [showNewItem, setShowNewItem] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const pageRef = React.useRef<HTMLDivElement>(null);

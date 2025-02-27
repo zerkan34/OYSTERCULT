@@ -217,7 +217,11 @@ export function ModernSidebar({
             transition={{ duration: 0.3, delay: 0.1 }}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-brand-burgundy/5 to-transparent opacity-50"></div>
-            {!collapsed && <OysterLogo />}
+            {!collapsed && (
+              <div className="cursor-pointer" onClick={() => navigate('/dashboard')}>
+                <OysterLogo />
+              </div>
+            )}
             <button
               onClick={() => setCollapsed(!collapsed)}
               className="p-2 hover:bg-white/10 rounded-lg hidden lg:block transition-colors relative z-10"
@@ -352,11 +356,11 @@ export function ModernSidebar({
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
               onClick={onEmergencyClick}
-              className="w-full flex items-center px-4 py-2.5 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-all duration-200 relative z-10 shadow-[0_0_15px_rgba(239,68,68,0.15)]"
+              className="w-full flex items-center px-4 py-2.5 text-white bg-red-500 hover:bg-red-600 rounded-lg transition-all duration-200 relative z-10 shadow-[0_0_15px_rgba(239,68,68,0.3)]"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-transparent opacity-0 hover:opacity-100 rounded-lg transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-500 opacity-100 rounded-lg"></div>
               <Phone size={22} className="relative z-10" />
-              {!collapsed && <span className="ml-3 relative z-10">Urgence</span>}
+              {!collapsed && <span className="ml-3 relative z-10 font-medium">Urgence</span>}
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.03 }}

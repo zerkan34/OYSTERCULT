@@ -3,27 +3,35 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { TableDetail } from './TableDetail';
 import { 
   Droplets, 
-  Settings, 
-  AlertTriangle, 
-  Clock, 
-  Filter,
-  Sparkles,
-  Zap,
-  History,
-  CheckCircle2,
-  Calendar,
   ThermometerSun,
   Plus,
-  Trash2,
-  Edit2,
-  Compass,
-  MapPin,
-  Eye,
+  ShoppingCart,
+  Calendar,
+  Package,
+  Star,
   Shell,
-  X
+  Eye,
+  Flame,
+  Filter,
+  PanelLeft,
+  Info,
+  ChevronUp,
+  ChevronDown,
+  ArrowUp,
+  ArrowDown,
+  Download,
+  Clock,
+  Search,
+  ZoomIn,
+  ZoomOut,
+  Maximize as MaximizeIcon,
+  X,
+  Map as MapIcon,
+  Compass,
+  MinimizeIcon
 } from 'lucide-react';
 
-interface Table {
+export interface Table {
   id: string;
   name: string;
   tableNumber: string;
@@ -35,6 +43,7 @@ interface Table {
   cells: {
     id: string;
     filled: boolean;
+    fillOrder?: number;
     type?: 'triplo' | 'diplo' | 'naturelle';
   }[];
   currentBatch?: {
@@ -54,7 +63,7 @@ interface OysterTableMapProps {
   selectedTable?: Table | null;
 }
 
-const mockTables: Table[] = [
+const initialTables: Table[] = [
   {
     id: '1',
     name: 'Bouzigues',
@@ -67,11 +76,15 @@ const mockTables: Table[] = [
     lastCheck: '2025-02-19',
     nextCheck: '2025-02-26',
     mortalityRate: 2.5,
-    cells: Array(20).fill(null).map((_, i) => ({
-      id: `b1-cell-${i}`,
-      filled: Math.random() > 0.3,
-      type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-    })),
+    cells: Array(20).fill(null).map((_, i) => {
+      const isFilled = Math.random() > 0.3;
+      return {
+        id: `b1-cell-${i}`,
+        filled: isFilled,
+        fillOrder: isFilled ? Math.floor(Math.random() * 20) + 1 : undefined,
+        type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
+      };
+    }),
     currentBatch: {
       size: '3',
       quantity: 5000,
@@ -90,11 +103,15 @@ const mockTables: Table[] = [
     lastCheck: '2025-02-19',
     nextCheck: '2025-02-26',
     mortalityRate: 1.8,
-    cells: Array(20).fill(null).map((_, i) => ({
-      id: `b2-cell-${i}`,
-      filled: Math.random() > 0.3,
-      type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-    })),
+    cells: Array(20).fill(null).map((_, i) => {
+      const isFilled = Math.random() > 0.3;
+      return {
+        id: `b2-cell-${i}`,
+        filled: isFilled,
+        fillOrder: isFilled ? Math.floor(Math.random() * 20) + 1 : undefined,
+        type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
+      };
+    }),
     currentBatch: {
       size: '2',
       quantity: 4000,
@@ -113,11 +130,15 @@ const mockTables: Table[] = [
     lastCheck: '2025-02-18',
     nextCheck: '2025-02-25',
     mortalityRate: 4.2,
-    cells: Array(20).fill(null).map((_, i) => ({
-      id: `m1-cell-${i}`,
-      filled: Math.random() > 0.3,
-      type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-    })),
+    cells: Array(20).fill(null).map((_, i) => {
+      const isFilled = Math.random() > 0.3;
+      return {
+        id: `m1-cell-${i}`,
+        filled: isFilled,
+        fillOrder: isFilled ? Math.floor(Math.random() * 20) + 1 : undefined,
+        type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
+      };
+    }),
     currentBatch: {
       size: '3',
       quantity: 6000,
@@ -136,11 +157,15 @@ const mockTables: Table[] = [
     lastCheck: '2025-02-18',
     nextCheck: '2025-02-25',
     mortalityRate: 3.7,
-    cells: Array(20).fill(null).map((_, i) => ({
-      id: `m2-cell-${i}`,
-      filled: Math.random() > 0.3,
-      type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-    })),
+    cells: Array(20).fill(null).map((_, i) => {
+      const isFilled = Math.random() > 0.3;
+      return {
+        id: `m2-cell-${i}`,
+        filled: isFilled,
+        fillOrder: isFilled ? Math.floor(Math.random() * 20) + 1 : undefined,
+        type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
+      };
+    }),
     currentBatch: {
       size: '4',
       quantity: 3500,
@@ -159,11 +184,15 @@ const mockTables: Table[] = [
     lastCheck: '2025-02-19',
     nextCheck: '2025-02-26',
     mortalityRate: 1.5,
-    cells: Array(20).fill(null).map((_, i) => ({
-      id: `ma1-cell-${i}`,
-      filled: Math.random() > 0.3,
-      type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-    })),
+    cells: Array(20).fill(null).map((_, i) => {
+      const isFilled = Math.random() > 0.3;
+      return {
+        id: `ma1-cell-${i}`,
+        filled: isFilled,
+        fillOrder: isFilled ? Math.floor(Math.random() * 20) + 1 : undefined,
+        type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
+      };
+    }),
     currentBatch: {
       size: '3',
       quantity: 5500,
@@ -182,11 +211,15 @@ const mockTables: Table[] = [
     lastCheck: '2025-02-19',
     nextCheck: '2025-02-26',
     mortalityRate: 1.9,
-    cells: Array(20).fill(null).map((_, i) => ({
-      id: `ma2-cell-${i}`,
-      filled: Math.random() > 0.3,
-      type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-    })),
+    cells: Array(20).fill(null).map((_, i) => {
+      const isFilled = Math.random() > 0.3;
+      return {
+        id: `ma2-cell-${i}`,
+        filled: isFilled,
+        fillOrder: isFilled ? Math.floor(Math.random() * 20) + 1 : undefined,
+        type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
+      };
+    }),
     currentBatch: {
       size: '2',
       quantity: 4800,
@@ -197,6 +230,12 @@ const mockTables: Table[] = [
 
 export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, selectedTable }: OysterTableMapProps) {
   const [showLegend, setShowLegend] = useState(true);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [viewPosition, setViewPosition] = useState({ x: 0, y: 0 });
+  const [tables, setTables] = useState<Table[]>(initialTables);
+  const [showFillColumnModal, setShowFillColumnModal] = useState(false);
+  const [selectedColumn, setSelectedColumn] = useState<{tableId: string, column: number} | null>(null);
+  const [fillOrderNumber, setFillOrderNumber] = useState<number>(1);
 
   const cellVariants = {
     initial: { opacity: 0.6, scale: 0.95 },
@@ -226,6 +265,71 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
     })
   };
 
+  const handleZoomIn = () => {
+    setZoomLevel(prev => {
+      const newZoom = Math.min(prev * 1.2, 3.0);
+      console.log("Zoom in:", newZoom);
+      return newZoom;
+    });
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => {
+      const newZoom = Math.max(prev * 0.8, 0.5);
+      console.log("Zoom out:", newZoom);
+      return newZoom;
+    });
+  };
+
+  const handleResetZoom = () => {
+    setZoomLevel(1);
+    setViewPosition({ x: 0, y: 0 });
+  };
+
+  const openFillColumnModal = (tableId: string, column: number) => {
+    setSelectedColumn({ tableId, column });
+    setShowFillColumnModal(true);
+  };
+
+  const fillColumn = () => {
+    if (!selectedColumn) return;
+    
+    setTables(prevTables => 
+      prevTables.map(table => {
+        if (table.id !== selectedColumn.tableId) return table;
+        
+        // On compte combien de cases sont déjà remplies pour commencer la numérotation à partir de là
+        const filledCellsCount = table.cells.filter(cell => cell.filled).length;
+        let nextNumber = filledCellsCount > 0 ? filledCellsCount + 1 : 1;
+        
+        const updatedCells = table.cells.map((cell, index) => {
+          const cellColumn = index % 2;
+          
+          if (cellColumn === selectedColumn.column) {
+            // Calcul de l'index de la ligne pour une numérotation progressive
+            // dans une grille 2x10, index / 2 nous donne la position de la ligne (0-9)
+            const rowIndex = Math.floor(index / 2);
+            
+            return {
+              ...cell,
+              filled: true,
+              fillOrder: nextNumber + rowIndex, // Numéro séquentiel basé sur la position
+              type: cell.type || 'naturelle'
+            };
+          }
+          return cell;
+        });
+
+        return {
+          ...table,
+          cells: updatedCells
+        };
+      })
+    );
+
+    setShowFillColumnModal(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-12 gap-6">
@@ -238,19 +342,42 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
 
             <div className="absolute top-0 left-0 right-0 flex justify-between p-6">
               <div className="glass-effect rounded-lg px-4 py-2 flex items-center space-x-2">
-                <MapPin size={16} className="text-brand-burgundy" />
+                <MapIcon size={16} className="text-brand-burgundy" />
                 <span className="text-white font-medium">Bouzigues</span>
               </div>
               <div className="glass-effect rounded-lg px-4 py-2 flex items-center space-x-2">
-                <MapPin size={16} className="text-brand-burgundy" />
+                <MapIcon size={16} className="text-brand-burgundy" />
                 <span className="text-white font-medium">Mèze</span>
               </div>
               <div className="glass-effect rounded-lg px-4 py-2 flex items-center space-x-2">
-                <MapPin size={16} className="text-brand-burgundy" />
+                <MapIcon size={16} className="text-brand-burgundy" />
                 <span className="text-white font-medium">Marseillan</span>
               </div>
             </div>
 
+            {/* Déplacer les contrôles de zoom en haut à droite */}
+            <div className="absolute top-6 right-6 flex glass-effect p-2 rounded-lg z-30">
+              <button 
+                onClick={handleZoomIn}
+                className="p-1.5 hover:bg-white/10 rounded-md text-white mr-1"
+              >
+                <ZoomIn size={18} />
+              </button>
+              <button 
+                onClick={handleZoomOut}
+                className="p-1.5 hover:bg-white/10 rounded-md text-white mr-1"
+              >
+                <ZoomOut size={18} />
+              </button>
+              <button 
+                onClick={handleResetZoom}
+                className="p-1.5 hover:bg-white/10 rounded-md text-white"
+              >
+                <MaximizeIcon size={18} />
+              </button>
+            </div>
+
+            {/* Boussole en bas à droite */}
             <div className="absolute bottom-6 right-6 w-24 h-24">
               <div className="absolute inset-0 bg-brand-burgundy/20 rounded-full blur-xl" />
               <div className="relative w-full h-full bg-black/40 backdrop-blur-sm rounded-full border border-white/20 flex items-center justify-center">
@@ -276,64 +403,108 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                   <div className="w-4 h-4 rounded-sm bg-brand-tertiary shadow-neon" />
                   <span className="text-white/60 text-sm">Naturelles</span>
                 </div>
+                <div className="mt-4 pt-2 border-t border-white/10">
+                  <span className="text-white/60 text-sm">Les numéros indiquent l'ordre de remplissage</span>
+                </div>
               </div>
             </div>
 
-            <div className="relative h-full">
-              {mockTables.map((table) => (
-                <motion.div
-                  key={table.id}
-                  className="absolute"
-                  style={{
-                    left: `${table.position.x}px`,
-                    top: `${table.position.y}px`,
-                    width: `${table.size.width}px`,
-                    height: `${table.size.height}px`,
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  onHoverStart={() => onTableHover?.(table)}
-                  onHoverEnd={() => onTableHover?.(null)}
-                  onClick={() => onTableSelect(table)}
-                >
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 glass-effect px-3 py-1 rounded-full">
-                    <span className="text-white text-sm font-medium">{table.tableNumber}</span>
-                  </div>
-
-                  <div 
-                    className={`relative h-full rounded-lg overflow-hidden transition-all duration-300
-                      ${selectedTable?.id === table.id ? 'ring-4 ring-brand-burgundy shadow-neon' : 'ring-1 ring-white/20'}`}
+            <div className="relative h-full overflow-hidden">
+              <div 
+                className="absolute inset-0 transition-transform duration-300 ease-out"
+                style={{ 
+                  transform: `scale(${zoomLevel}) translate(${viewPosition.x}px, ${viewPosition.y}px)`,
+                  transformOrigin: 'center center',
+                  cursor: 'grab'
+                }}
+                onMouseDown={(e) => {
+                  const el = e.currentTarget;
+                  const startX = e.clientX;
+                  const startY = e.clientY;
+                  const startPosX = viewPosition.x;
+                  const startPosY = viewPosition.y;
+                  
+                  const onMouseMove = (moveEvent: MouseEvent) => {
+                    const dx = (moveEvent.clientX - startX) / zoomLevel;
+                    const dy = (moveEvent.clientY - startY) / zoomLevel;
+                    setViewPosition({
+                      x: startPosX + dx,
+                      y: startPosY + dy
+                    });
+                    el.style.cursor = 'grabbing';
+                  };
+                  
+                  const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                    el.style.cursor = 'grab';
+                  };
+                  
+                  document.addEventListener('mousemove', onMouseMove);
+                  document.addEventListener('mouseup', onMouseUp);
+                }}
+              >
+                {tables.map((table) => (
+                  <motion.div
+                    key={table.id}
+                    className="absolute"
+                    style={{
+                      left: `${table.position.x}px`,
+                      top: `${table.position.y}px`,
+                      width: `${table.size.width}px`,
+                      height: `${table.size.height}px`,
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    onHoverStart={() => onTableHover?.(table)}
+                    onHoverEnd={() => onTableHover?.(null)}
+                    onClick={() => onTableSelect(table)}
                   >
-                    <div className={`absolute inset-0 backdrop-blur-sm ${
-                      table.status === 'optimal' ? 'bg-green-500/10' :
-                      table.status === 'warning' ? 'bg-yellow-500/10' :
-                      'bg-red-500/10'
-                    }`}>
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 glass-effect px-3 py-1 rounded-full">
+                      <span className="text-white text-sm font-medium">{table.tableNumber}</span>
                     </div>
 
-                    <div className="absolute inset-0 grid grid-cols-2 grid-rows-10 gap-2 p-4">
-                      {table.cells.map((cell, index) => (
-                        <motion.div
-                          key={cell.id}
-                          className={`rounded-md transition-all duration-300 ${
-                            cell.filled
-                              ? `${
-                                  cell.type === 'triplo' ? 'bg-brand-burgundy shadow-neon' :
-                                  cell.type === 'diplo' ? 'bg-brand-primary shadow-neon' :
-                                  'bg-brand-tertiary shadow-neon'
-                                }`
-                              : 'bg-white/5'
-                          }`}
-                          variants={cell.filled ? filledCellVariants : cellVariants}
-                          initial="initial"
-                          animate="animate"
-                          custom={index}
-                        />
-                      ))}
+                    <div 
+                      className={`relative h-full rounded-lg overflow-hidden transition-all duration-300
+                        ${selectedTable?.id === table.id ? 'ring-4 ring-brand-burgundy shadow-neon' : 'ring-1 ring-white/20'}`}
+                    >
+                      <div className={`absolute inset-0 backdrop-blur-sm ${
+                        table.status === 'optimal' ? 'bg-green-500/10' :
+                        table.status === 'warning' ? 'bg-yellow-500/10' :
+                        'bg-red-500/10'
+                      }`}>
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
+                      </div>
+
+                      <div className="absolute inset-0 grid grid-cols-2 grid-rows-10 gap-2 p-4">
+                        {table.cells.map((cell, index) => (
+                          <motion.div
+                            key={cell.id}
+                            className={`rounded-md transition-all duration-300 ${
+                              cell.filled
+                                ? `${
+                                    cell.type === 'triplo' ? 'bg-brand-burgundy shadow-neon' :
+                                    cell.type === 'diplo' ? 'bg-brand-primary shadow-neon' :
+                                    'bg-brand-tertiary shadow-neon'
+                                  }`
+                                : 'bg-white/5'
+                            }`}
+                            variants={cell.filled ? filledCellVariants : cellVariants}
+                            initial="initial"
+                            animate="animate"
+                            custom={index}
+                          >
+                            {cell.filled && cell.fillOrder && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-xs text-white font-bold">{cell.fillOrder}</span>
+                              </div>
+                            )}
+                          </motion.div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -346,76 +517,81 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="glass-effect rounded-xl p-6 space-y-6"
-                onClick={(e) => e.stopPropagation()}
+                className="glass-effect p-6 rounded-xl h-full"
               >
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-2">
-                    {(hoveredTable || selectedTable)?.name}
-                  </h3>
-                  <div className="text-lg text-gradient-primary">
-                    Table {(hoveredTable || selectedTable)?.tableNumber}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="glass-effect rounded-lg p-4">
-                    <div className="flex items-center text-white/80 mb-2">
-                      <ThermometerSun size={20} className="mr-2 text-brand-burgundy" />
-                      Température
-                    </div>
-                    <div className="text-2xl font-bold text-white">
-                      {(hoveredTable || selectedTable)?.temperature}°C
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold text-white">
+                      Table {(selectedTable || hoveredTable)?.tableNumber}
+                    </h3>
+                    <div className={`px-3 py-1 rounded-full text-sm ${
+                      (selectedTable || hoveredTable)?.status === 'optimal' ? 'bg-green-500/20 text-green-400' :
+                      (selectedTable || hoveredTable)?.status === 'warning' ? 'bg-yellow-500/20 text-yellow-400' :
+                      'bg-red-500/20 text-red-400'
+                    }`}>
+                      {(selectedTable || hoveredTable)?.status === 'optimal' ? 'Optimal' :
+                       (selectedTable || hoveredTable)?.status === 'warning' ? 'Attention' : 'Critique'}
                     </div>
                   </div>
 
-                  <div className="glass-effect rounded-lg p-4">
-                    <div className="flex items-center text-white/80 mb-2">
-                      <Droplets size={20} className="mr-2 text-brand-primary" />
-                      Salinité
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="bg-white/5 p-3 rounded-lg">
+                      <div className="text-white/60 text-sm mb-1">Température</div>
+                      <div className="text-white font-medium flex items-center">
+                        <ThermometerSun className="w-4 h-4 mr-1 text-brand-burgundy" />
+                        {(selectedTable || hoveredTable)?.temperature}°C
+                      </div>
                     </div>
-                    <div className="text-2xl font-bold text-white">
-                      {(hoveredTable || selectedTable)?.salinity}g/L
-                    </div>
-                  </div>
-                </div>
-
-                <div className="glass-effect rounded-lg p-4">
-                  <div className="flex items-center text-white/80 mb-4">
-                    <Clock size={20} className="mr-2 text-brand-tertiary" />
-                    Échantillonnage
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white/60">Dernier échantillonnage</span>
-                      <span className="text-white">
-                        {new Date((hoveredTable || selectedTable)?.lastCheck || '').toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white/60">Prochain échantillonnage</span>
-                      <span className="text-white">
-                        {new Date((hoveredTable || selectedTable)?.nextCheck || '').toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="pt-2 border-t border-white/10">
-                      <div className="flex justify-between items-center">
-                        <span className="text-white/60">Taux de mortalité estimé</span>
-                        <span className={`text-lg font-medium ${
-                          ((hoveredTable || selectedTable)?.mortalityRate || 0) > 3
-                            ? 'text-red-400'
-                            : ((hoveredTable || selectedTable)?.mortalityRate || 0) > 2
-                            ? 'text-yellow-400'
-                            : 'text-green-400'
-                        }`}>
-                          {(hoveredTable || selectedTable)?.mortalityRate}%
-                        </span>
+                    <div className="bg-white/5 p-3 rounded-lg">
+                      <div className="text-white/60 text-sm mb-1">Salinité</div>
+                      <div className="text-white font-medium flex items-center">
+                        <Droplets className="w-4 h-4 mr-1 text-brand-primary" />
+                        {(selectedTable || hoveredTable)?.salinity} g/L
                       </div>
                     </div>
                   </div>
+
+                  <div className="mb-6">
+                    <h4 className="text-white font-medium mb-2">Occupation</h4>
+                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-brand-burgundy"
+                        style={{ 
+                          width: `${((selectedTable || hoveredTable)?.cells.filter(cell => cell.filled).length || 0) * 5}%` 
+                        }}
+                      />
+                    </div>
+                    <div className="flex justify-between mt-1">
+                      <span className="text-xs text-white/60">
+                        {(selectedTable || hoveredTable)?.cells.filter(cell => cell.filled).length} / 20 emplacements
+                      </span>
+                      <span className="text-xs text-white/60">
+                        {((selectedTable || hoveredTable)?.cells.filter(cell => cell.filled).length || 0) * 5}%
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {selectedTable && (
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <button 
+                        onClick={() => openFillColumnModal(selectedTable.id, 0)}
+                        className="py-2 bg-brand-primary hover:bg-brand-primary/80 text-white rounded-lg flex items-center justify-center gap-2"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Colonne gauche
+                      </button>
+                      <button 
+                        onClick={() => openFillColumnModal(selectedTable.id, 1)}
+                        className="py-2 bg-brand-primary hover:bg-brand-primary/80 text-white rounded-lg flex items-center justify-center gap-2"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Colonne droite
+                      </button>
+                    </div>
+                  )}
                 </div>
 
-                {(hoveredTable || selectedTable)?.currentBatch && (
+                {(selectedTable || hoveredTable)?.currentBatch && (
                   <div className="glass-effect rounded-lg p-4">
                     <div className="flex items-center text-white/80 mb-4">
                       <Shell size={20} className="mr-2 text-brand-burgundy" />
@@ -425,19 +601,19 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                       <div className="flex justify-between items-center">
                         <span className="text-white/60">Calibre</span>
                         <span className="text-white font-medium">
-                          N°{(hoveredTable || selectedTable)?.currentBatch?.size}
+                          N°{(selectedTable || hoveredTable)?.currentBatch?.size}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-white/60">Quantité</span>
                         <span className="text-white font-medium">
-                          {(hoveredTable || selectedTable)?.currentBatch?.quantity} unités
+                          {(selectedTable || hoveredTable)?.currentBatch?.quantity} unités
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-white/60">Récolte prévue</span>
+                        <span className="text-white/60">Récolte estimée</span>
                         <span className="text-white font-medium">
-                          {new Date((hoveredTable || selectedTable)?.currentBatch?.estimatedHarvestDate || '').toLocaleDateString()}
+                          {new Date((selectedTable || hoveredTable)?.currentBatch?.estimatedHarvestDate || '').toLocaleDateString()}
                         </span>
                       </div>
                     </div>
@@ -446,21 +622,76 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
               </motion.div>
             ) : (
               <motion.div
-                key="no-selection"
+                key="no-table-selected"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="glass-effect rounded-xl p-6 text-center"
+                className="glass-effect p-6 rounded-xl flex flex-col items-center justify-center h-full text-center"
               >
-                <Eye size={48} className="mx-auto text-white/20 mb-4" />
+                <div className="bg-white/5 rounded-full p-4 mb-4">
+                  <MapIcon className="w-10 h-10 text-brand-burgundy" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Sélectionnez une table</h3>
                 <p className="text-white/60">
-                  Survolez une table pour voir ses informations détaillées
+                  Cliquez sur une table pour voir ses détails et gérer son contenu
                 </p>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
+
+      {showFillColumnModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center">
+          <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-white">
+                Remplir une colonne
+              </h3>
+              <button
+                onClick={() => setShowFillColumnModal(false)}
+                className="text-white/60 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Numéro de remplissage
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="20"
+                  value={fillOrderNumber}
+                  onChange={(e) => setFillOrderNumber(parseInt(e.target.value) || 1)}
+                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                />
+                <p className="mt-2 text-sm text-white/60">
+                  Toutes les cellules de cette colonne auront le numéro {fillOrderNumber}
+                </p>
+              </div>
+
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={() => setShowFillColumnModal(false)}
+                  className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={fillColumn}
+                  className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/80 transition-colors"
+                >
+                  Remplir la colonne
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

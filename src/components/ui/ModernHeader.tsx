@@ -2,7 +2,7 @@ import { Button } from './Button';
 import { Bell, Menu, Phone, Mail } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { useStore } from '@/lib/store';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { OysterLogo } from './OysterLogo';
 
 interface ModernHeaderProps {
@@ -22,6 +22,14 @@ export function ModernHeader({
 }: ModernHeaderProps) {
   const { unreadCount } = useStore();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogoClick = () => {
+    // Ne navigue vers le dashboard que si on n'est pas déjà sur cette page
+    if (location.pathname !== '/dashboard') {
+      navigate('/dashboard');
+    }
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-sm border-b z-50">
@@ -30,7 +38,7 @@ export function ModernHeader({
           <Menu className="h-4 w-4" />
         </Button>
 
-        <div className="absolute left-1/2 transform -translate-x-1/2">
+        <div className="absolute left-1/2 transform -translate-x-1/2 cursor-pointer" onClick={handleLogoClick}>
           <OysterLogo size={32} withText textPosition="right" />
         </div>
 
@@ -64,7 +72,7 @@ export function ModernHeader({
             variant="ghost" 
             size="sm" 
             onClick={onEmergencyClick}
-            className="relative group"
+            className="relative"
           >
             <div className="absolute inset-0 bg-red-500/30 rounded-full blur-lg" />
             <div className="relative flex items-center justify-center h-8 w-8 bg-red-500 rounded-full">

@@ -146,7 +146,7 @@ export function NetworkPage({ messageView = false }: NetworkPageProps) {
         >
           <div className="flex items-center">
             <Globe size={16} className="mr-2" />
-            Annuaire
+            Annuaire Prestataires
           </div>
         </button>
         <button
