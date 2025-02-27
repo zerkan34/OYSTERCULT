@@ -4,7 +4,7 @@ import { ModernCardBase } from '@/components/ui/ModernCardBase';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
-import { Dialog } from '@/components/ui/Dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog/index';
 import { PurchaseConfiguration } from '../components/PurchaseConfiguration';
 
 export function PurchasesPage() {
@@ -165,25 +165,26 @@ export function PurchasesPage() {
       </Tabs>
 
       {/* Modal de nouvelle commande */}
-      <Dialog
-        open={isNewOrderDialogOpen}
-        onClose={() => setIsNewOrderDialogOpen(false)}
-        title="Nouvelle commande"
-      >
-        <div className="space-y-4">
-          <PurchaseConfiguration />
-          <div className="flex justify-end gap-3">
-            <Button 
-              variant="outline"
-              onClick={() => setIsNewOrderDialogOpen(false)}
-            >
-              Annuler
-            </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              Créer la commande
-            </Button>
+      <Dialog open={isNewOrderDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nouvelle commande</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <PurchaseConfiguration />
+            <div className="flex justify-end gap-3">
+              <Button 
+                variant="outline"
+                onClick={() => setIsNewOrderDialogOpen(false)}
+              >
+                Annuler
+              </Button>
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                Créer la commande
+              </Button>
+            </div>
           </div>
-        </div>
+        </DialogContent>
       </Dialog>
     </div>
   );

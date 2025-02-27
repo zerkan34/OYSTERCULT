@@ -16,19 +16,68 @@ export function SupplierCatalogPage() {
   const { suppliers, getSupplierProducts } = useSuppliers();
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [products, setProducts] = useState<Awaited<ReturnType<typeof getSupplierProducts>>>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 
   const supplier = suppliers.find(s => s.id === supplierId);
 
   React.useEffect(() => {
     const loadProducts = async () => {
       if (supplierId) {
-        const supplierProducts = await getSupplierProducts(supplierId);
-        setProducts(supplierProducts);
-        setIsLoading(false);
+        try {
+          const supplierProducts = await getSupplierProducts(supplierId);
+          setProducts(supplierProducts);
+        } catch (error) {
+          console.error("Erreur lors du chargement des produits:", error);
+          // Fallback de produits fictifs pour la démo
+          setProducts([
+            {
+              id: '1',
+              name: 'Huîtres Spéciales de Normandie',
+              description: 'Huîtres Spéciales de Normandie n°3, saveur iodée et douce',
+              price: 12.99,
+              unit: 'dz',
+              min_order_quantity: 2,
+              category: 'huîtres',
+              stock: 50
+            },
+            {
+              id: '2',
+              name: 'Moules de Méditerranée',
+              description: 'Moules de Méditerranée fraîches, chair généreuse',
+              price: 8.50,
+              unit: 'kg',
+              min_order_quantity: 1,
+              category: 'moules',
+              stock: 30
+            },
+            {
+              id: '3',
+              name: 'Palourdes de l\'Atlantique',
+              description: 'Palourdes fraîches de l\'Atlantique, idéales pour vos plats de fruits de mer',
+              price: 14.99,
+              unit: 'kg',
+              min_order_quantity: 0.5,
+              category: 'palourdes',
+              stock: 20
+            },
+            {
+              id: '4',
+              name: 'Huîtres Fines de Claire',
+              description: 'Huîtres Fines de Claire affinées en bassin, saveur délicate',
+              price: 15.99,
+              unit: 'dz',
+              min_order_quantity: 1,
+              category: 'huîtres',
+              stock: 40
+            }
+          ]);
+        } finally {
+          setIsLoading(false);
+        }
       }
     };
     loadProducts();
@@ -50,136 +99,113 @@ export function SupplierCatalogPage() {
         if (quantity <= 0) {
           return prev.filter(item => item.productId !== productId);
         }
-        return prev.map(item => 
-          item.productId === productId ? { ...item, quantity } : item
-        );
+        return prev.map(item => item.productId === productId ? { ...item, quantity } : item);
       }
-      if (quantity > 0) {
-        return [...prev, { productId, quantity }];
-      }
-      return prev;
+      if (quantity <= 0) return prev;
+      return [...prev, { productId, quantity }];
     });
   };
 
   const getOrderQuantity = (productId: string) => {
-    return orderItems.find(item => item.productId === productId)?.quantity || 0;
-  };
-
-  const getTotalPrice = () => {
-    return orderItems.reduce((total, item) => {
-      const product = products.find(p => p.id === item.productId);
-      return total + (product?.price || 0) * item.quantity;
-    }, 0);
+    const item = orderItems.find(item => item.productId === productId);
+    return item ? item.quantity : 0;
   };
 
   const getTotalItems = () => {
-    return orderItems.reduce((total, item) => total + item.quantity, 0);
+    return orderItems.reduce((sum, item) => sum + item.quantity, 0);
   };
 
-  if (!supplier) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-gray-400">Fournisseur non trouvé</div>
-      </div>
-    );
-  }
+  const getTotalPrice = () => {
+    return orderItems.reduce((sum, item) => {
+      const product = products.find(p => p.id === item.productId);
+      return sum + (product ? product.price * item.quantity : 0);
+    }, 0);
+  };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary" />
+      <div className="flex items-center justify-center h-screen">
+        <div className="w-16 h-16 border-t-4 border-[rgb(var(--color-brand-primary))] border-solid rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-brand-surface))] text-[rgb(var(--color-text))]">
-      {/* En-tête fixe */}
-      <div className="fixed top-0 left-0 right-0 z-10 bg-[rgb(var(--color-brand-surface)_/_0.8)] backdrop-blur-lg border-b border-[rgb(var(--color-border)_/_var(--color-border-opacity))]">
+    <div className="min-h-screen bg-[rgb(var(--color-brand-bg))]">
+      {/* Header */}
+      <div className="fixed top-0 left-0 right-0 z-10 bg-[rgb(var(--color-brand-bg)_/_0.8)] backdrop-blur-md border-b border-[rgb(var(--color-border)_/_var(--color-border-opacity))]">
         <div className="max-w-[1400px] mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => navigate(-1)}
-                className="p-2 hover:bg-[rgb(var(--color-brand-primary)_/_0.1)] rounded-lg transition-colors"
+                onClick={() => navigate('/suppliers')}
+                className="p-2 rounded-full bg-[rgb(var(--color-brand-surface)_/_0.5)] hover:bg-[rgb(var(--color-brand-surface))] transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
               <div>
-                <h1 className="text-2xl font-bold">{supplier.name}</h1>
-                <p className="text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
-                  Catalogue des produits
+                <h1 className="text-xl font-semibold text-[rgb(var(--color-text))]">
+                  {supplier?.name || 'Catalogue Fournisseur'}
+                </h1>
+                <p className="text-sm text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
+                  {supplier?.address || 'Produits disponibles'}
                 </p>
               </div>
             </div>
-
+            
             <div className="relative">
               <button
                 onClick={() => setIsCartOpen(!isCartOpen)}
-                className="p-2 hover:bg-[rgb(var(--color-brand-primary)_/_0.1)] rounded-lg transition-colors relative"
+                className="p-2 rounded-full bg-[rgb(var(--color-brand-surface)_/_0.5)] hover:bg-[rgb(var(--color-brand-surface))] transition-colors relative"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {getTotalItems() > 0 && (
-                  <Badge
-                    className="absolute -top-1 -right-1 bg-[rgb(var(--color-brand-primary))]"
-                    variant="default"
-                  >
+                  <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-[rgb(var(--color-brand-primary))] text-white text-xs rounded-full">
                     {getTotalItems()}
-                  </Badge>
+                  </span>
                 )}
               </button>
-
-              {/* Panier */}
+              
               <AnimatePresence>
                 {isCartOpen && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute right-0 mt-2 w-96 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg shadow-xl"
+                    className="absolute right-0 mt-2 w-80 bg-[rgb(var(--color-brand-surface))] rounded-lg shadow-lg border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] z-50"
                   >
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold mb-4">Panier</h3>
+                      <h3 className="font-semibold mb-4">Votre commande</h3>
                       {orderItems.length === 0 ? (
-                        <p className="text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))] text-center py-4">
-                          Votre panier est vide
-                        </p>
+                        <p className="text-center text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))] py-4">Votre panier est vide</p>
                       ) : (
                         <>
-                          <div className="space-y-3 mb-4">
+                          <div className="space-y-3 max-h-80 overflow-y-auto">
                             {orderItems.map(item => {
                               const product = products.find(p => p.id === item.productId);
                               if (!product) return null;
                               return (
                                 <div key={item.productId} className="flex items-center justify-between">
-                                  <div>
+                                  <div className="flex-1">
                                     <p className="font-medium">{product.name}</p>
                                     <p className="text-sm text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
-                                      {item.quantity} × {product.price.toFixed(2)}€
+                                      {item.quantity} {product.unit} × {product.price}€
                                     </p>
                                   </div>
-                                  <p className="font-medium">
+                                  <span className="font-medium">
                                     {(product.price * item.quantity).toFixed(2)}€
-                                  </p>
+                                  </span>
                                 </div>
                               );
                             })}
                           </div>
-                          <div className="border-t border-[rgb(var(--color-border)_/_var(--color-border-opacity))] pt-4">
+                          <div className="border-t border-[rgb(var(--color-border)_/_var(--color-border-opacity))] mt-4 pt-4">
                             <div className="flex justify-between font-semibold mb-4">
                               <span>Total</span>
                               <span>{getTotalPrice().toFixed(2)}€</span>
                             </div>
-                            <button
-                              className="w-full py-2 bg-[rgb(var(--color-brand-primary))] hover:bg-[rgb(var(--color-brand-primary)_/_0.9)] text-white rounded-lg transition-colors"
-                              onClick={() => {
-                                // TODO: Implémenter la validation de la commande
-                                alert('Commande validée !');
-                                setOrderItems([]);
-                                setIsCartOpen(false);
-                              }}
-                            >
-                              Valider la commande
+                            <button className="w-full py-2 bg-[rgb(var(--color-brand-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-brand-primary)_/_0.9)] transition-colors">
+                              Passer la commande
                             </button>
                           </div>
                         </>
@@ -190,28 +216,58 @@ export function SupplierCatalogPage() {
               </AnimatePresence>
             </div>
           </div>
-
-          {/* Filtres et recherche */}
-          <div className="flex items-center gap-4 mt-6">
+          
+          <div className="mt-4 flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]" />
               <input
                 type="text"
                 placeholder="Rechercher un produit..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg focus:outline-none focus:border-[rgb(var(--color-brand-primary))]"
+                className="w-full pl-10 pr-4 py-2 bg-[rgb(var(--color-brand-surface)_/_0.5)] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg focus:border-[rgb(var(--color-brand-primary))] focus:outline-none"
               />
             </div>
+            
             <div className="relative">
-              <button
-                className="px-4 py-2 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg flex items-center gap-2"
-                onClick={() => setSelectedCategory(prev => prev === 'all' ? categories[1] || 'all' : 'all')}
-              >
-                <Filter className="w-4 h-4" />
-                <span className="capitalize">{selectedCategory}</span>
-                <ChevronDown className="w-4 h-4" />
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                  className="px-4 py-2 bg-[rgb(var(--color-brand-surface)_/_0.5)] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg focus:outline-none flex items-center gap-2 min-w-32"
+                >
+                  <Filter className="w-4 h-4" />
+                  <span className="capitalize">{selectedCategory === 'all' ? 'Toutes catégories' : selectedCategory}</span>
+                  <ChevronDown className="w-4 h-4 ml-auto" />
+                </button>
+                
+                <AnimatePresence>
+                  {showCategoryDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute left-0 right-0 mt-2 bg-[rgb(var(--color-brand-surface))] rounded-lg shadow-lg border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] z-50"
+                    >
+                      <div className="py-1">
+                        {categories.map(category => (
+                          <button
+                            key={category}
+                            onClick={() => {
+                              setSelectedCategory(category);
+                              setShowCategoryDropdown(false);
+                            }}
+                            className={`w-full px-4 py-2 text-left hover:bg-[rgb(var(--color-brand-surface)_/_0.7)] ${
+                              selectedCategory === category ? 'bg-[rgb(var(--color-brand-primary)_/_0.1)] text-[rgb(var(--color-brand-primary))]' : ''
+                            }`}
+                          >
+                            <span className="capitalize">{category === 'all' ? 'Toutes catégories' : category}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>
@@ -223,11 +279,11 @@ export function SupplierCatalogPage() {
           {filteredProducts.map(product => (
             <div
               key={product.id}
-              className="bg-[rgb(var(--color-brand-surface)_/_0.5)] backdrop-blur-sm rounded-xl border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] overflow-hidden hover:border-[rgb(var(--color-brand-primary)_/_0.5)] transition-all duration-300"
+              className="bg-[rgb(var(--color-brand-surface)_/_0.5)] backdrop-blur-sm rounded-xl border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] overflow-hidden hover:border-[rgb(var(--color-brand-primary)_/_0.5)] transition-all duration-300 group hover:shadow-lg"
             >
               <div className="aspect-square bg-gradient-to-br from-[rgb(var(--color-brand-primary)_/_0.2)] to-[rgb(var(--color-brand-secondary)_/_0.2)] relative">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Package2 className="w-16 h-16 text-[rgb(var(--color-brand-primary)_/_0.3)]" />
+                  <Package2 className="w-16 h-16 text-[rgb(var(--color-brand-primary)_/_0.3)] group-hover:scale-110 transition-transform duration-300" />
                 </div>
               </div>
               <div className="p-4">
@@ -255,13 +311,13 @@ export function SupplierCatalogPage() {
                     step={product.min_order_quantity}
                     value={getOrderQuantity(product.id)}
                     onChange={(e) => handleQuantityChange(product.id, parseFloat(e.target.value))}
-                    className="w-20 px-3 py-2 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg"
+                    className="w-20 px-3 py-2 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg focus:border-[rgb(var(--color-brand-primary))] focus:outline-none"
                   />
                   <button
                     onClick={() => handleQuantityChange(product.id, getOrderQuantity(product.id) + product.min_order_quantity)}
-                    className="flex-1 py-2 px-4 bg-[rgb(var(--color-brand-primary)_/_0.1)] hover:bg-[rgb(var(--color-brand-primary)_/_0.2)] text-[rgb(var(--color-brand-primary))] rounded-lg transition-colors"
+                    className="flex-1 py-2 px-4 bg-[rgb(var(--color-brand-primary)_/_0.1)] hover:bg-[rgb(var(--color-brand-primary)_/_0.2)] text-[rgb(var(--color-brand-primary))] rounded-lg transition-colors group-hover:shadow-md"
                   >
-                    Ajouter au panier
+                    Commander
                   </button>
                 </div>
               </div>

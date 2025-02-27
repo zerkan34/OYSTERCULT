@@ -48,6 +48,14 @@ export function NotificationsPanel({ onClose }: NotificationsPanelProps) {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const panel = document.querySelector('.notifications-panel');
+      const notificationBell = document.querySelector('[data-notification-bell="true"]');
+      
+      // Si le clic est sur la cloche, on ne fait rien car toggleNotifications s'en chargera
+      if (notificationBell && notificationBell.contains(event.target as Node)) {
+        return;
+      }
+      
+      // Si le clic est en dehors du panel, fermer le panel
       if (panel && !panel.contains(event.target as Node)) {
         onClose();
       }

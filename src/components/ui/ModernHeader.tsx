@@ -7,23 +7,21 @@ import { OysterLogo } from './OysterLogo';
 
 interface ModernHeaderProps {
   onShowMobileMenu: () => void;
-  onShowNotifications: () => void;
+  onToggleNotifications: () => void;
   onShowEmergency: () => void;
   onEmergencyClick: () => void;
+  onToggleMessages: () => void;
 }
 
 export function ModernHeader({
   onShowMobileMenu,
-  onShowNotifications,
+  onToggleNotifications,
   onShowEmergency,
   onEmergencyClick,
+  onToggleMessages,
 }: ModernHeaderProps) {
   const { unreadCount } = useStore();
   const navigate = useNavigate();
-
-  const handleMessageClick = () => {
-    navigate('/network', { state: { activeTab: 'messages' } });
-  };
 
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-sm border-b z-50">
@@ -40,8 +38,9 @@ export function ModernHeader({
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={handleMessageClick}
+            onClick={onToggleMessages}
             className="relative group"
+            data-message-button="true"
           >
             <div className="absolute inset-0 bg-cyan-500/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
             <Mail className="h-4 w-4 text-cyan-500 drop-shadow-[0_0_3px_rgba(6,182,212,0.5)]" />
@@ -50,8 +49,9 @@ export function ModernHeader({
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={onShowNotifications}
+            onClick={onToggleNotifications}
             className="relative group"
+            data-notification-bell="true"
           >
             <div className="absolute inset-0 bg-blue-500/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
             <Bell className="h-4 w-4 text-blue-500 drop-shadow-[0_0_3px_rgba(59,130,246,0.5)]" />

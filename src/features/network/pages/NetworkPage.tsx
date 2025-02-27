@@ -25,9 +25,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type NetworkTab = 'feed' | 'contacts' | 'directory' | 'forum' | 'messages' | 'suppliers';
 
-export function NetworkPage() {
+interface NetworkPageProps {
+  messageView?: boolean;
+}
+
+export function NetworkPage({ messageView = false }: NetworkPageProps) {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState<NetworkTab>('feed');
+  const [activeTab, setActiveTab] = useState<NetworkTab>(messageView ? 'messages' : 'feed');
   const [showNewPost, setShowNewPost] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,6 +44,18 @@ export function NetworkPage() {
       setActiveTab(location.state.activeTab);
     }
   }, [location.state]);
+
+  useEffect(() => {
+    if (messageView) {
+      setActiveTab('messages');
+    }
+  }, [messageView]);
+
+  useEffect(() => {
+    if (location.pathname === '/network/messages' && activeTab !== 'messages') {
+      setActiveTab('messages');
+    }
+  }, [location.pathname, activeTab]);
 
   return (
     <div className="space-y-6">

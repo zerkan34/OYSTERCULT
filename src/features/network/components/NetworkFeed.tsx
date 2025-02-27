@@ -39,7 +39,6 @@ const mockPosts: Post[] = [
       company: 'Ostréiculture Martin'
     },
     content: 'Recherche fournisseur de poches d\'élevage pour livraison urgente. Merci de me contacter en MP.',
-    images: ['https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62'],
     timestamp: '2025-02-19T09:15:00',
     likes: 8,
     comments: 5,
@@ -145,16 +144,6 @@ export function NetworkFeed() {
                 </div>
 
                 <p className="mt-4 text-white/80">{post.content}</p>
-
-                {post.images && post.images.length > 0 && (
-                  <div className="mt-4">
-                    <img
-                      src={post.images[0]}
-                      alt=""
-                      className="w-full h-64 object-cover rounded-lg"
-                    />
-                  </div>
-                )}
 
                 <div className="mt-4 flex items-center justify-between pt-4 border-t border-white/10">
                   <button className="flex items-center text-white/60 hover:text-white transition-colors">

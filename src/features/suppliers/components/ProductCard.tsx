@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Edit2, ShoppingCart } from 'lucide-react';
+import { Edit2, ShoppingBag } from 'lucide-react';
 import type { SupplierProduct } from '@/types/supplier';
 
 interface ProductCardProps {
@@ -12,12 +12,12 @@ export function ProductCard({ product, onEdit, onAddToCart }: ProductCardProps) 
   const [quantity, setQuantity] = useState(product.min_order_quantity);
 
   return (
-    <div className="w-[320px] h-[420px] bg-[rgb(var(--color-brand-surface)_/_0.5)] backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] hover:border-[rgb(var(--color-brand-primary)_/_0.5)] transition-all duration-300">
+    <div className="w-[320px] h-[420px] bg-[rgb(var(--color-brand-surface)_/_0.5)] backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] hover:border-[rgb(var(--color-brand-primary)_/_0.5)] transition-all duration-300 group">
       <div className="relative">
         {/* En-tête avec dégradé */}
         <div className="h-32 bg-gradient-to-br from-[rgb(var(--color-brand-primary)_/_0.2)] to-[rgb(var(--color-brand-secondary)_/_0.2)] flex items-center justify-center">
           {/* Image du produit ou placeholder */}
-          <div className="w-24 h-24 rounded-2xl bg-[rgb(var(--color-brand-surface))] flex items-center justify-center text-3xl font-bold text-[rgb(var(--color-brand-primary))] border-2 border-[rgb(var(--color-brand-primary)_/_0.3)] shadow-xl">
+          <div className="w-24 h-24 rounded-2xl bg-[rgb(var(--color-brand-surface))] flex items-center justify-center text-3xl font-bold text-[rgb(var(--color-brand-primary))] border-2 border-[rgb(var(--color-brand-primary)_/_0.3)] shadow-xl transform group-hover:scale-105 transition-transform duration-300">
             {product.name.charAt(0)}
           </div>
         </div>
@@ -29,7 +29,7 @@ export function ProductCard({ product, onEdit, onAddToCart }: ProductCardProps) 
           <h3 className="text-xl font-semibold text-[rgb(var(--color-text))]">{product.name}</h3>
           <button
             onClick={onEdit}
-            className="p-1 text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))] hover:text-[rgb(var(--color-brand-primary))]"
+            className="p-1 text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))] hover:text-[rgb(var(--color-brand-primary))] transition-colors duration-200"
           >
             <Edit2 size={16} />
           </button>
@@ -46,7 +46,6 @@ export function ProductCard({ product, onEdit, onAddToCart }: ProductCardProps) 
             <span className="text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">Prix unitaire:</span>
             <span className="font-medium text-[rgb(var(--color-text))]">{product.price.toFixed(2)}€ / {product.unit}</span>
           </div>
-
           <div className="flex items-center justify-between text-sm">
             <span className="text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">Quantité minimum:</span>
             <span className="text-[rgb(var(--color-text))]">{product.min_order_quantity} {product.unit}</span>
@@ -60,14 +59,14 @@ export function ProductCard({ product, onEdit, onAddToCart }: ProductCardProps) 
             min={product.min_order_quantity}
             value={quantity}
             onChange={(e) => setQuantity(Math.max(product.min_order_quantity, parseInt(e.target.value)))}
-            className="w-20 px-3 py-2 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg text-[rgb(var(--color-text))]"
+            className="w-20 px-3 py-2 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg text-[rgb(var(--color-text))] focus:border-[rgb(var(--color-brand-primary))] focus:outline-none"
           />
           <button
             onClick={() => onAddToCart(product, quantity)}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[rgb(var(--color-brand-primary)_/_0.1)] hover:bg-[rgb(var(--color-brand-primary)_/_0.2)] text-[rgb(var(--color-brand-primary))] rounded-lg transition-colors duration-200"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[rgb(var(--color-brand-primary)_/_0.1)] hover:bg-[rgb(var(--color-brand-primary)_/_0.2)] text-[rgb(var(--color-brand-primary))] rounded-lg transition-colors duration-200 group-hover:shadow-md"
           >
-            <ShoppingCart className="w-4 h-4" />
-            <span>Ajouter au panier</span>
+            <ShoppingBag className="w-4 h-4" />
+            <span>Commander</span>
           </button>
         </div>
       </div>

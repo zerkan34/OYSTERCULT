@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { ModernCardBase } from '@/components/ui/ModernCardBase';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Dialog } from '@/components/ui/Dialog';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle 
+} from '@/components/ui/dialog/index';
 import { Plus, Shell, Truck, Euro, Scale, Award, Info, Package, Fish, UserCircle, Phone } from 'lucide-react';
 
 interface Supplier {
@@ -305,61 +310,71 @@ export function PurchaseConfiguration() {
 
       {/* Modal des détails du produit */}
       {showProductDetails && (
-        <Dialog
-          open={!!showProductDetails}
-          onClose={() => setShowProductDetails(null)}
-          title="Détails du produit"
-        >
-          {(() => {
-            const product = CATALOG.find(p => p.id === showProductDetails);
-            if (!product) return null;
+        <Dialog open={!!showProductDetails}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Détails du produit</DialogTitle>
+            </DialogHeader>
+            {(() => {
+              const product = CATALOG.find(p => p.id === showProductDetails);
+              if (!product) return null;
 
-            return (
-              <div className="space-y-4">
-                <div className="bg-white/5 p-4 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-brand-burgundy/20 rounded-lg">
-                      {getIcon(product.type)}
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-white">{product.name}</h4>
-                      <p className="text-sm text-white/60">{product.description}</p>
-                    </div>
-                  </div>
-                </div>
-
+              return (
                 <div className="space-y-4">
                   <div className="bg-white/5 p-4 rounded-lg">
-                    <h5 className="font-medium text-white mb-2">Caractéristiques</h5>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-white/60">Calibre</span>
-                        <span className="text-sm text-white">{product.calibre}</span>
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-brand-burgundy/20 rounded-lg">
+                        {getIcon(product.type)}
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-white/60">Conservation</span>
-                        <span className="text-sm text-white">{product.conservation}</span>
+                      <div>
+                        <h4 className="font-medium text-white">{product.name}</h4>
+                        <p className="text-sm text-white/60">{product.description}</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-white/5 p-4 rounded-lg">
-                    <h5 className="font-medium text-white mb-2">Certifications</h5>
-                    <div className="flex flex-wrap gap-2">
-                      {product.certification?.map((cert, index) => (
-                        <span 
-                          key={index}
-                          className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg text-sm"
-                        >
-                          {cert}
-                        </span>
-                      ))}
+                  <div className="space-y-4">
+                    <div className="bg-white/5 p-4 rounded-lg">
+                      <h5 className="font-medium text-white mb-2">Caractéristiques</h5>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-sm text-white/60">Calibre</span>
+                          <span className="text-sm text-white">{product.calibre}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-white/60">Conservation</span>
+                          <span className="text-sm text-white">{product.conservation}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white/5 p-4 rounded-lg">
+                      <h5 className="font-medium text-white mb-2">Certifications</h5>
+                      <div className="flex flex-wrap gap-2">
+                        {product.certification?.map((cert, index) => (
+                          <span 
+                            key={index}
+                            className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg text-sm"
+                          >
+                            {cert}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
+
+                  <div className="flex justify-end">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowProductDetails(null)}
+                    >
+                      Fermer
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            );
-          })()}
+              );
+            })()}
+          </DialogContent>
         </Dialog>
       )}
     </div>

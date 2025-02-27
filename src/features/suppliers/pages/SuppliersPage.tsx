@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { useSuppliers } from '../hooks/useSuppliers';
 import { SupplierCard } from '../components/SupplierCard';
 import { Plus, Search, Users } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { SupplierDialog } from '../components/SupplierDialog';
+import { SupplierCatalogModal } from '../components/SupplierCatalogModal';
+import { Supplier } from '@/types/supplier';
 
 export function SuppliersPage() {
   const { suppliers, isLoading, updateSupplier } = useSuppliers();
-  const navigate = useNavigate();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
+  const [isCatalogModalOpen, setIsCatalogModalOpen] = useState(false);
 
   const handleDelete = async (id: string) => {
     try {
@@ -20,7 +22,11 @@ export function SuppliersPage() {
   };
 
   const handleViewCatalog = (id: string) => {
-    navigate(`/suppliers/${id}/catalog`);
+    const supplier = suppliers.find(s => s.id === id);
+    if (supplier) {
+      setSelectedSupplier(supplier);
+      setIsCatalogModalOpen(true);
+    }
   };
 
   const filteredSuppliers = suppliers.filter(supplier => 
@@ -98,6 +104,16 @@ export function SuppliersPage() {
       )}
 
       <SupplierDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
+      <SupplierCatalogModal 
+        isOpen={isCatalogModalOpen} 
+        supplierId={selectedSupplier?.id || ''}
+        supplierName={selectedSupplier?.name || ''}
+        onClose={() => setIsCatalogModalOpen(false)} 
+        onAddToCart={(product, quantity) => {
+          console.log('Produit ajouté au panier:', product, 'Quantité:', quantity);
+          setIsCatalogModalOpen(false);
+        }}
+      />
     </div>
   );
 }

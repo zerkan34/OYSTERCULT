@@ -20,6 +20,7 @@ export interface SupplierProduct {
   min_order_quantity: number;
   created_at: string;
   updated_at: string;
+  category?: string;
 }
 
 export interface SupplierOrder {

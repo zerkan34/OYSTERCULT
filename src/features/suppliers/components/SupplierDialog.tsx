@@ -6,11 +6,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog/index";
 import { Button } from "@/components/ui/Button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/Label";
+import { Input } from "@/components/ui/Input";
 import { useSuppliers } from '../hooks/useSuppliers';
 import { Building2, User, Mail, Phone, MapPin } from 'lucide-react';
 
