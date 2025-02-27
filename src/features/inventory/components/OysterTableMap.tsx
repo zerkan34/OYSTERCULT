@@ -44,6 +44,7 @@ export interface Table {
     id: string;
     filled: boolean;
     fillOrder?: number;
+    fillDate?: string;
     type?: 'triplo' | 'diplo' | 'naturelle';
   }[];
   currentBatch?: {
@@ -236,6 +237,7 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
   const [showFillColumnModal, setShowFillColumnModal] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState<{tableId: string, column: number} | null>(null);
   const [fillOrderNumber, setFillOrderNumber] = useState<number>(1);
+  const [fillDate, setFillDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
   const cellVariants = {
     initial: { opacity: 0.6, scale: 0.95 },
@@ -267,7 +269,7 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
 
   const handleZoomIn = () => {
     setZoomLevel(prev => {
-      const newZoom = Math.min(prev * 1.2, 3.0);
+      const newZoom = Math.min(prev + 0.2, 3.0);
       console.log("Zoom in:", newZoom);
       return newZoom;
     });
@@ -275,7 +277,7 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
 
   const handleZoomOut = () => {
     setZoomLevel(prev => {
-      const newZoom = Math.max(prev * 0.8, 0.5);
+      const newZoom = Math.max(prev - 0.2, 0.5);
       console.log("Zoom out:", newZoom);
       return newZoom;
     });
@@ -298,22 +300,22 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
       prevTables.map(table => {
         if (table.id !== selectedColumn.tableId) return table;
         
-        // On compte combien de cases sont déjà remplies pour commencer la numérotation à partir de là
-        const filledCellsCount = table.cells.filter(cell => cell.filled).length;
-        let nextNumber = filledCellsCount > 0 ? filledCellsCount + 1 : 1;
+        // On utilise le numéro de départ fourni par l'utilisateur
+        const startNumber = fillOrderNumber;
         
         const updatedCells = table.cells.map((cell, index) => {
           const cellColumn = index % 2;
           
           if (cellColumn === selectedColumn.column) {
-            // Calcul de l'index de la ligne pour une numérotation progressive
-            // dans une grille 2x10, index / 2 nous donne la position de la ligne (0-9)
+            // Calcul de l'index de la ligne pour une numérotation cohérente
             const rowIndex = Math.floor(index / 2);
             
             return {
               ...cell,
               filled: true,
-              fillOrder: nextNumber + rowIndex, // Numéro séquentiel basé sur la position
+              // Tous les carrés de la colonne auront le même numéro
+              fillOrder: startNumber,
+              fillDate: fillDate,
               type: cell.type || 'naturelle'
             };
           }
@@ -355,56 +357,35 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
               </div>
             </div>
 
-            {/* Déplacer les contrôles de zoom en haut à droite */}
-            <div className="absolute top-6 right-6 flex glass-effect p-2 rounded-lg z-30">
-              <button 
-                onClick={handleZoomIn}
-                className="p-1.5 hover:bg-white/10 rounded-md text-white mr-1"
-              >
-                <ZoomIn size={18} />
-              </button>
-              <button 
-                onClick={handleZoomOut}
-                className="p-1.5 hover:bg-white/10 rounded-md text-white mr-1"
-              >
-                <ZoomOut size={18} />
-              </button>
-              <button 
-                onClick={handleResetZoom}
-                className="p-1.5 hover:bg-white/10 rounded-md text-white"
-              >
-                <MaximizeIcon size={18} />
-              </button>
-            </div>
-
-            {/* Boussole en bas à droite */}
-            <div className="absolute bottom-6 right-6 w-24 h-24">
-              <div className="absolute inset-0 bg-brand-burgundy/20 rounded-full blur-xl" />
-              <div className="relative w-full h-full bg-black/40 backdrop-blur-sm rounded-full border border-white/20 flex items-center justify-center">
-                <Compass size={48} className="text-brand-burgundy animate-spin-slow" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-white font-bold text-xs">N</div>
-                </div>
+            <div className="absolute bottom-6 right-6 flex items-center space-x-4">
+              <div className="glass-effect p-2 rounded-lg z-30">
+                <button 
+                  onClick={handleZoomIn}
+                  className="p-1.5 hover:bg-white/10 rounded-md text-white mr-1"
+                >
+                  <ZoomIn size={18} />
+                </button>
+                <button 
+                  onClick={handleZoomOut}
+                  className="p-1.5 hover:bg-white/10 rounded-md text-white mr-1"
+                >
+                  <ZoomOut size={18} />
+                </button>
+                <button 
+                  onClick={handleResetZoom}
+                  className="p-1.5 hover:bg-white/10 rounded-md text-white"
+                >
+                  <MaximizeIcon size={18} />
+                </button>
               </div>
-            </div>
-
-            <div className="absolute bottom-6 left-6 glass-effect rounded-lg p-4">
-              <h4 className="text-white font-medium mb-2">Types d'huîtres</h4>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 rounded-sm bg-brand-burgundy shadow-neon" />
-                  <span className="text-white/60 text-sm">Triploïdes</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 rounded-sm bg-brand-primary shadow-neon" />
-                  <span className="text-white/60 text-sm">Diploïdes</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 rounded-sm bg-brand-tertiary shadow-neon" />
-                  <span className="text-white/60 text-sm">Naturelles</span>
-                </div>
-                <div className="mt-4 pt-2 border-t border-white/10">
-                  <span className="text-white/60 text-sm">Les numéros indiquent l'ordre de remplissage</span>
+              
+              <div className="relative w-24 h-24">
+                <div className="absolute inset-0 bg-brand-burgundy/20 rounded-full blur-xl" />
+                <div className="relative w-full h-full bg-black/40 backdrop-blur-sm rounded-full border border-white/20 flex items-center justify-center">
+                  <Compass size={48} className="text-brand-burgundy animate-spin-slow" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-white font-bold text-xs">N</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -501,11 +482,56 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                           </motion.div>
                         ))}
                       </div>
+                      
+                      <div className="absolute bottom-1 left-0 right-0 flex justify-center space-x-2 px-2">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openFillColumnModal(table.id, 0);
+                          }}
+                          className="py-1 px-2 bg-brand-primary/70 hover:bg-brand-primary text-white text-xs rounded flex items-center justify-center"
+                        >
+                          <Plus className="w-3 h-3 mr-1" />
+                          Remplir colonne gauche
+                        </button>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openFillColumnModal(table.id, 1);
+                          }}
+                          className="py-1 px-2 bg-brand-primary/70 hover:bg-brand-primary text-white text-xs rounded flex items-center justify-center"
+                        >
+                          <Plus className="w-3 h-3 mr-1" />
+                          Remplir colonne droite
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 ))}
               </div>
             </div>
+
+            <div className="absolute bottom-6 left-6 glass-effect rounded-lg p-4">
+              <h4 className="text-white font-medium mb-2">Types d'huîtres</h4>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 rounded-sm bg-brand-burgundy shadow-neon" />
+                  <span className="text-white/60 text-sm">Triploïdes</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 rounded-sm bg-brand-primary shadow-neon" />
+                  <span className="text-white/60 text-sm">Diploïdes</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 rounded-sm bg-brand-tertiary shadow-neon" />
+                  <span className="text-white/60 text-sm">Naturelles</span>
+                </div>
+                <div className="mt-4 pt-2 border-t border-white/10">
+                  <span className="text-white/60 text-sm">Les numéros indiquent l'ordre de remplissage</span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -570,25 +596,6 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                       </span>
                     </div>
                   </div>
-                  
-                  {selectedTable && (
-                    <div className="grid grid-cols-2 gap-3 mb-4">
-                      <button 
-                        onClick={() => openFillColumnModal(selectedTable.id, 0)}
-                        className="py-2 bg-brand-primary hover:bg-brand-primary/80 text-white rounded-lg flex items-center justify-center gap-2"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Colonne gauche
-                      </button>
-                      <button 
-                        onClick={() => openFillColumnModal(selectedTable.id, 1)}
-                        className="py-2 bg-brand-primary hover:bg-brand-primary/80 text-white rounded-lg flex items-center justify-center gap-2"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Colonne droite
-                      </button>
-                    </div>
-                  )}
                 </div>
 
                 {(selectedTable || hoveredTable)?.currentBatch && (
@@ -671,6 +678,21 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                 />
                 <p className="mt-2 text-sm text-white/60">
                   Toutes les cellules de cette colonne auront le numéro {fillOrderNumber}
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Date de remplissage
+                </label>
+                <input
+                  type="date"
+                  value={fillDate}
+                  onChange={(e) => setFillDate(e.target.value)}
+                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                />
+                <p className="mt-2 text-sm text-white/60">
+                  Toutes les cellules seront remplies avec la même date
                 </p>
               </div>
 
