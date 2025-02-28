@@ -49,20 +49,29 @@ export function BatchList({ searchQuery }: BatchListProps) {
                   <Tag className="text-brand-blue" size={20} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-white">{batch.batchNumber}</h3>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-white/60">
-                      Table {batch.status.replace('table', '')}
-                    </span>
-                    <span className="text-white/60">•</span>
-                    <span className="text-sm text-white/60">
-                      Perche {batch.perchNumber}
-                    </span>
-                  </div>
+                  <h3 className="text-sm font-medium text-white">{batch.batchNumber}</h3>
+                  <p className="text-xs text-white/60">
+                    {batch.type} - {batch.quantity} unités
+                  </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div className="bg-white/5 rounded-lg p-2">
+                  <p className="text-xs text-white/60">Carré de trempe</p>
+                  <div className="flex items-center gap-1 mt-1">
+                    <div className={`w-3 h-3 rounded-full ${
+                      batch.status === 'table1' ? 'bg-green-500' :
+                      batch.status === 'table2' ? 'bg-yellow-500' :
+                      'bg-blue-500'
+                    }`}></div>
+                    <p className="text-sm font-medium text-white">
+                      {batch.status === 'table1' ? 'Carré 1' :
+                       batch.status === 'table2' ? 'Carré 2' :
+                       'Carré 3'}
+                    </p>
+                  </div>
+                </div>
                 <div className="bg-white/5 rounded-lg p-3">
                   <div className="text-xs text-white/60 mb-1">Temps en trempe</div>
                   <div className="flex items-center gap-2">
@@ -72,11 +81,12 @@ export function BatchList({ searchQuery }: BatchListProps) {
                     </span>
                   </div>
                 </div>
-                <div className="bg-white/5 rounded-lg p-3">
-                  <div className="text-xs text-white/60 mb-1">Quantité</div>
-                  <div className="text-sm font-medium text-white">
-                    {batch.quantity} {batch.type}
-                  </div>
+              </div>
+
+              <div className="bg-white/5 rounded-lg p-3">
+                <div className="text-xs text-white/60 mb-1">Quantité</div>
+                <div className="text-sm font-medium text-white">
+                  {batch.quantity} {batch.type}
                 </div>
               </div>
             </div>

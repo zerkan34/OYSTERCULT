@@ -17,7 +17,10 @@ import {
   Plus,
   Scale,
   Hash,
-  Info
+  Info,
+  Edit,
+  Check,
+  X as XIcon
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -25,6 +28,7 @@ import { fr } from 'date-fns/locale';
 interface TableDetailProps {
   table: any;
   onClose: () => void;
+  onTableUpdate?: (tableId: string, updates: Partial<any>) => void;
 }
 
 interface CellModalProps {
@@ -228,9 +232,10 @@ import TableDetailComponent from './TableDetailComponent';
 interface TableDetailProps {
   table: any;
   onClose: () => void;
+  onTableUpdate?: (tableId: string, updates: Partial<any>) => void;
 }
 
-export function TableDetail({ table, onClose }: TableDetailProps) {
+export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps) {
   const handleModalClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Empêche la propagation du clic
   };
@@ -249,6 +254,10 @@ export function TableDetail({ table, onClose }: TableDetailProps) {
   const [selectedColumn, setSelectedColumn] = useState<{side: 'left' | 'right'}>({ side: 'left' });
   const [fillOrderNumber, setFillOrderNumber] = useState<number | ''>('');
   const [fillDate, setFillDate] = useState('');
+
+  // États pour l'édition du nom de la table
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedTableNumber, setEditedTableNumber] = useState(table.tableNumber);
 
   const handleCellUpdate = (cellId: string, data: any) => {
     // TODO: Implement cell update logic
@@ -271,6 +280,20 @@ export function TableDetail({ table, onClose }: TableDetailProps) {
     // Réinitialiser les champs
     setFillOrderNumber('');
     setFillDate('');
+  };
+
+  // Fonction pour mettre à jour le nom de la table
+  const handleTableNumberUpdate = () => {
+    if (onTableUpdate && editedTableNumber.trim() !== '') {
+      onTableUpdate(table.id, { tableNumber: editedTableNumber.trim() });
+    }
+    setIsEditingName(false);
+  };
+
+  // Fonction pour annuler l'édition du nom de la table
+  const cancelEditing = () => {
+    setEditedTableNumber(table.tableNumber);
+    setIsEditingName(false);
   };
 
   return (
@@ -543,9 +566,44 @@ export function TableDetail({ table, onClose }: TableDetailProps) {
       >
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="flex-1">
               <h2 className="text-xl font-bold text-white">{table.name}</h2>
-              <p className="text-white/60">{table.tableNumber}</p>
+              {isEditingName ? (
+                <div className="flex items-center mt-1 space-x-2">
+                  <input
+                    type="text"
+                    value={editedTableNumber}
+                    onChange={(e) => setEditedTableNumber(e.target.value)}
+                    className="w-full p-2 bg-white/10 border border-white/20 rounded-lg text-white"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleTableNumberUpdate}
+                    className="p-2 bg-brand-primary/20 hover:bg-brand-primary/40 rounded-lg transition-colors"
+                    title="Valider"
+                  >
+                    <Check size={18} className="text-white" />
+                  </button>
+                  <button
+                    onClick={cancelEditing}
+                    className="p-2 bg-red-500/20 hover:bg-red-500/40 rounded-lg transition-colors"
+                    title="Annuler"
+                  >
+                    <XIcon size={18} className="text-white" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <p className="text-white/60">{table.tableNumber}</p>
+                  <button
+                    onClick={() => setIsEditingName(true)}
+                    className="ml-2 p-1 hover:bg-white/10 rounded-lg transition-colors"
+                    title="Modifier le numéro de table"
+                  >
+                    <Edit size={14} className="text-white/60" />
+                  </button>
+                </div>
+              )}
             </div>
             <button
               onClick={onClose}
