@@ -231,28 +231,11 @@ export function ModernSidebar({
                 <ChevronLeft size={20} className="text-white/60 hover:text-white" />
               }
             </button>
-            {!collapsed && (
-              <div className="absolute right-4 flex space-x-2 z-10">
-                <button 
-                  className="p-1.5 rounded-full hover:bg-white/10 transition-all duration-200 hover:shadow-[0_0_8px_rgba(255,255,255,0.15)]"
-                  onClick={onToggleMessages}
-                  data-message-button="true"
-                >
-                  <Mail size={16} className="text-white/60 hover:text-white transition-colors" />
-                </button>
-                <button 
-                  className="p-1.5 rounded-full hover:bg-white/10 transition-all duration-200 hover:shadow-[0_0_8px_rgba(255,255,255,0.15)]"
-                  onClick={onToggleNotifications}
-                  data-notification-bell="true"
-                >
-                  <Bell size={16} className="text-white/60 hover:text-white transition-colors" />
-                </button>
-              </div>
-            )}
+            
           </motion.div>
 
           {/* Navigation avec catégories colorées */}
-          <nav className="flex-1 space-y-4 p-4 overflow-y-auto">
+          <nav className="flex-1 space-y-4 p-4 overflow-y-auto custom-scrollbar">
             {navItems.map((group, index) => {
               const categoryStyle = categories[group.category as keyof typeof categories];
               return (

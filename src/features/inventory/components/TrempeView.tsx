@@ -187,20 +187,7 @@ export function TrempeView() {
 
   // Styles pour la scrollbar personnalisée et le modal
   const customStyles = `
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 3px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
+    /* Styles de scrollbar supprimés pour utiliser les styles globaux définis dans index.css */
 
     .trempe-modal {
       pointer-events: all !important;
@@ -244,138 +231,24 @@ export function TrempeView() {
         {/* Vue principale */}
         <div className="glass-effect rounded-xl p-4">
           {/* Layout en grid pour organiser les éléments */}
-          <div className="grid grid-cols-3 gap-4">
-            {/* Colonne 1: Stats pleins + Table */}
-            <div className="space-y-4">
-              <div className="glass-effect rounded-lg p-2 text-center">
+          <div className="space-y-4">
+            {/* Statistiques générales */}
+            <div className="flex gap-4 justify-center">
+              <div className="glass-effect rounded-lg p-2 text-center flex-1">
                 <div className="text-brand-primary text-lg font-medium">
                   {mockSquares.filter(s => s.status === 'full').length}
                 </div>
                 <div className="text-[10px] text-white/60">Carrés pleins</div>
               </div>
-
-              {/* Grille des carrés */}
-              <div className="glass-effect rounded-xl p-4">
-                <div className="grid gap-2" style={{ 
-                  gridTemplateColumns: `repeat(${config.columns}, minmax(0, 1fr))`,
-                  gridTemplateRows: `repeat(${config.rows}, minmax(0, 1fr))`,
-                }}>
-                  {mockSquares.map((square) => (
-                    <div
-                      key={square.id}
-                      onMouseEnter={(e) => handleMouseEnter(square, e)}
-                      onMouseLeave={handleMouseLeave}
-                      onMouseMove={handleMouseMove}
-                      onClick={() => handleSquareClick(square)}
-                      className={`relative flex flex-col justify-between p-2 transition-all duration-200 cursor-pointer rounded-lg ${
-                        square.status === 'full' 
-                          ? 'bg-brand-primary/10 border border-brand-primary/30' 
-                          : square.status === 'partial'
-                          ? 'bg-brand-tertiary/10 border border-brand-tertiary/30'
-                          : 'bg-white/5 border border-white/10'
-                      } hover:scale-[1.02]`}
-                    >
-                      {/* Indicateur de remplissage */}
-                      <div className={`absolute inset-0 rounded-lg transition-all duration-300 ${
-                        square.status === 'full'
-                          ? 'bg-brand-primary/20'
-                          : square.status === 'partial'
-                          ? 'bg-brand-tertiary/20'
-                          : 'bg-white/5'
-                      }`} style={{
-                        height: square.status === 'full' ? '100%' : square.status === 'partial' ? '50%' : '0%',
-                        bottom: 0
-                      }} />
-
-                      {/* Contenu du carré */}
-                      <div className="relative z-10">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-1.5 h-1.5 rounded-full ${
-                            square.status === 'full'
-                              ? 'bg-brand-primary'
-                              : square.status === 'partial'
-                              ? 'bg-brand-tertiary'
-                              : 'bg-white/20'
-                          }`} />
-                          <div className="text-[10px] text-white/60">Carré {square.number}</div>
-                        </div>
-                      </div>
-                      <div className="relative z-10 text-[10px] text-white/60">{square.batches.length} lots</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Colonne 2: Stats partiels + Table */}
-            <div className="space-y-4">
-              <div className="glass-effect rounded-lg p-2 text-center">
+              
+              <div className="glass-effect rounded-lg p-2 text-center flex-1">
                 <div className="text-brand-tertiary text-lg font-medium">
                   {mockSquares.filter(s => s.status === 'partial').length}
                 </div>
                 <div className="text-[10px] text-white/60">Carrés partiels</div>
               </div>
-
-              {/* Grille des carrés */}
-              <div className="glass-effect rounded-xl p-4">
-                <div className="grid gap-2" style={{ 
-                  gridTemplateColumns: `repeat(${config.columns}, minmax(0, 1fr))`,
-                  gridTemplateRows: `repeat(${config.rows}, minmax(0, 1fr))`,
-                }}>
-                  {mockSquares.map((square) => (
-                    <div
-                      key={square.id}
-                      onMouseEnter={(e) => handleMouseEnter(square, e)}
-                      onMouseLeave={() => {
-                        if (!modalHovered) {
-                          setHoveredSquare(null);
-                        }
-                      }}
-                      onMouseMove={handleMouseMove}
-                      onClick={() => handleSquareClick(square)}
-                      className={`relative flex flex-col justify-between p-2 transition-all duration-200 cursor-pointer rounded-lg ${
-                        square.status === 'full' 
-                          ? 'bg-brand-primary/10 border border-brand-primary/30' 
-                          : square.status === 'partial'
-                          ? 'bg-brand-tertiary/10 border border-brand-tertiary/30'
-                          : 'bg-white/5 border border-white/10'
-                      } hover:scale-[1.02]`}
-                    >
-                      {/* Indicateur de remplissage */}
-                      <div className={`absolute inset-0 rounded-lg transition-all duration-300 ${
-                        square.status === 'full'
-                          ? 'bg-brand-primary/20'
-                          : square.status === 'partial'
-                          ? 'bg-brand-tertiary/20'
-                          : 'bg-white/5'
-                      }`} style={{
-                        height: square.status === 'full' ? '100%' : square.status === 'partial' ? '50%' : '0%',
-                        bottom: 0
-                      }} />
-
-                      {/* Contenu du carré */}
-                      <div className="relative z-10">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-1.5 h-1.5 rounded-full ${
-                            square.status === 'full'
-                              ? 'bg-brand-primary'
-                              : square.status === 'partial'
-                              ? 'bg-brand-tertiary'
-                              : 'bg-white/20'
-                          }`} />
-                          <div className="text-[10px] text-white/60">Carré {square.number}</div>
-                        </div>
-                      </div>
-                      <div className="relative z-10 text-[10px] text-white/60">{square.batches.length} lots</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Colonne 3: Stats vides + Modal fixe */}
-            <div className="space-y-4">
-              <div className="glass-effect rounded-lg p-2 text-center flex items-center justify-between">
+              
+              <div className="glass-effect rounded-lg p-2 text-center flex-1 flex items-center justify-between">
                 <div>
                   <div className="text-white/60 text-lg font-medium">
                     {mockSquares.filter(s => s.status === 'empty').length}
@@ -391,131 +264,183 @@ export function TrempeView() {
                   <Eye size={18} />
                 </button>
               </div>
+            </div>
 
-              {/* Modal fixe */}
-              <AnimatePresence>
-                {showFixedModal && (hoveredSquare || modalHovered) && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    className="glass-effect rounded-lg p-4 w-full trempe-modal"
-                    onMouseEnter={() => setModalHovered(true)}
-                    onMouseLeave={() => {
-                      setModalHovered(false);
-                      setHoveredSquare(null);
-                    }}
+            {/* Grille des carrés unifiée */}
+            <div className="glass-effect rounded-xl p-4">
+              <div className="grid gap-2" style={{ 
+                gridTemplateColumns: `repeat(${config.columns * 3}, minmax(0, 1fr))`,
+                gridTemplateRows: `repeat(${config.rows}, minmax(0, 1fr))`,
+              }}>
+                {mockSquares.map((square) => (
+                  <div
+                    key={square.id}
+                    onMouseEnter={(e) => handleMouseEnter(square, e)}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseMove={handleMouseMove}
+                    onClick={() => handleSquareClick(square)}
+                    className={`relative flex flex-col justify-between p-2 transition-all duration-200 cursor-pointer rounded-lg ${
+                      square.status === 'full' 
+                        ? 'bg-brand-primary/10 border border-brand-primary/30' 
+                        : square.status === 'partial'
+                        ? 'bg-brand-tertiary/10 border border-brand-tertiary/30'
+                        : 'bg-white/5 border border-white/10'
+                    } hover:scale-[1.02]`}
                   >
-                    {hoveredSquare ? (
-                      <>
-                        {/* En-tête du modal */}
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-2 h-2 rounded-full ${
-                              hoveredSquare.status === 'full'
-                                ? 'bg-brand-primary'
-                                : hoveredSquare.status === 'partial'
-                                ? 'bg-brand-tertiary'
-                                : 'bg-white/20'
-                            }`} />
-                            <h3 className="text-sm font-medium text-white">Carré {hoveredSquare.number}</h3>
-                          </div>
-                          <div className={`text-xs px-2 py-1 rounded-full ${
-                            hoveredSquare.status === 'full'
-                              ? 'bg-brand-primary/20 text-brand-primary'
-                              : hoveredSquare.status === 'partial'
-                              ? 'bg-brand-tertiary/20 text-brand-tertiary'
-                              : 'bg-white/10 text-white/60'
-                          }`}>
-                            {hoveredSquare.status === 'full' ? 'Plein' : hoveredSquare.status === 'partial' ? 'Partiel' : 'Vide'}
-                          </div>
-                        </div>
+                    {/* Indicateur de remplissage */}
+                    <div className={`absolute inset-0 rounded-lg transition-all duration-300 ${
+                      square.status === 'full'
+                        ? 'bg-brand-primary/20'
+                        : square.status === 'partial'
+                        ? 'bg-brand-tertiary/20'
+                        : 'bg-white/5'
+                    }`} style={{
+                      height: square.status === 'full' ? '100%' : square.status === 'partial' ? '50%' : '0%',
+                      bottom: 0
+                    }} />
 
-                        {/* Statistiques */}
-                        <div className="grid grid-cols-3 gap-3 mb-4">
-                          <div className="glass-effect rounded-lg p-3 hover:bg-white/5 transition-colors cursor-pointer">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Package size={14} className="text-white/60" />
-                              <span className="text-xs text-white/60">Lots</span>
-                            </div>
-                            <div className="text-lg font-medium text-white">{hoveredSquare.batches.length}</div>
-                          </div>
-                          <div className="glass-effect rounded-lg p-3 hover:bg-white/5 transition-colors cursor-pointer">
-                            <div className="flex items-center gap-2 mb-2">
-                              <PieChart size={14} className="text-white/60" />
-                              <span className="text-xs text-white/60">Capacité</span>
-                            </div>
-                            <div className="text-lg font-medium text-white">
-                              {hoveredSquare.status === 'full' ? '100%' : hoveredSquare.status === 'partial' ? '50%' : '0%'}
-                            </div>
-                          </div>
-                          <div className="glass-effect rounded-lg p-3 hover:bg-white/5 transition-colors cursor-pointer">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Package size={14} className="text-white/60" />
-                              <span className="text-xs text-white/60">Cordes restantes</span>
-                            </div>
-                            <div className="text-lg font-medium text-white">
-                              {hoveredSquare.remainingRopes}/{hoveredSquare.totalRopes}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Liste des lots */}
-                        <div className="glass-effect rounded-lg p-3 mb-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                              <History size={14} className="text-white/60" />
-                              <span className="text-xs text-white/60">Lots dans ce carré</span>
-                            </div>
-                            <span className="text-xs text-white/40">{hoveredSquare.batches.length} lots</span>
-                          </div>
-                          <div className="space-y-2 max-h-[150px] overflow-y-auto custom-scrollbar">
-                            {hoveredSquare.batches.map((batch) => (
-                              <div
-                                key={batch.id}
-                                className="glass-effect rounded-lg p-2 hover:bg-white/5 transition-colors cursor-pointer"
-                              >
-                                <div className="flex items-center justify-between">
-                                  <span className="text-sm font-medium text-white">{batch.name}</span>
-                                  <span className="text-xs text-white/60">
-                                    {format(batch.date, 'dd MMM yyyy', { locale: fr })}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Actions */}
-                        <div className="flex items-center gap-2">
-                          <button 
-                            className="flex-1 glass-effect rounded-lg py-2 px-3 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
-                          >
-                            <Edit2 size={14} className="text-white/60" />
-                            <span className="text-xs text-white/60">Modifier</span>
-                          </button>
-                          <button 
-                            className="flex-1 glass-effect rounded-lg py-2 px-3 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
-                          >
-                            <Plus size={14} className="text-white/60" />
-                            <span className="text-xs text-white/60">Ajouter un lot</span>
-                          </button>
-                        </div>
-                      </>
-                    ) : null}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    {/* Contenu du carré */}
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-1.5 h-1.5 rounded-full ${
+                          square.status === 'full'
+                            ? 'bg-brand-primary'
+                            : square.status === 'partial'
+                            ? 'bg-brand-tertiary'
+                            : 'bg-white/20'
+                        }`} />
+                        <div className="text-[10px] text-white/60">Carré {square.number}</div>
+                      </div>
+                    </div>
+                    <div className="relative z-10 text-[10px] text-white/60">{square.batches.length} lots</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Modal fixe */}
+        <AnimatePresence>
+          {showFixedModal && (hoveredSquare || modalHovered) && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              className="glass-effect rounded-lg p-4 w-full trempe-modal"
+              onMouseEnter={() => setModalHovered(true)}
+              onMouseLeave={() => {
+                setModalHovered(false);
+                setHoveredSquare(null);
+              }}
+            >
+              {hoveredSquare ? (
+                <>
+                  {/* En-tête du modal */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full ${
+                        hoveredSquare.status === 'full'
+                          ? 'bg-brand-primary'
+                          : hoveredSquare.status === 'partial'
+                          ? 'bg-brand-tertiary'
+                          : 'bg-white/20'
+                      }`} />
+                      <h3 className="text-sm font-medium text-white">Carré {hoveredSquare.number}</h3>
+                    </div>
+                    <div className={`text-xs px-2 py-1 rounded-full ${
+                      hoveredSquare.status === 'full'
+                        ? 'bg-brand-primary/20 text-brand-primary'
+                        : hoveredSquare.status === 'partial'
+                        ? 'bg-brand-tertiary/20 text-brand-tertiary'
+                        : 'bg-white/10 text-white/60'
+                    }`}>
+                      {hoveredSquare.status === 'full' ? 'Plein' : hoveredSquare.status === 'partial' ? 'Partiel' : 'Vide'}
+                    </div>
+                  </div>
+
+                  {/* Statistiques */}
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    <div className="glass-effect rounded-lg p-3 hover:bg-white/5 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Package size={14} className="text-white/60" />
+                        <span className="text-xs text-white/60">Lots</span>
+                      </div>
+                      <div className="text-lg font-medium text-white">{hoveredSquare.batches.length}</div>
+                    </div>
+                    <div className="glass-effect rounded-lg p-3 hover:bg-white/5 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2 mb-2">
+                        <PieChart size={14} className="text-white/60" />
+                        <span className="text-xs text-white/60">Capacité</span>
+                      </div>
+                      <div className="text-lg font-medium text-white">
+                        {hoveredSquare.status === 'full' ? '100%' : hoveredSquare.status === 'partial' ? '50%' : '0%'}
+                      </div>
+                    </div>
+                    <div className="glass-effect rounded-lg p-3 hover:bg-white/5 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Package size={14} className="text-white/60" />
+                        <span className="text-xs text-white/60">Cordes restantes</span>
+                      </div>
+                      <div className="text-lg font-medium text-white">
+                        {hoveredSquare.remainingRopes}/{hoveredSquare.totalRopes}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Liste des lots */}
+                  <div className="glass-effect rounded-lg p-3 mb-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <History size={14} className="text-white/60" />
+                        <span className="text-xs text-white/60">Lots dans ce carré</span>
+                      </div>
+                      <span className="text-xs text-white/40">{hoveredSquare.batches.length} lots</span>
+                    </div>
+                    <div className="space-y-2 max-h-[150px] overflow-y-auto custom-scrollbar">
+                      {hoveredSquare.batches.map((batch) => (
+                        <div
+                          key={batch.id}
+                          className="glass-effect rounded-lg p-2 hover:bg-white/5 transition-colors cursor-pointer"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-white">{batch.name}</span>
+                            <span className="text-xs text-white/60">
+                              {format(batch.date, 'dd MMM yyyy', { locale: fr })}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-2">
+                    <button 
+                      className="flex-1 glass-effect rounded-lg py-2 px-3 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <Edit2 size={14} className="text-white/60" />
+                      <span className="text-xs text-white/60">Modifier</span>
+                    </button>
+                    <button 
+                      className="flex-1 glass-effect rounded-lg py-2 px-3 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <Plus size={14} className="text-white/60" />
+                      <span className="text-xs text-white/60">Ajouter un lot</span>
+                    </button>
+                  </div>
+                </>
+              ) : null}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Modal de détail au clic */}
         <AnimatePresence>

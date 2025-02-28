@@ -79,10 +79,15 @@ const initialTables: Table[] = [
     mortalityRate: 2.5,
     cells: Array(20).fill(null).map((_, i) => {
       const isFilled = Math.random() > 0.3;
+      // Calculer l'ordre séquentiel: colonne gauche (indices pairs) de 1 à 10, puis colonne droite (indices impairs) de 11 à 20
+      const columnIndex = i % 2; // 0 pour colonne gauche, 1 pour colonne droite
+      const rowIndex = Math.floor(i / 2); // 0 à 9 pour les rangées
+      const sequentialOrder = columnIndex === 0 ? rowIndex + 1 : rowIndex + 11;
+      
       return {
         id: `b1-cell-${i}`,
         filled: isFilled,
-        fillOrder: isFilled ? Math.floor(Math.random() * 20) + 1 : undefined,
+        fillOrder: isFilled ? sequentialOrder : undefined,
         type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
       };
     }),
@@ -106,10 +111,15 @@ const initialTables: Table[] = [
     mortalityRate: 1.8,
     cells: Array(20).fill(null).map((_, i) => {
       const isFilled = Math.random() > 0.3;
+      // Calculer l'ordre séquentiel: colonne gauche (indices pairs) de 1 à 10, puis colonne droite (indices impairs) de 11 à 20
+      const columnIndex = i % 2; // 0 pour colonne gauche, 1 pour colonne droite
+      const rowIndex = Math.floor(i / 2); // 0 à 9 pour les rangées
+      const sequentialOrder = columnIndex === 0 ? rowIndex + 1 : rowIndex + 11;
+      
       return {
         id: `b2-cell-${i}`,
         filled: isFilled,
-        fillOrder: isFilled ? Math.floor(Math.random() * 20) + 1 : undefined,
+        fillOrder: isFilled ? sequentialOrder : undefined,
         type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
       };
     }),
@@ -133,10 +143,15 @@ const initialTables: Table[] = [
     mortalityRate: 4.2,
     cells: Array(20).fill(null).map((_, i) => {
       const isFilled = Math.random() > 0.3;
+      // Calculer l'ordre séquentiel: colonne gauche (indices pairs) de 1 à 10, puis colonne droite (indices impairs) de 11 à 20
+      const columnIndex = i % 2; // 0 pour colonne gauche, 1 pour colonne droite
+      const rowIndex = Math.floor(i / 2); // 0 à 9 pour les rangées
+      const sequentialOrder = columnIndex === 0 ? rowIndex + 1 : rowIndex + 11;
+      
       return {
         id: `m1-cell-${i}`,
         filled: isFilled,
-        fillOrder: isFilled ? Math.floor(Math.random() * 20) + 1 : undefined,
+        fillOrder: isFilled ? sequentialOrder : undefined,
         type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
       };
     }),
@@ -160,10 +175,15 @@ const initialTables: Table[] = [
     mortalityRate: 3.7,
     cells: Array(20).fill(null).map((_, i) => {
       const isFilled = Math.random() > 0.3;
+      // Calculer l'ordre séquentiel: colonne gauche (indices pairs) de 1 à 10, puis colonne droite (indices impairs) de 11 à 20
+      const columnIndex = i % 2; // 0 pour colonne gauche, 1 pour colonne droite
+      const rowIndex = Math.floor(i / 2); // 0 à 9 pour les rangées
+      const sequentialOrder = columnIndex === 0 ? rowIndex + 1 : rowIndex + 11;
+      
       return {
         id: `m2-cell-${i}`,
         filled: isFilled,
-        fillOrder: isFilled ? Math.floor(Math.random() * 20) + 1 : undefined,
+        fillOrder: isFilled ? sequentialOrder : undefined,
         type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
       };
     }),
@@ -187,10 +207,15 @@ const initialTables: Table[] = [
     mortalityRate: 1.5,
     cells: Array(20).fill(null).map((_, i) => {
       const isFilled = Math.random() > 0.3;
+      // Calculer l'ordre séquentiel: colonne gauche (indices pairs) de 1 à 10, puis colonne droite (indices impairs) de 11 à 20
+      const columnIndex = i % 2; // 0 pour colonne gauche, 1 pour colonne droite
+      const rowIndex = Math.floor(i / 2); // 0 à 9 pour les rangées
+      const sequentialOrder = columnIndex === 0 ? rowIndex + 1 : rowIndex + 11;
+      
       return {
         id: `ma1-cell-${i}`,
         filled: isFilled,
-        fillOrder: isFilled ? Math.floor(Math.random() * 20) + 1 : undefined,
+        fillOrder: isFilled ? sequentialOrder : undefined,
         type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
       };
     }),
@@ -214,10 +239,15 @@ const initialTables: Table[] = [
     mortalityRate: 1.9,
     cells: Array(20).fill(null).map((_, i) => {
       const isFilled = Math.random() > 0.3;
+      // Calculer l'ordre séquentiel: colonne gauche (indices pairs) de 1 à 10, puis colonne droite (indices impairs) de 11 à 20
+      const columnIndex = i % 2; // 0 pour colonne gauche, 1 pour colonne droite
+      const rowIndex = Math.floor(i / 2); // 0 à 9 pour les rangées
+      const sequentialOrder = columnIndex === 0 ? rowIndex + 1 : rowIndex + 11;
+      
       return {
         id: `ma2-cell-${i}`,
         filled: isFilled,
-        fillOrder: isFilled ? Math.floor(Math.random() * 20) + 1 : undefined,
+        fillOrder: isFilled ? sequentialOrder : undefined,
         type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
       };
     }),
@@ -234,10 +264,6 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
   const [zoomLevel, setZoomLevel] = useState(1);
   const [viewPosition, setViewPosition] = useState({ x: 0, y: 0 });
   const [tables, setTables] = useState<Table[]>(initialTables);
-  const [showFillColumnModal, setShowFillColumnModal] = useState(false);
-  const [selectedColumn, setSelectedColumn] = useState<{tableId: string, column: number} | null>(null);
-  const [fillOrderNumber, setFillOrderNumber] = useState<number>(1);
-  const [fillDate, setFillDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
   const cellVariants = {
     initial: { opacity: 0.6, scale: 0.95 },
@@ -286,50 +312,6 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
   const handleResetZoom = () => {
     setZoomLevel(1);
     setViewPosition({ x: 0, y: 0 });
-  };
-
-  const openFillColumnModal = (tableId: string, column: number) => {
-    setSelectedColumn({ tableId, column });
-    setShowFillColumnModal(true);
-  };
-
-  const fillColumn = () => {
-    if (!selectedColumn) return;
-    
-    setTables(prevTables => 
-      prevTables.map(table => {
-        if (table.id !== selectedColumn.tableId) return table;
-        
-        // On utilise le numéro de départ fourni par l'utilisateur
-        const startNumber = fillOrderNumber;
-        
-        const updatedCells = table.cells.map((cell, index) => {
-          const cellColumn = index % 2;
-          
-          if (cellColumn === selectedColumn.column) {
-            // Calcul de l'index de la ligne pour une numérotation cohérente
-            const rowIndex = Math.floor(index / 2);
-            
-            return {
-              ...cell,
-              filled: true,
-              // Tous les carrés de la colonne auront le même numéro
-              fillOrder: startNumber,
-              fillDate: fillDate,
-              type: cell.type || 'naturelle'
-            };
-          }
-          return cell;
-        });
-
-        return {
-          ...table,
-          cells: updatedCells
-        };
-      })
-    );
-
-    setShowFillColumnModal(false);
   };
 
   return (
@@ -482,29 +464,6 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                           </motion.div>
                         ))}
                       </div>
-                      
-                      <div className="absolute bottom-1 left-0 right-0 flex justify-center space-x-2 px-2">
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openFillColumnModal(table.id, 0);
-                          }}
-                          className="py-1 px-2 bg-brand-primary/70 hover:bg-brand-primary text-white text-xs rounded flex items-center justify-center"
-                        >
-                          <Plus className="w-3 h-3 mr-1" />
-                          Remplir colonne gauche
-                        </button>
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openFillColumnModal(table.id, 1);
-                          }}
-                          className="py-1 px-2 bg-brand-primary/70 hover:bg-brand-primary text-white text-xs rounded flex items-center justify-center"
-                        >
-                          <Plus className="w-3 h-3 mr-1" />
-                          Remplir colonne droite
-                        </button>
-                      </div>
                     </div>
                   </motion.div>
                 ))}
@@ -647,73 +606,6 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
           </AnimatePresence>
         </div>
       </div>
-
-      {showFillColumnModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center">
-          <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">
-                Remplir une colonne
-              </h3>
-              <button
-                onClick={() => setShowFillColumnModal(false)}
-                className="text-white/60 hover:text-white transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-white mb-2">
-                  Numéro de remplissage
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max="20"
-                  value={fillOrderNumber}
-                  onChange={(e) => setFillOrderNumber(parseInt(e.target.value) || 1)}
-                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-                />
-                <p className="mt-2 text-sm text-white/60">
-                  Toutes les cellules de cette colonne auront le numéro {fillOrderNumber}
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-white mb-2">
-                  Date de remplissage
-                </label>
-                <input
-                  type="date"
-                  value={fillDate}
-                  onChange={(e) => setFillDate(e.target.value)}
-                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-                />
-                <p className="mt-2 text-sm text-white/60">
-                  Toutes les cellules seront remplies avec la même date
-                </p>
-              </div>
-
-              <div className="flex justify-end space-x-4">
-                <button
-                  onClick={() => setShowFillColumnModal(false)}
-                  className="px-4 py-2 text-white/70 hover:text-white transition-colors"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={fillColumn}
-                  className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/80 transition-colors"
-                >
-                  Remplir la colonne
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

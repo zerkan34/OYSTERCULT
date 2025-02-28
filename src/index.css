@@ -286,4 +286,29 @@
   .modal-content {
     @apply fixed inset-0 flex items-center justify-center z-[101];
   }
+
+  /* Barre de défilement personnalisée */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(8, 12, 22, 0.3); /* Bleu foncé */
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(14, 165, 233, 0.5); /* Bleu azur */
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(56, 189, 248, 0.7); /* Bleu clair */
+  }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(14, 165, 233, 0.5) rgba(8, 12, 22, 0.3);
+  }
 }

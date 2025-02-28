@@ -244,9 +244,33 @@ export function TableDetail({ table, onClose }: TableDetailProps) {
   const [selectedCell, setSelectedCell] = useState<any | null>(null);
   const [showLegend, setShowLegend] = useState(true);
 
+  // États pour le modal de remplissage de colonne
+  const [showFillColumnModal, setShowFillColumnModal] = useState(false);
+  const [selectedColumn, setSelectedColumn] = useState<{side: 'left' | 'right'}>({ side: 'left' });
+  const [fillOrderNumber, setFillOrderNumber] = useState<number | ''>('');
+  const [fillDate, setFillDate] = useState('');
+
   const handleCellUpdate = (cellId: string, data: any) => {
     // TODO: Implement cell update logic
     console.log('Updating cell:', cellId, data);
+  };
+
+  // Fonction pour ouvrir le modal de remplissage de colonne
+  const openFillColumnModal = (side: 'left' | 'right') => {
+    setSelectedColumn({ side });
+    setShowFillColumnModal(true);
+  };
+
+  // Fonction pour gérer le remplissage de colonne
+  const handleFillColumn = () => {
+    // Simuler le remplissage de la colonne (l'implémentation réelle dépendra de la structure des données)
+    console.log(`Remplissage de la colonne ${selectedColumn.side} avec ordre de remplissage ${fillOrderNumber} à la date ${fillDate}`);
+    
+    // Fermer le modal après le remplissage
+    setShowFillColumnModal(false);
+    // Réinitialiser les champs
+    setFillOrderNumber('');
+    setFillDate('');
   };
 
   return (
@@ -355,6 +379,24 @@ export function TableDetail({ table, onClose }: TableDetailProps) {
 
           {/* Actions */}
           <div className="flex justify-end space-x-4 pt-4">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                openFillColumnModal('left');
+              }}
+              className="px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
+            >
+              Remplir colonne gauche
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                openFillColumnModal('right');
+              }}
+              className="px-4 py-2 bg-brand-tertiary rounded-lg text-white hover:bg-brand-tertiary/90 transition-colors"
+            >
+              Remplir colonne droite
+            </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -497,7 +539,7 @@ export function TableDetail({ table, onClose }: TableDetailProps) {
         initial={{ x: '100%' }}
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
-        className="w-96 bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 h-full border-l border-white/10 overflow-y-auto"
+        className="w-96 bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 h-full border-l border-white/10 overflow-y-auto custom-scrollbar"
       >
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-between">
@@ -609,6 +651,82 @@ export function TableDetail({ table, onClose }: TableDetailProps) {
             onClose={() => setSelectedCell(null)}
             onUpdate={(data) => handleCellUpdate(selectedCell.id, data)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Modal de remplissage de colonne */}
+      <AnimatePresence>
+        {showFillColumnModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-white">
+                  Remplissage de la colonne {selectedColumn.side}
+                </h3>
+                <button
+                  onClick={() => setShowFillColumnModal(false)}
+                  className="text-white/60 hover:text-white transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                handleFillColumn();
+              }} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Ordre de remplissage
+                  </label>
+                  <input
+                    type="number"
+                    value={fillOrderNumber}
+                    onChange={(e) => setFillOrderNumber(e.target.valueAsNumber)}
+                    className="w-full p-4 bg-white/5 rounded-lg text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Date de remplissage
+                  </label>
+                  <input
+                    type="date"
+                    value={fillDate}
+                    onChange={(e) => setFillDate(e.target.value)}
+                    className="w-full p-4 bg-white/5 rounded-lg text-white"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowFillColumnModal(false)}
+                    className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
+                  >
+                    Remplir la colonne
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
