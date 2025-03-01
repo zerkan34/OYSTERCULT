@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Edit2, ShoppingBag } from 'lucide-react';
+import { Edit2, ShoppingCart } from 'lucide-react';
 import type { SupplierProduct } from '@/types/supplier';
 
 interface ProductCardProps {
@@ -63,10 +63,10 @@ export function ProductCard({ product, onEdit, onAddToCart }: ProductCardProps) 
           />
           <button
             onClick={() => onAddToCart(product, quantity)}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[rgb(var(--color-brand-primary)_/_0.1)] hover:bg-[rgb(var(--color-brand-primary)_/_0.2)] text-[rgb(var(--color-brand-primary))] rounded-lg transition-colors duration-200 group-hover:shadow-md"
+            className="flex-1 flex items-center justify-center gap-1 px-4 py-2 bg-[rgb(var(--color-brand-primary)_/_0.1)] hover:bg-[rgb(var(--color-brand-primary)_/_0.2)] text-[rgb(var(--color-brand-primary))] rounded-lg transition-colors duration-200 group-hover:shadow-md"
           >
-            <ShoppingBag className="w-4 h-4" />
-            <span>Commander</span>
+            <ShoppingCart className="w-4 h-4" />
+            <span>Ajouter au panier</span>
           </button>
         </div>
       </div>

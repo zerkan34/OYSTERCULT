@@ -3,7 +3,7 @@ import { useSuppliers } from '../hooks/useSuppliers';
 import { useSupplierProducts } from '../hooks/useSupplierProducts';
 import { ProductForm } from './ProductForm';
 import { ProductCard } from './ProductCard';
-import { Package2, Search, Filter, AlertCircle } from 'lucide-react';
+import { Package2, Search, Filter, AlertCircle, ShoppingCart } from 'lucide-react';
 import type { Supplier, SupplierProduct } from '@/types/supplier';
 
 export function SupplierCatalog() {
@@ -218,9 +218,10 @@ export function SupplierCatalog() {
                   alert('Commande envoyée avec succès');
                   setCartItems([]);
                 }}
-                className="w-full px-4 py-3 bg-[rgb(var(--color-brand-primary))] hover:bg-[rgb(var(--color-brand-primary)_/_0.9)] text-white rounded-lg transition-colors shadow-md hover:shadow-lg mt-4"
+                className="w-full px-4 py-3 flex items-center justify-center gap-2 bg-[rgb(var(--color-brand-primary))] hover:bg-[rgb(var(--color-brand-primary)_/_0.9)] text-white rounded-lg transition-colors shadow-md hover:shadow-lg mt-4"
               >
-                Commander
+                <ShoppingCart className="w-5 h-5" />
+                <span>Valider la commande</span>
               </button>
             </div>
           ) : (

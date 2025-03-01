@@ -49,25 +49,114 @@ export function useSupplierOrders() {
   const { addNotification } = useStore();
 
   const { data: orders = [], isLoading } = useQuery({
-    queryKey: ['supplier-orders'],
+    queryKey: ['supplier_orders'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('supplier_orders')
-        .select(`
-          *,
-          supplier:suppliers(name),
-          comments:supplier_order_comments(
-            id,
-            content,
-            created_at,
-            user_id
-          )
-        `)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as SupplierOrder[];
-    }
+      try {
+        // Normalement, on ferait un appel à Supabase ici
+        // const { data, error } = await supabase.from('supplier_orders').select('*');
+        
+        // Mais pour le moment, on utilise des données fictives
+        const mockOrders: SupplierOrder[] = [
+          {
+            id: '1',
+            supplier_id: 'hmo',
+            status: 'pending', // Envoyé
+            products: [
+              { id: '1', name: 'Huîtres plates', quantity: 120, price: 8.5 },
+              { id: '2', name: 'Huîtres creuses', quantity: 240, price: 7.2 }
+            ],
+            total_amount: 2748,
+            created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+            updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+            comments: []
+          },
+          {
+            id: '2',
+            supplier_id: 'lpb',
+            status: 'accepted', // Validé
+            products: [
+              { id: '3', name: 'Moules de Bouzigues', quantity: 50, price: 6.0 }
+            ],
+            total_amount: 300,
+            created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+            updated_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+            comments: [
+              {
+                id: '1',
+                content: 'Commande validée par le fournisseur. Livraison prévue la semaine prochaine.',
+                created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                user_id: '1'
+              }
+            ]
+          },
+          {
+            id: '3',
+            supplier_id: 'ac',
+            status: 'delivering', // En cours de livraison
+            products: [
+              { id: '4', name: 'Huîtres du Bassin', quantity: 80, price: 9.5 },
+              { id: '5', name: 'Palourdes', quantity: 30, price: 12.0 }
+            ],
+            total_amount: 1120,
+            created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+            updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+            comments: [
+              {
+                id: '2',
+                content: 'Votre commande est en cours de livraison. Arrivée prévue demain matin.',
+                created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                user_id: '1'
+              }
+            ]
+          },
+          {
+            id: '4',
+            supplier_id: 'cp',
+            status: 'completed', // Reçu
+            products: [
+              { id: '6', name: 'Huîtres plates', quantity: 50, price: 8.5 },
+              { id: '7', name: 'Moules de bouchot', quantity: 80, price: 5.2 }
+            ],
+            total_amount: 841,
+            storage_location: 'Zone A, Étagère 3',
+            created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+            updated_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+            comments: [
+              {
+                id: '3',
+                content: 'Commande reçue et stockée. Qualité conforme aux attentes.',
+                created_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+                user_id: '1'
+              }
+            ]
+          },
+          {
+            id: '5',
+            supplier_id: 'hmo',
+            status: 'rejected', // Refusé
+            products: [
+              { id: '8', name: 'Huîtres spéciales', quantity: 20, price: 15.0 }
+            ],
+            total_amount: 300,
+            created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+            updated_at: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+            comments: [
+              {
+                id: '4',
+                content: 'Commande refusée par le fournisseur. Stock insuffisant pour le moment.',
+                created_at: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+                user_id: '2'
+              }
+            ]
+          }
+        ];
+        
+        return mockOrders;
+      } catch (error) {
+        console.error('Error fetching supplier orders:', error);
+        return [];
+      }
+    },
   });
 
   const createOrder = useMutation({
@@ -97,13 +186,15 @@ export function useSupplierOrders() {
       addNotification({
         title: 'Commande créée',
         message: 'La commande a été créée avec succès',
-        type: 'success'
+        type: 'success',
+        important: false,
+        category: 'inventory'
       });
 
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['supplier-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['supplier_orders'] });
     }
   });
 
@@ -140,14 +231,16 @@ export function useSupplierOrders() {
         addNotification({
           title: 'Stock mis à jour',
           message: 'Le stock a été mis à jour avec les produits livrés',
-          type: 'success'
+          type: 'success',
+          important: false,
+          category: 'inventory'
         });
       }
 
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['supplier-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['supplier_orders'] });
     }
   });
 
@@ -167,7 +260,7 @@ export function useSupplierOrders() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['supplier-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['supplier_orders'] });
     }
   });
 

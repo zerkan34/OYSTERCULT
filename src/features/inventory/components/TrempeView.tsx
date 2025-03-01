@@ -5,7 +5,7 @@ import { format, isValid } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { AnimatedCard } from '@/components/ui/AnimatedCard';
 import { useStore } from '@/lib/store';
-import { Batch } from '@/features/traceability/types';
+import { Batch as TraceabilityBatch } from '@/features/traceability/types';
 
 interface TrempeConfig {
   squares: number;
@@ -41,7 +41,7 @@ const mockSquares: TrempeSquare[] = [
     id: '1',
     number: 1,
     status: 'full',
-    remainingRopes: 0,
+    remainingRopes: 0,     // 0 cordes restantes car carré plein
     totalRopes: 100,
     batches: [
       { id: '101', name: 'Lot 2023-A', date: new Date(2023, 2, 15) },
@@ -52,7 +52,7 @@ const mockSquares: TrempeSquare[] = [
     id: '2',
     number: 2,
     status: 'partial',
-    remainingRopes: 50,
+    remainingRopes: 50,    // 50 cordes restantes car carré partiellement rempli
     totalRopes: 100,
     batches: [
       { id: '103', name: 'Lot 2023-C', date: new Date(2023, 4, 10) }
@@ -62,15 +62,15 @@ const mockSquares: TrempeSquare[] = [
     id: '3',
     number: 3,
     status: 'empty',
-    remainingRopes: 100,
+    remainingRopes: 100,   // 100 cordes restantes car carré vide
     totalRopes: 100,
-    batches: []
+    batches: []            // pas de lots car carré vide
   },
   {
     id: '4',
     number: 4,
     status: 'full',
-    remainingRopes: 0,
+    remainingRopes: 0,     // 0 cordes restantes car carré plein
     totalRopes: 100,
     batches: [
       { id: '104', name: 'Lot 2023-D', date: new Date(2023, 5, 15) },
@@ -81,7 +81,7 @@ const mockSquares: TrempeSquare[] = [
     id: '5',
     number: 5,
     status: 'partial',
-    remainingRopes: 50,
+    remainingRopes: 40,    // 40 cordes restantes avec 2 lots (30 cordes par lot)
     totalRopes: 100,
     batches: [
       { id: '106', name: 'Lot 2023-F', date: new Date(2023, 7, 10) },
@@ -92,15 +92,15 @@ const mockSquares: TrempeSquare[] = [
     id: '6',
     number: 6,
     status: 'empty',
-    remainingRopes: 100,
+    remainingRopes: 100,   // 100 cordes restantes car carré vide
     totalRopes: 100,
-    batches: []
+    batches: []            // pas de lots car carré vide
   },
   {
     id: '7',
     number: 7,
     status: 'full',
-    remainingRopes: 0,
+    remainingRopes: 0,     // 0 cordes restantes car carré plein
     totalRopes: 100,
     batches: [
       { id: '108', name: 'Lot 2023-H', date: new Date(2023, 9, 15) },
@@ -112,7 +112,7 @@ const mockSquares: TrempeSquare[] = [
     id: '8',
     number: 8,
     status: 'partial',
-    remainingRopes: 50,
+    remainingRopes: 70,    // 70 cordes restantes avec 1 lot (30 cordes par lot)
     totalRopes: 100,
     batches: [
       { id: '111', name: 'Lot 2023-K', date: new Date(2023, 0, 15) }
@@ -122,15 +122,15 @@ const mockSquares: TrempeSquare[] = [
     id: '9',
     number: 9,
     status: 'empty',
-    remainingRopes: 100,
+    remainingRopes: 100,   // 100 cordes restantes car carré vide
     totalRopes: 100,
-    batches: []
+    batches: []            // pas de lots car carré vide
   },
   {
     id: '10',
     number: 10,
     status: 'full',
-    remainingRopes: 0,
+    remainingRopes: 0,     // 0 cordes restantes car carré plein
     totalRopes: 100,
     batches: [
       { id: '112', name: 'Lot 2023-L', date: new Date(2023, 1, 20) },
@@ -140,16 +140,16 @@ const mockSquares: TrempeSquare[] = [
 ];
 
 // Fonction pour convertir un lot de traçabilité au format du lot de trempe
-const convertBatchToTrempeBatch = (batch: Batch, index: number) => {
+const convertBatchToTrempeBatch = (batch: TraceabilityBatch, index: number): Batch => {
   return {
     id: String(index + 1),
-    name: batch.name,
-    date: batch.date instanceof Date && isValid(batch.date) ? batch.date : new Date()
+    name: batch.batchNumber || `Lot ${batch.id}`,
+    date: batch.startDate ? new Date(batch.startDate) : new Date()
   };
 };
 
 // Fonction pour trouver le numéro de carré de trempe à partir du statut du lot
-const getSquareNumberFromBatchStatus = (status: string) => {
+const getSquareNumberFromBatchStatus = (status: TraceabilityBatch['status'] | string) => {
   if (status === 'table1') return 1;
   if (status === 'table2') return 2;
   if (status === 'table3') return 3;
@@ -172,7 +172,7 @@ export function TrempeView() {
   // Effet pour synchroniser les lots de traçabilité avec les carrés de trempe
   useEffect(() => {
     // Créer une carte des lots par carré de trempe
-    const batchesBySquare: { [key: number]: any[] } = {};
+    const batchesBySquare: Record<number, Batch[]> = {};
     
     // Initialiser la carte avec des tableaux vides
     for (let i = 1; i <= config.squares; i++) {
@@ -180,7 +180,7 @@ export function TrempeView() {
     }
     
     // Regrouper les lots par carré de trempe
-    batches.forEach((batch, index) => {
+    batches.forEach((batch: TraceabilityBatch, index: number) => {
       const squareNumber = getSquareNumberFromBatchStatus(batch.status);
       
       if (squareNumber > 0 && squareNumber <= config.squares) {
@@ -242,13 +242,13 @@ export function TrempeView() {
     else newStatus = 'table3';
     
     // Mettre à jour le statut des lots associés au carré
-    batches.forEach(batch => {
+    batches.forEach((batch: TraceabilityBatch) => {
       const batchSquareNumber = getSquareNumberFromBatchStatus(batch.status);
       
       if (batchSquareNumber === oldSquareNumber) {
         updateBatch({
           ...batch,
-          status: newStatus
+          status: newStatus as TraceabilityBatch['status']
         });
       }
     });
@@ -485,7 +485,9 @@ export function TrempeView() {
                                 ? 'text-white/80'
                                 : 'text-white/40'
                             }`}>
-                              {square.remainingRopes !== undefined ? square.remainingRopes : 0}
+                              {square.totalRopes !== undefined && square.remainingRopes !== undefined 
+                                ? (square.totalRopes - square.remainingRopes) 
+                                : 0}
                               <span className="text-white/20">/</span>
                               <span className="text-white/40">{square.totalRopes !== undefined ? square.totalRopes : 0}</span>
                             </div>
@@ -512,7 +514,7 @@ export function TrempeView() {
                             ? 'bg-brand-tertiary glow-dot-gold'
                             : 'bg-white/20'
                         }`} />
-                        <h3 className="text-sm font-semibold text-white tracking-wide">Carré {(hoveredSquare || selectedSquare).number}</h3>
+                        <h3 className="text-sm font-semibold text-white">Carré {(hoveredSquare || selectedSquare).number}</h3>
                       </div>
                       <div className={`text-xs px-3 py-1 rounded-full flex items-center gap-1.5 ${
                         (hoveredSquare || selectedSquare).status === 'full'
@@ -553,7 +555,9 @@ export function TrempeView() {
                       <div className="glass-effect rounded-lg p-2 flex flex-col justify-between border border-white/10">
                         <div className="text-center">
                           <div className="flex items-center justify-center gap-1">
-                            <span className="text-white/60 text-lg font-medium">{(hoveredSquare || selectedSquare).remainingRopes !== undefined ? (hoveredSquare || selectedSquare).remainingRopes : 0}</span>
+                            <span className="text-white/60 text-lg font-medium">{(hoveredSquare || selectedSquare).totalRopes !== undefined && (hoveredSquare || selectedSquare).remainingRopes !== undefined 
+                              ? ((hoveredSquare || selectedSquare).totalRopes - (hoveredSquare || selectedSquare).remainingRopes) 
+                              : 0}</span>
                             <span className="text-white/40 text-xs">/</span>
                             <span className="text-white/40 text-sm">{(hoveredSquare || selectedSquare).totalRopes !== undefined ? (hoveredSquare || selectedSquare).totalRopes : 0}</span>
                           </div>
@@ -564,37 +568,17 @@ export function TrempeView() {
 
                     {/* Liste des lots */}
                     <div className="mb-1">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 rounded-lg bg-white/10">
-                            <History size={14} className="text-white" />
-                          </div>
-                          <span className="text-xs text-white/70 font-medium">Lots dans ce carré</span>
-                        </div>
-                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/60">
-                          {(hoveredSquare || selectedSquare).batches.length} lot{(hoveredSquare || selectedSquare).batches.length !== 1 ? 's' : ''}
-                        </span>
-                      </div>
-                      
                       {(hoveredSquare || selectedSquare).batches.length > 0 ? (
-                        <div className="space-y-2 max-h-[150px] overflow-y-auto custom-scrollbar pr-1">
-                          {(hoveredSquare || selectedSquare).batches.map((batch) => (
-                            <div
-                              key={batch.id}
-                              className="bg-white/5 hover:bg-white/10 rounded-xl p-3 border border-white/5 transition-all duration-200 cursor-pointer transform hover:translate-x-1"
-                            >
-                              <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-white">{batch.name}</span>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs bg-white/10 px-2 py-0.5 rounded-full text-white/60">
-                                    {batch.date && isValid(batch.date) 
-                                      ? format(batch.date, 'dd MMM', { locale: fr })
-                                      : 'Date inconnue'}
-                                  </span>
-                                </div>
-                              </div>
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 rounded-lg bg-white/10">
+                              <History size={14} className="text-white" />
                             </div>
-                          ))}
+                            <span className="text-xs text-white/70 font-medium">Lots dans ce carré</span>
+                          </div>
+                          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/60">
+                            {(hoveredSquare || selectedSquare).batches.length} lot{(hoveredSquare || selectedSquare).batches.length !== 1 ? 's' : ''}
+                          </span>
                         </div>
                       ) : (
                         <div className="text-center py-4 text-white/40 text-sm">
@@ -707,14 +691,14 @@ export function TrempeView() {
                   <div className="glass-effect rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Package size={16} className="text-white/60" />
-                      <span className="text-sm text-white/60">Cordes restantes</span>
+                      <span className="text-sm text-white/60">Cordes utilisées</span>
                     </div>
                     <div className="text-2xl font-medium text-white">
                       {editMode ? (
                         <div className="flex items-center gap-2">
                           <input
                             type="number"
-                            value={editedSquare?.remainingRopes !== undefined ? editedSquare.remainingRopes : selectedSquare.remainingRopes !== undefined ? selectedSquare.remainingRopes : 0}
+                            value={editedSquare?.totalRopes !== undefined ? editedSquare.totalRopes - editedSquare.remainingRopes : selectedSquare.totalRopes !== undefined ? selectedSquare.totalRopes - selectedSquare.remainingRopes : 0}
                             onChange={(e) => handleFieldChange('remainingRopes', parseInt(e.target.value))}
                             className="bg-white/10 w-20 px-2 py-1 rounded outline-none focus:ring-2 focus:ring-brand-primary"
                           />
@@ -727,69 +711,82 @@ export function TrempeView() {
                           />
                         </div>
                       ) : (
-                        `${selectedSquare.remainingRopes !== undefined ? selectedSquare.remainingRopes : 0}/${selectedSquare.totalRopes !== undefined ? selectedSquare.totalRopes : 0}`
+                        `${selectedSquare.totalRopes !== undefined ? selectedSquare.totalRopes - selectedSquare.remainingRopes : 0}/${selectedSquare.totalRopes !== undefined ? selectedSquare.totalRopes : 0}`
                       )}
                     </div>
                   </div>
                 </div>
 
                 {/* Liste des lots */}
-                <div className="glass-effect rounded-xl p-4 mb-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="mb-1">
+                  <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <History size={16} className="text-white/60" />
-                      <h3 className="text-lg font-medium text-white">Lots dans ce carré</h3>
+                      <div className="p-1.5 rounded-lg bg-white/10">
+                        <History size={14} className="text-white" />
+                      </div>
+                      <span className="text-xs text-white/70 font-medium">Lots dans ce carré</span>
                     </div>
-                    <span className="text-sm font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/60">
-                      {selectedSquare.batches.length} lot{selectedSquare.batches.length > 1 ? 's' : ''}
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/60">
+                      {(selectedSquare).batches.length} lot{(selectedSquare).batches.length !== 1 ? 's' : ''}
                     </span>
                   </div>
-                  <div className="space-y-3">
-                    {(editMode ? editedSquare?.batches : selectedSquare.batches).map((batch, index) => (
-                      <div
-                        key={batch.id}
-                        className="glass-effect rounded-lg p-4 hover:bg-white/5 transition-colors"
-                      >
-                        <div className="flex items-center justify-between">
-                          {editMode ? (
-                            <>
-                              <input
-                                type="text"
-                                value={batch.name}
-                                onChange={(e) => {
-                                  const newBatches = [...(editedSquare?.batches || selectedSquare.batches)];
-                                  newBatches[index] = { ...batch, name: e.target.value };
-                                  handleFieldChange('batches', newBatches);
-                                }}
-                                className="bg-white/10 text-lg font-medium text-white px-3 py-1 rounded outline-none focus:ring-2 focus:ring-brand-primary"
-                              />
-                              <input
-                                type="date"
-                                value={format(batch.date, 'yyyy-MM-dd')}
-                                onChange={(e) => {
-                                  const newBatches = [...(editedSquare?.batches || selectedSquare.batches)];
-                                  newBatches[index] = { ...batch, date: new Date(e.target.value) };
-                                  handleFieldChange('batches', newBatches);
-                                }}
-                                className="bg-white/10 text-sm text-white/60 px-3 py-1 rounded outline-none focus:ring-2 focus:ring-brand-primary"
-                              />
-                            </>
-                          ) : (
-                            <>
-                              <span className="text-lg font-medium text-white">{batch.name}</span>
-                              <span className="text-sm text-white/60">
+                  {(selectedSquare).batches.length > 0 ? (
+                    <div className="space-y-2 max-h-[150px] overflow-y-auto custom-scrollbar pr-1">
+                      {(selectedSquare).batches.map((batch) => (
+                        <div
+                          key={batch.id}
+                          className="bg-white/5 hover:bg-white/10 rounded-xl p-3 border border-white/5 transition-all duration-200 cursor-pointer transform hover:translate-x-1"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-white">{batch.name}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs bg-white/10 px-2 py-0.5 rounded-full text-white/60">
                                 {batch.date && isValid(batch.date) 
-                                  ? format(batch.date, 'dd MMM yyyy', { locale: fr })
+                                  ? format(batch.date, 'dd MMM', { locale: fr })
                                   : 'Date inconnue'}
                               </span>
-                            </>
-                          )}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-white/40 text-sm">
+                      Aucun lot dans ce carré
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-semibold text-white">Détails du carré {selectedSquare.number}</h3>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => {
+                        window.location.href = '/traceability';
+                      }}
+                      className="p-2 bg-brand-primary/20 hover:bg-brand-primary/40 rounded-lg transition-colors"
+                      title="Ajouter un lot via la traçabilité"
+                    >
+                      <Plus size={16} className="text-white" />
+                    </button>
+                    <button
+                      onClick={handleCloseModal}
+                      className="p-2 hover:bg-white/5 rounded-lg transition-colors"
+                    >
+                      <X size={18} className="text-white/60" />
+                    </button>
                   </div>
                 </div>
-
+                <div className="rounded-lg bg-white/5 p-3 mt-6">
+                  <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <Info size={16} className="text-brand-primary" />
+                    Synchronisation avec la traçabilité
+                  </h3>
+                  <p className="text-xs text-white/60 mt-2">
+                    Les lots affichés ici sont synchronisés avec la section traçabilité. 
+                    Pour ajouter ou modifier un lot, utilisez le bouton <Plus size={12} className="inline text-white" /> 
+                    ci-dessus pour accéder à la section traçabilité.
+                  </p>
+                </div>
                 {/* Actions */}
                 <div className="flex items-center gap-3">
                   {editMode ? (
@@ -838,37 +835,6 @@ export function TrempeView() {
                       </button>
                     </>
                   )}
-                </div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-white">Détails du carré {selectedSquare.number}</h3>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => {
-                        window.location.href = '/traceability';
-                      }}
-                      className="p-2 bg-brand-primary/20 hover:bg-brand-primary/40 rounded-lg transition-colors"
-                      title="Ajouter un lot via la traçabilité"
-                    >
-                      <Plus size={16} className="text-white" />
-                    </button>
-                    <button
-                      onClick={handleCloseModal}
-                      className="p-2 hover:bg-white/5 rounded-lg transition-colors"
-                    >
-                      <X size={18} className="text-white/60" />
-                    </button>
-                  </div>
-                </div>
-                <div className="rounded-lg bg-white/5 p-3 mt-6">
-                  <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
-                    <Info size={16} className="text-brand-primary" />
-                    Synchronisation avec la traçabilité
-                  </h3>
-                  <p className="text-xs text-white/60 mt-2">
-                    Les lots affichés ici sont synchronisés avec la section traçabilité. 
-                    Pour ajouter ou modifier un lot, utilisez le bouton <Plus size={12} className="inline text-white" /> 
-                    ci-dessus pour accéder à la section traçabilité.
-                  </p>
                 </div>
               </motion.div>
             </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Shell, Fish, Crab, Package, Check, Truck, Clock } from 'lucide-react';
+import { X, Shell, Fish, Anchor, Package, Check, Truck, Clock, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 interface Product {
@@ -68,7 +68,7 @@ export function CatalogModal({ isOpen, onClose }: CatalogModalProps) {
     switch (type) {
       case 'moules': return <Shell className="w-5 h-5" />;
       case 'palourdes': return <Fish className="w-5 h-5" />;
-      case 'crevettes': return <Crab className="w-5 h-5" />;
+      case 'crevettes': return <Anchor className="w-5 h-5" />;
       default: return <Package className="w-5 h-5" />;
     }
   };
@@ -197,8 +197,10 @@ export function CatalogModal({ isOpen, onClose }: CatalogModalProps) {
                       onClick={() => handleOrder(product)}
                       disabled={(quantities[product.id] || 0) < product.minOrder}
                       variant="primary"
+                      className="flex items-center gap-1"
                     >
-                      Commander
+                      <ShoppingCart className="w-4 h-4" />
+                      <span>Ajouter au panier</span>
                     </Button>
                   </div>
                 </div>

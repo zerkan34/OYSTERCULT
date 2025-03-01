@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shell, Fish, Shrimp, Info, DollarSign, Scale, Truck, Package, Calendar } from 'lucide-react';
+import { Shell, Fish, Anchor, Info, DollarSign, Scale, Truck, Package, Calendar, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 interface Product {
@@ -120,7 +120,7 @@ export function SupplierCatalog() {
       case 'palourdes':
         return <Fish className="w-5 h-5" />;
       case 'crevettes':
-        return <Shrimp className="w-5 h-5" />;
+        return <Anchor className="w-5 h-5" />;
       default:
         return <Package className="w-5 h-5" />;
     }
@@ -231,9 +231,10 @@ export function SupplierCatalog() {
                   <span className="text-sm text-white/60">/{product.unit}</span>
                 </div>
                 <Button
-                  className="bg-brand-burgundy/20 hover:bg-brand-burgundy/30"
+                  className="bg-brand-burgundy/20 hover:bg-brand-burgundy/30 flex items-center gap-1"
                 >
-                  Commander
+                  <ShoppingCart className="w-4 h-4" />
+                  <span>Ajouter au panier</span>
                 </Button>
               </div>
             </div>

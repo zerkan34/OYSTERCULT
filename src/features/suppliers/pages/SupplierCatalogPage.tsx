@@ -133,34 +133,37 @@ export function SupplierCatalogPage() {
   return (
     <div className="min-h-screen bg-[rgb(var(--color-brand-bg))]">
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-10 bg-[rgb(var(--color-brand-bg)_/_0.8)] backdrop-blur-md border-b border-[rgb(var(--color-border)_/_var(--color-border-opacity))]">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-[rgb(var(--color-brand-bg)_/_0.8)] backdrop-blur-md border-b border-[rgb(var(--color-border)_/_var(--color-border-opacity))]">
         <div className="max-w-[1400px] mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate('/suppliers')}
-                className="p-2 rounded-full bg-[rgb(var(--color-brand-surface)_/_0.5)] hover:bg-[rgb(var(--color-brand-surface))] transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <h1 className="text-xl font-semibold text-[rgb(var(--color-text))]">
-                  {supplier?.name || 'Catalogue Fournisseur'}
-                </h1>
-                <p className="text-sm text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
-                  {supplier?.address || 'Produits disponibles'}
-                </p>
-              </div>
+          <div className="flex items-center justify-center relative">
+            <button
+              onClick={() => navigate('/suppliers')}
+              className="absolute left-0 p-2 rounded-full bg-[rgb(var(--color-brand-surface)_/_0.5)] hover:bg-[rgb(var(--color-brand-surface))] transition-colors hover:shadow-[0_0_10px_rgba(var(--color-brand-primary),0.3)]"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div className="text-center">
+              <h1 className="text-xl font-semibold text-[rgb(var(--color-text))]">
+                {supplier?.name || 'Catalogue Fournisseur'}
+              </h1>
+              <p className="text-sm text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
+                {supplier?.address || 'Produits disponibles'}
+              </p>
             </div>
             
-            <div className="relative">
+            <div className="absolute right-0">
               <button
                 onClick={() => setIsCartOpen(!isCartOpen)}
                 className="p-2 rounded-full bg-[rgb(var(--color-brand-surface)_/_0.5)] hover:bg-[rgb(var(--color-brand-surface))] transition-colors relative"
+                style={{
+                  boxShadow: getTotalItems() > 0 ? '0 0 10px 2px rgb(var(--color-brand-primary))' : 'none'
+                }}
               >
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="w-5 h-5" style={{
+                  color: getTotalItems() > 0 ? 'rgb(var(--color-brand-primary))' : 'inherit'
+                }} />
                 {getTotalItems() > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-[rgb(var(--color-brand-primary))] text-white text-xs rounded-full">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-[rgb(var(--color-brand-primary))] text-white text-xs rounded-full animate-pulse">
                     {getTotalItems()}
                   </span>
                 )}
@@ -204,8 +207,16 @@ export function SupplierCatalogPage() {
                               <span>Total</span>
                               <span>{getTotalPrice().toFixed(2)}€</span>
                             </div>
-                            <button className="w-full py-2 bg-[rgb(var(--color-brand-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-brand-primary)_/_0.9)] transition-colors">
-                              Passer la commande
+                            <button 
+                              className="w-full py-2 bg-[rgb(var(--color-brand-primary))] text-white rounded-lg transition-all duration-300 hover:shadow-[0_0_15px_rgba(var(--color-brand-primary),0.5)] hover:translate-y-[-2px]"
+                              onClick={() => {
+                                console.log('Commande passée:', orderItems);
+                                alert('Commande confirmée ! Votre commande a été transmise au fournisseur.\n\nVous trouverez son statut dans "commandes".');
+                                setOrderItems([]);
+                                setIsCartOpen(false);
+                              }}
+                            >
+                              Valider la commande
                             </button>
                           </div>
                         </>
@@ -274,7 +285,7 @@ export function SupplierCatalogPage() {
       </div>
 
       {/* Contenu principal */}
-      <div className="max-w-[1400px] mx-auto px-6 pt-48 pb-12">
+      <div className="max-w-[1400px] mx-auto px-6 pt-24 pb-12 mt-28">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map(product => (
             <div
@@ -289,7 +300,7 @@ export function SupplierCatalogPage() {
               <div className="p-4">
                 <div className="flex items-start justify-between gap-4 mb-2">
                   <h3 className="font-semibold">{product.name}</h3>
-                  <Badge variant="outline" className="capitalize">
+                  <Badge variant="default" className="capitalize">
                     {product.category}
                   </Badge>
                 </div>
@@ -315,9 +326,10 @@ export function SupplierCatalogPage() {
                   />
                   <button
                     onClick={() => handleQuantityChange(product.id, getOrderQuantity(product.id) + product.min_order_quantity)}
-                    className="flex-1 py-2 px-4 bg-[rgb(var(--color-brand-primary)_/_0.1)] hover:bg-[rgb(var(--color-brand-primary)_/_0.2)] text-[rgb(var(--color-brand-primary))] rounded-lg transition-colors group-hover:shadow-md"
+                    className="flex-1 py-2 px-4 flex items-center justify-center gap-1 bg-[rgb(var(--color-brand-primary)_/_0.1)] hover:bg-[rgb(var(--color-brand-primary)_/_0.2)] text-[rgb(var(--color-brand-primary))] rounded-lg transition-colors group-hover:shadow-md"
                   >
-                    Commander
+                    <ShoppingCart className="w-4 h-4" />
+                    <span>Ajouter au panier</span>
                   </button>
                 </div>
               </div>

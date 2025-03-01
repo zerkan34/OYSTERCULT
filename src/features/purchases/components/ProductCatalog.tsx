@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shell, Fish, Shrimp, Package } from 'lucide-react';
+import { Shell, Fish, Anchor, Package, ShoppingCart } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Product {
@@ -112,12 +112,12 @@ interface ProductCardProps {
 }
 
 function ProductCard({ product, onOrder }: ProductCardProps) {
-  const getIcon = (type: string) => {
+  const getProductIcon = (type: string) => {
     switch (type) {
-      case 'moules': return <Shell className="w-6 h-6" />;
-      case 'palourdes': return <Fish className="w-6 h-6" />;
-      case 'crevettes': return <Shrimp className="w-6 h-6" />;
-      default: return <Package className="w-6 h-6" />;
+      case 'moules': return <Shell className="w-5 h-5" />;
+      case 'palourdes': return <Fish className="w-5 h-5" />;
+      case 'crevettes': return <Anchor className="w-5 h-5" />;
+      default: return <Package className="w-5 h-5" />;
     }
   };
 
@@ -135,7 +135,7 @@ function ProductCard({ product, onOrder }: ProductCardProps) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-white/5 to-white/10">
-            {getIcon(product.type)}
+            {getProductIcon(product.type)}
           </div>
         )}
         <div className="absolute top-2 right-2 px-2 py-1 rounded bg-black/50 backdrop-blur-sm text-sm text-white">
@@ -191,9 +191,10 @@ function ProductCard({ product, onOrder }: ProductCardProps) {
           </div>
           <button
             onClick={() => onOrder(product)}
-            className="w-full py-2 px-4 bg-brand-burgundy hover:bg-brand-burgundy/90 text-white rounded-lg transition-colors"
+            className="w-full py-2 px-4 bg-brand-burgundy hover:bg-brand-burgundy/90 text-white rounded-lg transition-colors flex items-center justify-center gap-1"
           >
-            Commander
+            <ShoppingCart className="w-4 h-4" />
+            <span>Ajouter au panier</span>
           </button>
         </div>
       </div>
@@ -239,7 +240,7 @@ export function ProductCatalog({ onOrder }: ProductCatalogProps) {
                   : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
               }`}
             >
-              {type !== 'all' && getIcon(type)}
+              {type !== 'all' && getProductIcon(type)}
               <span>
                 {type === 'all' ? 'Tous les produits' : type.charAt(0).toUpperCase() + type.slice(1)}
               </span>

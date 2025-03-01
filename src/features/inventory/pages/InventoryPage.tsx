@@ -9,6 +9,7 @@ import { InventoryForm } from '../components/InventoryForm';
 import { InventoryFilters } from '../components/InventoryFilters';
 import { useTouchGestures } from '@/lib/hooks';
 import { PurchaseConfiguration } from '@/features/purchases/components/PurchaseConfiguration';
+import { PurchaseForm } from '@/features/purchases/components/PurchaseForm';
 
 type TabType = 'tables' | 'pools' | 'trempes' | 'achats';
 
@@ -43,7 +44,7 @@ export function InventoryPage() {
             className="flex items-center px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
           >
             <Plus size={20} className="mr-2" />
-            Nouveau Lot
+            {activeTab === 'achats' ? 'Nouvel achat' : 'Nouveau Lot'}
           </button>
         </div>
       </div>
@@ -63,19 +64,6 @@ export function InventoryPage() {
           </div>
         </button>
         <button
-          onClick={() => setActiveTab('pools')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'pools'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
-          }`}
-        >
-          <div className="flex items-center">
-            <Droplets size={16} className="mr-2" />
-            Bassins
-          </div>
-        </button>
-        <button
           onClick={() => setActiveTab('trempes')}
           className={`py-4 text-sm font-medium border-b-2 transition-colors ${
             activeTab === 'trempes'
@@ -86,6 +74,19 @@ export function InventoryPage() {
           <div className="flex items-center">
             <Droplets size={16} className="mr-2" />
             Trempes
+          </div>
+        </button>
+        <button
+          onClick={() => setActiveTab('pools')}
+          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'pools'
+              ? 'border-brand-primary text-white'
+              : 'border-transparent text-white/60 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center">
+            <Droplets size={16} className="mr-2" />
+            Bassins
           </div>
         </button>
         <button
@@ -142,8 +143,15 @@ export function InventoryPage() {
         />
       )}
 
-      {showNewItem && (
+      {showNewItem && activeTab !== 'achats' && (
         <InventoryForm
+          isOpen={showNewItem}
+          onClose={() => setShowNewItem(false)}
+        />
+      )}
+
+      {showNewItem && activeTab === 'achats' && (
+        <PurchaseForm
           isOpen={showNewItem}
           onClose={() => setShowNewItem(false)}
         />
