@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+  import React, { useState } from 'react';
 import {
   BarChart2,
   Receipt,
-  ArrowDown,
-  ArrowUp,
-  Wallet,
+  CreditCard,
+  FileText,
+  DollarSign,
+  Users,
   Calendar,
   Filter,
+  ChevronDown,
+  ChevronRight,
+  Plus,
   Search,
-  Plus
+  Download
 } from 'lucide-react';
 import { ModernChart } from '@/components/ui/ModernChart';
 import { ModernStatCard } from '@/components/ui/ModernStatCard';

@@ -19,12 +19,43 @@ import {
   Tag,
   Store,
   Truck,
-  Mail
+  Mail,
+  Lock
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { OysterLogo } from './OysterLogo';
 import { ThemeToggle } from './ThemeToggle';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const pulseAnimation = {
+  pulse: {
+    boxShadow: [
+      '0 0 4px rgba(255, 255, 255, 0.5)',
+      '0 0 8px rgba(255, 255, 255, 0.6)',
+      '0 0 4px rgba(255, 255, 255, 0.5)'
+    ],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const createColorPulse = (color: string) => ({
+  pulse: {
+    boxShadow: [
+      `0 0 4px ${color}`,
+      `0 0 8px ${color}`,
+      `0 0 4px ${color}`
+    ],
+    transition: {
+      duration: 2.5,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+});
 
 interface ModernSidebarProps {
   showMobileMenu: boolean;
@@ -131,6 +162,11 @@ const navItems = [
         path: '/hr', 
         label: 'RH', 
         icon: <Users size={22} />
+      },
+      { 
+        path: '/digitalvault', 
+        label: 'Mon coffre-fort numérique', 
+        icon: <Lock size={22} />
       }
     ]
   },
@@ -163,6 +199,7 @@ export function ModernSidebar({
   const { setSession } = useStore();
   const [collapsed, setCollapsed] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   const handleLogout = () => {
     setSession(null);
@@ -218,8 +255,21 @@ export function ModernSidebar({
           >
             <div className="absolute inset-0 bg-gradient-to-r from-brand-burgundy/5 to-transparent opacity-50"></div>
             {!collapsed && (
-              <div className="cursor-pointer" onClick={() => navigate('/dashboard')}>
-                <OysterLogo />
+              <div className="flex items-center justify-between px-4 py-2 relative z-10">
+                <div className="flex items-center">
+                  <div className="absolute inset-0 bg-white/5 rounded-lg opacity-80"></div>
+                  <div className="relative z-10">
+                    <OysterLogo />
+                  </div>
+                </div>
+              </div>
+            )}
+            {collapsed && (
+              <div className="flex items-center justify-center px-2 py-2 relative z-10">
+                <div className="absolute inset-0 bg-white/5 rounded-lg opacity-80"></div>
+                <div className="relative z-10">
+                  <OysterLogo />
+                </div>
               </div>
             )}
             <button
@@ -271,6 +321,8 @@ export function ModernSidebar({
                           initial="hidden"
                           animate="visible"
                           whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+                          onMouseEnter={() => setHoveredItem(item.path)}
+                          onMouseLeave={() => setHoveredItem(null)}
                         >
                           <Link
                             to={item.path}
@@ -292,15 +344,50 @@ export function ModernSidebar({
                               />
                             )}
                             <div className={`
-                              relative z-10 transition-transform duration-200
+                              relative z-10 transition-all duration-200
                               ${isActive ? `text-${categoryStyle.textColor.split('-')[1]}` : 'text-white/70 group-hover:text-white'}
+                              flex items-center justify-center w-7 h-7 rounded-full
+                              ${!isActive && hoveredItem === item.path ? 'shadow-[0_0_5px_rgba(255,255,255,0.4)] filter brightness-110' : ''}
+                              transition-all transform hover:scale-110
                             `}>
-                              {item.icon}
+                              {isActive ? (
+                                <motion.div
+                                  animate="pulse"
+                                  variants={createColorPulse(
+                                    categoryStyle.textColor.includes('blue') ? '#3b82f680' : 
+                                    categoryStyle.textColor.includes('green') ? '#10b98180' : 
+                                    categoryStyle.textColor.includes('purple') ? '#8b5cf680' : 
+                                    categoryStyle.textColor.includes('amber') ? '#f59e0b80' : 
+                                    '#06b6d480'
+                                  )}
+                                  className="flex items-center justify-center"
+                                >
+                                  {item.icon}
+                                </motion.div>
+                              ) : (
+                                <div className={hoveredItem === item.path ? "animate-pulse" : ""}>
+                                  {item.icon}
+                                </div>
+                              )}
                             </div>
-                            {!collapsed && (
-                              <span className={`ml-3 relative z-10 ${isActive ? 'font-medium' : ''}`}>
-                                {item.label}
-                              </span>
+                            <span className={`ml-3 relative z-10 ${isActive ? 'font-medium' : ''}`}>
+                              {item.label}
+                            </span>
+                            {collapsed && (
+                              <AnimatePresence>
+                                {hoveredItem === item.path && (
+                                  <motion.div
+                                    initial={{ opacity: 0, x: 10 }}
+                                    animate={{ opacity: 0.9, x: 0 }}
+                                    exit={{ opacity: 0, x: 10 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="absolute left-14 px-3 py-2 bg-gray-900/90 text-white rounded-md shadow-lg backdrop-blur-sm whitespace-nowrap z-50"
+                                  >
+                                    <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-gray-900/90 rotate-45"></div>
+                                    <span className={`${categoryStyle.textColor} font-medium`}>{item.label}</span>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
                             )}
                             {isActive && (
                               <motion.div 

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
 import { Settings } from 'lucide-react';
 import { AuthForm } from '../components/AuthForm';
 
@@ -24,61 +24,52 @@ const itemVariants = {
 };
 
 export function AuthPage() {
-  const [showLogo, setShowLogo] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLogo(false);
-      setShowForm(true);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-dark via-brand-purple/20 to-brand-burgundy/20">
-      <div className="relative min-h-screen flex items-center justify-center p-4">
-        <AnimatePresence>
-          {showLogo && (
-            <motion.div
-              key="logo"
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={containerVariants}
-              className="text-center max-w-4xl mx-auto px-4"
+      <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
+        <motion.div
+          key="logo"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+          className="text-center max-w-4xl mx-auto px-4 mb-8"
+        >
+          <motion.div variants={itemVariants} className="text-center">
+            <motion.div 
+              animate={{ 
+                rotate: 360 
+              }}
+              transition={{ 
+                repeat: Infinity, 
+                duration: 3, 
+                ease: "linear" 
+              }}
             >
-              <motion.div variants={itemVariants} className="text-center">
-                <Settings className="w-24 h-24 md:w-32 md:h-32 text-brand-burgundy animate-spin-slow mx-auto" />
-                <motion.h1 
-                  variants={itemVariants}
-                  className="text-3xl md:text-4xl font-industry text-white mt-4 animate-pulse"
-                >
-                  OYSTER CULT
-                </motion.h1>
-                <motion.p 
-                  variants={itemVariants}
-                  className="text-lg md:text-xl text-white/60 mt-4"
-                >
-                  Des données claires pour des coquillages d'exception
-                </motion.p>
-              </motion.div>
+              <Settings className="w-24 h-24 md:w-32 md:h-32 text-brand-burgundy mx-auto" />
             </motion.div>
-          )}
-
-          {showForm && (
-            <motion.div
-              key="form"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", duration: 0.5 }}
-              className="w-full animate-fade-in"
+            <motion.h1 
+              variants={itemVariants}
+              className="text-3xl md:text-4xl font-industry text-white mt-4 animate-pulse"
             >
-              <AuthForm />
-            </motion.div>
-          )}
-        </AnimatePresence>
+              OYSTER CULT
+            </motion.h1>
+            <motion.p 
+              variants={itemVariants}
+              className="text-lg md:text-xl text-white/60 mt-4"
+            >
+              Des données claires pour des coquillages d'exception
+            </motion.p>
+          </motion.div>
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+          className="w-full max-w-md"
+        >
+          <AuthForm />
+        </motion.div>
       </div>
     </div>
   );

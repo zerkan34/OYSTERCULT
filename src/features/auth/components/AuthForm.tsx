@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Settings, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useStore } from '@/lib/store';
 
 type AuthMode = 'login' | 'register';
@@ -45,16 +45,6 @@ export function AuthForm() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <motion.div 
-        className="text-center mb-8"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <Settings className="w-16 h-16 text-brand-burgundy mx-auto" />
-        <h1 className="text-3xl font-industry text-white mt-4">OYSTER CULT</h1>
-      </motion.div>
-
       <motion.div 
         className="glass-effect p-8 rounded-lg shadow-glass"
         initial={{ y: 20, opacity: 0 }}

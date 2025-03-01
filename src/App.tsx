@@ -29,6 +29,7 @@ import { ShopPage } from '@/features/shop/pages/ShopPage';
 import { SuppliersPage } from '@/features/suppliers/pages/SuppliersPage';
 import { SupplierCatalogPage } from '@/features/suppliers/pages/SupplierCatalogPage';
 import { OrdersPage } from '@/features/suppliers/pages/OrdersPage';
+import DigitalVaultPage from '@/features/digitalvault/pages/DigitalVaultPage';
 import { AnimatePresence } from 'framer-motion';
 
 const queryClient = new QueryClient();
@@ -117,6 +118,7 @@ function AppContent() {
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/tasks" element={<TasksPage />} />
+                <Route path="/digitalvault" element={<DigitalVaultPage />} />
                 <Route path="/inventory" element={<InventoryPage />} />
                 <Route path="/stock" element={<StockPage />} />
                 <Route path="/traceability" element={<TraceabilityPage />} />
