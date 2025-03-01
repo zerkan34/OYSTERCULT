@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    "strictFunctionTypes": false,
+    "strictBindCallApply": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  }
+}
