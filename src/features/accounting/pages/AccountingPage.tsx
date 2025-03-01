@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import { 
-  BarChart2, 
-  DollarSign, 
-  TrendingUp, 
-  ArrowUpRight,
-  ArrowDownRight,
+import {
+  BarChart2,
   Receipt,
-  CreditCard,
+  ArrowDown,
+  ArrowUp,
   Wallet,
   Calendar,
   Filter,
-  Search
+  Search,
+  Plus
 } from 'lucide-react';
 import { ModernChart } from '@/components/ui/ModernChart';
 import { ModernStatCard } from '@/components/ui/ModernStatCard';
+import { InvoiceForm } from '../components/InvoiceForm';
+import type { InvoiceWithItems } from '@/types/accounting';
 
 const mockRevenueData = [
   { month: 'Jan', revenue: 45000, expenses: 32000 },
@@ -70,6 +70,12 @@ const cashflowChartSeries = [
 export function AccountingPage() {
   const [showStats, setShowStats] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showNewInvoice, setShowNewInvoice] = useState(false);
+
+  const handleCreateInvoice = (data: InvoiceWithItems) => {
+    console.log('Creating invoice:', data);
+    setShowNewInvoice(false);
+  };
 
   return (
     <div className="space-y-6">
@@ -84,6 +90,7 @@ export function AccountingPage() {
             Statistiques
           </button>
           <button
+            onClick={() => setShowNewInvoice(true)}
             className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
           >
             <Receipt size={20} className="mr-2" />
@@ -128,32 +135,28 @@ export function AccountingPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <ModernStatCard
-          title="Chiffre d'affaires"
+          icon={<Plus />}
+          label="Chiffre d'affaires"
           value="58,000 €"
-          change="+12%"
-          trend="up"
-          icon={<DollarSign />}
+          trend={{ value: 12, positive: true }}
         />
         <ModernStatCard
-          title="Bénéfice net"
-          value="24,500 €"
-          change="+8%"
-          trend="up"
-          icon={<TrendingUp />}
+          icon={<ArrowUp />}
+          label="Bénéfice net"
+          value="12,500 €"
+          trend={{ value: 8, positive: true }}
         />
         <ModernStatCard
-          title="Dépenses"
-          value="33,500 €"
-          change="-5%"
-          trend="down"
-          icon={<CreditCard />}
+          icon={<ArrowDown />}
+          label="Dépenses"
+          value="45,500 €"
+          trend={{ value: 5, positive: false }}
         />
         <ModernStatCard
-          title="Trésorerie"
-          value="125,000 €"
-          change="+15%"
-          trend="up"
           icon={<Wallet />}
+          label="Trésorerie"
+          value="25,800 €"
+          trend={{ value: 3, positive: true }}
         />
       </div>
 
@@ -193,6 +196,19 @@ export function AccountingPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal de création de facture */}
+      {showNewInvoice && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-50">
+          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-[rgb(var(--color-card))/95] border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.3)] backdrop-blur-lg rounded-xl overflow-hidden p-8">
+            <InvoiceForm
+              type="sale"
+              onSubmit={handleCreateInvoice}
+              onCancel={() => setShowNewInvoice(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

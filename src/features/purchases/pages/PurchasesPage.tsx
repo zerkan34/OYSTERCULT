@@ -67,6 +67,54 @@ export function PurchasesPage() {
 
   const orders = [
     {
+      id: '2024-0131',
+      product: 'Huîtres spéciales n°2 Bouzigues',
+      supplier: 'Bassin de Thau SARL',
+      deliveryDate: '15/03',
+      price: 1420,
+      quantity: '180kg',
+      status: 'pending',
+      icon: Shell,
+      stockLocation: 'En attente',
+      lastUpdate: '01/03/2024 14:30'
+    },
+    {
+      id: '2024-0130',
+      product: 'Palourdes vénérirupis',
+      supplier: 'Conchyliculteurs Normands',
+      deliveryDate: '14/03',
+      price: 850,
+      quantity: '65kg',
+      status: 'confirmed',
+      icon: Shell,
+      stockLocation: 'En attente',
+      lastUpdate: '01/03/2024 11:20'
+    },
+    {
+      id: '2024-0129',
+      product: 'Coquilles Saint-Jacques Normandie',
+      supplier: 'Pêcherie Atlantique',
+      deliveryDate: '12/03',
+      price: 1680,
+      quantity: '90kg',
+      status: 'dispatched',
+      icon: Shell,
+      stockLocation: 'En transit',
+      lastUpdate: '01/03/2024 09:45'
+    },
+    {
+      id: '2024-0128',
+      product: 'Coques fraîches Baie de Somme',
+      supplier: 'Marée du Nord',
+      deliveryDate: '11/03',
+      price: 720,
+      quantity: '40kg',
+      status: 'in_transit',
+      icon: Shell,
+      stockLocation: 'En transit',
+      lastUpdate: '01/03/2024 08:15'
+    },
+    {
       id: '2024-0127',
       product: 'Huîtres creuses Marennes-Oléron',
       supplier: 'Maison Gillardeau',

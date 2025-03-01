@@ -48,9 +48,9 @@ const mockPurchases: MarketPurchase[] = [
 ];
 
 const statusColors = {
-  fresh: 'bg-green-500/20 text-green-300',
-  warning: 'bg-yellow-500/20 text-yellow-300',
-  expired: 'bg-blue-500/20 text-blue-300'
+  fresh: 'bg-blue-400/20 text-blue-300',
+  warning: 'bg-blue-500/30 text-blue-400',
+  expired: 'bg-blue-600/20 text-blue-400'
 };
 
 export function MarketPurchases() {
@@ -63,7 +63,7 @@ export function MarketPurchases() {
           <div
             key={purchase.id}
             onClick={() => setSelectedPurchase(purchase)}
-            className="bg-white/5 border border-white/10 rounded-lg p-6 hover:border-white/20 transition-colors cursor-pointer"
+            className={`bg-white/5 border border-blue-400/50 rounded-lg p-6 hover:border-blue-400/70 transition-colors cursor-pointer shadow-[0_0_5px_rgba(59,130,246,0.2)]`}
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-start space-x-4">
@@ -111,8 +111,8 @@ export function MarketPurchases() {
       </div>
 
       {selectedPurchase && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md p-6 rounded-lg w-full max-w-2xl">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-50">
+          <div className="relative w-full max-w-3xl bg-[rgb(var(--color-card))/95] border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.3)] backdrop-blur-lg rounded-xl overflow-hidden">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white">{selectedPurchase.type}</h3>
               <button

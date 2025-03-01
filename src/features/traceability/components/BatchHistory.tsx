@@ -53,10 +53,10 @@ const typeIcons = {
 };
 
 const typeColors = {
-  movement: 'bg-blue-500/20 text-blue-300',
-  treatment: 'bg-purple-500/20 text-purple-300',
-  quality_check: 'bg-green-500/20 text-green-300',
-  alert: 'bg-red-500/20 text-red-300'
+  movement: 'bg-blue-400/20 text-blue-300',
+  treatment: 'bg-blue-500/20 text-blue-300',
+  quality_check: 'bg-blue-600/20 text-blue-300',
+  alert: 'bg-blue-700/20 text-blue-300'
 };
 
 interface BatchHistoryProps {
@@ -71,8 +71,8 @@ export function BatchHistory({ searchQuery }: BatchHistoryProps) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white/5 border border-white/10 rounded-lg">
-        <div className="p-6 border-b border-white/10">
+      <div className="bg-white/5 border border-blue-400/50 rounded-lg shadow-[0_0_5px_rgba(59,130,246,0.2)]">
+        <div className="p-6 border-b border-blue-400/30">
           <h3 className="text-lg font-medium text-white">Historique des événements</h3>
         </div>
         <div className="divide-y divide-white/10">

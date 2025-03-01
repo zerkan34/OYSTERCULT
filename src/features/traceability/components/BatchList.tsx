@@ -35,7 +35,7 @@ export function BatchList({ searchQuery }: BatchListProps) {
           return (
             <div 
               key={batch.id} 
-              className={`bg-white/5 border ${isWarning ? 'border-red-500/30' : 'border-white/10'} rounded-lg p-4 relative group`}
+              className={`bg-white/5 border ${isWarning ? 'border-blue-400/70' : 'border-white/10'} rounded-lg p-4 relative group ${isWarning ? 'shadow-[0_0_10px_rgba(59,130,246,0.3)]' : ''}`}
             >
               <button
                 onClick={() => setEditingBatch(batch)}
