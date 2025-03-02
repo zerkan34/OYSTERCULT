@@ -30,22 +30,31 @@ export function InventoryPage() {
     }
   );
 
+  const getTitleByTab = () => {
+    switch (activeTab) {
+      case 'tables':
+        return 'Tables';
+      case 'trempes':
+        return 'Trempes';
+      case 'pools':
+        return 'Bassins';
+      case 'achats':
+        return 'Achats';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div 
       ref={pageRef} 
       className="space-y-6"
       {...handlers}
     >
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Stock</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">{getTitleByTab()}</h1>
         <div className="flex items-center space-x-3">
-          <button
-            onClick={() => setShowNewItem(true)}
-            className="flex items-center px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
-          >
-            <Plus size={20} className="mr-2" />
-            {activeTab === 'achats' ? 'Nouvel achat' : 'Nouveau Lot'}
-          </button>
+          {/* Bouton Nouveau Lot supprimé */}
         </div>
       </div>
 

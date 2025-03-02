@@ -28,7 +28,9 @@ import {
   X,
   Map as MapIcon,
   Compass,
-  MinimizeIcon
+  MinimizeIcon,
+  Check,
+  Edit
 } from 'lucide-react';
 
 export interface Table {
@@ -265,6 +267,13 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
   const [viewPosition, setViewPosition] = useState({ x: 0, y: 0 });
   const [tables, setTables] = useState<Table[]>(initialTables);
 
+  const [draggedItem, setDraggedItem] = useState<any | null>(null);
+  const [showTableDetail, setShowTableDetail] = useState(false);
+
+  // États pour l'édition du numéro de table
+  const [isEditingTableNumber, setIsEditingTableNumber] = useState<string | null>(null);
+  const [editedTableNumber, setEditedTableNumber] = useState<string>('');
+
   const cellVariants = {
     initial: { opacity: 0.6, scale: 0.95 },
     animate: (custom: number) => ({
@@ -312,6 +321,35 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
   const handleResetZoom = () => {
     setZoomLevel(1);
     setViewPosition({ x: 0, y: 0 });
+  };
+
+  // Fonction pour gérer l'édition du numéro de table
+  const handleEditTableNumber = (tableId: string, currentNumber: string) => {
+    setIsEditingTableNumber(tableId);
+    setEditedTableNumber(currentNumber);
+  };
+
+  // Fonction pour sauvegarder le numéro de table modifié
+  const handleSaveTableNumber = (tableId: string) => {
+    // Ici, vous implémenteriez la logique pour mettre à jour le numéro de table
+    // dans votre état ou votre base de données
+    console.log(`Table ID: ${tableId}, Nouveau numéro: ${editedTableNumber}`);
+    
+    // Mise à jour de l'état local (simulé)
+    const updatedTables = tables.map(t => 
+      t.id === tableId ? { ...t, tableNumber: editedTableNumber } : t
+    );
+    
+    // Mettez à jour l'état si vous utilisez un état local
+    // setTables(updatedTables);
+    
+    // Réinitialiser l'état d'édition
+    setIsEditingTableNumber(null);
+  };
+
+  // Fonction pour annuler l'édition
+  const handleCancelTableNumberEdit = () => {
+    setIsEditingTableNumber(null);
   };
 
   return (
@@ -422,8 +460,47 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                     onHoverEnd={() => onTableHover?.(null)}
                     onClick={() => onTableSelect(table)}
                   >
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 glass-effect px-3 py-1 rounded-full">
-                      <span className="text-white text-sm font-medium">{table.tableNumber}</span>
+                    <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 glass-effect px-3 py-1 rounded-full">
+                      {isEditingTableNumber === table.id ? (
+                        <div className="flex items-center space-x-1">
+                          <input
+                            type="text"
+                            value={editedTableNumber}
+                            onChange={(e) => setEditedTableNumber(e.target.value)}
+                            className="w-20 py-1 px-2 bg-white/10 border border-white/20 rounded text-white text-sm"
+                            autoFocus
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => {
+                              e.stopPropagation();
+                              if (e.key === 'Enter') {
+                                handleSaveTableNumber(table.id);
+                              } else if (e.key === 'Escape') {
+                                handleCancelTableNumberEdit();
+                              }
+                            }}
+                          />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSaveTableNumber(table.id);
+                            }}
+                            className="text-brand-primary hover:text-brand-primary/80"
+                          >
+                            <Check size={14} />
+                          </button>
+                        </div>
+                      ) : (
+                        <span 
+                          className="text-white text-sm font-medium cursor-pointer flex items-center"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditTableNumber(table.id, table.tableNumber);
+                          }}
+                        >
+                          {table.tableNumber}
+                          <Edit size={12} className="ml-1 text-white/60 hover:text-white" />
+                        </span>
+                      )}
                     </div>
 
                     <div 

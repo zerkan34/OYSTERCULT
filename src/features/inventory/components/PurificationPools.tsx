@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useClickOutside } from '@/lib/hooks';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { 
   Droplets, 
   Settings, 
@@ -14,14 +16,11 @@ import {
   Calendar,
   ThermometerSun,
   Plus,
-  ArrowUpRight,
-  Edit2,
   X,
   Shell,
-  Brush
+  Brush,
+  ArrowUpRight
 } from 'lucide-react';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
 import { PoolMaintenanceModal } from './PoolMaintenanceModal';
 import { BatchExitModal } from './BatchExitModal';
 
@@ -444,6 +443,36 @@ export function PurificationPools() {
   const [hoveredPool, setHoveredPool] = useState<string | null>(null);
   const [pools, setPools] = useState(mockPools);
 
+  const [showAddBatchModal, setShowAddBatchModal] = useState(false);
+  const [activePoolForBatch, setActivePoolForBatch] = useState<Pool | null>(null);
+  const [newBatchData, setNewBatchData] = useState({
+    number: '',
+    quantity: 0,
+    type: 'plates',
+    entryTime: format(new Date(), 'yyyy-MM-dd\'T\'HH:mm')
+  });
+
+  const handleOpenAddBatchModal = (e: React.MouseEvent, pool: Pool) => {
+    e.stopPropagation();
+    setActivePoolForBatch(pool);
+    setNewBatchData({
+      number: `LOT-${format(new Date(), 'yyyy')}-${String(Math.floor(Math.random() * 999)).padStart(3, '0')}`,
+      quantity: 0,
+      type: 'plates',
+      entryTime: format(new Date(), 'yyyy-MM-dd\'T\'HH:mm')
+    });
+    setShowAddBatchModal(true);
+  };
+
+  const handleAddBatch = () => {
+    if (activePoolForBatch && newBatchData.quantity > 0) {
+      console.log(`Ajout d'un lot au bassin ${activePoolForBatch.name}:`, newBatchData);
+      
+      setShowAddBatchModal(false);
+      setActivePoolForBatch(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-6">
@@ -466,13 +495,22 @@ export function PurificationPools() {
                   {pool.filterType}
                 </div>
               </div>
-              <div className={`px-3 py-1 rounded-full text-xs ${
-                pool.filterStatus === 'active' ? 'bg-green-500/20 text-green-300' :
-                pool.filterStatus === 'maintenance' ? 'bg-yellow-500/20 text-yellow-300' :
-                'bg-red-500/20 text-red-300'
-              }`}>
-                {pool.filterStatus === 'active' ? 'Actif' :
-                 pool.filterStatus === 'maintenance' ? 'Maintenance' : 'Erreur'}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={(e) => handleOpenAddBatchModal(e, pool)}
+                  className="px-3 py-1 text-sm bg-brand-primary rounded-lg text-white hover:bg-brand-primary/80 transition-colors flex items-center"
+                >
+                  <Plus size={14} className="mr-1" />
+                  Rentrer un lot
+                </button>
+                <div className={`px-3 py-1 rounded-full text-xs ${
+                  pool.filterStatus === 'active' ? 'bg-green-500/20 text-green-300' :
+                  pool.filterStatus === 'maintenance' ? 'bg-yellow-500/20 text-yellow-300' :
+                  'bg-red-500/20 text-red-300'
+                }`}>
+                  {pool.filterStatus === 'active' ? 'Actif' :
+                   pool.filterStatus === 'maintenance' ? 'Maintenance' : 'Erreur'}
+                </div>
               </div>
             </div>
 
@@ -540,6 +578,107 @@ export function PurificationPools() {
           />
         )}
       </AnimatePresence>
+
+      {showAddBatchModal && activePoolForBatch && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-white">
+                Rentrer un lot dans {activePoolForBatch.name}
+              </h3>
+              <button
+                onClick={() => setShowAddBatchModal(false)}
+                className="text-white/60 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleAddBatch();
+            }} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Numéro de lot
+                </label>
+                <input
+                  type="text"
+                  value={newBatchData.number}
+                  onChange={(e) => setNewBatchData({...newBatchData, number: e.target.value})}
+                  className="w-full p-4 bg-white/5 rounded-lg text-white border border-white/10"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Type d'huîtres
+                </label>
+                <select
+                  value={newBatchData.type}
+                  onChange={(e) => setNewBatchData({...newBatchData, type: e.target.value})}
+                  className="w-full p-4 bg-white/5 rounded-lg text-white border border-white/10"
+                >
+                  <option value="plates">Plates</option>
+                  <option value="creuses">Creuses</option>
+                  <option value="speciales">Spéciales</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Quantité
+                </label>
+                <input
+                  type="number"
+                  value={newBatchData.quantity}
+                  onChange={(e) => setNewBatchData({...newBatchData, quantity: parseInt(e.target.value)})}
+                  className="w-full p-4 bg-white/5 rounded-lg text-white border border-white/10"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Date et heure d'entrée
+                </label>
+                <input
+                  type="datetime-local"
+                  value={newBatchData.entryTime}
+                  onChange={(e) => setNewBatchData({...newBatchData, entryTime: e.target.value})}
+                  className="w-full p-4 bg-white/5 rounded-lg text-white border border-white/10"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddBatchModal(false)}
+                  className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
+                >
+                  Ajouter le lot
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }

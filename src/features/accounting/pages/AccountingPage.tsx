@@ -12,7 +12,10 @@ import {
   ChevronRight,
   Plus,
   Search,
-  Download
+  Download,
+  ArrowUp,
+  ArrowDown,
+  Wallet
 } from 'lucide-react';
 import { ModernChart } from '@/components/ui/ModernChart';
 import { ModernStatCard } from '@/components/ui/ModernStatCard';

@@ -766,7 +766,7 @@ export function TrempeView() {
                       className="p-2 bg-brand-primary/20 hover:bg-brand-primary/40 rounded-lg transition-colors"
                       title="Ajouter un lot via la traçabilité"
                     >
-                      <Plus size={16} className="text-white" />
+                      <Plus size={16} className="text-red-500" />
                     </button>
                     <button
                       onClick={handleCloseModal}
@@ -783,7 +783,7 @@ export function TrempeView() {
                   </h3>
                   <p className="text-xs text-white/60 mt-2">
                     Les lots affichés ici sont synchronisés avec la section traçabilité. 
-                    Pour ajouter ou modifier un lot, utilisez le bouton <Plus size={12} className="inline text-white" /> 
+                    Pour ajouter ou modifier un lot, utilisez le bouton <Plus size={12} className="inline text-red-500" /> 
                     ci-dessus pour accéder à la section traçabilité.
                   </p>
                 </div>
@@ -824,7 +824,7 @@ export function TrempeView() {
                       <button 
                         className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
                       >
-                        <Plus size={16} className="text-white/60" />
+                        <Plus size={16} className="text-red-500" />
                         <span>Ajouter un lot</span>
                       </button>
                       <button 

@@ -259,6 +259,12 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedTableNumber, setEditedTableNumber] = useState(table.tableNumber);
 
+  // États pour la modale d'échantillonnage
+  const [showSamplingModal, setShowSamplingModal] = useState(false);
+  const [samplingMortalityRate, setSamplingMortalityRate] = useState<number | ''>('');
+  const [iAMortalityPrediction, setIAMortalityPrediction] = useState<number | null>(null);
+  const [samplingDate, setSamplingDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+
   const handleCellUpdate = (cellId: string, data: any) => {
     // TODO: Implement cell update logic
     console.log('Updating cell:', cellId, data);
@@ -294,6 +300,34 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
   const cancelEditing = () => {
     setEditedTableNumber(table.tableNumber);
     setIsEditingName(false);
+  };
+
+  // Fonction pour gérer l'échantillonnage
+  const handleSampling = () => {
+    // Calculer une prédiction IA simulée basée sur le taux de mortalité actuel
+    // (dans une vraie implémentation, ce serait basé sur un modèle d'IA)
+    if (typeof samplingMortalityRate === 'number') {
+      // Simulation simple: prédiction est le taux actuel +/- 20%
+      const variationFactor = 0.2;
+      const randomVariation = (Math.random() * 2 - 1) * variationFactor;
+      const prediction = samplingMortalityRate * (1 + randomVariation);
+      setIAMortalityPrediction(Number(prediction.toFixed(1)));
+    }
+
+    // Enregistrer l'échantillonnage
+    console.log(`Échantillonnage enregistré avec un taux de mortalité de ${samplingMortalityRate}% à la date ${samplingDate}`);
+    
+    // Fermer la modale
+    setShowSamplingModal(false);
+  };
+
+  // Fonction pour ouvrir la modale d'échantillonnage
+  const openSamplingModal = () => {
+    // Réinitialiser les valeurs
+    setSamplingMortalityRate('');
+    setIAMortalityPrediction(null);
+    setSamplingDate(format(new Date(), 'yyyy-MM-dd'));
+    setShowSamplingModal(true);
   };
 
   return (
@@ -423,20 +457,20 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                openSamplingModal();
+              }}
+              className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
+            >
+              Échantillonnage
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
                 onClose();
               }}
               className="px-4 py-2 text-white/70 hover:text-white transition-colors"
             >
               Fermer
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                // Gérer la sauvegarde ici
-              }}
-              className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
-            >
-              Enregistrer les modifications
             </button>
           </div>
         </div>
@@ -491,7 +525,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                 }
               ].map((type) => (
                 <div key={type.type} className="flex items-center space-x-3">
-                  <div className={`w-6 h-6 rounded-lg ${type.color} shadow-neon flex-shrink-0`} />
+                  <div className={`w-6 h-6 rounded-lg ${type.color} shadow-neon border-2 border-white/80 shadow-[0_0_15px_rgba(255,255,255,0.6)] flex-shrink-0`} />
                   <div>
                     <div className="text-white font-medium">{type.label}</div>
                     <div className="text-sm text-white/60">{type.description}</div>
@@ -541,9 +575,12 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
               animate="animate"
               custom={index}
             >
-              {/* Overlay d'action */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-md">
-                <Plus size={20} className="text-white" />
+              {/* Overlay d'action avec contour toujours visible */}
+              <div className="absolute inset-0 rounded-md border-2 border-white shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+                {/* Contenu de l'overlay visible au survol */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-md">
+                  <Plus size={20} className="text-red-500" />
+                </div>
               </div>
 
               {/* Informations de la cellule */}
@@ -780,6 +817,97 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                     className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
                   >
                     Remplir la colonne
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal d'échantillonnage */}
+      <AnimatePresence>
+        {showSamplingModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-white">
+                  Échantillonnage
+                </h3>
+                <button
+                  onClick={() => setShowSamplingModal(false)}
+                  className="text-white/60 hover:text-white transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                handleSampling();
+              }} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Taux évalué de mortalité
+                  </label>
+                  <input
+                    type="number"
+                    value={samplingMortalityRate}
+                    onChange={(e) => setSamplingMortalityRate(e.target.valueAsNumber)}
+                    className="w-full p-4 bg-white/5 rounded-lg text-white"
+                    placeholder="Ex: 3.7%"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Taux potentiel de mortalité (IA)
+                  </label>
+                  <input
+                    type="number"
+                    value={iAMortalityPrediction}
+                    onChange={(e) => setIAMortalityPrediction(e.target.valueAsNumber)}
+                    className="w-full p-4 bg-white/5 rounded-lg text-white"
+                    placeholder="Prédiction IA calculée automatiquement"
+                    disabled
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Date d'échantillonnage
+                  </label>
+                  <input
+                    type="date"
+                    value={samplingDate}
+                    onChange={(e) => setSamplingDate(e.target.value)}
+                    className="w-full p-4 bg-white/5 rounded-lg text-white"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowSamplingModal(false)}
+                    className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
+                  >
+                    Enregistrer l'échantillonnage
                   </button>
                 </div>
               </form>

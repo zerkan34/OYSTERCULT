@@ -156,13 +156,7 @@ export function PurchaseConfiguration() {
                     </span>
                   </div>
                 </div>
-                <Button
-                  onClick={() => setSelectedSupplierId(supplier.id)}
-                  className="bg-brand-burgundy hover:bg-brand-burgundy/90"
-                  size="sm"
-                >
-                  Voir catalogue
-                </Button>
+                {/* Bouton "Voir catalogue" supprimé */}
               </div>
             </div>
           </ModernCardBase>
