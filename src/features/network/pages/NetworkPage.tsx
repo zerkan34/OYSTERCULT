@@ -23,7 +23,7 @@ import { useStore } from '@/lib/store';
 import { useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-type NetworkTab = 'feed' | 'contacts' | 'directory' | 'forum' | 'messages' | 'suppliers';
+type NetworkTab = 'feed' | 'contacts' | 'directory' | 'forum' | 'suppliers';
 
 interface NetworkPageProps {
   messageView?: boolean;
@@ -31,7 +31,7 @@ interface NetworkPageProps {
 
 export function NetworkPage({ messageView = false }: NetworkPageProps) {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState<NetworkTab>(messageView ? 'messages' : 'feed');
+  const [activeTab, setActiveTab] = useState<NetworkTab>(messageView ? 'feed' : 'feed');
   const [showNewPost, setShowNewPost] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -47,13 +47,13 @@ export function NetworkPage({ messageView = false }: NetworkPageProps) {
 
   useEffect(() => {
     if (messageView) {
-      setActiveTab('messages');
+      setActiveTab('feed');
     }
   }, [messageView]);
 
   useEffect(() => {
-    if (location.pathname === '/network/messages' && activeTab !== 'messages') {
-      setActiveTab('messages');
+    if (location.pathname === '/network/messages' && activeTab !== 'feed') {
+      setActiveTab('feed');
     }
   }, [location.pathname, activeTab]);
 
@@ -68,18 +68,6 @@ export function NetworkPage({ messageView = false }: NetworkPageProps) {
           >
             <UserPlus size={20} className="mr-2" />
             Ajouter un contact
-          </button>
-          <button
-            onClick={() => setActiveTab('messages')}
-            className="relative flex items-center px-4 py-2 bg-brand-primary/20 rounded-lg text-brand-primary hover:bg-brand-primary/30 transition-colors"
-          >
-            <MessageCircle size={20} className="mr-2" />
-            Messagerie
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[20px] h-5 bg-brand-primary rounded-full flex items-center justify-center px-1 text-xs font-medium text-white shadow-lg">
-                {unreadCount}
-              </span>
-            )}
           </button>
           <button
             onClick={() => setShowNewPost(true)}
@@ -103,24 +91,6 @@ export function NetworkPage({ messageView = false }: NetworkPageProps) {
           <div className="flex items-center">
             <Rss size={16} className="mr-2" />
             Fil d'actualités
-          </div>
-        </button>
-        <button
-          onClick={() => setActiveTab('messages')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'messages'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
-          }`}
-        >
-          <div className="flex items-center">
-            <MessageSquare size={16} className="mr-2" />
-            Messagerie
-            {unreadCount > 0 && (
-              <span className="ml-2 w-5 h-5 bg-brand-primary rounded-full flex items-center justify-center text-xs">
-                {unreadCount}
-              </span>
-            )}
           </div>
         </button>
         <button
@@ -177,46 +147,38 @@ export function NetworkPage({ messageView = false }: NetworkPageProps) {
         </button>
       </div>
 
-      {activeTab !== 'messages' && (
-        <div className="flex items-center space-x-4">
-          <div className="flex-1 relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher..."
-              className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40"
-            />
-          </div>
-          <button className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors">
-            <Filter size={20} className="mr-2" />
-            Filtres
-          </button>
-          <button className="relative p-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors">
-            <Bell size={20} />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-primary rounded-full flex items-center justify-center text-xs">
-                {unreadCount}
-              </span>
-            )}
-          </button>
+      <div className="flex items-center space-x-4">
+        <div className="flex-1 relative">
+          <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Rechercher..."
+            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40"
+          />
         </div>
-      )}
+        <button className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors">
+          <Filter size={20} className="mr-2" />
+          Filtres
+        </button>
+        <button className="relative p-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors">
+          <Bell size={20} />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-primary rounded-full flex items-center justify-center text-xs">
+              {unreadCount}
+            </span>
+          )}
+        </button>
+      </div>
 
       {activeTab === 'feed' && <NetworkFeed />}
-      {activeTab === 'messages' && (
-        <NetworkChat 
-          contactId={selectedContactId || 'default'} 
-          onClose={() => setActiveTab('feed')} 
-        />
-      )}
       {activeTab === 'contacts' && (
         <NetworkContacts 
           searchQuery={searchQuery}
           onSelectContact={(contactId) => {
             setSelectedContactId(contactId);
-            setActiveTab('messages');
+            setActiveTab('feed');
           }}
         />
       )}
@@ -226,11 +188,16 @@ export function NetworkPage({ messageView = false }: NetworkPageProps) {
           selectedSkill={selectedSkill}
         />
       )}
-      {activeTab === 'forum' && <Forum searchQuery={searchQuery} />}
-      {activeTab === 'suppliers' && <FriendSuppliers />}
+      {activeTab === 'forum' && (
+        <Forum />
+      )}
+      {activeTab === 'suppliers' && (
+        <FriendSuppliers />
+      )}
+      </div>
 
       {showNewPost && (
-        <NewPostModal onClose={() => setShowNewPost(false)} type={activeTab} />
+        <NewPostModal onClose={() => setShowNewPost(false)} />
       )}
 
       {showAddFriend && (

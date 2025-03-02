@@ -577,9 +577,9 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
             >
               {/* Overlay d'action avec contour toujours visible */}
               <div className="absolute inset-0 rounded-md border-2 border-white shadow-[0_0_8px_rgba(255,255,255,0.8)]">
-                {/* Contenu de l'overlay visible au survol */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-md">
-                  <Plus size={20} className="text-red-500" />
+                {/* Remplacer l'icône Plus par un indicateur numérique */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xs text-white font-bold">{index + 1}</span>
                 </div>
               </div>
 
