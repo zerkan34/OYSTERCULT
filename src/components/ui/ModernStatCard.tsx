@@ -36,22 +36,22 @@ const colorVariants = {
 
 const sizeVariants = {
   sm: {
-    padding: 'p-4',
-    iconSize: 'w-10 h-10',
-    valueSize: 'text-2xl',
-    labelSize: 'text-sm'
+    padding: 'p-3 md:p-4',
+    iconSize: 'w-8 h-8 md:w-10 md:h-10',
+    valueSize: 'text-xl md:text-2xl',
+    labelSize: 'text-xs md:text-sm'
   },
   md: {
-    padding: 'p-6',
-    iconSize: 'w-12 h-12',
-    valueSize: 'text-3xl',
-    labelSize: 'text-base'
+    padding: 'p-4 md:p-6',
+    iconSize: 'w-10 h-10 md:w-12 md:h-12',
+    valueSize: 'text-2xl md:text-3xl',
+    labelSize: 'text-sm md:text-base'
   },
   lg: {
-    padding: 'p-8',
-    iconSize: 'w-14 h-14',
-    valueSize: 'text-4xl',
-    labelSize: 'text-lg'
+    padding: 'p-5 md:p-8',
+    iconSize: 'w-12 h-12 md:w-14 md:h-14',
+    valueSize: 'text-3xl md:text-4xl',
+    labelSize: 'text-base md:text-lg'
   }
 };
 
@@ -68,7 +68,7 @@ export function ModernStatCard({
 
   return (
     <motion.div
-      className={`relative glass-effect rounded-xl ${sizes.padding} group hover:glass-effect-hover`}
+      className={`relative glass-effect rounded-xl ${sizes.padding} group hover:glass-effect-hover touch-manipulation`}
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
     >
@@ -86,24 +86,16 @@ export function ModernStatCard({
 
           {/* Trend indicator */}
           {trend && (
-            <div className={`px-2 py-1 rounded-lg text-sm ${
-              trend.positive 
-                ? 'bg-brand-primary/10 text-brand-primary' 
-                : 'bg-brand-secondary/10 text-brand-secondary'
-            }`}>
-              {trend.positive ? '+' : '-'}{Math.abs(trend.value)}%
+            <div className={`flex items-center ${trend.positive ? 'text-green-500' : 'text-red-500'} text-xs md:text-sm font-medium`}>
+              <span className="mr-1">{trend.positive ? '↑' : '↓'}</span>
+              <span>{Math.abs(trend.value)}%</span>
             </div>
           )}
         </div>
 
-        {/* Value and label */}
         <div className="mt-4">
-          <div className={`${sizes.valueSize} font-bold text-white group-hover:text-gradient-primary transition-all duration-300`}>
-            {value}
-          </div>
-          <div className={`${sizes.labelSize} text-white/60 group-hover:text-white/80 transition-colors duration-300`}>
-            {label}
-          </div>
+          <h3 className={`${sizes.valueSize} font-bold text-white tracking-tight`}>{value}</h3>
+          <p className={`${sizes.labelSize} text-gray-300 mt-1 font-medium`}>{label}</p>
         </div>
       </div>
     </motion.div>
@@ -112,7 +104,7 @@ export function ModernStatCard({
 
 export function ModernStatGrid({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
       {children}
     </div>
   );

@@ -260,6 +260,8 @@ export function ModernSidebar({
     },
     mobileVisible: {
       x: 0,
+      width: "85vw", // Utiliser une largeur relative à l'écran sur mobile
+      maxWidth: "300px", // Mais avec une taille maximale
       transition: {
         type: "spring",
         stiffness: 400,
@@ -296,6 +298,7 @@ export function ModernSidebar({
           fixed top-0 left-0 bottom-0 z-50 bg-gradient-to-b from-brand-dark to-brand-dark/95
           border-r border-white/10 shadow-xl shadow-black/40
           overflow-hidden
+          ${showMobileMenu ? 'safe-area-inset-bottom' : ''}
         `}
         initial="collapsed"
         animate={
@@ -384,7 +387,7 @@ export function ModernSidebar({
           </motion.div>
 
           {/* Navigation avec catégories colorées */}
-          <nav className="flex-1 space-y-4 p-4 overflow-y-auto custom-scrollbar">
+          <nav className="flex-1 space-y-2 md:space-y-4 p-3 md:p-4 overflow-y-auto custom-scrollbar">
             {navItems.map((group, index) => {
               const categoryStyle = categories[group.category as keyof typeof categories];
               return (
@@ -431,7 +434,7 @@ export function ModernSidebar({
                           <Link
                             to={item.path}
                             className={`
-                              relative flex items-center px-4 py-3 rounded-lg text-sm
+                              relative flex items-center px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm
                               transition-all duration-200 ease-in-out overflow-hidden
                               ${isActive
                                 ? `bg-white/10 text-white shadow-[0_0_12px_rgba(255,255,255,0.1)] 
@@ -493,7 +496,7 @@ export function ModernSidebar({
                             <AnimatePresence>
                               {!collapsed && (
                                 <motion.span 
-                                  className={`ml-3 relative z-10 ${isActive ? 'font-medium' : ''}`}
+                                  className={`ml-2 md:ml-3 relative z-10 ${isActive ? 'font-medium' : ''} whitespace-nowrap`}
                                   variants={contentFadeVariants}
                                   initial="hidden"
                                   animate="visible"

@@ -43,11 +43,31 @@ function AppContent() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showEmergency, setShowEmergency] = useState(false);
   const previousPageRef = useRef<string | null>(null);
+  
+  // Détection de l'appareil iPhone
+  const [isIOS, setIsIOS] = useState(false);
+  
+  useEffect(() => {
+    // Détection des appareils iOS
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    setIsIOS(isIOSDevice);
+    
+    // Ajouter une classe au body si c'est un appareil iOS
+    if (isIOSDevice) {
+      document.body.classList.add('ios-device');
+    }
+  }, []);
 
   // Mise à jour du thème
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  // Fermer le menu mobile lors d'un changement de route
+  useEffect(() => {
+    setShowMobileMenu(false);
+  }, [location.pathname]);
 
   // Vérifier si on est sur la page des messages
   const isOnMessagesPage = location.pathname === '/network/messages';
@@ -103,43 +123,52 @@ function AppContent() {
         onEmergencyClick={() => setShowEmergency(true)}
         onToggleMessages={toggleMessagesPage}
       />
-      <div className="flex min-h-screen pt-16">
-        <ModernSidebar
-          showMobileMenu={showMobileMenu}
+      <div className="flex min-h-screen h-full">
+        {/* Ajouter une class spécifique pour iOS */}
+        <ModernSidebar 
+          showMobileMenu={showMobileMenu} 
           onCloseMobileMenu={() => setShowMobileMenu(false)}
           onEmergencyClick={() => setShowEmergency(true)}
           onToggleMessages={toggleMessagesPage}
-          onToggleNotifications={toggleNotifications}
+          onToggleNotifications={() => setShowNotifications(true)}
         />
-        <main className="flex-1 p-6 overflow-x-hidden">
-          <div className="max-w-7xl mx-auto">
-            <AnimatePresence mode="wait">
-              <Routes>
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/tasks" element={<TasksPage />} />
-                <Route path="/digitalvault" element={<DigitalVaultPage />} />
-                <Route path="/inventory" element={<InventoryPage />} />
-                <Route path="/stock" element={<StockPage />} />
-                <Route path="/traceability" element={<TraceabilityPage />} />
-                <Route path="/accounting" element={<AccountingPage />} />
-                <Route path="/invoices" element={<InvoicesPage />} />
-                <Route path="/hr" element={<HRPage />} />
-                <Route path="/network" element={<NetworkPage />} />
-                <Route path="/network/messages" element={<NetworkPage messageView={true} />} />
-                <Route path="/config" element={<ConfigPage />} />
-                <Route path="/notifications" element={<NotificationsPage />} />
-                <Route path="/sales" element={<SalesPage />} />
-                <Route path="/purchases" element={<PurchasesPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/shop" element={<ShopPage />} />
-                <Route path="/suppliers" element={<SuppliersPage />} />
-                <Route path="/suppliers/orders" element={<OrdersPage />} />
-                <Route path="/suppliers/:supplierId/catalog" element={<SupplierCatalogPage />} />
-              </Routes>
-            </AnimatePresence>
-          </div>
-        </main>
+
+        <div className={`
+          flex-1 bg-brand-dark pt-16 md:pt-16 
+          ${isIOS ? 'pb-safe' : 'pb-4'} 
+          ${isOnMessagesPage ? "" : "px-4 md:px-6 lg:px-8"}
+          ml-0 lg:ml-[4.5rem] transition-all duration-300
+        `}>
+          <main className="flex-1 p-6 overflow-x-hidden">
+            <div className="max-w-7xl mx-auto">
+              <AnimatePresence mode="wait">
+                <Routes>
+                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/tasks" element={<TasksPage />} />
+                  <Route path="/digitalvault" element={<DigitalVaultPage />} />
+                  <Route path="/inventory" element={<InventoryPage />} />
+                  <Route path="/stock" element={<StockPage />} />
+                  <Route path="/traceability" element={<TraceabilityPage />} />
+                  <Route path="/accounting" element={<AccountingPage />} />
+                  <Route path="/invoices" element={<InvoicesPage />} />
+                  <Route path="/hr" element={<HRPage />} />
+                  <Route path="/network" element={<NetworkPage />} />
+                  <Route path="/network/messages" element={<NetworkPage messageView={true} />} />
+                  <Route path="/config" element={<ConfigPage />} />
+                  <Route path="/notifications" element={<NotificationsPage />} />
+                  <Route path="/sales" element={<SalesPage />} />
+                  <Route path="/purchases" element={<PurchasesPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/shop" element={<ShopPage />} />
+                  <Route path="/suppliers" element={<SuppliersPage />} />
+                  <Route path="/suppliers/orders" element={<OrdersPage />} />
+                  <Route path="/suppliers/:supplierId/catalog" element={<SupplierCatalogPage />} />
+                </Routes>
+              </AnimatePresence>
+            </div>
+          </main>
+        </div>
       </div>
 
       <AnimatePresence>
