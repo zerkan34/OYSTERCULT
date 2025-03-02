@@ -114,13 +114,13 @@ export function DashboardPage() {
       <WeatherWidget />
 
       {/* Bloc unifié des statistiques */}
-      <div className="glass-effect rounded-xl p-6">
-        <div className="grid grid-cols-2 gap-8">
+      <div className="glass-effect rounded-xl p-4 md:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           {/* Colonne de gauche: Tables */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-white">Occupation des tables</h3>
-              <div className="text-sm text-white/60">4 tables actives</div>
+              <h3 className="text-base md:text-lg font-medium text-white">Occupation des tables</h3>
+              <div className="text-xs md:text-sm text-white/60">4 tables actives</div>
             </div>
             <div className="space-y-3">
               {tableOccupancyData.map((table, index) => {
@@ -149,16 +149,13 @@ export function DashboardPage() {
                         <div className="flex items-center space-x-3">
                           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: table.color }} />
                           <div>
-                            <div className="text-white font-medium">{table.name}</div>
-                            <div className="text-sm text-white/60">{table.type}</div>
+                            <div className="text-sm md:text-base text-white">{table.name}</div>
+                            <div className="text-xs text-white/70">{table.type}</div>
                           </div>
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-sm ${
-                          table.value >= 85 ? 'bg-green-500/20 text-green-300' :
-                          table.value >= 70 ? 'bg-yellow-500/20 text-yellow-300' :
-                          'bg-red-500/20 text-red-300'
-                        }`}>
-                          {table.value}% occupé
+                        <div className="text-right">
+                          <div className="text-sm md:text-base font-semibold text-white">{table.value}%</div>
+                          <div className="text-xs text-white/70">occupée</div>
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-sm">
@@ -189,10 +186,10 @@ export function DashboardPage() {
           </div>
 
           {/* Colonne de droite: Bassins */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6 mt-6 md:mt-0">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-white">Occupation des bassins</h3>
-              <div className="text-sm text-white/60">3 bassins actifs</div>
+              <h3 className="text-base md:text-lg font-medium text-white">Santé des bassins</h3>
+              <div className="text-xs md:text-sm text-white/60">3 bassins actifs</div>
             </div>
             <div className="space-y-3">
               {poolData.map((pool, index) => (
@@ -227,8 +224,8 @@ export function DashboardPage() {
                       <div className="flex items-center space-x-3">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pool.color }} />
                         <div>
-                          <div className="text-white font-medium">{pool.name}</div>
-                          <div className="text-sm text-white/60">{pool.type}</div>
+                          <div className="text-sm md:text-base text-white">{pool.name}</div>
+                          <div className="text-xs text-white/70">{pool.type}</div>
                         </div>
                       </div>
                       <div className={`px-3 py-1 rounded-full text-sm ${
@@ -292,8 +289,8 @@ export function DashboardPage() {
         </div>
       </div>
 
-      {/* Stock total et statistiques */}
-      <div className="grid grid-cols-4 gap-6">
+      {/* Statistiques principales */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <ModernStatCard
           icon={<Package size={24} className="text-brand-accent" />}
           label="Stock total"
@@ -323,6 +320,20 @@ export function DashboardPage() {
           trend={{ value: 0.3, positive: false }}
           color="primary"
         />
+      </div>
+
+      {/* Alertes */}
+      <div className="glass-effect rounded-xl p-4 md:p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base md:text-lg font-medium text-white">Alertes récentes</h3>
+          <div className="text-xs md:text-sm text-white/60">3 nouvelles alertes</div>
+        </div>
+        {/* ... */}
+      </div>
+
+      {/* Statistiques supplémentaires */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* ... */}
       </div>
 
       {/* Modales */}
