@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, Paperclip, Image, Smile, Search } from 'lucide-react';
+import { Send, Paperclip, Image, Smile, Search, ArrowLeft } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -34,6 +34,28 @@ const mockContacts: Contact[] = [
     lastMessage: 'Je vous recontacte demain',
     lastMessageTime: '09:15',
     online: false
+  },
+  {
+    id: '3',
+    name: 'Pierre Durand',
+    lastMessage: 'Pouvez-vous me donner les prix pour...',
+    lastMessageTime: 'Hier',
+    online: true
+  },
+  {
+    id: '4',
+    name: 'Sophie Dubois',
+    lastMessage: 'Je vous envoie les documents',
+    lastMessageTime: 'Lun',
+    unreadCount: 1,
+    online: false
+  },
+  {
+    id: '5',
+    name: 'Luc Moreau',
+    lastMessage: 'Merci pour votre réponse',
+    lastMessageTime: '23/02',
+    online: true
   }
 ];
 
@@ -160,6 +182,12 @@ export function NetworkChat({ contactId, onClose }: NetworkChatProps) {
         <div className="p-4 border-b border-white/10">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
+              <button 
+                onClick={onClose}
+                className="p-2 rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-colors"
+              >
+                <ArrowLeft size={20} />
+              </button>
               <div className="w-10 h-10 bg-brand-burgundy rounded-full flex items-center justify-center">
                 <span className="text-white font-medium">J</span>
               </div>

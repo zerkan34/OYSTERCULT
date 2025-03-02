@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shell, Fish, Anchor, Package, ShoppingCart } from 'lucide-react';
+import { Shell, Fish, Anchor, Package, ShoppingCart, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Product {
@@ -106,21 +106,22 @@ export const PRODUCTS_CATALOG: Product[] = [
   }
 ];
 
+// Déplacer la fonction getProductIcon en dehors des composants pour qu'elle soit accessible partout
+const getProductIcon = (type: string) => {
+  switch (type) {
+    case 'moules': return <Shell className="w-5 h-5" />;
+    case 'palourdes': return <Fish className="w-5 h-5" />;
+    case 'crevettes': return <Anchor className="w-5 h-5" />;
+    default: return <Package className="w-5 h-5" />;
+  }
+};
+
 interface ProductCardProps {
   product: Product;
   onOrder: (product: Product) => void;
 }
 
 function ProductCard({ product, onOrder }: ProductCardProps) {
-  const getProductIcon = (type: string) => {
-    switch (type) {
-      case 'moules': return <Shell className="w-5 h-5" />;
-      case 'palourdes': return <Fish className="w-5 h-5" />;
-      case 'crevettes': return <Anchor className="w-5 h-5" />;
-      default: return <Package className="w-5 h-5" />;
-    }
-  };
-
   return (
     <motion.div
       whileHover={{ y: -4 }}

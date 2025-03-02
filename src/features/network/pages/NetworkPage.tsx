@@ -19,19 +19,21 @@ import { NetworkChat } from '../components/NetworkChat';
 import { NewPostModal } from '../components/NewPostModal';
 import { AddFriendModal } from '../components/AddFriendModal';
 import { FriendSuppliers } from '../components/FriendSuppliers';
+import { MessageList } from '../components/MessageList';
 import { useStore } from '@/lib/store';
 import { useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-type NetworkTab = 'feed' | 'contacts' | 'directory' | 'forum' | 'suppliers';
+type NetworkTab = 'feed' | 'contacts' | 'directory' | 'forum' | 'messages' | 'suppliers';
 
 interface NetworkPageProps {
   messageView?: boolean;
+  activeTab?: NetworkTab;
 }
 
-export function NetworkPage({ messageView = false }: NetworkPageProps) {
+export function NetworkPage({ messageView = false, activeTab: initialActiveTab }: NetworkPageProps) {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState<NetworkTab>(messageView ? 'feed' : 'feed');
+  const [activeTab, setActiveTab] = useState<NetworkTab>(initialActiveTab || messageView ? 'messages' : 'feed');
   const [showNewPost, setShowNewPost] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -46,14 +48,16 @@ export function NetworkPage({ messageView = false }: NetworkPageProps) {
   }, [location.state]);
 
   useEffect(() => {
-    if (messageView) {
-      setActiveTab('feed');
+    if (initialActiveTab) {
+      setActiveTab(initialActiveTab);
+    } else if (messageView) {
+      setActiveTab('messages');
     }
-  }, [messageView]);
+  }, [messageView, initialActiveTab]);
 
   useEffect(() => {
-    if (location.pathname === '/network/messages' && activeTab !== 'feed') {
-      setActiveTab('feed');
+    if (location.pathname === '/network/messages' && activeTab !== 'messages') {
+      setActiveTab('messages');
     }
   }, [location.pathname, activeTab]);
 
@@ -133,6 +137,19 @@ export function NetworkPage({ messageView = false }: NetworkPageProps) {
           </div>
         </button>
         <button
+          onClick={() => setActiveTab('messages')}
+          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'messages'
+              ? 'border-brand-primary text-white'
+              : 'border-transparent text-white/60 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center">
+            <MessageCircle size={16} className="mr-2" />
+            Messagerie
+          </div>
+        </button>
+        <button
           onClick={() => setActiveTab('suppliers')}
           className={`py-4 text-sm font-medium border-b-2 transition-colors ${
             activeTab === 'suppliers'
@@ -163,9 +180,9 @@ export function NetworkPage({ messageView = false }: NetworkPageProps) {
           Filtres
         </button>
         <button className="relative p-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors">
-          <Bell size={20} />
+          <Bell size={20} className="text-amber-500 drop-shadow-[0_0_3px_rgba(245,158,11,0.5)]" />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-primary rounded-full flex items-center justify-center text-xs">
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center text-xs font-bold">
               {unreadCount}
             </span>
           )}
@@ -189,12 +206,14 @@ export function NetworkPage({ messageView = false }: NetworkPageProps) {
         />
       )}
       {activeTab === 'forum' && (
-        <Forum />
+        <Forum searchQuery={searchQuery} />
+      )}
+      {activeTab === 'messages' && (
+        <MessageList />
       )}
       {activeTab === 'suppliers' && (
         <FriendSuppliers />
       )}
-      </div>
 
       {showNewPost && (
         <NewPostModal onClose={() => setShowNewPost(false)} />

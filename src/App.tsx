@@ -30,6 +30,7 @@ import { SuppliersPage } from '@/features/suppliers/pages/SuppliersPage';
 import { SupplierCatalogPage } from '@/features/suppliers/pages/SupplierCatalogPage';
 import { OrdersPage } from '@/features/suppliers/pages/OrdersPage';
 import DigitalVaultPage from '@/features/digitalvault/pages/DigitalVaultPage';
+import { MessagesPage } from '@/features/network/pages/MessagesPage';
 import { AnimatePresence } from 'framer-motion';
 
 const queryClient = new QueryClient();
@@ -56,6 +57,28 @@ function AppContent() {
     // Ajouter une classe au body si c'est un appareil iOS
     if (isIOSDevice) {
       document.body.classList.add('ios-device');
+      
+      // Ajouter les méta-tags pour éviter le zoom sur iPhone
+      const metaViewport = document.querySelector('meta[name="viewport"]');
+      if (metaViewport) {
+        metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+      } else {
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+        document.head.appendChild(meta);
+      }
+      
+      // Ajuster la taille de police pour les inputs afin d'éviter le zoom automatique
+      const style = document.createElement('style');
+      style.innerHTML = `
+        @media screen and (max-width: 768px) {
+          input, select, textarea {
+            font-size: 16px !important;
+          }
+        }
+      `;
+      document.head.appendChild(style);
     }
   }, []);
 
@@ -154,7 +177,8 @@ function AppContent() {
                   <Route path="/invoices" element={<InvoicesPage />} />
                   <Route path="/hr" element={<HRPage />} />
                   <Route path="/network" element={<NetworkPage />} />
-                  <Route path="/network/messages" element={<NetworkPage messageView={true} />} />
+                  <Route path="/network/messages" element={<MessagesPage />} />
+                  <Route path="/messages" element={<NetworkPage activeTab="messages" />} />
                   <Route path="/config" element={<ConfigPage />} />
                   <Route path="/notifications" element={<NotificationsPage />} />
                   <Route path="/sales" element={<SalesPage />} />

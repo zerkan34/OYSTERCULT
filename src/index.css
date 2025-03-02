@@ -175,6 +175,65 @@
   }
 }
 
+/* Optimisations pour iPhone */
+@media screen and (max-width: 428px) {
+  /* iPhone 13 Pro Max width */
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Empêcher le zoom automatique sur les inputs */
+  input, 
+  textarea, 
+  select, 
+  button {
+    font-size: 16px !important; /* Taille min pour iOS pour éviter le zoom auto */
+  }
+  
+  /* S'assurer que les modals et popovers sont bien dimensionnés */
+  .modal-content,
+  .popover,
+  .dropdown-menu {
+    max-width: 90vw !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Assurer que les textes ne débordent pas */
+  p, h1, h2, h3, h4, h5, h6, span, button {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+  
+  /* Ajuster la taille des boutons pour faciliter la prise en main */
+  button,
+  .btn,
+  .button {
+    min-height: 44px; /* Hauteur minimale pour les cibles tactiles sur iOS */
+    padding: 10px 15px;
+  }
+  
+  /* Assurer que les éléments interactifs sont suffisamment espacés */
+  .button-group > * {
+    margin: 5px;
+  }
+}
+
+@supports(padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
 @layer components {
   /* Glass effect modernisé */
   .glass-effect {

@@ -12,11 +12,10 @@ import {
   Shell,
   Eye,
   Flame,
+  Layers, 
   Filter,
-  PanelLeft,
-  Info,
-  ChevronUp,
   ChevronDown,
+  ChevronUp,
   ArrowUp,
   ArrowDown,
   Download,
@@ -24,11 +23,11 @@ import {
   Search,
   ZoomIn,
   ZoomOut,
-  Maximize as MaximizeIcon,
+  Maximize,
   X,
   Map as MapIcon,
   Compass,
-  MinimizeIcon,
+  Minimize as MinimizeIcon,
   Check,
   Edit
 } from 'lucide-react';
@@ -319,7 +318,9 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
   };
 
   const handleResetZoom = () => {
-    setZoomLevel(1);
+    // Dézoom au minimum pour voir toutes les tables
+    setZoomLevel(0.5);
+    // Réinitialise la position de vue au centre
     setViewPosition({ x: 0, y: 0 });
   };
 
@@ -395,7 +396,7 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                   onClick={handleResetZoom}
                   className="p-1.5 hover:bg-white/10 rounded-md text-white"
                 >
-                  <MaximizeIcon size={18} />
+                  <Maximize size={18} />
                 </button>
               </div>
               
@@ -519,7 +520,7 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                         {table.cells.map((cell, index) => (
                           <motion.div
                             key={cell.id}
-                            className={`rounded-md transition-all duration-300 ${
+                            className={`relative rounded-md transition-all duration-300 ${
                               cell.filled
                                 ? `${
                                     cell.type === 'triplo' ? 'bg-brand-burgundy shadow-neon' :
@@ -533,11 +534,15 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                             animate="animate"
                             custom={index}
                           >
-                            {cell.filled && cell.fillOrder && (
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-xs text-white font-bold">{cell.fillOrder}</span>
-                              </div>
-                            )}
+                            {/* Overlay avec contour blanc et ombre */}
+                            <div className="absolute inset-0 rounded-md border-2 border-white shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+                              {/* Affichage du numéro uniquement pour les cellules remplies */}
+                              {cell.filled && (
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <span className="text-xs text-white font-bold">{cell.fillOrder}</span>
+                                </div>
+                              )}
+                            </div>
                           </motion.div>
                         ))}
                       </div>

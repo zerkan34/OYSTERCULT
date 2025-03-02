@@ -21,8 +21,8 @@ import {
   Truck,
   Mail,
   Lock,
-  CircleChevronRight,
-  Menu
+  Menu,
+  MessageCircle
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { OysterLogo } from './OysterLogo';
@@ -136,14 +136,14 @@ const navItems = [
         icon: <Truck size={22} /> 
       },
       { 
-        path: '/sales', 
-        label: 'Ventes', 
-        icon: <DollarSign size={22} />
-      },
-      { 
         path: '/purchases', 
         label: 'Commandes', 
         icon: <ShoppingCart size={22} />
+      },
+      { 
+        path: '/sales', 
+        label: 'Ventes', 
+        icon: <DollarSign size={22} />
       },
       { 
         path: '/shop', 

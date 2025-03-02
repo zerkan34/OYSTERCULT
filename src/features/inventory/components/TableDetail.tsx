@@ -405,7 +405,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                 <div className="flex justify-between items-center">
                   <span className="text-white/60">Date de récolte estimée</span>
                   <span className="text-white font-medium">
-                    {new Date(table.currentBatch.estimatedHarvestDate).toLocaleDateString()}
+                    {format(new Date(table.currentBatch.estimatedHarvestDate), 'PP', { locale: fr })}
                   </span>
                 </div>
               </div>
@@ -419,16 +419,16 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
               Échantillonnage
             </div>
             <div className="space-y-4">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between text-sm">
                 <span className="text-white/60">Dernier échantillonnage</span>
-                <span className="text-white font-medium">
-                  {new Date(table?.lastCheck || '').toLocaleDateString()}
+                <span className="text-white">
+                  {format(new Date(table.lastCheck), 'PP', { locale: fr })}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between text-sm">
                 <span className="text-white/60">Prochain échantillonnage</span>
-                <span className="text-white font-medium">
-                  {new Date(table?.nextCheck || '').toLocaleDateString()}
+                <span className="text-white">
+                  {format(new Date(table.nextCheck), 'PP', { locale: fr })}
                 </span>
               </div>
             </div>
@@ -575,15 +575,17 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
               animate="animate"
               custom={index}
             >
-              {/* Overlay d'action avec contour toujours visible */}
+              {/* Overlay avec contour blanc et ombre */}
               <div className="absolute inset-0 rounded-md border-2 border-white shadow-[0_0_8px_rgba(255,255,255,0.8)]">
-                {/* Remplacer l'icône Plus par un indicateur numérique */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-xs text-white font-bold">{index + 1}</span>
-                </div>
+                {/* Affichage du numéro uniquement pour les cellules remplies */}
+                {cell.filled && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xs text-white font-bold">{cell.fillOrder || index + 1}</span>
+                  </div>
+                )}
               </div>
 
-              {/* Informations de la cellule */}
+              {/* Informations de la cellule (seulement si remplie) */}
               {cell.filled && (
                 <div className="absolute bottom-1 right-1 text-[8px] text-white/60">
                   {cell.ropeCount}
