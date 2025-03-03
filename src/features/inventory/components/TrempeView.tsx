@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Plus, Edit2, Package, Info, PieChart, History, Eye, X, Save } from 'lucide-react';
+import { Settings, Plus, Edit2, Package, Info, PieChart, History, Eye, X, Save, Scale } from 'lucide-react';
 import { format, isValid } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { AnimatedCard } from '@/components/ui/AnimatedCard';
@@ -169,9 +169,13 @@ export function TrempeView() {
   const [newRopeData, setNewRopeData] = useState({
     type: '',
     quantity: 1,
-    date: format(new Date(), 'yyyy-MM-dd')
+    date: format(new Date(), 'yyyy-MM-dd'),
+    batchNumber: `LOT-${format(new Date(), 'yyyyMMdd')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`
   });
-  
+  const [showHarvestModal, setShowHarvestModal] = useState(false);
+  const [ropesToHarvest, setRopesToHarvest] = useState(1);
+  const [selectedHarvestBatch, setSelectedHarvestBatch] = useState('');
+
   // Récupérer les lots depuis le store
   const { batches, updateBatch } = useStore();
 
@@ -331,6 +335,16 @@ export function TrempeView() {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     setMousePosition({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleHarvestRopes = () => {
+    if (selectedSquare && ropesToHarvest > 0) {
+      // Ici vous pouvez implémenter la logique pour récolter les cordes
+      console.log(`Récolte de ${ropesToHarvest} cordes du carré ${selectedSquare.number}, lot: ${selectedHarvestBatch}`);
+      
+      // Fermer le modal de récolte
+      setShowHarvestModal(false);
+    }
   };
 
   return (
@@ -636,8 +650,8 @@ export function TrempeView() {
                 </button>
 
                 {/* En-tête */}
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
                     <div className={`w-3 h-3 rounded-full ${
                       selectedSquare.status === 'full'
                         ? 'bg-brand-primary'
@@ -766,13 +780,10 @@ export function TrempeView() {
                   <h3 className="text-xl font-semibold text-white">Détails du carré {selectedSquare.number}</h3>
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => {
-                        window.location.href = '/traceability';
-                      }}
-                      className="p-2 bg-brand-primary/20 hover:bg-brand-primary/40 rounded-lg transition-colors"
-                      title="Ajouter une corde via la traçabilité"
+                      onClick={() => setShowHarvestModal(true)}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors text-white"
                     >
-                      <Plus size={16} className="text-red-500" />
+                      Récolter
                     </button>
                     <button
                       onClick={handleCloseModal}
@@ -869,7 +880,7 @@ export function TrempeView() {
                 <h3 className="text-xl font-semibold text-white mb-4">Ajouter une corde</h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm text-white/60 mb-1">Type d'huître</label>
+                    <label className="block text-sm text-white/60 mb-1">Types d'huîtres</label>
                     <select
                       value={newRopeData.type}
                       onChange={(e) => setNewRopeData({...newRopeData, type: e.target.value})}
@@ -880,6 +891,24 @@ export function TrempeView() {
                       <option value="creuses" className="text-white">Creuses</option>
                       <option value="speciales" className="text-white">Spéciales</option>
                     </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white/60 mb-1">
+                      Numéro de lot 
+                      <span className="ml-2 text-white/40">(lot en cours)</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        value={newRopeData.batchNumber}
+                        onChange={(e) => setNewRopeData({...newRopeData, batchNumber: e.target.value})}
+                        className="flex-1 bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
+                      >
+                        <option value={newRopeData.batchNumber}>{newRopeData.batchNumber}</option>
+                        <option value={`LOT-${format(new Date(), 'yyyyMMdd')}-001`}>LOT-{format(new Date(), 'yyyyMMdd')}-001</option>
+                        <option value={`LOT-${format(new Date(), 'yyyyMMdd')}-002`}>LOT-{format(new Date(), 'yyyyMMdd')}-002</option>
+                        <option value={`LOT-${format(new Date(), 'yyyyMMdd')}-003`}>LOT-{format(new Date(), 'yyyyMMdd')}-003</option>
+                      </select>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm text-white/60 mb-1">Nombre de cordes</label>
@@ -922,6 +951,90 @@ export function TrempeView() {
             </div>
           )}
         </AnimatePresence>
+
+        {/* Modal pour la récolte des cordes */}
+        {showHarvestModal && selectedSquare && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-white">Récolte de cordes</h3>
+                <button
+                  onClick={() => setShowHarvestModal(false)}
+                  className="text-white/60 hover:text-white transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+              
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Sélectionner une perche
+                  </label>
+                  <div className="flex flex-col gap-3">
+                    <select
+                      value={selectedHarvestBatch}
+                      onChange={(e) => setSelectedHarvestBatch(e.target.value)}
+                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white [&>option]:bg-gray-800 [&>option]:text-white"
+                    >
+                      <option value="" className="text-white/60">Choisir une perche</option>
+                      {[...Array(5)].map((_, index) => (
+                        <option key={index} value={`perche-${index + 1}`}>
+                          Perche {index + 1}
+                        </option>
+                      ))}
+                    </select>
+                    
+                    <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg">
+                      <span className="text-white/60 text-sm">Numéro de lot:</span>
+                      <span className="text-white font-medium">
+                        {selectedHarvestBatch ? (
+                          `LOT-${format(new Date(), 'yyyyMMdd')}-${selectedHarvestBatch.split('-')[1].padStart(3, '0')}`
+                        ) : (
+                          'LOT-000000-000'
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Nombre de cordes à récolter
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max={selectedSquare.ropes || 10}
+                    value={ropesToHarvest}
+                    onChange={(e) => setRopesToHarvest(Math.min(parseInt(e.target.value) || 1, selectedSquare.ropes || 10))}
+                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                  />
+                  <p className="mt-2 text-sm text-white/70">
+                    {selectedSquare.ropes ? `${selectedSquare.ropes} cordes disponibles` : 'Nombre de cordes inconnu'}
+                  </p>
+                </div>
+                
+                <div className="flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowHarvestModal(false)}
+                    className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleHarvestRopes}
+                    className="px-4 py-2 bg-green-600 rounded-lg text-white hover:bg-green-700 transition-colors"
+                  >
+                    Récolter
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
