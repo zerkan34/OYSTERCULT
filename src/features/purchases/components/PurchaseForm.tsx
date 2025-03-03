@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { useForm } from 'react-hook-form';
 import { Camera, Upload, Star } from 'lucide-react';
+import { MessageSquare, X, BarChart2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 interface PurchaseFormData {
   productName: string;
@@ -20,6 +23,15 @@ interface PurchaseFormProps {
   onClose: () => void;
 }
 
+interface OrderDetailsProps {
+  order: {
+    id: string;
+    productName: string;
+    rating?: number;
+  };
+  onClose: () => void;
+}
+
 export function PurchaseForm({ isOpen, onClose }: PurchaseFormProps) {
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<PurchaseFormData>({
     defaultValues: {
@@ -30,7 +42,7 @@ export function PurchaseForm({ isOpen, onClose }: PurchaseFormProps) {
   });
   const [invoicePreview, setInvoicePreview] = useState<string | null>(null);
   const rating = watch('rating');
-
+  
   const onSubmit = (data: PurchaseFormData) => {
     console.log(data);
     // Ici, on enverrait les données à traçabilité, comptabilité et stock
@@ -259,6 +271,132 @@ export function PurchaseForm({ isOpen, onClose }: PurchaseFormProps) {
           </button>
         </div>
       </form>
+    </Modal>
+  );
+}
+
+export function OrderDetails({ order, onClose }: OrderDetailsProps) {
+  const [activeTab, setActiveTab] = useState<'comments' | 'performance'>('comments');
+  const [message, setMessage] = useState('');
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+    // TODO: Implement message sending
+    setMessage('');
+  };
+
+  return (
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      size="xl"
+      showCloseButton={false}
+    >
+      <div className="h-[80vh] flex flex-col">
+        {/* Header */}
+        <div className="p-6 border-b border-white/10">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-white">Commande #{order.id}</h2>
+              <p className="text-white/60 mt-1">{order.productName}</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-white/60 hover:text-white transition-colors"
+            >
+              <X size={24} />
+            </button>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="border-b border-white/10">
+          <div className="flex space-x-4 px-6">
+            <button
+              onClick={() => setActiveTab('comments')}
+              className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'comments'
+                  ? 'border-brand-primary text-brand-primary'
+                  : 'border-transparent text-white/60 hover:text-white'
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                <MessageSquare size={16} />
+                <span>Commentaires</span>
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('performance')}
+              className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'performance'
+                  ? 'border-brand-primary text-brand-primary'
+                  : 'border-transparent text-white/60 hover:text-white'
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                <BarChart2 size={16} />
+                <span>Performances</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto">
+          {activeTab === 'comments' ? (
+            <div className="p-6 space-y-6">
+              {/* Comments list */}
+              <div className="space-y-4">
+                {/* Add comments here */}
+              </div>
+
+              {/* Comment input */}
+              <form onSubmit={handleSendMessage} className="mt-4">
+                <div className="flex space-x-4">
+                  <input
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Ajouter un commentaire..."
+                    className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-brand-primary hover:bg-brand-primary/90 rounded-lg text-white transition-colors"
+                  >
+                    Envoyer
+                  </button>
+                </div>
+              </form>
+            </div>
+          ) : (
+            <div className="p-6 space-y-6">
+              {/* Performance content */}
+              <div className="bg-white/5 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Évaluation du produit</h3>
+                <div className="flex items-center space-x-2">
+                  {[1, 2, 3, 4, 5].map((value) => (
+                    <Star
+                      key={value}
+                      size={24}
+                      className={`${
+                        value <= (order.rating || 0)
+                          ? 'text-yellow-400 fill-current'
+                          : 'text-white/20'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <p className="mt-2 text-white/60">
+                  Note: {order.rating}/5
+                </p>
+                {/* Add more performance metrics here */}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </Modal>
   );
 }

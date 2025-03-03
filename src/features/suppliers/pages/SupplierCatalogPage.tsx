@@ -406,23 +406,6 @@ export function SupplierCatalogPage() {
                     {product.price.toFixed(2)}€ / {product.unit}
                   </span>
                 </div>
-                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
-                  <input
-                    type="number"
-                    min={product.min_order_quantity}
-                    step={product.min_order_quantity}
-                    value={getOrderQuantity(product.id)}
-                    onChange={(e) => handleQuantityChange(product.id, parseFloat(e.target.value))}
-                    className="w-full sm:w-20 px-3 py-2 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg focus:border-[rgb(var(--color-brand-primary))] focus:outline-none"
-                  />
-                  <button
-                    onClick={() => addToCart(product.id)}
-                    className="w-full sm:flex-1 py-2 px-4 flex items-center justify-center gap-1 bg-[rgb(var(--color-brand-primary)_/_0.1)] hover:bg-[rgb(var(--color-brand-primary)_/_0.2)] text-[rgb(var(--color-brand-primary))] rounded-lg transition-colors group-hover:shadow-md"
-                  >
-                    <ShoppingCart className="w-4 h-4" />
-                    <span>Ajouter au panier</span>
-                  </button>
-                </div>
               </div>
             </div>
           ))}

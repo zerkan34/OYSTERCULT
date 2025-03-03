@@ -7,6 +7,11 @@ import { CartModal } from './CartModal';
 import { Package2, Search, Filter, AlertCircle, ShoppingCart } from 'lucide-react';
 import type { Supplier, SupplierProduct } from '@/types/supplier';
 
+interface CartItem {
+  product: SupplierProduct;
+  quantity: number;
+}
+
 export function SupplierCatalog() {
   const { suppliers } = useSuppliers();
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
@@ -16,8 +21,8 @@ export function SupplierCatalog() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const [cartItems, setCartItems] = useState<Array<{ product: SupplierProduct; quantity: number }>>([]);
-  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(true);
 
   const addToCart = (product: SupplierProduct, quantity: number) => {
     setCartItems(prev => {
@@ -48,9 +53,7 @@ export function SupplierCatalog() {
   };
 
   const handleCartClick = () => {
-    if (cartItems.length > 0) {
-      setIsCartModalOpen(true);
-    }
+    setIsCartModalOpen(true);
   };
 
   // Catégories disponibles basées sur les produits

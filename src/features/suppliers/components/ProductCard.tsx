@@ -11,6 +11,10 @@ interface ProductCardProps {
 export function ProductCard({ product, onEdit, onAddToCart }: ProductCardProps) {
   const [quantity, setQuantity] = useState(product.min_order_quantity);
 
+  const handleAddToCart = () => {
+    onAddToCart(product, quantity);
+  };
+
   return (
     <div className="w-[320px] h-[420px] bg-[rgb(var(--color-brand-surface)_/_0.5)] backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] hover:border-[rgb(var(--color-brand-primary)_/_0.5)] transition-all duration-300 group">
       <div className="relative">
@@ -58,11 +62,11 @@ export function ProductCard({ product, onEdit, onAddToCart }: ProductCardProps) 
             type="number"
             min={product.min_order_quantity}
             value={quantity}
-            onChange={(e) => setQuantity(Math.max(product.min_order_quantity, parseInt(e.target.value)))}
+            onChange={(e) => setQuantity(Math.max(product.min_order_quantity, parseInt(e.target.value) || product.min_order_quantity))}
             className="w-20 px-3 py-2 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg text-[rgb(var(--color-text))] focus:border-[rgb(var(--color-brand-primary))] focus:outline-none"
           />
           <button
-            onClick={() => onAddToCart(product, quantity)}
+            onClick={handleAddToCart}
             className="flex-1 px-4 py-2 bg-[rgb(var(--color-brand-primary)_/_0.1)] hover:bg-[rgb(var(--color-brand-primary)_/_0.2)] text-[rgb(var(--color-brand-primary))] rounded-lg transition-colors duration-200 group-hover:shadow-md font-medium"
           >
             Ajouter au panier
