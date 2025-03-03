@@ -28,12 +28,30 @@ const mockUnits: Unit[] = [
   },
   {
     id: '3',
-    name: 'Poche',
-    symbol: 'pc',
+    name: 'Pochon',
+    symbol: 'pch',
     type: 'quantity',
     baseUnit: 'douzaine',
     conversionFactor: 12,
     description: 'Contenant standard pour l\'élevage'
+  },
+  {
+    id: '4',
+    name: 'Caisse de conditionnement',
+    symbol: 'ccon',
+    type: 'quantity',
+    baseUnit: 'douzaine',
+    conversionFactor: 24,
+    description: 'Caisse utilisée pour le conditionnement des huîtres'
+  },
+  {
+    id: '5',
+    name: 'Caisse de stockage bassin',
+    symbol: 'cstk',
+    type: 'quantity',
+    baseUnit: 'douzaine',
+    conversionFactor: 36,
+    description: 'Caisse pour le stockage en bassin'
   }
 ];
 

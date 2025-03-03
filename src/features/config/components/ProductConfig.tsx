@@ -219,33 +219,6 @@ export function ProductConfig() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Stock minimum
-                  </label>
-                  <input
-                    type="number"
-                    name="minStock"
-                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-                    defaultValue={editingProduct?.minStock}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Stock maximum
-                  </label>
-                  <input
-                    type="number"
-                    name="maxStock"
-                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-                    defaultValue={editingProduct?.maxStock}
-                    required
-                  />
-                </div>
-              </div>
-
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
                   Unité

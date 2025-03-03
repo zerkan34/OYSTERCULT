@@ -353,6 +353,26 @@ export function PricingConfig() {
                   <button
                     type="button"
                     className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+                    onClick={() => {
+                      const newProducts = [...(editingPriceList?.products || [])];
+                      newProducts.push({
+                        name: 'plates',
+                        size: '3',
+                        price: 0,
+                        minQuantity: 1
+                      });
+                      setEditingPriceList({
+                        ...(editingPriceList || {
+                          name: '',
+                          description: '',
+                          type: 'retail',
+                          validFrom: '',
+                          validTo: '',
+                          products: []
+                        }),
+                        products: newProducts
+                      });
+                    }}
                   >
                     + Ajouter un produit
                   </button>
