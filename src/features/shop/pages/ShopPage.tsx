@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { Search, Filter, ShoppingCart, Package, Droplets, Thermometer, Activity, Gauge, Wifi, Smartphone } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, ChevronDown, ShoppingCart } from 'lucide-react';
+import { useCart } from '../hooks/useCart';
+import { CartModal } from '../components/CartModal';
 
 interface Product {
   id: string;
@@ -12,6 +14,7 @@ interface Product {
   specifications: {
     [key: string]: string;
   };
+  image: string;
 }
 
 const mockProducts: Product[] = [
@@ -33,7 +36,8 @@ const mockProducts: Product[] = [
       'Autonomie': '12 mois',
       'Profondeur max': '50m',
       'Protection': 'IP68'
-    }
+    },
+    image: 'https://example.com/image1.jpg'
   },
   {
     id: '2',
@@ -53,7 +57,8 @@ const mockProducts: Product[] = [
       'Précision': '±0.01 pH',
       'Temps de réponse': '<5s',
       'Température': '0-50°C'
-    }
+    },
+    image: 'https://example.com/image2.jpg'
   },
   {
     id: '3',
@@ -73,167 +78,180 @@ const mockProducts: Product[] = [
       'Connectivité': 'Bluetooth 5.0',
       'Autonomie': '7 jours',
       'Résistance': '5 ATM'
-    }
+    },
+    image: 'https://example.com/image3.jpg'
   }
 ];
 
 export function ShopPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const { cartItems, addToCart, isCartModalOpen, setIsCartModalOpen } = useCart();
 
-  const filteredProducts = mockProducts.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.description.toLowerCase().includes(searchQuery.toLowerCase())
-  ).filter(product =>
-    !selectedCategory || product.category === selectedCategory
-  );
+  // Fermer le dropdown des catégories quand on clique en dehors
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showCategoryDropdown) {
+        setShowCategoryDropdown(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showCategoryDropdown]);
+
+  // Get unique categories
+  const categories = ['all', ...new Set(mockProducts.map(product => product.category))];
+
+  // Filter products based on category and search query
+  const filteredProducts = mockProducts.filter(product => {
+    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         product.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-      {/* Header */}
-      <div className="fixed top-0 left-0 right-0 bg-brand-primary/10 backdrop-blur-md z-10 border-b border-white/10">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center">
-            <ShoppingCart className="w-5 h-5 mr-2" />
-            <h1 className="text-xl font-semibold">Boutique Oystercult</h1>
-          </div>
-          
-          <div className="flex w-full sm:w-auto items-center space-x-2">
-            <div className="relative flex-1 sm:w-64">
-              <input
-                type="text"
-                placeholder="Rechercher..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 pl-9 bg-white/5 border border-white/10 rounded-lg focus:border-white/20 focus:outline-none"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
-            </div>
-            
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="px-3 py-2 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors flex items-center space-x-1"
-            >
-              <Filter className="w-4 h-4" />
-              <span className="hidden sm:inline">Filtres</span>
-            </button>
-            
-            <div className="relative">
-              <button
-                onClick={() => {}}
-                className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors relative"
-                style={{
-                  boxShadow: cartCount > 0 ? '0 0 10px 2px rgba(125, 211, 252, 0.5)' : 'none'
-                }}
+    <div className="min-h-screen bg-[rgb(var(--color-brand-bg))]">
+      {/* Header avec effet de flou */}
+      <header className="sticky top-0 z-40 w-full border-b border-[rgb(var(--color-border)_/_var(--color-border-opacity))] bg-[rgb(var(--color-brand-surface))]">
+        <div className="max-w-[1400px] mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-semibold text-[rgb(var(--color-text-primary))]">
+              Boutique
+            </h1>
+            <div className="flex items-center gap-4">
+              <button 
+                className="p-2 rounded-lg hover:bg-[rgb(var(--color-brand-surface-hover))] transition-colors relative"
+                onClick={() => setIsCartModalOpen()}
               >
-                <ShoppingCart className="w-5 h-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-brand-primary text-white text-xs rounded-full">
-                    {cartCount}
+                <ShoppingCart className="w-5 h-5 text-[rgb(var(--color-text-secondary))]" />
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[rgb(var(--color-brand-primary))] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                    {cartItems.length}
                   </span>
                 )}
               </button>
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* Contenu principal */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 pt-32 pb-12">
-      
-        {/* Filtres */}
-        <div className={`mb-6 bg-white/5 rounded-xl p-4 transition-all duration-300 ${showFilters ? 'max-h-96' : 'max-h-0 overflow-hidden p-0 mb-0'}`}>
-          <h2 className="text-lg font-medium mb-3">Filtrer par catégorie</h2>
-          <div className="flex flex-wrap gap-2">
+      </header>
+
+      {/* Contenu principal avec espacement correct */}
+      <main className="max-w-[1400px] mx-auto px-6 pt-12 pb-24">
+        {/* Barre de recherche et filtres */}
+        <div className="mb-8 flex flex-col sm:flex-row gap-4">
+          {/* Barre de recherche */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgb(var(--color-text-secondary))]" />
+            <input
+              type="text"
+              placeholder="Rechercher un produit..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg focus:outline-none focus:border-[rgb(var(--color-brand-primary))]"
+            />
+          </div>
+
+          {/* Filtre par catégorie */}
+          <div className="relative">
             <button
-              onClick={() => setSelectedCategory(null)}
-              className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
-                selectedCategory === null
-                  ? 'bg-brand-primary text-white'
-                  : 'bg-white/5 text-white/70 hover:bg-white/10'
-              }`}
+              onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+              className="w-full sm:w-48 px-4 py-2.5 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg flex items-center justify-between gap-2"
             >
-              Tous
+              <span className="text-[rgb(var(--color-text-primary))]">
+                {selectedCategory === 'all' ? 'Toutes catégories' : selectedCategory}
+              </span>
+              <ChevronDown className="w-4 h-4 text-[rgb(var(--color-text-secondary))]" />
             </button>
-            <button
-              onClick={() => setSelectedCategory('device')}
-              className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
-                selectedCategory === 'device'
-                  ? 'bg-brand-primary text-white'
-                  : 'bg-white/5 text-white/70 hover:bg-white/10'
-              }`}
-            >
-              Appareils
-            </button>
-            <button
-              onClick={() => setSelectedCategory('accessory')}
-              className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
-                selectedCategory === 'accessory'
-                  ? 'bg-brand-primary text-white'
-                  : 'bg-white/5 text-white/70 hover:bg-white/10'
-              }`}
-            >
-              Accessoires
-            </button>
+
+            {showCategoryDropdown && (
+              <div className="absolute z-20 mt-1 w-full bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg shadow-lg">
+                <div className="p-1">
+                  {categories.map(category => (
+                    <button
+                      key={category}
+                      onClick={() => {
+                        setSelectedCategory(category);
+                        setShowCategoryDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                        selectedCategory === category 
+                          ? 'bg-[rgb(var(--color-brand-primary)_/_0.1)] text-[rgb(var(--color-brand-primary))]'
+                          : 'hover:bg-[rgb(var(--color-brand-surface-hover))] text-[rgb(var(--color-text-primary))]'
+                      }`}
+                    >
+                      <span className="capitalize">
+                        {category === 'all' ? 'Toutes catégories' : category}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        {/* Grille de produits */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:border-white/20 transition-all duration-200"
+              className="bg-[rgb(var(--color-brand-surface))] rounded-lg overflow-hidden border border-[rgb(var(--color-border)_/_var(--color-border-opacity))]"
             >
-              <div className="p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-0">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-medium text-white break-words">{product.name}</h3>
-                    <p className="text-sm text-white/60 mt-1 line-clamp-3">{product.description}</p>
-                  </div>
-                  <div className="text-xl font-bold text-white whitespace-nowrap">{product.price}€</div>
-                </div>
-
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {product.features.map((feature, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 bg-white/5 rounded-full text-xs text-white/70"
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4">
+                <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">
+                  {product.name}
+                </h3>
+                <p className="mt-1 text-sm text-[rgb(var(--color-text-secondary))]">
+                  {product.description}
+                </p>
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-lg font-medium text-[rgb(var(--color-text-primary))]">
+                    {product.price}€
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="1"
+                      defaultValue="1"
+                      className="w-16 px-2 py-1 text-sm border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded"
+                      onChange={(e) => {
+                        const quantity = parseInt(e.target.value, 10);
+                        if (quantity > 0) {
+                          addToCart(product.id, quantity);
+                        }
+                      }}
+                    />
+                    <button
+                      onClick={() => addToCart(product.id, 1)}
+                      className="px-3 py-1 bg-[rgb(var(--color-brand-primary))] text-white rounded hover:bg-[rgb(var(--color-brand-primary))/0.8] transition-colors"
                     >
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="mt-4">
-                  <h4 className="text-sm font-medium text-white mb-2">Spécifications</h4>
-                  <div className="space-y-2">
-                    {Object.entries(product.specifications).map(([key, value]) => (
-                      <div key={key} className="flex justify-between text-sm">
-                        <span className="text-white/60">{key}</span>
-                        <span className="text-white">{value}</span>
-                      </div>
-                    ))}
+                      Ajouter
+                    </button>
                   </div>
-                </div>
-
-                <div className="mt-6 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-                  <button
-                    onClick={() => setCartCount(prev => prev + 1)}
-                    className="w-full sm:flex-1 px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
-                  >
-                    Ajouter au panier
-                  </button>
-                  <button className="w-full sm:w-auto px-4 py-2 bg-white/5 rounded-lg text-white hover:bg-white/10 transition-colors">
-                    Détails
-                  </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
-      </div>
+
+        {/* Modal du panier */}
+        {isCartModalOpen && (
+          <CartModal
+            products={mockProducts}
+            onClose={() => setIsCartModalOpen()}
+          />
+        )}
+      </main>
     </div>
   );
 }

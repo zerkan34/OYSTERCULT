@@ -32,12 +32,6 @@ const sections: { id: ConfigSection; label: string; icon: React.ReactNode; descr
     description: 'Configuration des produits et du catalogue'
   },
   { 
-    id: 'suppliers', 
-    label: 'Fournisseurs', 
-    icon: <Truck size={20} />,
-    description: 'Gestion des fournisseurs et partenaires'
-  },
-  { 
     id: 'pricing', 
     label: 'Tarification', 
     icon: <DollarSign size={20} />,

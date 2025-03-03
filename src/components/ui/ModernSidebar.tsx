@@ -295,7 +295,7 @@ export function ModernSidebar({
 
       <motion.div
         className={`
-          fixed top-0 left-0 bottom-0 z-50 bg-gradient-to-b from-brand-dark to-brand-dark/95
+          fixed top-0 left-0 bottom-0 z-50 bg-brand-dark
           border-r border-white/10 shadow-xl shadow-black/40
           overflow-hidden
           ${showMobileMenu ? 'safe-area-inset-bottom' : ''}
@@ -342,9 +342,6 @@ export function ModernSidebar({
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <div className="relative z-10">
-                    <OysterLogo />
-                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -353,7 +350,7 @@ export function ModernSidebar({
               className={`
                 rounded-lg hidden lg:flex items-center justify-center transition-all duration-300 relative z-10
                 ${collapsed ? 
-                  "p-3 bg-white hover:bg-white/90 border-2 border-white shadow-[0_0_15px_rgba(255,255,255,0.6)]" : 
+                  "p-2.5 bg-white/15 hover:bg-white/25 border border-white/20" : 
                   "p-2.5 bg-white/15 hover:bg-white/25 border border-white/20"
                 }
               `}
@@ -363,25 +360,9 @@ export function ModernSidebar({
               aria-label={collapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
             >
               {collapsed ? (
-                <div className="relative flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="26"
-                    height="26"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#6A1B31"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-brand-burgundy"
-                  >
-                    <path d="M9 6l6 6-6 6"></path>
-                    <line x1="3" y1="6" x2="3" y2="18"></line>
-                  </svg>
-                </div>
+                <ChevronRight className="w-[22px] h-[22px] text-white hover:text-white" />
               ) : (
-                <ChevronLeft size={22} className="text-white hover:text-white" />
+                <ChevronLeft className="w-[22px] h-[22px] text-white hover:text-white" />
               )}
             </motion.button>
           </motion.div>
@@ -483,13 +464,13 @@ export function ModernSidebar({
                                   )}
                                   className="flex items-center justify-center"
                                 >
-                                  {collapsed && item.path === '/config' ? null : item.icon}
+                                  {item.icon}
                                 </motion.div>
                               ) : (
                                 <div 
                                   className={hoveredItem === item.path ? "animate-pulse" : ""}
                                 >
-                                  {collapsed && item.path === '/config' ? null : item.icon}
+                                  {item.icon}
                                 </div>
                               )}
                             </div>
