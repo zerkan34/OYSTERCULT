@@ -350,7 +350,7 @@ export function TrempeView() {
 
         {/* Vue principale avec effet de glow */}
         <div className="glass-effect rounded-xl p-6 border border-white/10 shadow-glow-main relative">
-          {/* Layout en grid pour organiser les éléments horizontalement */}
+          {/* Layout en deux colonnes pour la vue satellite et les détails */}
           <div className="flex flex-col gap-6">
             {/* Statistiques générales - Maintenant dans une barre horizontale avec effet de glow */}
             <div className="grid grid-cols-3 gap-4 p-4 rounded-xl bg-white/5 border border-white/10 shadow-inner-glow">
@@ -409,10 +409,10 @@ export function TrempeView() {
               </div>
             </div>
 
-            {/* Layout en deux colonnes pour la vue satellite et les détails */}
-            <div className="flex gap-6">
-              {/* Vue satellite réduite de moitié */}
-              <div className="w-1/2">
+            {/* Layout en flex-col pour organiser les éléments verticalement */}
+            <div className="flex flex-col gap-6">
+              {/* Vue satellite - maintenant en pleine largeur */}
+              <div className="w-full">
                 <div className="p-4 rounded-xl bg-white/5 border border-white/10 shadow-inner-glow">
                   <h2 className="text-white/80 text-sm font-medium mb-3">Vue satellite des trempes</h2>
                   
@@ -505,8 +505,8 @@ export function TrempeView() {
                 </div>
               </div>
 
-              {/* Panneau de détails à droite */}
-              <div className="w-1/2 glass-effect rounded-xl border border-white/10 backdrop-blur-md p-4 shadow-glow-subtle">
+              {/* Panneau de détails - maintenant en pleine largeur */}
+              <div className="w-full glass-effect rounded-xl border border-white/10 backdrop-blur-md p-4 shadow-glow-subtle">
                 {/* Affichage des détails du carré sélectionné ou survolé */}
                 {(hoveredSquare || selectedSquare) ? (
                   <div className="h-full">

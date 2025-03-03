@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Filter, Calendar, QrCode, Tag, FileText, Package, Download, Droplets, Waves, Grid, History, Edit2 } from 'lucide-react';
+import { Filter, Calendar, QrCode, Tag, FileText, Package, Download, Droplets, Waves, Grid, History, Edit2, Box } from 'lucide-react';
 import { BatchList } from '../components/BatchList';
 import { BatchHistory } from '../components/BatchHistory';
 import { QualityChecks } from '../components/QualityChecks';
 import { PurificationPools } from '../components/PurificationPools';
 import { MarketPurchases } from '../components/MarketPurchases';
+import { StorageLocations } from '../components/StorageLocations';
 import { QRCodeGenerator } from '../components/QRCodeGenerator';
 import { useStore } from '@/lib/store';
 import { jsPDF } from 'jspdf';
@@ -12,7 +13,7 @@ import 'jspdf-autotable';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-type TabType = 'batches' | 'pools' | 'history' | 'market';
+type TabType = 'batches' | 'pools' | 'storage' | 'market' | 'history';
 
 export function TraceabilityPage() {
   const [activeTab, setActiveTab] = useState<TabType>('batches');
@@ -174,6 +175,7 @@ export function TraceabilityPage() {
   const tabs = [
     { id: 'batches', label: 'Lots en cours', icon: Package },
     { id: 'pools', label: 'Bassins', icon: Waves },
+    { id: 'storage', label: 'Autres emplacements', icon: Box },
     { id: 'market', label: 'Achats', icon: Grid },
     { id: 'history', label: 'Historique', icon: History }
   ];
@@ -277,6 +279,20 @@ export function TraceabilityPage() {
             </div>
           </div>
           <PurificationPools />
+        </div>
+      )}
+      
+      {activeTab === 'storage' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
+                <Box className="text-brand-blue" size={20} />
+              </div>
+              <h2 className="text-lg font-medium text-white">Autres emplacements de stockage</h2>
+            </div>
+          </div>
+          <StorageLocations />
         </div>
       )}
       
