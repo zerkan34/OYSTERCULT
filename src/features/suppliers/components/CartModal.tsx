@@ -1,105 +1,107 @@
 import React from 'react';
-import { X, Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
+import { X, Trash2, ShoppingBag } from 'lucide-react';
 import type { SupplierProduct } from '@/types/supplier';
-
-interface CartItem {
-  product: SupplierProduct;
-  quantity: number;
-}
 
 interface CartModalProps {
   isOpen: boolean;
   onClose: () => void;
-  items: CartItem[];
-  onUpdateQuantity: (productId: string, quantity: number) => void;
+  items: Array<{
+    productId: string;
+    quantity: number;
+  }>;
+  products: SupplierProduct[];
   onRemoveItem: (productId: string) => void;
+  onClearCart: () => void;
 }
 
-export function CartModal({ isOpen, onClose, items, onUpdateQuantity, onRemoveItem }: CartModalProps) {
+export function CartModal({ isOpen, onClose, items, products, onRemoveItem, onClearCart }: CartModalProps) {
   if (!isOpen) return null;
 
-  const total = items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+  const totalPrice = items.reduce((total, item) => {
+    const product = products.find(p => p.id === item.productId);
+    return total + (product ? product.price * item.quantity : 0);
+  }, 0);
+
+  const handleValidateCart = () => {
+    // Enregistrer la commande
+    onClearCart();
+    onClose();
+  };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-start justify-end p-4 z-50">
-      <div className="bg-[rgb(var(--color-brand-surface)_/_var(--glass-opacity))] backdrop-blur-md border border-white/10 rounded-lg w-full max-w-md h-[calc(100vh-2rem)] flex flex-col shadow-xl">
+    <div className="absolute inset-0 flex items-center justify-center bg-black/50" style={{ minHeight: '100vh' }}>
+      <div className="bg-[rgb(var(--color-brand-surface))] rounded-lg shadow-xl w-full max-w-md mx-4 relative">
         <div className="flex items-center justify-between p-4 border-b border-[rgb(var(--color-border)_/_var(--color-border-opacity))]">
-          <h2 className="text-xl font-semibold text-[rgb(var(--color-text))]">Votre commande</h2>
+          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Panier</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/5 rounded-lg text-[rgb(var(--color-text-secondary))]"
+            className="p-2 hover:bg-[rgb(var(--color-brand-surface-hover))] rounded-lg transition-colors"
           >
-            <X size={20} />
+            <X className="w-5 h-5 text-[rgb(var(--color-text-secondary))]" />
           </button>
         </div>
-
-        <div className="flex-1 overflow-y-auto p-4">
+        
+        <div className="p-4 max-h-[60vh] overflow-y-auto">
           {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center p-6">
-              <ShoppingCart size={48} className="text-[rgb(var(--color-text-secondary)_/_0.3)] mb-4" />
-              <p className="text-[rgb(var(--color-text-secondary))] text-lg">Votre panier est vide</p>
-              <p className="text-[rgb(var(--color-text-secondary)_/_0.7)] text-sm mt-2">
-                Ajoutez des produits depuis le catalogue
-              </p>
-            </div>
+            <p className="text-center text-[rgb(var(--color-text-secondary))]">
+              Votre panier est vide
+            </p>
           ) : (
             <div className="space-y-4">
-              {items.map(({ product, quantity }) => (
-                <div 
-                  key={product.id}
-                  className="bg-[rgb(var(--color-brand-surface))] p-4 rounded-lg border border-[rgb(var(--color-border)_/_var(--color-border-opacity))]"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium text-[rgb(var(--color-text))]">{product.name}</h3>
-                    <button
-                      onClick={() => onRemoveItem(product.id)}
-                      className="p-1 text-[rgb(var(--color-text-secondary))] hover:text-red-400 transition-colors"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => onUpdateQuantity(product.id, Math.max(product.min_order_quantity, quantity - 1))}
-                        className="p-1 hover:bg-white/5 rounded text-[rgb(var(--color-text-secondary))]"
-                        disabled={quantity <= product.min_order_quantity}
-                      >
-                        <Minus size={16} />
-                      </button>
-                      <span className="w-12 text-center text-[rgb(var(--color-text))]">{quantity}</span>
-                      <button
-                        onClick={() => onUpdateQuantity(product.id, quantity + 1)}
-                        className="p-1 hover:bg-white/5 rounded text-[rgb(var(--color-text-secondary))]"
-                      >
-                        <Plus size={16} />
-                      </button>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[rgb(var(--color-text))]">{(product.price * quantity).toFixed(2)}€</p>
+              {items.map((item) => {
+                const product = products.find(p => p.id === item.productId);
+                if (!product) return null;
+
+                return (
+                  <div key={item.productId} className="flex items-center justify-between gap-4 p-3 bg-[rgb(var(--color-brand-surface-hover))] rounded-lg">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-[rgb(var(--color-text-primary))]">
+                        {product.name}
+                      </h3>
                       <p className="text-sm text-[rgb(var(--color-text-secondary))]">
-                        {product.price.toFixed(2)}€ / {product.unit}
+                        {item.quantity} {product.unit} × {product.price.toFixed(2)}€
+                      </p>
+                      <p className="text-sm font-medium text-[rgb(var(--color-brand-primary))]">
+                        Total: {(item.quantity * product.price).toFixed(2)}€
                       </p>
                     </div>
+                    <button
+                      onClick={() => onRemoveItem(item.productId)}
+                      className="p-2 hover:bg-[rgb(var(--color-brand-surface))] rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </button>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
 
         {items.length > 0 && (
-          <div className="border-t border-[rgb(var(--color-border)_/_var(--color-border-opacity))] p-4">
+          <div className="p-4 border-t border-[rgb(var(--color-border)_/_var(--color-border-opacity))]">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-[rgb(var(--color-text))] font-medium">Total</span>
-              <span className="text-[rgb(var(--color-text))] font-medium">{total.toFixed(2)}€</span>
+              <span className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Total</span>
+              <span className="text-lg font-medium text-[rgb(var(--color-text-primary))]">
+                {totalPrice.toFixed(2)}€
+              </span>
             </div>
-            <button
-              className="w-full py-3 bg-[rgb(var(--color-brand-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-brand-primary)_/_0.9)] transition-colors"
-            >
-              Valider la commande
-            </button>
+            
+            <div className="flex gap-2">
+              <button
+                onClick={onClearCart}
+                className="px-4 py-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20 transition-colors"
+              >
+                Vider
+              </button>
+              <button
+                onClick={handleValidateCart}
+                className="flex-1 px-4 py-2 bg-[rgb(var(--color-brand-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-brand-primary)_/_0.9)] transition-colors flex items-center justify-center gap-2"
+              >
+                <ShoppingBag className="w-4 h-4" />
+                Valider la commande
+              </button>
+            </div>
           </div>
         )}
       </div>
