@@ -304,11 +304,9 @@ export function OysterTables() {
                 >
                   Fermer
                 </button>
-                <button
-                  className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
-                >
-                  Modifier
-                </button>
+                <p className="text-xs text-white/60 italic ml-2">
+                  Vous pouvez modifier le contenu des bassins en cliquant directement dessus
+                </p>
               </div>
             </div>
           </div>

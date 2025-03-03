@@ -45,20 +45,36 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
   const [ropeCount, setRopeCount] = useState(cell.ropeCount || 0);
   const [size, setSize] = useState(cell.size || '');
   const [harvestedRopes, setHarvestedRopes] = useState(0);
+  const [isEditing, setIsEditing] = useState(!cell.filled);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const data = cell.filled
-      ? {
-          harvestedRopes,
-          batchNumber: `LOT-${new Date().getTime()}`
-        }
-      : {
-          type,
-          ropeCount,
-          size,
-          filled: true
-        };
+    let data;
+    
+    if (isEditing) {
+      // Mode édition - mettre à jour les propriétés existantes
+      data = {
+        type,
+        ropeCount,
+        size,
+        filled: true
+      };
+    } else if (cell.filled) {
+      // Mode récolte
+      data = {
+        harvestedRopes,
+        batchNumber: `LOT-${new Date().getTime()}`
+      };
+    } else {
+      // Mode nouvelle production
+      data = {
+        type,
+        ropeCount,
+        size,
+        filled: true
+      };
+    }
+    
     onUpdate(data);
     onClose();
   };
@@ -79,7 +95,7 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-white">
-            {cell.filled ? 'Récolte' : 'Nouvelle production'}
+            {cell.filled && !isEditing ? 'Récolte' : cell.filled && isEditing ? 'Modifier le bassin' : 'Nouvelle production'}
           </h3>
           <button
             onClick={onClose}
@@ -89,8 +105,21 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
           </button>
         </div>
 
+        {cell.filled && !isEditing && (
+          <div className="flex justify-end mb-4">
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="flex items-center text-brand-tertiary hover:text-brand-tertiary/80 transition-colors"
+            >
+              <Edit size={16} className="mr-1" />
+              Modifier les propriétés
+            </button>
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit} className="space-y-6">
-          {!cell.filled ? (
+          {!cell.filled || isEditing ? (
             <>
               <div>
                 <label className="block text-sm font-medium text-white mb-2">
@@ -235,7 +264,7 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
               type="submit"
               className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
             >
-              {cell.filled ? 'Valider la récolte' : 'Ajouter la production'}
+              {cell.filled && !isEditing ? 'Valider la récolte' : cell.filled && isEditing ? 'Enregistrer les modifications' : 'Ajouter la production'}
             </button>
           </div>
         </form>
@@ -298,8 +327,20 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCellUpdate = (cellId: string, data: any) => {
-    // TODO: Implement cell update logic
     console.log('Updating cell:', cellId, data);
+    
+    // Trouver l'index de la cellule à mettre à jour
+    const cellIndex = table.cells.findIndex((c: any) => c.id === cellId);
+    if (cellIndex === -1) return;
+
+    // Créer une copie des cellules pour la mise à jour
+    const updatedCells = [...table.cells];
+    updatedCells[cellIndex] = { ...updatedCells[cellIndex], ...data };
+
+    // Mettre à jour la table avec les nouvelles cellules
+    if (onTableUpdate) {
+      onTableUpdate(table.id, { cells: updatedCells });
+    }
   };
 
   // Fonction pour ouvrir le modal de remplissage de colonne
@@ -713,6 +754,11 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                   {cell.ropeCount}
                 </div>
               )}
+              
+              {/* Icône d'édition qui apparaît au survol */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded-md transition-opacity">
+                <Edit size={16} className="text-white" />
+              </div>
             </motion.button>
           ))}
         </div>
