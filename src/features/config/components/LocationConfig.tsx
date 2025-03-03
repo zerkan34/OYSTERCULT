@@ -7,6 +7,9 @@ interface Location {
   type: string;
   capacity: number;
   currentOccupancy: number;
+  cordCount: number;
+  cordLength: number;
+  oystersPerCord: number;
   coordinates?: {
     latitude: number;
     longitude: number;
@@ -18,9 +21,12 @@ const mockLocations: Location[] = [
   {
     id: '1',
     name: 'Zone Nord',
-    type: 'Production',
-    capacity: 5000,
-    currentOccupancy: 3500,
+    type: 'table',
+    capacity: 100,
+    currentOccupancy: 0,
+    cordCount: 10,
+    cordLength: 3,
+    oystersPerCord: 130,
     coordinates: {
       latitude: 46.1558,
       longitude: -1.1532
@@ -30,9 +36,12 @@ const mockLocations: Location[] = [
   {
     id: '2',
     name: 'Zone Sud',
-    type: 'Production',
-    capacity: 4000,
-    currentOccupancy: 2800,
+    type: 'table',
+    capacity: 100,
+    currentOccupancy: 0,
+    cordCount: 10,
+    cordLength: 3,
+    oystersPerCord: 130,
     coordinates: {
       latitude: 46.1498,
       longitude: -1.1502
@@ -87,7 +96,7 @@ export function LocationConfig() {
           className="flex items-center px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
         >
           <Plus size={20} className="mr-2" />
-          Nouvel emplacement
+          Configuration table
         </button>
       </div>
 
@@ -125,23 +134,14 @@ export function LocationConfig() {
                       <div className="text-sm text-white/60">Type</div>
                       <div className="text-white">{location.type}</div>
                       
-                      <div className="text-sm text-white/60 mt-4">Occupation</div>
-                      <div className="text-white">
-                        {location.currentOccupancy} / {location.capacity}
-                        <span className="text-white/60 text-sm ml-2">
-                          ({Math.round((location.currentOccupancy / location.capacity) * 100)}%)
-                        </span>
-                      </div>
+                      <div className="text-sm text-white/60 mt-4">Nombre de perches</div>
+                      <div className="text-white">{location.capacity}</div>
                     </div>
                     
-                    {location.coordinates && (
-                      <div>
-                        <div className="text-sm text-white/60">Coordonnées GPS</div>
-                        <div className="text-white">
-                          {location.coordinates.latitude}, {location.coordinates.longitude}
-                        </div>
-                      </div>
-                    )}
+                    <div>
+                      <div className="text-sm text-white/60">Nombre de corde par perches</div>
+                      <div className="text-white">{location.cordCount}</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -200,7 +200,7 @@ export function LocationConfig() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md p-6 rounded-lg w-full max-w-xl">
             <h2 className="text-xl font-bold text-white mb-6">
-              {editingLocation ? 'Modifier l\'emplacement' : 'Nouvel emplacement'}
+              {editingLocation ? 'Modifier la table' : 'Nouvelle table'}
             </h2>
             <form onSubmit={(e) => {
               e.preventDefault();
@@ -208,9 +208,10 @@ export function LocationConfig() {
               const data = {
                 name: formData.get('name') as string,
                 type: formData.get('type') as string,
-                capacity: Number(formData.get('capacity')),
-                currentOccupancy: Number(formData.get('currentOccupancy') || 0),
-                status: formData.get('status') as 'active' | 'maintenance' | 'inactive',
+                capacity: Number(formData.get('capacity')), 
+                cordCount: Number(formData.get('cordCount')), 
+                cordLength: Number(formData.get('cordLength')), 
+                oystersPerCord: Number(formData.get('oystersPerCord')), 
                 coordinates: {
                   latitude: Number(formData.get('latitude')),
                   longitude: Number(formData.get('longitude'))
@@ -227,7 +228,7 @@ export function LocationConfig() {
                     type="text"
                     name="name"
                     className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-                    placeholder="Ex: Zone Nord"
+                    placeholder="Ex: Table Nord"
                     defaultValue={editingLocation?.name}
                     required
                   />
@@ -239,12 +240,11 @@ export function LocationConfig() {
                   <select 
                     name="type"
                     className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-                    defaultValue={editingLocation?.type}
+                    defaultValue={editingLocation?.type || "table"}
                     required
                   >
-                    <option value="production">Production</option>
-                    <option value="storage">Stockage</option>
-                    <option value="maintenance">Maintenance</option>
+                    <option value="table">Table</option>
+                    <option value="tableTrempe">Table de trempe</option>
                   </select>
                 </div>
               </div>
@@ -252,30 +252,57 @@ export function LocationConfig() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-white mb-1">
-                    Capacité
+                    Nombre de perches
                   </label>
                   <input
                     type="number"
                     name="capacity"
                     className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-                    defaultValue={editingLocation?.capacity}
+                    defaultValue={editingLocation?.capacity || 100}
                     required
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-white mb-1">
-                    Statut
+                    Nombre de corde par perches
                   </label>
-                  <select 
-                    name="status"
+                  <input
+                    type="number"
+                    name="cordCount"
                     className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-                    defaultValue={editingLocation?.status}
+                    defaultValue={editingLocation?.cordCount || 10}
                     required
-                  >
-                    <option value="active">Actif</option>
-                    <option value="maintenance">Maintenance</option>
-                    <option value="inactive">Inactif</option>
-                  </select>
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Longueur de corde
+                  </label>
+                  <div className="flex items-center">
+                    <input
+                      type="number"
+                      name="cordLength"
+                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-l-lg text-white"
+                      defaultValue={editingLocation?.cordLength || 3}
+                      required
+                    />
+                    <span className="bg-white/10 px-3 py-2 rounded-r-lg text-white/60">mètres</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Nombre d'huitres par cordes
+                  </label>
+                  <input
+                    type="number"
+                    name="oystersPerCord"
+                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                    defaultValue={editingLocation?.oystersPerCord || 130}
+                    required
+                  />
                 </div>
               </div>
 
@@ -326,7 +353,7 @@ export function LocationConfig() {
                   type="submit"
                   className="px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
                 >
-                  {editingLocation ? 'Mettre à jour' : 'Créer l\'emplacement'}
+                  {editingLocation ? 'Mettre à jour' : 'Créer table'}
                 </button>
               </div>
             </form>
