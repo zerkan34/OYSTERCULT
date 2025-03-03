@@ -387,7 +387,7 @@ export function PurificationPools() {
                 <select
                   value={editedPool.filterStatus}
                   onChange={(e) => handleInputChange('filterStatus', e.target.value)}
-                  className="w-full bg-gray-800 border border-white/10 rounded-lg px-4 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
+                  className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
                 >
                   <option value="active">Actif</option>
                   <option value="maintenance">Maintenance</option>

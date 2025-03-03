@@ -139,8 +139,14 @@ export function EmployeeList({ searchQuery }: EmployeeListProps) {
       </div>
 
       {showSchedule && selectedEmployee && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+          onClick={() => setShowSchedule(false)}
+        >
+          <div 
+            className="w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Schedule 
               employee={selectedEmployee} 
               onClose={() => setShowSchedule(false)} 

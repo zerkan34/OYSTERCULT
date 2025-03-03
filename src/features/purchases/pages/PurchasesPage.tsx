@@ -342,8 +342,8 @@ export function PurchasesPage() {
                         onClick={() => setSelectedOrderForComments(order.id)}
                         className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-colors flex items-center space-x-2"
                       >
-                        <MessageSquare size={16} />
-                        <span>Commenter</span>
+                        <MessageSquare size={16} className="mr-2" />
+                        Commenter
                       </button>
                     </div>
                   </div>

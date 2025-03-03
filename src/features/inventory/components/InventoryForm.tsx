@@ -83,7 +83,7 @@ export function InventoryForm({ isOpen, onClose }: InventoryFormProps) {
             </label>
             <select
               {...register('category')}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+              className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
             >
               <option value="huitres">Huîtres</option>
               <option value="materiels">Matériels</option>
@@ -96,7 +96,7 @@ export function InventoryForm({ isOpen, onClose }: InventoryFormProps) {
             </label>
             <select
               {...register('unit')}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+              className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
             >
               <option value="douzaines">Douzaines</option>
               <option value="unites">Unités</option>
@@ -178,7 +178,7 @@ export function InventoryForm({ isOpen, onClose }: InventoryFormProps) {
           </label>
           <select
             {...register('supplier')}
-            className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+            className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
           >
             <option value="">Sélectionner un fournisseur</option>
             <option value="supplier1">Fournisseur 1</option>

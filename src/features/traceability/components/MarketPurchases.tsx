@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Package, Calendar, AlertTriangle, Clock, Tag, X, Edit2, Save } from 'lucide-react';
+import { Package, Calendar, AlertTriangle, Clock, Tag, X, Edit2, Save, MessageCircle, Star } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 
 interface MarketPurchase {
@@ -56,12 +56,12 @@ const statusColors = {
 
 export function MarketPurchases() {
   const [selectedPurchase, setSelectedPurchase] = useState<MarketPurchase | null>(null);
-  const [editMode, setEditMode] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editedPurchase, setEditedPurchase] = useState<MarketPurchase | null>(null);
 
   const handleEdit = () => {
     setEditedPurchase(selectedPurchase);
-    setEditMode(true);
+    setIsEditModalOpen(true);
   };
 
   const handleSave = () => {
@@ -72,13 +72,13 @@ export function MarketPurchases() {
       );
       // Mettre à jour le state global (à implémenter avec un vrai backend)
       setSelectedPurchase(editedPurchase);
-      setEditMode(false);
+      setIsEditModalOpen(false);
       setEditedPurchase(null);
     }
   };
 
   const handleCancel = () => {
-    setEditMode(false);
+    setIsEditModalOpen(false);
     setEditedPurchase(null);
   };
 
@@ -145,94 +145,76 @@ export function MarketPurchases() {
         ))}
       </div>
 
-      {selectedPurchase && !editMode && (
+      {selectedPurchase && !isEditModalOpen && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-50">
           <div className="relative w-full max-w-3xl bg-[rgb(var(--color-card))/95] border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.3)] backdrop-blur-lg rounded-xl overflow-hidden p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">{selectedPurchase.type}</h3>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleEdit}
-                  className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
-                >
-                  <Edit2 size={20} className="mr-2" />
-                  Modifier
-                </button>
-                <button
-                  onClick={() => setSelectedPurchase(null)}
-                  className="p-2 hover:bg-white/5 rounded-lg"
-                >
-                  <X className="text-white/60" size={20} />
-                </button>
+              <h2 className="text-xl font-semibold text-white">Détails de l'achat</h2>
+              <button
+                onClick={() => setSelectedPurchase(null)}
+                className="p-2 hover:bg-white/5 rounded-lg"
+              >
+                <X className="text-white/60" size={20} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-sm text-white/40">Produit</p>
+                <p className="text-sm text-white mt-1">{selectedPurchase.type}</p>
+              </div>
+              <div>
+                <p className="text-sm text-white/40">Fournisseur</p>
+                <p className="text-sm text-white mt-1">{selectedPurchase.supplier}</p>
+              </div>
+              <div>
+                <p className="text-sm text-white/40">Quantité</p>
+                <p className="text-sm text-white mt-1">{selectedPurchase.quantity} {selectedPurchase.unit}</p>
+              </div>
+              <div>
+                <p className="text-sm text-white/40">Date d'achat</p>
+                <p className="text-sm text-white mt-1">{new Date(selectedPurchase.purchaseDate).toLocaleDateString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-white/40">Date d'expiration</p>
+                <p className="text-sm text-white mt-1">{new Date(selectedPurchase.expiryDate).toLocaleDateString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-white/40">Emplacement de stockage</p>
+                <p className="text-sm text-white mt-1">{selectedPurchase.storageLocation}</p>
+              </div>
+              <div>
+                <p className="text-sm text-white/40">Numéro de lot</p>
+                <p className="text-sm text-white mt-1">{selectedPurchase.batchNumber}</p>
+              </div>
+              <div>
+                <p className="text-sm text-white/40">Prix unitaire</p>
+                <p className="text-sm text-white mt-1">{selectedPurchase.price}€/{selectedPurchase.unit}</p>
+              </div>
+              <div>
+                <p className="text-sm text-white/40">Qualité</p>
+                <p className="text-sm text-white mt-1">{selectedPurchase.quality}%</p>
               </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-white/5 rounded-lg p-4">
-                  <div className="text-sm text-white/60">Prix unitaire</div>
-                  <div className="text-2xl font-bold text-white">
-                    {selectedPurchase.price}€/{selectedPurchase.unit}
-                  </div>
-                </div>
-                <div className="bg-white/5 rounded-lg p-4">
-                  <div className="text-sm text-white/60">Qualité</div>
-                  <div className="text-2xl font-bold text-white">
-                    {selectedPurchase.quality}%
-                  </div>
-                </div>
-                <div className="bg-white/5 rounded-lg p-4">
-                  <div className="text-sm text-white/60">Total</div>
-                  <div className="text-2xl font-bold text-white">
-                    {(selectedPurchase.price * selectedPurchase.quantity).toFixed(2)}€
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white/5 rounded-lg p-4">
-                  <h4 className="text-lg font-medium text-white mb-2">Dates</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-white/60">Achat:</span>
-                      <span className="text-white">
-                        {new Date(selectedPurchase.purchaseDate).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white/60">DLC:</span>
-                      <span className="text-white">
-                        {new Date(selectedPurchase.expiryDate).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white/5 rounded-lg p-4">
-                  <h4 className="text-lg font-medium text-white mb-2">Stockage</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-white/60">Emplacement:</span>
-                      <span className="text-white">{selectedPurchase.storageLocation}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white/60">Lot:</span>
-                      <span className="text-white">{selectedPurchase.batchNumber}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={handleEdit}
+                className="flex items-center px-4 py-2 bg-brand-burgundy hover:bg-brand-burgundy/90 rounded-lg text-white transition-colors"
+              >
+                <Edit2 size={20} className="mr-2" />
+                Modifier
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {editMode && editedPurchase && (
+      {isEditModalOpen && editedPurchase && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-50">
           <div className="relative w-full max-w-3xl bg-[rgb(var(--color-card))/95] border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.3)] backdrop-blur-lg rounded-xl overflow-hidden p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">Modifier {editedPurchase.type}</h3>
+              <h2 className="text-xl font-semibold text-white">Modifier l'achat</h2>
               <button
                 onClick={handleCancel}
                 className="p-2 hover:bg-white/5 rounded-lg"

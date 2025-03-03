@@ -372,7 +372,9 @@ function PoolDetail({ pool, onClose }: PoolDetailProps) {
                       <label className="block text-sm font-medium text-white mb-2">
                         Type de filtration
                       </label>
-                      <select className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white">
+                      <select
+                        className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
+                      >
                         <option value="uv">UV</option>
                         <option value="uv_ozone">UV + Ozone</option>
                         <option value="mechanical">Mécanique</option>
@@ -628,7 +630,7 @@ export function PurificationPools() {
                 <select
                   value={newBatchData.type}
                   onChange={(e) => setNewBatchData({...newBatchData, type: e.target.value})}
-                  className="w-full p-4 bg-white/5 rounded-lg text-white border border-white/10"
+                  className="w-full p-4 bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
                 >
                   <option value="plates">Plates</option>
                   <option value="creuses">Creuses</option>

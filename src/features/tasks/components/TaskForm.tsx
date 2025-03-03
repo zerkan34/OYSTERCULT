@@ -83,7 +83,7 @@ export function TaskForm({ onClose }: TaskFormProps) {
             <div className="relative">
               <select
                 {...register('priority')}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white appearance-none [&>option]:bg-gray-800 [&>option]:text-white"
+                className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
               >
                 <option value="low">Basse</option>
                 <option value="medium">Moyenne</option>
@@ -113,7 +113,7 @@ export function TaskForm({ onClose }: TaskFormProps) {
             <div className="relative">
               <select
                 {...register('assignedTo')}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white appearance-none [&>option]:bg-gray-800 [&>option]:text-white"
+                className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
               >
                 <option value="">Sélectionner un employé</option>
                 <option value="user1">Jean Dupont</option>
@@ -130,7 +130,7 @@ export function TaskForm({ onClose }: TaskFormProps) {
             <div className="relative">
               <select
                 {...register('category')}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white appearance-none [&>option]:bg-gray-800 [&>option]:text-white"
+                className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
               >
                 <option value="">Sélectionner une catégorie</option>
                 <option value="production">Production</option>

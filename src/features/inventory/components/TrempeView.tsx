@@ -665,7 +665,7 @@ export function TrempeView() {
                           : selectedSquare.status === 'partial'
                           ? 'bg-brand-tertiary/20 text-brand-tertiary'
                           : 'bg-white/10 text-white/60'
-                      } ${!editMode && 'cursor-not-allowed'} [&>option]:bg-brand-dark [&>option]:text-white`}
+                      } ${!editMode && 'cursor-not-allowed'} [&>option]:bg-gray-800 [&>option]:text-white`}
                     >
                       <option value="full" className="text-white">Plein</option>
                       <option value="partial" className="text-white">Partiel</option>
@@ -873,7 +873,7 @@ export function TrempeView() {
                     <select
                       value={newRopeData.type}
                       onChange={(e) => setNewRopeData({...newRopeData, type: e.target.value})}
-                      className="w-full bg-white/10 text-white rounded-lg p-2 outline-none focus:ring-2 focus:ring-brand-primary [&>option]:bg-brand-dark [&>option]:text-white"
+                      className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
                     >
                       <option value="" className="text-white/60">Sélectionner un type</option>
                       <option value="plates" className="text-white">Plates</option>

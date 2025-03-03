@@ -107,7 +107,7 @@ export function HRPage() {
         </button>
       </div>
 
-      {(activeTab === 'employees' || activeTab === 'schedule') && (
+      {(activeTab === 'employees') && (
         <div className="flex items-center space-x-4">
           <div className="flex-1 relative">
             <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" />
@@ -138,14 +138,10 @@ export function HRPage() {
       {activeTab === 'leave' && <LeaveManagement />}
       {activeTab === 'performance' && <PerformanceReviews />}
       {activeTab === 'schedule' && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <Schedule 
-              employee={mockEmployee}
-              onClose={() => handleTabChange('employees')}
-            />
-          </div>
-        </div>
+        <Schedule 
+          employee={mockEmployee}
+          onClose={() => handleTabChange('employees')}
+        />
       )}
     </div>
   );

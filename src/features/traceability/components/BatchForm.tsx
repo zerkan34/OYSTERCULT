@@ -59,7 +59,7 @@ export function BatchForm({ onClose }: BatchFormProps) {
             </label>
             <select
               {...register('type')}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+              className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
             >
               <option value="plates">Huîtres Plates</option>
               <option value="creuses">Huîtres Creuses</option>
@@ -85,7 +85,7 @@ export function BatchForm({ onClose }: BatchFormProps) {
             </label>
             <select
               {...register('location')}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+              className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
             >
               <option value="zone_nord">Zone Nord - Table A1</option>
               <option value="zone_sud">Zone Sud - Table B3</option>
@@ -122,7 +122,7 @@ export function BatchForm({ onClose }: BatchFormProps) {
           </label>
           <select
             {...register('supplier')}
-            className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+            className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
           >
             <option value="naissain_express">Naissain Express</option>
             <option value="other">Autre</option>

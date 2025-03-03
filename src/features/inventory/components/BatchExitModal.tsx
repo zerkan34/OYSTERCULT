@@ -93,7 +93,7 @@ export function BatchExitModal({ isOpen, onClose, onConfirm, batch }: BatchExitM
           <select
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
-            className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+            className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
             required
           >
             <option value="">Sélectionner une destination...</option>
