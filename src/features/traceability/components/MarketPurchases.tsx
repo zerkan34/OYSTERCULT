@@ -223,19 +223,6 @@ export function MarketPurchases() {
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-4">
-                <button
-                  onClick={() => setSelectedPurchase(null)}
-                  className="px-4 py-2 bg-white/10 rounded-lg text-white"
-                >
-                  Fermer
-                </button>
-                <button
-                  className="px-4 py-2 bg-brand-burgundy rounded-lg text-white"
-                >
-                  Modifier
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -368,7 +355,7 @@ export function MarketPurchases() {
                 <select
                   value={editedPurchase.status}
                   onChange={(e) => handleInputChange('status', e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
+                  className="w-full bg-gray-800 border border-white/10 rounded-lg px-4 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
                 >
                   <option value="fresh">Frais</option>
                   <option value="warning">À surveiller</option>

@@ -7,7 +7,8 @@ import {
   Users, 
   Calendar,
   FileText,
-  ChevronDown
+  ChevronDown,
+  X
 } from 'lucide-react';
 
 interface TaskFormData {
@@ -35,15 +36,26 @@ export function TaskForm({ onClose }: TaskFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="glass-effect p-6 rounded-lg">
+    <form onSubmit={handleSubmit(onSubmit)} className="bg-gray-900 p-6 rounded-lg relative">
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 text-white/60 hover:text-white"
+      >
+        <X size={20} />
+      </button>
+
+      <h2 className="text-xl font-medium text-white mb-6">
+        Nouvelle Tâche
+      </h2>
+
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-white mb-1">
+          <label className="block text-sm text-white/60 mb-1">
             Titre de la tâche
           </label>
           <input
             {...register('title', { required: 'Le titre est requis' })}
-            className="input-modern"
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
             placeholder="Entrez le titre de la tâche"
           />
           {errors.title && (
@@ -52,26 +64,26 @@ export function TaskForm({ onClose }: TaskFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-white mb-1">
+          <label className="block text-sm text-white/60 mb-1">
             Description
           </label>
           <textarea
             {...register('description')}
             rows={4}
-            className="input-modern"
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
             placeholder="Décrivez la tâche en détail"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-white mb-1">
+            <label className="block text-sm text-white/60 mb-1">
               Priorité
             </label>
             <div className="relative">
               <select
                 {...register('priority')}
-                className="input-modern appearance-none"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white appearance-none [&>option]:bg-gray-800 [&>option]:text-white"
               >
                 <option value="low">Basse</option>
                 <option value="medium">Moyenne</option>
@@ -82,26 +94,26 @@ export function TaskForm({ onClose }: TaskFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-1">
+            <label className="block text-sm text-white/60 mb-1">
               Date d'échéance
             </label>
             <input
               type="date"
               {...register('dueDate')}
-              className="input-modern"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-white mb-1">
+            <label className="block text-sm text-white/60 mb-1">
               Assigné à
             </label>
             <div className="relative">
               <select
                 {...register('assignedTo')}
-                className="input-modern appearance-none"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white appearance-none [&>option]:bg-gray-800 [&>option]:text-white"
               >
                 <option value="">Sélectionner un employé</option>
                 <option value="user1">Jean Dupont</option>
@@ -112,13 +124,13 @@ export function TaskForm({ onClose }: TaskFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-1">
+            <label className="block text-sm text-white/60 mb-1">
               Catégorie
             </label>
             <div className="relative">
               <select
                 {...register('category')}
-                className="input-modern appearance-none"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white appearance-none [&>option]:bg-gray-800 [&>option]:text-white"
               >
                 <option value="">Sélectionner une catégorie</option>
                 <option value="production">Production</option>
@@ -132,29 +144,29 @@ export function TaskForm({ onClose }: TaskFormProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-white mb-1">
+            <label className="block text-sm text-white/60 mb-1">
               Temps estimé (heures)
             </label>
             <input
               type="number"
               {...register('estimatedHours')}
-              className="input-modern"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
               min="0"
               step="0.5"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-1">
+            <label className="block text-sm text-white/60 mb-1">
               Tâche récurrente
             </label>
             <div className="flex items-center mt-2">
               <input
                 type="checkbox"
                 {...register('isRecurring')}
-                className="form-checkbox"
+                className="form-checkbox bg-white/5 border border-white/10 text-brand-blue rounded"
               />
-              <span className="ml-2 text-sm text-white">Activer la récurrence</span>
+              <span className="ml-2 text-sm text-white/60">Activer la récurrence</span>
             </div>
           </div>
         </div>
@@ -164,13 +176,13 @@ export function TaskForm({ onClose }: TaskFormProps) {
         <button
           type="button"
           onClick={onClose}
-          className="btn-secondary"
+          className="px-4 py-2 text-white/60 hover:text-white transition-colors"
         >
           Annuler
         </button>
         <button
           type="submit"
-          className="btn-primary"
+          className="px-4 py-2 bg-brand-blue hover:bg-brand-blue/90 text-white font-medium rounded-lg transition-colors"
         >
           Créer la tâche
         </button>

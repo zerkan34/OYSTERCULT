@@ -74,7 +74,7 @@ export function EditBatchModal({ batch, isOpen, onClose }: EditBatchModalProps) 
             <select
               value={formData.status}
               onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
             >
               <option value="table1">Table 1</option>
               <option value="table2">Table 2</option>
