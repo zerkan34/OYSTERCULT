@@ -41,7 +41,7 @@ const sections: { id: ConfigSection; label: string; icon: React.ReactNode; descr
     id: 'locations', 
     label: 'Emplacements', 
     icon: <Map size={20} />,
-    description: 'Gestion des zones et emplacements'
+    description: 'Configuration des tables'
   },
   { 
     id: 'units', 

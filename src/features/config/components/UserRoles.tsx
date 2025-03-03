@@ -193,7 +193,7 @@ export function UserRoles() {
       errors.phone = 'Le téléphone est obligatoire';
     }
     if (!formData.position) {
-      errors.position = 'Le poste est obligatoire';
+      errors.position = 'Le rôle est obligatoire';
     }
     if (!formData.startDate) {
       errors.startDate = 'La date de début est obligatoire';
@@ -219,7 +219,7 @@ export function UserRoles() {
       errors.phone = 'Le téléphone est obligatoire';
     }
     if (!formData.position) {
-      errors.position = 'Le poste est obligatoire';
+      errors.position = 'Le rôle est obligatoire';
     }
     if (!formData.startDate) {
       errors.startDate = 'La date de début est obligatoire';
@@ -382,10 +382,9 @@ export function UserRoles() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-white mb-1">
-                    Poste
+                    Rôle
                   </label>
-                  <input
-                    type="text"
+                  <select
                     name="position"
                     value={formData.position}
                     onChange={handleChange}
@@ -393,7 +392,13 @@ export function UserRoles() {
                       formErrors.position ? 'border-red-500' : 'border-white/10'
                     } rounded-lg text-white`}
                     required
-                  />
+                  >
+                    <option value="">Sélectionner un rôle</option>
+                    <option value="manageur">Manageur</option>
+                    <option value="operateur">Opérateur</option>
+                    <option value="comptable_full">Comptable Tout accès</option>
+                    <option value="comptable">Comptable</option>
+                  </select>
                   {formErrors.position && (
                     <p className="mt-1 text-sm text-red-500">{formErrors.position}</p>
                   )}
