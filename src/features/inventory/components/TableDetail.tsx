@@ -1,29 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useClickOutside } from '@/lib/hooks';
 import { 
   Clock, 
-  AlertCircle, 
-  Tag, 
-  Users, 
-  Calendar,
-  FileText,
-  MessageSquare,
-  BarChart2,
-  X,
-  Shell,
-  ThermometerSun,
-  Droplets,
+  Shell, 
+  Thermometer, 
+  Droplets, 
+  X, 
+  Check, 
+  SquarePen, 
+  Calendar, 
+  ChevronRight, 
+  FileSpreadsheet,
+  Upload,
+  Download,
+  AlertCircle,
   Plus,
-  Scale,
-  Hash,
   Info,
   Edit,
-  Check,
-  X as XIcon
+  Scale,
+  Hash,
+  Tag
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import * as XLSX from 'xlsx';
 
 interface TableDetailProps {
   table: any;
@@ -35,9 +36,10 @@ interface CellModalProps {
   cell: any;
   onClose: () => void;
   onUpdate: (data: any) => void;
+  setShowNaissainModal?: (show: boolean) => void;
 }
 
-function CellModal({ cell, onClose, onUpdate }: CellModalProps) {
+function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalProps) {
   const modalRef = useClickOutside(onClose);
   const [type, setType] = useState(cell.type || '');
   const [ropeCount, setRopeCount] = useState(cell.ropeCount || 0);
@@ -94,6 +96,21 @@ function CellModal({ cell, onClose, onUpdate }: CellModalProps) {
                 <label className="block text-sm font-medium text-white mb-2">
                   Type de production
                 </label>
+                <div className="flex justify-between items-center mb-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (setShowNaissainModal) {
+                        setShowNaissainModal(true);
+                      } else {
+                        console.warn("setShowNaissainModal is not defined");
+                      }
+                    }}
+                    className="px-4 py-2 bg-brand-tertiary rounded-lg text-white hover:bg-brand-tertiary/90 transition-colors"
+                  >
+                    Naissain
+                  </button>
+                </div>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { value: 'triplo', label: 'Triploïde', color: 'bg-brand-burgundy' },
@@ -265,6 +282,21 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
   const [iAMortalityPrediction, setIAMortalityPrediction] = useState<number | null>(null);
   const [samplingDate, setSamplingDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
+  // États pour le modal de naissain
+  const [showNaissainModal, setShowNaissainModal] = useState(false);
+  const [naissainSource, setNaissainSource] = useState('');
+
+  // États pour le modal d'historique
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [historyDate, setHistoryDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+
+  // Nouveaux états pour l'importation de données
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importData, setImportData] = useState<any[]>([]);
+  const [importPreview, setImportPreview] = useState<any[]>([]);
+  const [importError, setImportError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleCellUpdate = (cellId: string, data: any) => {
     // TODO: Implement cell update logic
     console.log('Updating cell:', cellId, data);
@@ -330,6 +362,102 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
     setShowSamplingModal(true);
   };
 
+  // Fonction pour gérer l'enregistrement du naissain
+  const handleNaissainSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simuler l'enregistrement du naissain
+    const naissainData = {
+      source: naissainSource,
+      date: format(new Date(), 'yyyy-MM-dd'),
+      batchNumber: `NAIS-${new Date().getTime()}`
+    };
+    console.log('Naissain enregistré:', naissainData);
+    
+    // Mettre à jour la table avec l'information du naissain si nécessaire
+    if (onTableUpdate) {
+      onTableUpdate(table.id, { 
+        naissainSource: naissainData.source,
+        naissainBatchNumber: naissainData.batchNumber
+      });
+    }
+    
+    // Fermer la modale
+    setShowNaissainModal(false);
+    // Réinitialiser le champ
+    setNaissainSource('');
+  };
+
+  // Fonction pour rechercher dans l'historique
+  const handleHistorySearch = () => {
+    console.log(`Recherche dans l'historique pour la date: ${historyDate}`);
+    // Dans une vraie implémentation, cette fonction ferait une requête à l'API
+    // pour obtenir les données historiques de la table à la date spécifiée
+    
+    // Pour l'instant, nous utilisons des données fictives qui sont déjà affichées
+  };
+
+  // Fonction pour gérer l'importation de fichiers Excel
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setImportError('');
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = e.target?.result;
+        const workbook = XLSX.read(data, { type: 'binary' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        
+        if (jsonData.length === 0) {
+          setImportError('Le fichier ne contient pas de données valides.');
+          return;
+        }
+
+        setImportData(jsonData);
+        setImportPreview(jsonData.slice(0, 5)); // Afficher les 5 premières lignes comme aperçu
+      } catch (error) {
+        console.error('Erreur lors de la lecture du fichier Excel:', error);
+        setImportError('Une erreur est survenue lors de la lecture du fichier. Vérifiez que le format est correct.');
+      }
+    };
+
+    reader.onerror = () => {
+      setImportError('Une erreur est survenue lors de la lecture du fichier.');
+    };
+
+    reader.readAsBinaryString(file);
+  };
+
+  // Fonction pour appliquer les données importées
+  const handleImportData = () => {
+    if (importData.length === 0) {
+      setImportError('Aucune donnée à importer.');
+      return;
+    }
+
+    console.log('Importation des données:', importData);
+    // Ici, vous implémenterez la logique pour appliquer les données importées aux tables/carrés
+    
+    // Exemple: mettre à jour la table avec les données importées
+    if (onTableUpdate) {
+      // Adapter cette partie selon la structure des données importées
+      const updates: any = {
+        lastUpdated: new Date().toISOString(),
+        // Ajouter d'autres champs en fonction de la structure des données importées
+      };
+      
+      onTableUpdate(table.id, updates);
+    }
+    
+    setShowImportModal(false);
+    setImportData([]);
+    setImportPreview([]);
+  };
+
   return (
     <div 
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
@@ -357,11 +485,11 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
           <div className="grid grid-cols-3 gap-4">
             <div className="glass-effect rounded-lg p-4">
               <div className="flex items-center text-white/80 mb-2">
-                <ThermometerSun size={20} className="mr-2 text-brand-burgundy" />
+                <Thermometer size={20} className="mr-2 text-brand-burgundy" />
                 Température
               </div>
               <div className="text-2xl font-bold text-white">
-                {table?.temperature}°C
+                {table.temperature ? `${table.temperature}°C` : "Non disponible"}
               </div>
             </div>
 
@@ -371,7 +499,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                 Salinité
               </div>
               <div className="text-2xl font-bold text-white">
-                {table?.salinity}g/L
+                {table.salinity}g/L
               </div>
             </div>
 
@@ -381,7 +509,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                 Mortalité
               </div>
               <div className="text-2xl font-bold text-white">
-                {table?.mortalityRate}%
+                {table.mortalityRate}%
               </div>
             </div>
           </div>
@@ -436,39 +564,33 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
 
           {/* Actions */}
           <div className="flex justify-end space-x-4 pt-4">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                openFillColumnModal('left');
-              }}
+            <button 
+              className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
+              onClick={() => setShowHistoryModal(true)}
+            >
+              Historique
+            </button>
+            <button 
               className="px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
+              onClick={() => openFillColumnModal('left')}
             >
               Remplir colonne gauche
             </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                openFillColumnModal('right');
-              }}
+            <button 
               className="px-4 py-2 bg-brand-tertiary rounded-lg text-white hover:bg-brand-tertiary/90 transition-colors"
+              onClick={() => openFillColumnModal('right')}
             >
               Remplir colonne droite
             </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                openSamplingModal();
-              }}
+            <button 
               className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
+              onClick={openSamplingModal}
             >
               Échantillonnage
             </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onClose();
-              }}
+            <button 
               className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+              onClick={onClose}
             >
               Fermer
             </button>
@@ -655,7 +777,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white/5 rounded-lg p-4">
               <div className="flex items-center text-white/80 mb-2">
-                <ThermometerSun size={20} className="mr-2 text-brand-burgundy" />
+                <Thermometer size={20} className="mr-2 text-brand-burgundy" />
                 Température
               </div>
               <div className="text-2xl font-bold text-white">
@@ -731,12 +853,41 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                 <div className="flex justify-between items-center">
                   <span className="text-white/60">Récolte prévue</span>
                   <span className="text-white font-medium">
-                    {format(new Date(table.currentBatch.estimatedHarvestDate), 'PP', { locale: fr })}
+                    {table.currentBatch?.estimatedHarvestDate 
+                      ? format(new Date(table.currentBatch.estimatedHarvestDate), 'PP', { locale: fr })
+                      : 'Non définie'}
                   </span>
                 </div>
               </div>
             </div>
           )}
+          
+          {/* Bouton d'importation de données */}
+          <div className="bg-white/5 rounded-lg p-4 mt-6">
+            <div className="flex items-center text-white/80 mb-4">
+              <FileSpreadsheet size={20} className="mr-2 text-brand-tertiary" />
+              Importation de données
+            </div>
+            <div className="space-y-2">
+              <p className="text-white/60 text-sm mb-4">
+                Importez vos données existantes pour remplir rapidement les tables et suivre leur production.
+              </p>
+              <a href="#" className="text-brand-tertiary text-sm hover:underline flex items-center">
+                <Download size={16} className="mr-1" />
+                Télécharger un modèle de fichier
+              </a>
+              <p className="text-white/60 text-sm mb-4">
+                Importez vos données existantes pour remplir rapidement les tables et suivre leur production.
+              </p>
+              <button
+                onClick={() => setShowImportModal(true)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-brand-tertiary/80 rounded-lg text-white hover:bg-brand-tertiary transition-colors"
+              >
+                <Upload size={18} />
+                Importer des données
+              </button>
+            </div>
+          </div>
         </div>
       </motion.div>
 
@@ -747,6 +898,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
             cell={selectedCell}
             onClose={() => setSelectedCell(null)}
             onUpdate={(data) => handleCellUpdate(selectedCell.id, data)}
+            setShowNaissainModal={setShowNaissainModal}
           />
         )}
       </AnimatePresence>
@@ -910,6 +1062,409 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                     className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
                   >
                     Enregistrer l'échantillonnage
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal de naissain */}
+      <AnimatePresence>
+        {showNaissainModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-white">
+                  Gestion du Naissain
+                </h3>
+                <button
+                  onClick={() => setShowNaissainModal(false)}
+                  className="text-white/60 hover:text-white transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <form onSubmit={handleNaissainSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Source du naissain (écloserie)
+                  </label>
+                  <input
+                    type="text"
+                    value={naissainSource}
+                    onChange={(e) => setNaissainSource(e.target.value)}
+                    className="w-full p-4 bg-white/5 rounded-lg text-white"
+                    placeholder="Ex: Écloserie Atlantique"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Numéro de lot fournisseur
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full p-4 bg-white/5 rounded-lg text-white"
+                    placeholder="Ex: ATLANT-2025-0012"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Date de réception
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full p-4 bg-white/5 rounded-lg text-white"
+                    defaultValue={format(new Date(), 'yyyy-MM-dd')}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Quantité reçue
+                  </label>
+                  <input
+                    type="number"
+                    className="w-full p-4 bg-white/5 rounded-lg text-white"
+                    placeholder="Ex: 10000"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Notes sur la qualité
+                  </label>
+                  <textarea
+                    className="w-full p-4 bg-white/5 rounded-lg text-white h-24 resize-none"
+                    placeholder="Observations sur la qualité du naissain à la réception..."
+                  />
+                </div>
+
+                <div className="bg-brand-burgundy/20 p-4 rounded-lg">
+                  <div className="flex items-center text-brand-burgundy mb-2">
+                    <Info size={20} className="mr-2" />
+                    <span className="font-medium">Numéro de traçabilité</span>
+                  </div>
+                  <div className="text-white font-mono">
+                    NAIS-{new Date().getTime()}
+                  </div>
+                  <p className="text-xs text-white/60 mt-2">
+                    Ce numéro sera utilisé pour la traçabilité et permettra de suivre la performance de ce lot de naissain.
+                  </p>
+                </div>
+
+                <div className="flex justify-end space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowNaissainModal(false)}
+                    className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
+                  >
+                    Enregistrer le naissain
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal d'historique */}
+      <AnimatePresence>
+        {showHistoryModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-2xl"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-white">
+                  Historique de la table {table?.name}
+                </h3>
+                <button
+                  onClick={() => setShowHistoryModal(false)}
+                  className="text-white/60 hover:text-white transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h4 className="text-lg font-medium text-white">Rechercher par date</h4>
+                  <div className="flex space-x-2">
+                    <input
+                      type="date"
+                      value={historyDate}
+                      onChange={(e) => setHistoryDate(e.target.value)}
+                      className="p-2 bg-white/5 rounded-lg text-white"
+                    />
+                    <button
+                      onClick={handleHistorySearch}
+                      className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
+                    >
+                      Rechercher
+                    </button>
+                  </div>
+                </div>
+
+                {/* Affichage des informations historiques */}
+                <div className="bg-white/5 p-4 rounded-lg">
+                  <h4 className="text-white font-medium mb-4">Données pour le {format(new Date(historyDate), 'dd MMMM yyyy', { locale: fr })}</h4>
+                  
+                  {/* Métriques */}
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="glass-effect rounded-lg p-4">
+                      <div className="flex items-center text-white/80 mb-2">
+                        <Thermometer size={20} className="mr-2 text-brand-burgundy" />
+                        Température
+                      </div>
+                      <div className="text-2xl font-bold text-white">12.5°C</div>
+                    </div>
+
+                    <div className="glass-effect rounded-lg p-4">
+                      <div className="flex items-center text-white/80 mb-2">
+                        <Droplets size={20} className="mr-2 text-brand-primary" />
+                        Salinité
+                      </div>
+                      <div className="text-2xl font-bold text-white">35g/L</div>
+                    </div>
+
+                    <div className="glass-effect rounded-lg p-4">
+                      <div className="flex items-center text-white/80 mb-2">
+                        <AlertCircle size={20} className="mr-2 text-brand-tertiary" />
+                        Mortalité
+                      </div>
+                      <div className="text-2xl font-bold text-white">2.5%</div>
+                    </div>
+                  </div>
+
+                  {/* Informations sur le lot */}
+                  <div className="glass-effect rounded-lg p-4">
+                    <div className="flex items-center text-white/80 mb-4">
+                      <Shell size={20} className="mr-2 text-brand-burgundy" />
+                      Lot en cours
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/60">Calibre</span>
+                        <span className="text-white font-medium">N°3</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/60">Quantité</span>
+                        <span className="text-white font-medium">5000 unités</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/60">Date de récolte estimée</span>
+                        <span className="text-white font-medium">15 juin 2025</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/60">Source du naissain</span>
+                        <span className="text-white font-medium">Écloserie Atlantique</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Échantillonnage */}
+                  <div className="glass-effect rounded-lg p-4 mt-4">
+                    <div className="flex items-center text-white/80 mb-4">
+                      <Calendar size={20} className="mr-2 text-brand-tertiary" />
+                      Échantillonnage
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-white/60">Dernier échantillonnage</span>
+                        <span className="text-white">19 févr. 2025</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-white/60">Prochain échantillonnage</span>
+                        <span className="text-white">26 févr. 2025</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-4">
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-brand-tertiary rounded-lg text-white hover:bg-brand-tertiary/90 transition-colors"
+                  >
+                    Exporter les données
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowHistoryModal(false)}
+                    className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+                  >
+                    Fermer
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal d'importation */}
+      <AnimatePresence>
+        {showImportModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <FileSpreadsheet size={24} className="mr-3 text-brand-tertiary" />
+                  <h3 className="text-xl font-bold text-white">
+                    Importer des données
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowImportModal(false)}
+                  className="text-white/60 hover:text-white transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="mb-6 bg-white/5 p-4 rounded-lg">
+                <h4 className="font-medium text-white mb-2">Format de fichier attendu</h4>
+                <p className="text-white/70 text-sm">
+                  Votre fichier Excel doit contenir les colonnes suivantes :
+                </p>
+                <ul className="list-disc list-inside text-white/70 text-sm mt-2 space-y-1">
+                  <li>Position (ID de la case)</li>
+                  <li>Type (type de production)</li>
+                  <li>Quantité (nombre d'unités)</li>
+                  <li>Date de mise en place (format JJ/MM/AAAA)</li>
+                  <li>Calibre (taille des huîtres)</li>
+                  <li>Source (provenance du naissain)</li>
+                </ul>
+                <div className="mt-4">
+                  <a href="#" className="text-brand-tertiary text-sm hover:underline flex items-center">
+                    <Download size={16} className="mr-1" />
+                    Télécharger un modèle de fichier
+                  </a>
+                </div>
+              </div>
+
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                handleImportData();
+              }} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Sélectionner un fichier Excel (.xlsx, .xls) ou CSV
+                  </label>
+                  <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center cursor-pointer hover:border-white/40 transition-colors"
+                    onClick={() => fileInputRef.current?.click()}>
+                    <Upload size={36} className="mx-auto text-white/60 mb-3" />
+                    <p className="text-white/80 mb-2">
+                      Glissez-déposez votre fichier ici ou cliquez pour parcourir
+                    </p>
+                    <p className="text-white/50 text-sm">
+                      Formats supportés: .xlsx, .xls, .csv
+                    </p>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      accept=".xlsx, .xls, .csv"
+                    />
+                  </div>
+                </div>
+
+                {importError && (
+                  <div className="bg-red-900/30 border border-red-500/30 text-red-300 p-4 rounded-lg text-sm">
+                    <div className="font-medium mb-1">Erreur d'importation</div>
+                    {importError}
+                  </div>
+                )}
+
+                {importPreview.length > 0 && (
+                  <div className="bg-white/5 p-4 rounded-lg">
+                    <h4 className="text-white font-medium mb-4">Aperçu des données ({importData.length} enregistrements au total)</h4>
+                    
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-white/10">
+                            {Object.keys(importPreview[0]).map((key) => (
+                              <th key={key} className="text-left py-2 px-3 text-white/80">{key}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {importPreview.map((row, index) => (
+                            <tr key={index} className="border-b border-white/5">
+                              {Object.keys(row).map((key) => (
+                                <td key={key} className="py-2 px-3 text-white/70">{row[key]}</td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    <div className="mt-4 text-white/60 text-sm">
+                      * Seules les 5 premières lignes sont affichées
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex justify-end space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowImportModal(false)}
+                    className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={importData.length === 0}
+                    className={`px-4 py-2 rounded-lg text-white transition-colors flex items-center 
+                    ${importData.length === 0 
+                      ? 'bg-white/20 cursor-not-allowed' 
+                      : 'bg-brand-burgundy hover:bg-brand-burgundy/90'}`}
+                  >
+                    <FileSpreadsheet size={18} className="mr-2" />
+                    Importer les données
                   </button>
                 </div>
               </form>
