@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Waves, ThermometerSun, Timer, Activity, Filter, Shell, Droplets, X } from 'lucide-react';
+import { Waves, ThermometerSun, Timer, Activity, Filter, Shell, Droplets, X, Edit2, Save } from 'lucide-react';
 import { AnimatedCard } from '@/components/ui/AnimatedCard';
+import { Input } from '@/components/ui/Input';
 
 interface Pool {
   id: string;
@@ -99,6 +100,8 @@ const mockPools: Pool[] = [
 
 export function PurificationPools() {
   const [selectedPool, setSelectedPool] = useState<Pool | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editedPool, setEditedPool] = useState<Pool | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -110,6 +113,38 @@ export function PurificationPools() {
         return 'bg-red-500/20 text-red-300';
       default:
         return 'bg-white/20 text-white';
+    }
+  };
+
+  const handleEdit = () => {
+    setEditedPool(selectedPool);
+    setEditMode(true);
+  };
+
+  const handleSave = () => {
+    if (editedPool) {
+      // Dans un environnement réel, nous ferions un appel API ici
+      const updatedPools = mockPools.map(pool => 
+        pool.id === editedPool.id ? editedPool : pool
+      );
+      // Mettre à jour le state global (à implémenter avec un vrai backend)
+      setSelectedPool(editedPool);
+      setEditMode(false);
+      setEditedPool(null);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditMode(false);
+    setEditedPool(null);
+  };
+
+  const handleInputChange = (field: keyof Pool, value: string | number) => {
+    if (editedPool) {
+      setEditedPool({
+        ...editedPool,
+        [field]: value
+      });
     }
   };
 
@@ -225,12 +260,21 @@ export function PurificationPools() {
                   </div>
                 </div>
               </div>
-              <button
-                onClick={() => setSelectedPool(null)}
-                className="p-2 hover:bg-white/5 rounded-lg"
-              >
-                <X className="text-white/60" size={20} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleEdit}
+                  className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+                >
+                  <Edit2 size={20} className="mr-2" />
+                  Modifier
+                </button>
+                <button
+                  onClick={() => setSelectedPool(null)}
+                  className="p-2 hover:bg-white/5 rounded-lg"
+                >
+                  <X className="text-white/60" size={20} />
+                </button>
+              </div>
             </div>
 
             <div className="space-y-6">
@@ -298,6 +342,104 @@ export function PurificationPools() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editMode && editedPool && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[rgb(var(--color-brand-surface)_/_var(--glass-opacity))] backdrop-blur-md border border-white/10 rounded-lg p-6 w-full max-w-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-white">Modifier {editedPool.name}</h2>
+              <button
+                onClick={handleCancel}
+                className="p-2 hover:bg-white/5 rounded-lg"
+              >
+                <X className="text-white/60" size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Nom du bassin</label>
+                <Input
+                  type="text"
+                  value={editedPool.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Type de filtre</label>
+                <Input
+                  type="text"
+                  value={editedPool.filterType}
+                  onChange={(e) => handleInputChange('filterType', e.target.value)}
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Statut du filtre</label>
+                <select
+                  value={editedPool.filterStatus}
+                  onChange={(e) => handleInputChange('filterStatus', e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
+                >
+                  <option value="active">Actif</option>
+                  <option value="maintenance">Maintenance</option>
+                  <option value="error">Erreur</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Capacité</label>
+                <Input
+                  type="number"
+                  value={editedPool.capacity}
+                  onChange={(e) => handleInputChange('capacity', parseInt(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Température (°C)</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={editedPool.temperature}
+                  onChange={(e) => handleInputChange('temperature', parseFloat(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Prochaine maintenance</label>
+                <Input
+                  type="date"
+                  value={editedPool.nextMaintenance}
+                  onChange={(e) => handleInputChange('nextMaintenance', e.target.value)}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={handleCancel}
+                  className="px-4 py-2 text-white hover:bg-white/5 rounded-lg transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="flex items-center px-4 py-2 bg-brand-blue hover:bg-brand-blue/90 rounded-lg text-white transition-colors"
+                >
+                  <Save size={20} className="mr-2" />
+                  Enregistrer
+                </button>
               </div>
             </div>
           </div>

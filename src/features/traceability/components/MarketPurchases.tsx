@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Package, Calendar, AlertTriangle, Clock, Tag, X } from 'lucide-react';
+import { Package, Calendar, AlertTriangle, Clock, Tag, X, Edit2, Save } from 'lucide-react';
+import { Input } from '@/components/ui/Input';
 
 interface MarketPurchase {
   id: string;
@@ -55,6 +56,40 @@ const statusColors = {
 
 export function MarketPurchases() {
   const [selectedPurchase, setSelectedPurchase] = useState<MarketPurchase | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editedPurchase, setEditedPurchase] = useState<MarketPurchase | null>(null);
+
+  const handleEdit = () => {
+    setEditedPurchase(selectedPurchase);
+    setEditMode(true);
+  };
+
+  const handleSave = () => {
+    if (editedPurchase) {
+      // Dans un environnement réel, nous ferions un appel API ici
+      const updatedPurchases = mockPurchases.map(purchase => 
+        purchase.id === editedPurchase.id ? editedPurchase : purchase
+      );
+      // Mettre à jour le state global (à implémenter avec un vrai backend)
+      setSelectedPurchase(editedPurchase);
+      setEditMode(false);
+      setEditedPurchase(null);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditMode(false);
+    setEditedPurchase(null);
+  };
+
+  const handleInputChange = (field: keyof MarketPurchase, value: string | number) => {
+    if (editedPurchase) {
+      setEditedPurchase({
+        ...editedPurchase,
+        [field]: value
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -110,17 +145,26 @@ export function MarketPurchases() {
         ))}
       </div>
 
-      {selectedPurchase && (
+      {selectedPurchase && !editMode && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-50">
-          <div className="relative w-full max-w-3xl bg-[rgb(var(--color-card))/95] border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.3)] backdrop-blur-lg rounded-xl overflow-hidden">
+          <div className="relative w-full max-w-3xl bg-[rgb(var(--color-card))/95] border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.3)] backdrop-blur-lg rounded-xl overflow-hidden p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white">{selectedPurchase.type}</h3>
-              <button
-                onClick={() => setSelectedPurchase(null)}
-                className="text-white/60 hover:text-white"
-              >
-                <X size={24} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleEdit}
+                  className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+                >
+                  <Edit2 size={20} className="mr-2" />
+                  Modifier
+                </button>
+                <button
+                  onClick={() => setSelectedPurchase(null)}
+                  className="p-2 hover:bg-white/5 rounded-lg"
+                >
+                  <X className="text-white/60" size={20} />
+                </button>
+              </div>
             </div>
 
             <div className="space-y-6">
@@ -190,6 +234,161 @@ export function MarketPurchases() {
                   className="px-4 py-2 bg-brand-burgundy rounded-lg text-white"
                 >
                   Modifier
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editMode && editedPurchase && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-50">
+          <div className="relative w-full max-w-3xl bg-[rgb(var(--color-card))/95] border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.3)] backdrop-blur-lg rounded-xl overflow-hidden p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-white">Modifier {editedPurchase.type}</h3>
+              <button
+                onClick={handleCancel}
+                className="p-2 hover:bg-white/5 rounded-lg"
+              >
+                <X className="text-white/60" size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-white/60 mb-2">Type</label>
+                  <Input
+                    type="text"
+                    value={editedPurchase.type}
+                    onChange={(e) => handleInputChange('type', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-2">Fournisseur</label>
+                  <Input
+                    type="text"
+                    value={editedPurchase.supplier}
+                    onChange={(e) => handleInputChange('supplier', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-white/60 mb-2">Quantité</label>
+                  <Input
+                    type="number"
+                    value={editedPurchase.quantity}
+                    onChange={(e) => handleInputChange('quantity', parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-2">Unité</label>
+                  <Input
+                    type="text"
+                    value={editedPurchase.unit}
+                    onChange={(e) => handleInputChange('unit', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-white/60 mb-2">Date d'achat</label>
+                  <Input
+                    type="date"
+                    value={editedPurchase.purchaseDate}
+                    onChange={(e) => handleInputChange('purchaseDate', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-2">Date d'expiration</label>
+                  <Input
+                    type="date"
+                    value={editedPurchase.expiryDate}
+                    onChange={(e) => handleInputChange('expiryDate', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-white/60 mb-2">Emplacement de stockage</label>
+                  <Input
+                    type="text"
+                    value={editedPurchase.storageLocation}
+                    onChange={(e) => handleInputChange('storageLocation', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-2">Numéro de lot</label>
+                  <Input
+                    type="text"
+                    value={editedPurchase.batchNumber}
+                    onChange={(e) => handleInputChange('batchNumber', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-white/60 mb-2">Prix unitaire (€)</label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={editedPurchase.price}
+                    onChange={(e) => handleInputChange('price', parseFloat(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-2">Qualité (%)</label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={editedPurchase.quality}
+                    onChange={(e) => handleInputChange('quality', parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Statut</label>
+                <select
+                  value={editedPurchase.status}
+                  onChange={(e) => handleInputChange('status', e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
+                >
+                  <option value="fresh">Frais</option>
+                  <option value="warning">À surveiller</option>
+                  <option value="expired">Périmé</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={handleCancel}
+                  className="px-4 py-2 text-white hover:bg-white/5 rounded-lg transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="flex items-center px-4 py-2 bg-brand-burgundy hover:bg-brand-burgundy/90 rounded-lg text-white transition-colors"
+                >
+                  <Save size={20} className="mr-2" />
+                  Enregistrer
                 </button>
               </div>
             </div>
