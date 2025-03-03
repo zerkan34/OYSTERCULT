@@ -467,13 +467,20 @@ export function PurchaseConfiguration() {
 
               <div>
                 <label className="block text-sm text-white/60 mb-2">Lieu de stockage</label>
-                <Input
-                  type="text"
+                <select
                   value={formData.storageLocation}
                   onChange={(e) => setFormData(prev => ({ ...prev, storageLocation: e.target.value }))}
-                  className="w-full"
+                  className="w-full px-3 py-2 rounded-md bg-brand-dark/80 border border-brand-blue/30 text-white focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue appearance-none"
                   required
-                />
+                >
+                  <option value="">Sélectionner un lieu de stockage</option>
+                  <option value="Frigo 1">Frigo 1</option>
+                  <option value="Frigo 2">Frigo 2</option>
+                  <option value="Congélateur 1">Congélateur 1</option>
+                  <option value="Congélateur 2">Congélateur 2</option>
+                  <option value="Remise">Remise</option>
+                  <option value="Cave">Cave</option>
+                </select>
               </div>
 
               <div>
