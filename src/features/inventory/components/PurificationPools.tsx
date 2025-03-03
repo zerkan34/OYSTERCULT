@@ -274,7 +274,7 @@ function PoolDetail({ pool, onClose }: PoolDetailProps) {
                         <div>
                           <div className="text-white font-medium">{batch.number}</div>
                           <div className="text-sm text-white/60">
-                            {batch.quantity} unités - {batch.type}
+                            {batch.quantity} kg - {batch.type}
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -542,7 +542,7 @@ export function PurificationPools() {
                 <div key={batch.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                   <div>
                     <div className="text-white font-medium">{batch.number}</div>
-                    <div className="text-sm text-white/60">{batch.quantity} unités</div>
+                    <div className="text-sm text-white/60">{batch.quantity} kg</div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="text-right">

@@ -274,7 +274,7 @@ export function DashboardPage() {
                     <div className="flex items-center justify-between text-sm">
                       <div className="flex items-center text-white/60">
                         <Shell className="w-4 h-4 mr-1" />
-                        {pool.currentLoad} / {pool.capacity} unités
+                        {pool.currentLoad} / {pool.capacity} kg
                       </div>
                       <div className="flex items-center text-white/60">
                         <Waves className="w-4 h-4 mr-1" />

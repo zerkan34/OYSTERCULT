@@ -165,6 +165,12 @@ export function TrempeView() {
   const [editMode, setEditMode] = useState(false);
   const [editedSquare, setEditedSquare] = useState<TrempeSquare | null>(null);
   const [trempeSquares, setTrempeSquares] = useState<TrempeSquare[]>(mockSquares);
+  const [showAddRopeModal, setShowAddRopeModal] = useState(false);
+  const [newRopeData, setNewRopeData] = useState({
+    type: '',
+    quantity: 1,
+    date: format(new Date(), 'yyyy-MM-dd')
+  });
   
   // Récupérer les lots depuis le store
   const { batches, updateBatch } = useStore();
@@ -261,7 +267,7 @@ export function TrempeView() {
       // Ici, on pourrait ouvrir un modal de création de lot
       // ou rediriger vers le tableau de traçabilité
       
-      alert(`Pour ajouter un lot au carré ${squareNumber}, veuillez utiliser la section Traçabilité`);
+      alert(`Pour ajouter une corde au carré ${squareNumber}, veuillez utiliser la section Traçabilité`);
     }
   };
 
@@ -467,7 +473,7 @@ export function TrempeView() {
                             }`} />
                           </div>
                           
-                          {/* Indicateur de lots */}
+                          {/* Indicateur de cordes */}
                           <div className="flex items-center justify-between">
                             <div className={`text-xs ${
                               square.batches.length > 0
@@ -475,8 +481,8 @@ export function TrempeView() {
                                 : 'text-white/40'
                             }`}>
                               {square.batches.length > 0 
-                                ? `${square.batches.length} lot${square.batches.length > 1 ? 's' : ''}`
-                                : 'Aucun lot'}
+                                ? `${square.batches.length} corde${square.batches.length > 1 ? 's' : ''}`
+                                : 'Aucune corde'}
                             </div>
                             
                             {/* Indicateur de cordes */}
@@ -538,7 +544,7 @@ export function TrempeView() {
                         <div className={`${(hoveredSquare || selectedSquare).batches.length > 0 ? 'text-brand-primary glow-text-blue' : 'text-white/60'} text-lg font-medium`}>
                           {(hoveredSquare || selectedSquare).batches.length}
                         </div>
-                        <div className="text-[10px] text-white/60">Lots</div>
+                        <div className="text-[10px] text-white/60">Cordes</div>
                       </div>
                       
                       <div className={`glass-effect rounded-lg p-2 text-center flex-1 border ${
@@ -566,7 +572,7 @@ export function TrempeView() {
                       </div>
                     </div>
 
-                    {/* Liste des lots */}
+                    {/* Liste des cordes */}
                     <div className="mb-1">
                       {(hoveredSquare || selectedSquare).batches.length > 0 ? (
                         <div className="flex items-center justify-between mb-3">
@@ -574,15 +580,15 @@ export function TrempeView() {
                             <div className="p-1.5 rounded-lg bg-white/10">
                               <History size={14} className="text-white" />
                             </div>
-                            <span className="text-xs text-white/70 font-medium">Lots dans ce carré</span>
+                            <span className="text-xs text-white/70 font-medium">Cordes dans ce carré</span>
                           </div>
                           <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/60">
-                            {(hoveredSquare || selectedSquare).batches.length} lot{(hoveredSquare || selectedSquare).batches.length !== 1 ? 's' : ''}
+                            {(hoveredSquare || selectedSquare).batches.length} corde{(hoveredSquare || selectedSquare).batches.length !== 1 ? 's' : ''}
                           </span>
                         </div>
                       ) : (
                         <div className="text-center py-4 text-white/40 text-sm">
-                          Aucun lot dans ce carré
+                          Aucune corde dans ce carré
                         </div>
                       )}
                     </div>
@@ -659,11 +665,11 @@ export function TrempeView() {
                           : selectedSquare.status === 'partial'
                           ? 'bg-brand-tertiary/20 text-brand-tertiary'
                           : 'bg-white/10 text-white/60'
-                      } ${!editMode && 'cursor-not-allowed'}`}
+                      } ${!editMode && 'cursor-not-allowed'} [&>option]:bg-brand-dark [&>option]:text-white`}
                     >
-                      <option value="full">Plein</option>
-                      <option value="partial">Partiel</option>
-                      <option value="empty">Vide</option>
+                      <option value="full" className="text-white">Plein</option>
+                      <option value="partial" className="text-white">Partiel</option>
+                      <option value="empty" className="text-white/60">Vide</option>
                     </select>
                   </div>
                 </div>
@@ -673,7 +679,7 @@ export function TrempeView() {
                   <div className="glass-effect rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Package size={16} className="text-white/60" />
-                      <span className="text-sm text-white/60">Lots</span>
+                      <span className="text-sm text-white/60">Cordes</span>
                     </div>
                     <div className="text-2xl font-medium text-white">
                       {editMode ? (
@@ -717,17 +723,17 @@ export function TrempeView() {
                   </div>
                 </div>
 
-                {/* Liste des lots */}
+                {/* Liste des cordes */}
                 <div className="mb-1">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 rounded-lg bg-white/10">
                         <History size={14} className="text-white" />
                       </div>
-                      <span className="text-xs text-white/70 font-medium">Lots dans ce carré</span>
+                      <span className="text-xs text-white/70 font-medium">Cordes dans ce carré</span>
                     </div>
                     <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/60">
-                      {(selectedSquare).batches.length} lot{(selectedSquare).batches.length !== 1 ? 's' : ''}
+                      {(selectedSquare).batches.length} corde{(selectedSquare).batches.length !== 1 ? 's' : ''}
                     </span>
                   </div>
                   {(selectedSquare).batches.length > 0 ? (
@@ -752,7 +758,7 @@ export function TrempeView() {
                     </div>
                   ) : (
                     <div className="text-center py-4 text-white/40 text-sm">
-                      Aucun lot dans ce carré
+                      Aucune corde dans ce carré
                     </div>
                   )}
                 </div>
@@ -764,7 +770,7 @@ export function TrempeView() {
                         window.location.href = '/traceability';
                       }}
                       className="p-2 bg-brand-primary/20 hover:bg-brand-primary/40 rounded-lg transition-colors"
-                      title="Ajouter un lot via la traçabilité"
+                      title="Ajouter une corde via la traçabilité"
                     >
                       <Plus size={16} className="text-red-500" />
                     </button>
@@ -782,8 +788,8 @@ export function TrempeView() {
                     Synchronisation avec la traçabilité
                   </h3>
                   <p className="text-xs text-white/60 mt-2">
-                    Les lots affichés ici sont synchronisés avec la section traçabilité. 
-                    Pour ajouter ou modifier un lot, utilisez le bouton <Plus size={12} className="inline text-red-500" /> 
+                    Les cordes affichées ici sont synchronisées avec la section traçabilité. 
+                    Pour ajouter ou modifier une corde, utilisez le bouton <Plus size={12} className="inline text-red-500" /> 
                     ci-dessus pour accéder à la section traçabilité.
                   </p>
                 </div>
@@ -822,10 +828,11 @@ export function TrempeView() {
                         <span>Modifier</span>
                       </button>
                       <button 
+                        onClick={() => setShowAddRopeModal(true)}
                         className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
                       >
                         <Plus size={16} className="text-red-500" />
-                        <span>Ajouter un lot</span>
+                        <span>Ajouter une corde</span>
                       </button>
                       <button 
                         className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
@@ -835,6 +842,81 @@ export function TrempeView() {
                       </button>
                     </>
                   )}
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Modal d'ajout de corde */}
+        <AnimatePresence>
+          {showAddRopeModal && selectedSquare && (
+            <div 
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                  setShowAddRopeModal(false);
+                }
+              }}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="glass-effect rounded-xl p-6 max-w-md w-full mx-4 relative"
+              >
+                <h3 className="text-xl font-semibold text-white mb-4">Ajouter une corde</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm text-white/60 mb-1">Type d'huître</label>
+                    <select
+                      value={newRopeData.type}
+                      onChange={(e) => setNewRopeData({...newRopeData, type: e.target.value})}
+                      className="w-full bg-white/10 text-white rounded-lg p-2 outline-none focus:ring-2 focus:ring-brand-primary [&>option]:bg-brand-dark [&>option]:text-white"
+                    >
+                      <option value="" className="text-white/60">Sélectionner un type</option>
+                      <option value="plates" className="text-white">Plates</option>
+                      <option value="creuses" className="text-white">Creuses</option>
+                      <option value="speciales" className="text-white">Spéciales</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white/60 mb-1">Nombre de cordes</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={newRopeData.quantity}
+                      onChange={(e) => setNewRopeData({...newRopeData, quantity: parseInt(e.target.value)})}
+                      className="w-full bg-white/10 text-white rounded-lg p-2 outline-none focus:ring-2 focus:ring-brand-primary"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white/60 mb-1">Date de mise en place</label>
+                    <input
+                      type="date"
+                      value={newRopeData.date}
+                      onChange={(e) => setNewRopeData({...newRopeData, date: e.target.value})}
+                      className="w-full bg-white/10 text-white rounded-lg p-2 outline-none focus:ring-2 focus:ring-brand-primary"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={() => {
+                      // Logique d'ajout de corde
+                      setShowAddRopeModal(false);
+                    }}
+                    className="flex-1 bg-brand-primary text-white rounded-lg py-2 px-4 hover:bg-brand-primary/80 transition-colors"
+                  >
+                    Ajouter
+                  </button>
+                  <button
+                    onClick={() => setShowAddRopeModal(false)}
+                    className="flex-1 bg-white/10 text-white rounded-lg py-2 px-4 hover:bg-white/20 transition-colors"
+                  >
+                    Annuler
+                  </button>
                 </div>
               </motion.div>
             </div>

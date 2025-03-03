@@ -94,7 +94,7 @@ const initialTables: Table[] = [
     }),
     currentBatch: {
       size: '3',
-      quantity: 5000,
+      quantity: 300,
       estimatedHarvestDate: '2025-06-15'
     }
   },
@@ -126,7 +126,7 @@ const initialTables: Table[] = [
     }),
     currentBatch: {
       size: '2',
-      quantity: 4000,
+      quantity: 300,
       estimatedHarvestDate: '2025-06-20'
     }
   },
@@ -158,7 +158,7 @@ const initialTables: Table[] = [
     }),
     currentBatch: {
       size: '3',
-      quantity: 6000,
+      quantity: 500,
       estimatedHarvestDate: '2025-07-01'
     }
   },
@@ -190,7 +190,7 @@ const initialTables: Table[] = [
     }),
     currentBatch: {
       size: '4',
-      quantity: 3500,
+      quantity: 350,
       estimatedHarvestDate: '2025-07-05'
     }
   },
@@ -222,7 +222,7 @@ const initialTables: Table[] = [
     }),
     currentBatch: {
       size: '3',
-      quantity: 5500,
+      quantity: 550,
       estimatedHarvestDate: '2025-06-25'
     }
   },
@@ -254,7 +254,7 @@ const initialTables: Table[] = [
     }),
     currentBatch: {
       size: '2',
-      quantity: 4800,
+      quantity: 480,
       estimatedHarvestDate: '2025-06-30'
     }
   }
@@ -655,7 +655,7 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                       <div className="flex justify-between items-center">
                         <span className="text-white/60">Quantité</span>
                         <span className="text-white font-medium">
-                          {(selectedTable || hoveredTable)?.currentBatch?.quantity} unités
+                          {(selectedTable || hoveredTable)?.currentBatch?.quantity} kg d'Huîtres N°{(selectedTable || hoveredTable)?.currentBatch?.size}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">

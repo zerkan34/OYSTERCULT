@@ -78,9 +78,9 @@ export function TraceabilityPage() {
     
     const batchData = [
       ['Bassin', 'N° Lot', 'Type', 'Quantité', 'Temps restant', 'Qualité'],
-      ['Bassin A1', 'LOT-2025-001', 'Plates', '500 unités', '12h', '98%'],
-      ['Bassin A1', 'LOT-2025-002', 'Creuses', '300 unités', '24h', '95%'],
-      ['Bassin A2', 'LOT-2025-003', 'Spéciales', '600 unités', '4h', '92%']
+      ['Bassin A1', 'LOT-2025-001', 'Plates', '500 kg', '12h', '98%'],
+      ['Bassin A1', 'LOT-2025-002', 'Creuses', '300 kg', '24h', '95%'],
+      ['Bassin A2', 'LOT-2025-003', 'Spéciales', '600 kg', '4h', '92%']
     ];
 
     (doc as any).autoTable({

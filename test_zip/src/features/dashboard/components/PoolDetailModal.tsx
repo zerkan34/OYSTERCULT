@@ -102,7 +102,7 @@ export function PoolDetailModal({ pool, onClose }: PoolDetailModalProps) {
               <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                 <div>
                   <div className="text-white font-medium">LOT-2025-001</div>
-                  <div className="text-sm text-white/60">500 unités</div>
+                  <div className="text-sm text-white/60">500 kg</div>
                 </div>
                 <div className="text-right">
                   <div className="text-white">12h</div>
@@ -112,7 +112,7 @@ export function PoolDetailModal({ pool, onClose }: PoolDetailModalProps) {
               <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                 <div>
                   <div className="text-white font-medium">LOT-2025-002</div>
-                  <div className="text-sm text-white/60">300 unités</div>
+                  <div className="text-sm text-white/60">300 kg</div>
                 </div>
                 <div className="text-right">
                   <div className="text-white">24h</div>
