@@ -261,13 +261,6 @@ export function TraceabilityPage() {
               </div>
               <h2 className="text-lg font-medium text-white">Lots en trempe</h2>
             </div>
-            <button
-              onClick={() => setShowQRCode(true)}
-              className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
-            >
-              <Edit2 size={20} className="mr-2" />
-              Modifier
-            </button>
           </div>
           <BatchList searchQuery="" />
         </div>
@@ -282,13 +275,6 @@ export function TraceabilityPage() {
               </div>
               <h2 className="text-lg font-medium text-white">Bassins de purification</h2>
             </div>
-            <button
-              onClick={() => setShowQRCode(true)}
-              className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
-            >
-              <Edit2 size={20} className="mr-2" />
-              Modifier
-            </button>
           </div>
           <PurificationPools />
         </div>
@@ -303,13 +289,6 @@ export function TraceabilityPage() {
               </div>
               <h2 className="text-lg font-medium text-white">Achats</h2>
             </div>
-            <button
-              onClick={() => setShowQRCode(true)}
-              className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
-            >
-              <Edit2 size={20} className="mr-2" />
-              Modifier
-            </button>
           </div>
           <MarketPurchases />
         </div>

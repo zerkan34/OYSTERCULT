@@ -3,11 +3,9 @@ import { Package, Search, Filter, Calendar, Clock, AlertCircle, ChevronRight, Sh
 import { ModernCardBase } from '@/components/ui/ModernCardBase';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 
 export function PurchasesPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('commandes');
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
 
   // Fonction pour obtenir la couleur en fonction du statut
@@ -252,91 +250,73 @@ export function PurchasesPage() {
         </div>
       </div>
 
-      {/* Onglets */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="commandes">Commandes</TabsTrigger>
-          <TabsTrigger value="fournisseurs">Fournisseurs</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="commandes">
-          <ModernCardBase>
-            <div className="p-6 space-y-4">
-              {orders.map((order) => (
-                <div 
-                  key={order.id}
-                  className="bg-white/5 p-4 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() => setSelectedOrder(order.id === selectedOrder ? null : order.id)}
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className={`p-3 rounded-lg ${getStatusStyles(order.status).bgColor}`}>
-                      {order.icon && <order.icon className={`w-5 h-5 ${getStatusStyles(order.status).textColor}`} />}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-base font-medium text-white">{order.product}</h3>
-                        <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusStyles(order.status).bgColor} ${getStatusStyles(order.status).textColor}`}>
-                          {getStatusStyles(order.status).label}
-                        </span>
-                      </div>
-                      <p className="text-sm text-white/60">
-                        {order.supplier} • #{order.id} • Livraison le {order.deliveryDate}
+      <ModernCardBase>
+        <div className="p-6 space-y-4">
+          {orders.map((order) => (
+            <div 
+              key={order.id}
+              className="bg-white/5 p-4 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+              onClick={() => setSelectedOrder(order.id === selectedOrder ? null : order.id)}
+            >
+              <div className="flex items-center space-x-4">
+                <div className={`p-3 rounded-lg ${getStatusStyles(order.status).bgColor}`}>
+                  {order.icon && <order.icon className={`w-5 h-5 ${getStatusStyles(order.status).textColor}`} />}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-medium text-white">{order.product}</h3>
+                    <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusStyles(order.status).bgColor} ${getStatusStyles(order.status).textColor}`}>
+                      {getStatusStyles(order.status).label}
+                    </span>
+                  </div>
+                  <p className="text-sm text-white/60">
+                    {order.supplier} • #{order.id} • Livraison le {order.deliveryDate}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-base font-medium text-white">{order.price}€</p>
+                  <p className="text-sm text-white/60">{order.quantity}</p>
+                </div>
+                <ChevronRight 
+                  className={`w-5 h-5 text-white/40 transition-transform ${
+                    selectedOrder === order.id ? 'rotate-90' : ''
+                  }`}
+                />
+              </div>
+              {selectedOrder === order.id && (
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-sm text-white/40">Statut</p>
+                      <p 
+                        className={`text-sm text-white mt-1 ${getStatusStyles(order.status).textColor}`}
+                      >
+                        {getStatusStyles(order.status).label}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-base font-medium text-white">{order.price}€</p>
-                      <p className="text-sm text-white/60">{order.quantity}</p>
+                    <div>
+                      <p className="text-sm text-white/40">Date de commande</p>
+                      <p className="text-sm text-white mt-1">25/02/2024</p>
                     </div>
-                    <ChevronRight 
-                      className={`w-5 h-5 text-white/40 transition-transform ${
-                        selectedOrder === order.id ? 'rotate-90' : ''
-                      }`}
-                    />
+                    <div>
+                      <p className="text-sm text-white/40">Fournisseur</p>
+                      <p className="text-sm text-white mt-1">{order.supplier}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-white/40">Emplacement stock</p>
+                      <p className="text-sm text-white mt-1">{order.stockLocation}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-white/40">Dernière mise à jour</p>
+                      <p className="text-sm text-white mt-1">{order.lastUpdate}</p>
+                    </div>
                   </div>
-                  {selectedOrder === order.id && (
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div>
-                          <p className="text-sm text-white/40">Statut</p>
-                          <p 
-                            className={`text-sm text-white mt-1 ${getStatusStyles(order.status).textColor}`}
-                          >
-                            {getStatusStyles(order.status).label}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-white/40">Date de commande</p>
-                          <p className="text-sm text-white mt-1">25/02/2024</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-white/40">Fournisseur</p>
-                          <p className="text-sm text-white mt-1">{order.supplier}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-white/40">Emplacement stock</p>
-                          <p className="text-sm text-white mt-1">{order.stockLocation}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-white/40">Dernière mise à jour</p>
-                          <p className="text-sm text-white mt-1">{order.lastUpdate}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
-              ))}
+              )}
             </div>
-          </ModernCardBase>
-        </TabsContent>
-
-        <TabsContent value="fournisseurs">
-          <ModernCardBase>
-            <div className="p-6">
-              <p className="text-white/60">Liste des fournisseurs à venir...</p>
-            </div>
-          </ModernCardBase>
-        </TabsContent>
-      </Tabs>
+          ))}
+        </div>
+      </ModernCardBase>
     </div>
   );
 }
