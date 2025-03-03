@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { useForm } from 'react-hook-form';
-import { Camera, Upload } from 'lucide-react';
+import { Camera, Upload, Star } from 'lucide-react';
 
 interface PurchaseFormData {
   productName: string;
   supplierName: string;
   expiryDate: string;
   storageLocation: string;
+  quantity: number;
+  unitPrice: number;
+  rating: number;
+  notes: string;
   invoice: File | null;
 }
 
@@ -17,8 +21,15 @@ interface PurchaseFormProps {
 }
 
 export function PurchaseForm({ isOpen, onClose }: PurchaseFormProps) {
-  const { register, handleSubmit, formState: { errors } } = useForm<PurchaseFormData>();
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<PurchaseFormData>({
+    defaultValues: {
+      rating: 0,
+      quantity: 1,
+      unitPrice: 0,
+    }
+  });
   const [invoicePreview, setInvoicePreview] = useState<string | null>(null);
+  const rating = watch('rating');
 
   const onSubmit = (data: PurchaseFormData) => {
     console.log(data);
@@ -35,6 +46,10 @@ export function PurchaseForm({ isOpen, onClose }: PurchaseFormProps) {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleRating = (value: number) => {
+    setValue('rating', value);
   };
 
   return (
@@ -98,6 +113,81 @@ export function PurchaseForm({ isOpen, onClose }: PurchaseFormProps) {
               <p className="mt-1 text-sm text-red-400">{errors.storageLocation.message}</p>
             )}
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-white mb-1">
+              Quantité
+            </label>
+            <input
+              type="number"
+              min="1"
+              {...register('quantity', { 
+                required: 'La quantité est requise',
+                min: { value: 1, message: 'La quantité doit être supérieure à 0' }
+              })}
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+            />
+            {errors.quantity && (
+              <p className="mt-1 text-sm text-red-400">{errors.quantity.message}</p>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-white mb-1">
+              Prix unitaire (€)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              {...register('unitPrice', { 
+                required: 'Le prix unitaire est requis',
+                min: { value: 0, message: 'Le prix doit être positif' }
+              })}
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+            />
+            {errors.unitPrice && (
+              <p className="mt-1 text-sm text-red-400">{errors.unitPrice.message}</p>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            Note de qualité
+          </label>
+          <div className="flex items-center space-x-2">
+            {[1, 2, 3, 4, 5].map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => handleRating(value)}
+                className="focus:outline-none"
+              >
+                <Star
+                  size={24}
+                  className={`${
+                    value <= rating
+                      ? 'text-yellow-400 fill-current'
+                      : 'text-white/20'
+                  } transition-colors`}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-white mb-1">
+            Notes / Commentaires
+          </label>
+          <textarea
+            {...register('notes')}
+            rows={3}
+            className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white resize-none"
+            placeholder="Ajoutez des notes ou commentaires sur l'achat..."
+          />
         </div>
 
         <div>

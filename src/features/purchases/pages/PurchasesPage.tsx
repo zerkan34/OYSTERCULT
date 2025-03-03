@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
-import { Package, Search, Filter, Calendar, Clock, AlertCircle, ChevronRight, Shell, Fish, Anchor, Sailboat, Ship } from 'lucide-react';
+import { Package, Search, Filter, Calendar, Clock, AlertCircle, ChevronRight, Shell, Fish, Anchor, Sailboat, Ship, Plus, Camera, Scan, Star, X, Upload, MessageSquare } from 'lucide-react';
 import { ModernCardBase } from '@/components/ui/ModernCardBase';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { OrderDetails } from '../components/OrderDetails';
 
 export function PurchasesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+  const [selectedOrderForComments, setSelectedOrderForComments] = useState<string | null>(null);
+  const [showNewPurchaseForm, setShowNewPurchaseForm] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [formData, setFormData] = useState({
+    supplier: '',
+    product: '',
+    expiryDate: '',
+    invoice: null as File | null
+  });
 
   // Fonction pour obtenir la couleur en fonction du statut
   const getStatusStyles = (status: string) => {
@@ -61,6 +71,30 @@ export function PurchasesPage() {
           borderColor: 'border-gray-500/30'
         };
     }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, invoice: file }));
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implémenter la logique d'envoi
+    // 1. Envoyer les données au backend
+    // 2. Mettre à jour la traçabilité
+    // 3. Mettre à jour la comptabilité
+    console.log('Nouveau achat:', { ...formData, rating });
+    setShowNewPurchaseForm(false);
+    setFormData({
+      supplier: '',
+      product: '',
+      expiryDate: '',
+      invoice: null
+    });
+    setRating(0);
   };
 
   const orders = [
@@ -223,100 +257,236 @@ export function PurchasesPage() {
   ];
 
   return (
-    <div>
-      {/* En-tête avec recherche */}
-      <div className="mb-8">
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Commandes</h1>
-            <p className="text-sm text-white/60 mt-1">Gérez vos commandes et fournisseurs</p>
-          </div>
-        </div>
-        <div className="flex gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+    <div className="container mx-auto p-4 space-y-4">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex-1 flex items-center space-x-4">
+          <div className="flex-1">
             <Input
               type="text"
               placeholder="Rechercher une commande..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="w-full"
+              leftIcon={<Search className="w-4 h-4" />}
             />
           </div>
-          <Button variant="outline" className="gap-2">
-            <Filter className="w-4 h-4" />
-            Filtres
+          <Button variant="outline" className="flex items-center gap-2">
+            <Filter className="w-4 h-4" /> Filtres
           </Button>
         </div>
       </div>
 
-      <ModernCardBase>
-        <div className="p-6 space-y-4">
-          {orders.map((order) => (
-            <div 
-              key={order.id}
-              className="bg-white/5 p-4 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
-              onClick={() => setSelectedOrder(order.id === selectedOrder ? null : order.id)}
-            >
-              <div className="flex items-center space-x-4">
-                <div className={`p-3 rounded-lg ${getStatusStyles(order.status).bgColor}`}>
-                  {order.icon && <order.icon className={`w-5 h-5 ${getStatusStyles(order.status).textColor}`} />}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-medium text-white">{order.product}</h3>
-                    <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusStyles(order.status).bgColor} ${getStatusStyles(order.status).textColor}`}>
-                      {getStatusStyles(order.status).label}
-                    </span>
+      <div className="grid grid-cols-1 gap-4">
+        {orders.map((order) => (
+          <div key={order.id}>
+            <ModernCardBase className="overflow-hidden">
+              <div 
+                className="p-6 cursor-pointer"
+                onClick={() => setSelectedOrder(selectedOrder === order.id ? null : order.id)}
+              >
+                <div className="flex items-center space-x-4">
+                  <div className={`p-3 rounded-lg ${getStatusStyles(order.status).bgColor}`}>
+                    {order.icon && <order.icon className={`w-5 h-5 ${getStatusStyles(order.status).textColor}`} />}
                   </div>
-                  <p className="text-sm text-white/60">
-                    {order.supplier} • #{order.id} • Livraison le {order.deliveryDate}
-                  </p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-medium text-white">{order.product}</h3>
+                      <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusStyles(order.status).bgColor} ${getStatusStyles(order.status).textColor}`}>
+                        {getStatusStyles(order.status).label}
+                      </span>
+                    </div>
+                    <p className="text-sm text-white/60">
+                      {order.supplier} • #{order.id} • Livraison le {order.deliveryDate}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-base font-medium text-white">{order.price}€</p>
+                    <p className="text-sm text-white/60">{order.quantity}</p>
+                  </div>
+                  <ChevronRight 
+                    className={`w-5 h-5 text-white/40 transition-transform ${
+                      selectedOrder === order.id ? 'rotate-90' : ''
+                    }`}
+                  />
                 </div>
-                <div className="text-right">
-                  <p className="text-base font-medium text-white">{order.price}€</p>
-                  <p className="text-sm text-white/60">{order.quantity}</p>
-                </div>
-                <ChevronRight 
-                  className={`w-5 h-5 text-white/40 transition-transform ${
-                    selectedOrder === order.id ? 'rotate-90' : ''
-                  }`}
+                {selectedOrder === order.id && (
+                  <div className="px-6 pb-6 pt-2 border-t border-white/10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <p className="text-sm text-white/40">Statut</p>
+                        <p 
+                          className={`text-sm text-white mt-1 ${getStatusStyles(order.status).textColor}`}
+                        >
+                          {getStatusStyles(order.status).label}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-white/40">Date de commande</p>
+                        <p className="text-sm text-white mt-1">25/02/2024</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-white/40">Fournisseur</p>
+                        <p className="text-sm text-white mt-1">{order.supplier}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-white/40">Emplacement stock</p>
+                        <p className="text-sm text-white mt-1">{order.stockLocation}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-white/40">Dernière mise à jour</p>
+                        <p className="text-sm text-white mt-1">{order.lastUpdate}</p>
+                      </div>
+                    </div>
+                    <div className="flex justify-end mt-6 space-x-4">
+                      <button
+                        onClick={() => setSelectedOrderForComments(order.id)}
+                        className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-colors flex items-center space-x-2"
+                      >
+                        <MessageSquare size={16} />
+                        <span>Commenter</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </ModernCardBase>
+          </div>
+        ))}
+      </div>
+
+      {selectedOrderForComments && (
+        <OrderDetails
+          order={orders.find(o => o.id === selectedOrderForComments)}
+          onClose={() => setSelectedOrderForComments(null)}
+        />
+      )}
+
+      {showNewPurchaseForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50">
+          <div className="bg-[rgb(var(--color-brand-surface)_/_var(--glass-opacity))] backdrop-blur-md border border-white/10 rounded-lg p-6 w-full max-w-xl">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-white">Nouvel achat</h2>
+              <button
+                onClick={() => setShowNewPurchaseForm(false)}
+                className="p-2 hover:bg-white/5 rounded-lg"
+              >
+                <X className="text-white/60" size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Nom du fournisseur</label>
+                <Input
+                  type="text"
+                  value={formData.supplier}
+                  onChange={(e) => setFormData(prev => ({ ...prev, supplier: e.target.value }))}
+                  className="w-full"
+                  required
                 />
               </div>
-              {selectedOrder === order.id && (
-                <div className="mt-4 pt-4 border-t border-white/10">
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <p className="text-sm text-white/40">Statut</p>
-                      <p 
-                        className={`text-sm text-white mt-1 ${getStatusStyles(order.status).textColor}`}
-                      >
-                        {getStatusStyles(order.status).label}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-white/40">Date de commande</p>
-                      <p className="text-sm text-white mt-1">25/02/2024</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-white/40">Fournisseur</p>
-                      <p className="text-sm text-white mt-1">{order.supplier}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-white/40">Emplacement stock</p>
-                      <p className="text-sm text-white mt-1">{order.stockLocation}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-white/40">Dernière mise à jour</p>
-                      <p className="text-sm text-white mt-1">{order.lastUpdate}</p>
-                    </div>
-                  </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Produit</label>
+                <Input
+                  type="text"
+                  value={formData.product}
+                  onChange={(e) => setFormData(prev => ({ ...prev, product: e.target.value }))}
+                  className="w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">DLC</label>
+                <Input
+                  type="date"
+                  value={formData.expiryDate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, expiryDate: e.target.value }))}
+                  className="w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Évaluation</label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      className="focus:outline-none"
+                    >
+                      <Star
+                        size={24}
+                        className={star <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-white/20'}
+                      />
+                    </button>
+                  ))}
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Facture</label>
+                <div className="flex items-center gap-4">
+                  <label className="flex-1">
+                    <div className="flex items-center justify-center px-4 py-3 border border-dashed border-white/20 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                      <Upload className="w-5 h-5 text-white/60 mr-2" />
+                      <span className="text-white/60">Choisir un fichier</span>
+                    </div>
+                  </label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    onClick={() => {/* TODO: Implement camera capture */}}
+                  >
+                    <Camera className="w-4 h-4" />
+                    Photo
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    onClick={() => {/* TODO: Implement scanner */}}
+                  >
+                    <Scan className="w-4 h-4" />
+                    Scanner
+                  </Button>
+                </div>
+                {formData.invoice && (
+                  <p className="mt-2 text-sm text-white/60">
+                    Fichier sélectionné : {formData.invoice.name}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setShowNewPurchaseForm(false)}
+                >
+                  Annuler
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-brand-blue hover:bg-brand-blue/90"
+                >
+                  Enregistrer
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
-      </ModernCardBase>
+      )}
     </div>
   );
 }

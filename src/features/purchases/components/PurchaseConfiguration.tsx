@@ -8,7 +8,7 @@ import {
   DialogHeader, 
   DialogTitle 
 } from '@/components/ui/dialog/index';
-import { Plus, Shell, Truck, Euro, Scale, Award, Info, Package, Fish, UserCircle, Phone } from 'lucide-react';
+import { Plus, Shell, Truck, Euro, Scale, Award, Info, Package, Fish, UserCircle, Phone, Star, Camera, Scan, Upload, X } from 'lucide-react';
 
 interface Supplier {
   id: string;
@@ -92,6 +92,15 @@ export function PurchaseConfiguration() {
   const [quantity, setQuantity] = useState<number>(0);
   const [showProductDetails, setShowProductDetails] = useState<string | null>(null);
   const [selectedSupplierId, setSelectedSupplierId] = useState<string | null>(null);
+  const [showNewPurchaseModal, setShowNewPurchaseModal] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [formData, setFormData] = useState({
+    supplier: '',
+    product: '',
+    expiryDate: '',
+    storageLocation: '',
+    invoice: null as File | null
+  });
 
   const handleQuantityChange = (value: string) => {
     const qty = parseInt(value, 10);
@@ -126,8 +135,44 @@ export function PurchaseConfiguration() {
     setQuantity(0);
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, invoice: file }));
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implémenter la logique d'envoi
+    // 1. Envoyer les données au backend
+    // 2. Mettre à jour la traçabilité
+    // 3. Mettre à jour la comptabilité
+    console.log('Nouveau achat:', { ...formData, rating });
+    setShowNewPurchaseModal(false);
+    setFormData({
+      supplier: '',
+      product: '',
+      expiryDate: '',
+      storageLocation: '',
+      invoice: null
+    });
+    setRating(0);
+  };
+
   return (
     <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold text-white">Configuration des achats</h2>
+        <Button
+          onClick={() => setShowNewPurchaseModal(true)}
+          className="flex items-center gap-2 bg-brand-blue hover:bg-brand-blue/90 text-white"
+        >
+          <Plus className="w-4 h-4" />
+          Nouvel achat
+        </Button>
+      </div>
+
       {/* Liste des fournisseurs */}
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
         {SUPPLIERS.map((supplier) => (
@@ -370,6 +415,145 @@ export function PurchaseConfiguration() {
             })()}
           </DialogContent>
         </Dialog>
+      )}
+
+      {/* Modal Nouvel Achat */}
+      {showNewPurchaseModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50">
+          <div className="bg-[rgb(var(--color-brand-surface)_/_var(--glass-opacity))] backdrop-blur-md border border-white/10 rounded-lg p-6 w-full max-w-xl">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-white">Nouvel achat</h2>
+              <button
+                onClick={() => setShowNewPurchaseModal(false)}
+                className="p-2 hover:bg-white/5 rounded-lg"
+              >
+                <X className="text-white/60" size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Nom du fournisseur</label>
+                <Input
+                  type="text"
+                  value={formData.supplier}
+                  onChange={(e) => setFormData(prev => ({ ...prev, supplier: e.target.value }))}
+                  className="w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Nom du produit</label>
+                <Input
+                  type="text"
+                  value={formData.product}
+                  onChange={(e) => setFormData(prev => ({ ...prev, product: e.target.value }))}
+                  className="w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">DLC</label>
+                <Input
+                  type="date"
+                  value={formData.expiryDate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, expiryDate: e.target.value }))}
+                  className="w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Lieu de stockage</label>
+                <Input
+                  type="text"
+                  value={formData.storageLocation}
+                  onChange={(e) => setFormData(prev => ({ ...prev, storageLocation: e.target.value }))}
+                  className="w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Évaluation du produit</label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      className="focus:outline-none"
+                    >
+                      <Star
+                        size={24}
+                        className={star <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-white/20'}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Facture</label>
+                <div className="flex items-center gap-4">
+                  <label className="flex-1">
+                    <div className="flex items-center justify-center px-4 py-3 border border-dashed border-white/20 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                      <Upload className="w-5 h-5 text-white/60 mr-2" />
+                      <span className="text-white/60">Choisir un fichier</span>
+                    </div>
+                  </label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    onClick={() => {/* TODO: Implement camera capture */}}
+                  >
+                    <Camera className="w-4 h-4" />
+                    Photo
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    onClick={() => {/* TODO: Implement scanner */}}
+                  >
+                    <Scan className="w-4 h-4" />
+                    Scanner
+                  </Button>
+                </div>
+                {formData.invoice && (
+                  <p className="mt-2 text-sm text-white/60">
+                    Fichier sélectionné : {formData.invoice.name}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setShowNewPurchaseModal(false)}
+                >
+                  Annuler
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-brand-blue hover:bg-brand-blue/90"
+                >
+                  Enregistrer
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );
