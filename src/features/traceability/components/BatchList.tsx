@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Timer, Tag, Edit2 } from 'lucide-react';
 import { format, differenceInHours } from 'date-fns';
 import { useStore } from '@/lib/store';
-import { Batch } from '../types';
+import type { Batch } from '@/types/batch';
 import { EditBatchModal } from './EditBatchModal';
 
 interface BatchListProps {
@@ -13,12 +13,14 @@ export function BatchList({ searchQuery }: BatchListProps) {
   const { batches } = useStore();
   const [editingBatch, setEditingBatch] = useState<Batch | null>(null);
 
-  // Filtrer uniquement les lots en trempe
-  const trempeBatches = batches.filter(batch => 
-    batch.status === 'table1' || 
-    batch.status === 'table2' || 
-    batch.status === 'table3'
-  );
+  // Filtrer uniquement les quatre premiers lots en trempe
+  const trempeBatches = batches
+    .filter(batch => 
+      batch.status === 'table1' || 
+      batch.status === 'table2' || 
+      batch.status === 'table3'
+    )
+    .slice(0, 4); // Prendre seulement les 4 premiers lots
 
   const getTimeInTrempe = (startDate: string) => {
     const hours = differenceInHours(new Date(), new Date(startDate));

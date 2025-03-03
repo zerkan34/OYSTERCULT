@@ -26,16 +26,48 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import * as XLSX from 'xlsx';
 
+interface TableCell {
+  id: string;
+  type: string;
+  ropeCount: number;
+  size: string;
+  filled: boolean;
+  harvestedRopes?: number;
+  status?: string;
+  lastUpdate?: string;
+}
+
+interface Table {
+  id: string;
+  name: string;
+  cells: TableCell[];
+  status: string;
+  lastUpdate: string;
+  temperature?: number;
+  salinity?: number;
+  tableNumber?: string;
+  currentBatch?: {
+    size: string;
+    quantity: number;
+    estimatedHarvestDate?: string;
+  };
+  lastCheck?: string;
+  nextCheck?: string;
+  mortalityRate?: number;
+  naissainSource?: string;
+  naissainBatchNumber?: string;
+}
+
 interface TableDetailProps {
-  table: any;
+  table: Table;
   onClose: () => void;
-  onTableUpdate?: (tableId: string, updates: Partial<any>) => void;
+  onTableUpdate?: (tableId: string, updates: Partial<Table>) => void;
 }
 
 interface CellModalProps {
-  cell: any;
+  cell: TableCell;
   onClose: () => void;
-  onUpdate: (data: any) => void;
+  onUpdate: (data: Partial<TableCell>) => void;
   setShowNaissainModal?: (show: boolean) => void;
 }
 
@@ -276,9 +308,9 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
 import TableDetailComponent from './TableDetailComponent';
 
 interface TableDetailProps {
-  table: any;
+  table: Table;
   onClose: () => void;
-  onTableUpdate?: (tableId: string, updates: Partial<any>) => void;
+  onTableUpdate?: (tableId: string, updates: Partial<Table>) => void;
 }
 
 export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps) {
@@ -292,7 +324,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
     }
   };
 
-  const [selectedCell, setSelectedCell] = useState<any | null>(null);
+  const [selectedCell, setSelectedCell] = useState<TableCell | null>(null);
   const [showLegend, setShowLegend] = useState(true);
 
   // États pour le modal de remplissage de colonne
@@ -326,11 +358,11 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
   const [importError, setImportError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleCellUpdate = (cellId: string, data: any) => {
+  const handleCellUpdate = (cellId: string, data: Partial<TableCell>) => {
     console.log('Updating cell:', cellId, data);
     
     // Trouver l'index de la cellule à mettre à jour
-    const cellIndex = table.cells.findIndex((c: any) => c.id === cellId);
+    const cellIndex = table.cells.findIndex((c: TableCell) => c.id === cellId);
     if (cellIndex === -1) return;
 
     // Créer une copie des cellules pour la mise à jour
@@ -708,7 +740,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
         className="relative w-[400px] h-[800px] bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 rounded-lg overflow-hidden border border-white/10"
       >
         <div className="relative h-full grid grid-cols-2 grid-rows-10 gap-1 p-8 transform rotate-0">
-          {table.cells.map((cell: any, index: number) => (
+          {table.cells.map((cell: TableCell, index: number) => (
             <motion.button
               key={cell.id}
               onClick={() => setSelectedCell(cell)}
