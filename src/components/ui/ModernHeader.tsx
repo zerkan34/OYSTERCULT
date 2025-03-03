@@ -33,7 +33,7 @@ export function ModernHeader({
 
   return (
     <header className="fixed top-0 left-0 right-0 h-14 md:h-16 bg-background/80 backdrop-blur-sm border-b z-50 safe-area-inset-top">
-      <div className="container h-full flex items-center justify-between px-2 md:px-4">
+      <div className="h-full flex items-center justify-between px-2 md:px-4">
         <Button variant="ghost" size="sm" onClick={onShowMobileMenu} className="md:mr-2">
           <Menu className="h-4 w-4" />
         </Button>

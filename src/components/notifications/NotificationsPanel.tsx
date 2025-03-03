@@ -71,7 +71,7 @@ export function NotificationsPanel({ onClose }: NotificationsPanelProps) {
 
   return (
     <motion.div
-      className="notifications-panel fixed inset-y-0 right-0 w-full max-w-md bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md shadow-2xl z-[9999]"
+      className="notifications-panel fixed inset-y-0 right-0 w-full max-w-md bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md shadow-2xl z-[9999] margin-top-65"
       initial={{ x: '100%', opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: '100%', opacity: 0 }}

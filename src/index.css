@@ -1,6 +1,12 @@
-@import url('https://fonts.cdnfonts.com/css/industry-inc-base');
 @import url('https://fonts.cdnfonts.com/css/sf-pro-display');
 @import url('https://fonts.cdnfonts.com/css/sf-mono');
+
+@font-face {
+  font-family: 'Industry Inc Base';
+  src: local('Arial'), local('Helvetica');
+  font-weight: normal;
+  font-style: normal;
+}
 
 @tailwind base;
 @tailwind components;
@@ -78,7 +84,7 @@
   }
 
   .font-industry {
-    font-family: 'Industry', 'SF Pro Display', sans-serif;
+    font-family: 'Industry Inc Base', 'SF Pro Display', sans-serif;
     letter-spacing: 0.05em;
     text-transform: uppercase;
   }
@@ -90,6 +96,10 @@
       rgb(var(--color-brand-burgundy)),
       rgb(var(--color-brand-burgundy) / 0.8)
     );
+  }
+
+  .margin-top-65 {
+    margin-top: 65px;
   }
 }
 

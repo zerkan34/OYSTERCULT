@@ -47,6 +47,12 @@ export function SupplierCatalog() {
     setCartItems(prev => prev.filter(item => item.product.id !== productId));
   };
 
+  const handleCartClick = () => {
+    if (cartItems.length > 0) {
+      setIsCartModalOpen(true);
+    }
+  };
+
   // Catégories disponibles basées sur les produits
   const categories = ['all', ...new Set(products.map(p => p.category))];
   
@@ -134,77 +140,61 @@ export function SupplierCatalog() {
                 <span className="text-sm text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
                   {filteredProducts.length} produit{filteredProducts.length !== 1 ? 's' : ''}
                 </span>
-                {cartItems.length > 0 && (
-                  <button
-                    className="relative p-2 text-[rgb(var(--color-brand-primary))] hover:bg-[rgb(var(--color-brand-primary)_/_0.1)] rounded-lg transition-colors"
-                    onClick={() => setIsCartModalOpen(true)}
-                  >
-                    <ShoppingCart className="w-6 h-6" />
+                <button
+                  className="relative p-2 text-[rgb(var(--color-brand-primary))] hover:bg-[rgb(var(--color-brand-primary)_/_0.1)] rounded-lg transition-colors"
+                  onClick={handleCartClick}
+                >
+                  <ShoppingCart className="w-6 h-6" />
+                  {cartItems.length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-[rgb(var(--color-brand-primary))] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                       {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
                     </span>
-                  </button>
-                )}
+                  )}
+                </button>
               </div>
             </div>
-            
-            {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onEdit={() => setEditingProduct(product)}
-                    onAddToCart={addToCart}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-16 h-16 bg-[rgb(var(--color-brand-primary)_/_0.1)] rounded-full flex items-center justify-center mb-4">
-                  <AlertCircle className="w-8 h-8 text-[rgb(var(--color-brand-primary))]" />
-                </div>
-                <h3 className="text-lg font-medium text-[rgb(var(--color-text))] mb-2">Aucun produit trouvé</h3>
-                <p className="text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))] max-w-md">
-                  {searchTerm 
-                    ? `Aucun produit ne correspond à "${searchTerm}". Essayez une autre recherche.` 
-                    : 'Aucun produit disponible dans cette catégorie.'}
-                </p>
-              </div>
-            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onEdit={() => setEditingProduct(product)}
+                  onAddToCart={addToCart}
+                />
+              ))}
+            </div>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 bg-[rgb(var(--color-brand-primary)_/_0.1)] rounded-full flex items-center justify-center mb-4">
-              <Package2 className="w-8 h-8 text-[rgb(var(--color-brand-primary))]" />
+          <div className="flex items-center justify-center h-96 text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))]">
+            <div className="text-center">
+              <AlertCircle className="w-12 h-12 mx-auto mb-4" />
+              <p>Veuillez sélectionner un fournisseur pour voir son catalogue</p>
             </div>
-            <h3 className="text-lg font-medium text-[rgb(var(--color-text))] mb-2">Sélectionnez un fournisseur</h3>
-            <p className="text-[rgb(var(--color-text-secondary)_/_var(--color-text-opacity-secondary))] max-w-md">
-              Veuillez choisir un fournisseur dans la liste pour voir son catalogue de produits.
-            </p>
           </div>
         )}
       </div>
 
-      <div className="col-span-3">
-        {/* Modale du panier */}
-        <CartModal
-          isOpen={isCartModalOpen}
-          onClose={() => setIsCartModalOpen(false)}
-          items={cartItems}
-          onUpdateQuantity={updateCartQuantity}
-          onRemoveItem={removeFromCart}
-        />
-      </div>
+      <CartModal
+        isOpen={isCartModalOpen}
+        onClose={() => setIsCartModalOpen(false)}
+        items={cartItems}
+        onUpdateQuantity={updateCartQuantity}
+        onRemoveItem={removeFromCart}
+      />
 
-      {(showAddProduct || editingProduct) && selectedSupplier && (
+      {showAddProduct && (
         <ProductForm
-          supplierId={selectedSupplier.id}
+          onClose={() => setShowAddProduct(false)}
+          supplierId={selectedSupplier?.id || ''}
+        />
+      )}
+
+      {editingProduct && (
+        <ProductForm
           product={editingProduct}
-          onClose={() => {
-            setShowAddProduct(false);
-            setEditingProduct(null);
-          }}
+          onClose={() => setEditingProduct(null)}
+          supplierId={selectedSupplier?.id || ''}
         />
       )}
     </div>

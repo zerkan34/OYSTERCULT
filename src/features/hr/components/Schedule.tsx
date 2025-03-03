@@ -197,23 +197,13 @@ export function Schedule({ employee, onClose }: ScheduleProps) {
     <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 rounded-lg overflow-hidden">
       {/* En-tête avec le nom de l'employé */}
       <div className="p-6 border-b border-white/10">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center">
           <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-brand-burgundy rounded-full flex items-center justify-center">
-              <User size={20} className="text-white" />
-            </div>
             <div>
               <h3 className="text-lg font-medium text-white">{employee.name}</h3>
               <p className="text-white/60">Planning hebdomadaire</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-white/5 rounded-lg text-white/60 hover:text-white transition-colors"
-            aria-label="Fermer"
-          >
-            <X size={24} />
-          </button>
         </div>
 
         <div className="mt-6 flex items-center justify-between">
