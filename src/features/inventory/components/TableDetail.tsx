@@ -32,6 +32,7 @@ interface TableCell {
   ropeCount: number;
   size: string;
   filled: boolean;
+  fillOrder?: number;
   harvestedRopes?: number;
   status?: string;
   lastUpdate?: string;
@@ -304,8 +305,6 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
     </motion.div>
   );
 }
-
-import TableDetailComponent from './TableDetailComponent';
 
 interface TableDetailProps {
   table: Table;
@@ -828,7 +827,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                     className="p-2 bg-red-500/20 hover:bg-red-500/40 rounded-lg transition-colors"
                     title="Annuler"
                   >
-                    <XIcon size={18} className="text-white" />
+                    <X size={18} className="text-white" />
                   </button>
                 </div>
               ) : (

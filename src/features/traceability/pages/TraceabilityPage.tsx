@@ -7,13 +7,14 @@ import { PurificationPools } from '../components/PurificationPools';
 import { MarketPurchases } from '../components/MarketPurchases';
 import { StorageLocations } from '../components/StorageLocations';
 import { QRCodeGenerator } from '../components/QRCodeGenerator';
+import { InvoicesAndDeliveryNotes } from '../components/InvoicesAndDeliveryNotes';
 import { useStore } from '@/lib/store';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-type TabType = 'batches' | 'pools' | 'storage' | 'market' | 'history';
+type TabType = 'batches' | 'pools' | 'storage' | 'market' | 'invoices' | 'history';
 
 export function TraceabilityPage() {
   const [activeTab, setActiveTab] = useState<TabType>('batches');
@@ -177,6 +178,7 @@ export function TraceabilityPage() {
     { id: 'pools', label: 'Bassins', icon: Waves },
     { id: 'storage', label: 'Autres emplacements', icon: Box },
     { id: 'market', label: 'Achats', icon: Grid },
+    { id: 'invoices', label: 'Factures et BL', icon: FileText },
     { id: 'history', label: 'Historique', icon: History }
   ];
 
@@ -309,6 +311,21 @@ export function TraceabilityPage() {
           <MarketPurchases />
         </div>
       )}
+      
+      {activeTab === 'invoices' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
+                <FileText className="text-brand-blue" size={20} />
+              </div>
+              <h2 className="text-lg font-medium text-white">Factures et bons de livraison</h2>
+            </div>
+          </div>
+          <InvoicesAndDeliveryNotes />
+        </div>
+      )}
+      
       {activeTab === 'history' && (
         <BatchHistory searchQuery="" />
       )}
