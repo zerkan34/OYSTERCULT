@@ -4,7 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/OYSTERCULT/',
+  base: process.env.GITHUB_ACTIONS ? '/OYSTERCULT/' : '/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -30,26 +30,17 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: false
-      }
-    },
+    sourcemap: false,
+    chunkSizeWarningLimit: 1600,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: [
-            '@tanstack/react-query',
-            '@tanstack/react-table',
-            'framer-motion',
-            'lucide-react'
-          ]
-        }
-      }
-    }
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        },
+      },
+    },
   },
   optimizeDeps: {
     include: [
