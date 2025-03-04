@@ -7,7 +7,7 @@ interface CartModalProps {
 }
 
 export function CartModal({ products, onClose }: CartModalProps) {
-  const { cartItems, removeFromCart, clearCart } = useCart();
+  const { cartItems, removeFromCart, clearCart, validateCart } = useCart();
 
   const cartProducts = cartItems.map(item => {
     const product = products.find(p => p.id === item.productId);
@@ -75,13 +75,21 @@ export function CartModal({ products, onClose }: CartModalProps) {
 
               <div className="flex gap-3">
                 <button
-                  onClick={clearCart}
+                  onClick={() => {
+                    clearCart();
+                    const cartBubble = document.querySelector('.cart-bubble');
+                    if (cartBubble) cartBubble.remove();
+                  }}
                   className="flex-1 px-4 py-2 bg-[rgb(var(--color-brand-surface-hover))] text-[rgb(var(--color-text-primary))] rounded-lg hover:bg-[rgb(var(--color-brand-surface-hover))/0.8] transition-colors"
                 >
                   Vider le panier
                 </button>
                 <button
-                  onClick={onClose}
+                  onClick={() => {
+                    validateCart();
+                    const cartBubble = document.querySelector('.cart-bubble');
+                    if (cartBubble) cartBubble.remove();
+                  }}
                   className="flex-1 px-4 py-2 bg-[rgb(var(--color-brand-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-brand-primary))/0.8] transition-colors"
                 >
                   Commander

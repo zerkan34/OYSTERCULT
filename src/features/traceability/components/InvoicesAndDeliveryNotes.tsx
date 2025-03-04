@@ -199,7 +199,7 @@ export function InvoicesAndDeliveryNotes() {
         <div className="flex gap-4">
           <div className="w-48">
             <select
-              className="w-full px-4 py-2 bg-brand-blue/20 border border-brand-blue/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue/50"
+              className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as any)}
             >

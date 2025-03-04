@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ChevronDown, ShoppingCart } from 'lucide-react';
-import { useCart } from '../hooks/useCart';
-import { CartModal } from '../components/CartModal';
+import { useCart } from '@/features/suppliers/hooks/useCart';
+import { CartModal } from '@/features/suppliers/components/CartModal';
 
 interface Product {
   id: string;
@@ -87,7 +87,7 @@ export function ShopPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
-  const { cartItems, addToCart, isCartModalOpen, setIsCartModalOpen } = useCart();
+  const { cartItems, addToCart, removeFromCart, clearCart, isCartModalOpen, setIsCartModalOpen } = useCart();
 
   // Fermer le dropdown des catégories quand on clique en dehors
   useEffect(() => {
@@ -197,45 +197,68 @@ export function ShopPage() {
 
         {/* Grille de produits */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
+          {filteredProducts.map(product => (
             <div
               key={product.id}
-              className="bg-[rgb(var(--color-brand-surface))] rounded-lg overflow-hidden border border-[rgb(var(--color-border)_/_var(--color-border-opacity))]"
+              className="bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:border-white/20 transition-all duration-200"
             >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">
-                  {product.name}
-                </h3>
-                <p className="mt-1 text-sm text-[rgb(var(--color-text-secondary))]">
-                  {product.description}
-                </p>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-lg font-medium text-[rgb(var(--color-text-primary))]">
-                    {product.price}€
-                  </span>
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-0">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-medium text-white break-words">{product.name}</h3>
+                    <p className="text-sm text-white/60 mt-1 line-clamp-3">{product.description}</p>
+                  </div>
+                  <div className="text-xl font-bold text-white whitespace-nowrap">{product.price}€</div>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {product.features.map((feature, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-1 bg-white/5 rounded-full text-xs text-white/70"
+                    >
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-white mb-2">Spécifications</h4>
+                  <div className="space-y-2">
+                    {Object.entries(product.specifications).map(([key, value]) => (
+                      <div key={key} className="flex justify-between text-sm">
+                        <span className="text-white/60">{key}</span>
+                        <span className="text-white">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-6 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-2">
                     <input
                       type="number"
-                      min="1"
-                      defaultValue="1"
-                      className="w-16 px-2 py-1 text-sm border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded"
+                      min="0"
+                      defaultValue="0"
+                      className="w-20 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-white/20"
                       onChange={(e) => {
                         const quantity = parseInt(e.target.value, 10);
-                        if (quantity > 0) {
-                          addToCart(product.id, quantity);
+                        if (quantity < 0) {
+                          e.target.value = "0";
                         }
                       }}
                     />
                     <button
-                      onClick={() => addToCart(product.id, 1)}
-                      className="px-3 py-1 bg-[rgb(var(--color-brand-primary))] text-white rounded hover:bg-[rgb(var(--color-brand-primary))/0.8] transition-colors"
+                      onClick={(e) => {
+                        const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                        const quantity = parseInt(input.value, 10);
+                        if (quantity > 0) {
+                          addToCart(product.id, quantity);
+                        }
+                      }}
+                      className="px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
                     >
-                      Ajouter
+                      Ajouter au panier
                     </button>
                   </div>
                 </div>
@@ -245,12 +268,17 @@ export function ShopPage() {
         </div>
 
         {/* Modal du panier */}
-        {isCartModalOpen && (
-          <CartModal
-            products={mockProducts}
-            onClose={() => setIsCartModalOpen()}
-          />
-        )}
+        <CartModal
+          isOpen={isCartModalOpen}
+          onClose={() => setIsCartModalOpen(false)}
+          items={cartItems}
+          products={mockProducts}
+          onRemoveItem={removeFromCart}
+          onClearCart={() => {
+            clearCart();
+            setIsCartModalOpen(false);
+          }}
+        />
       </main>
     </div>
   );

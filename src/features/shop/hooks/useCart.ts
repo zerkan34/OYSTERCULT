@@ -25,6 +25,11 @@ export function useCart() {
   }, []);
 
   const addToCart = (productId: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+
     const newCart = [...cartItems];
     const existingItem = newCart.find(item => item.productId === productId);
     
@@ -52,6 +57,15 @@ export function useCart() {
   const clearCart = () => {
     setCartItems([]);
     localStorage.removeItem(CART_STORAGE_KEY);
+    document.cookie = 'cart=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    setIsCartModalOpen(false);
+  };
+
+  const validateCart = () => {
+    setCartItems([]);
+    localStorage.removeItem(CART_STORAGE_KEY);
+    document.cookie = 'cart=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    setIsCartModalOpen(false);
   };
 
   const toggleCartModal = () => {
@@ -63,6 +77,7 @@ export function useCart() {
     addToCart,
     removeFromCart,
     clearCart,
+    validateCart,
     isCartModalOpen,
     setIsCartModalOpen: toggleCartModal,
   };
