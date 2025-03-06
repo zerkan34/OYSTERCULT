@@ -18,8 +18,9 @@ interface TrempeSquare {
   status: 'empty' | 'partial' | 'full';
   batches: Batch[];
   number: number;
-  remainingRopes?: number;
-  totalRopes?: number;
+  remainingPochons?: number;
+  totalPochons?: number;
+  type: 'triploide' | 'diploide';
 }
 
 interface Batch {
@@ -31,111 +32,115 @@ interface Batch {
 // Configuration de base
 const config: TrempeConfig = {
   squares: 10,
-  rows: 5,
-  columns: 2
+  rows: 2,
+  columns: 5
 };
 
-// Données de test
+// Données de test avec séparation triploïdes/diploïdes selon le standard
 const mockSquares: TrempeSquare[] = [
+  // Colonne gauche - Triploïdes (bordeaux)
   {
     id: '1',
     number: 1,
     status: 'full',
-    remainingRopes: 0,     // 0 cordes restantes car carré plein
-    totalRopes: 100,
+    remainingPochons: 0,
+    totalPochons: 100,
+    type: 'triploide', // Ajout du type pour différencier
     batches: [
-      { id: '101', name: 'Lot 2023-A', date: new Date(2023, 2, 15) },
-      { id: '102', name: 'Lot 2023-B', date: new Date(2023, 3, 20) }
+      { id: '101', name: 'Lot Plates 2023-A', date: new Date(2023, 2, 15) },
+      { id: '102', name: 'Lot Plates 2023-B', date: new Date(2023, 3, 20) }
     ]
   },
   {
     id: '2',
     number: 2,
     status: 'partial',
-    remainingRopes: 50,    // 50 cordes restantes car carré partiellement rempli
-    totalRopes: 100,
+    remainingPochons: 50,
+    totalPochons: 100,
+    type: 'triploide',
     batches: [
-      { id: '103', name: 'Lot 2023-C', date: new Date(2023, 4, 10) }
+      { id: '103', name: 'Lot Plates 2023-C', date: new Date(2023, 4, 5) }
     ]
   },
   {
     id: '3',
     number: 3,
-    status: 'empty',
-    remainingRopes: 100,   // 100 cordes restantes car carré vide
-    totalRopes: 100,
-    batches: []            // pas de lots car carré vide
+    status: 'partial',
+    remainingPochons: 75,
+    totalPochons: 100,
+    type: 'triploide',
+    batches: [
+      { id: '104', name: 'Lot Plates 2023-D', date: new Date(2023, 5, 10) }
+    ]
   },
   {
     id: '4',
     number: 4,
-    status: 'full',
-    remainingRopes: 0,     // 0 cordes restantes car carré plein
-    totalRopes: 100,
-    batches: [
-      { id: '104', name: 'Lot 2023-D', date: new Date(2023, 5, 15) },
-      { id: '105', name: 'Lot 2023-E', date: new Date(2023, 6, 20) }
-    ]
+    status: 'empty',
+    remainingPochons: 100,
+    totalPochons: 100,
+    type: 'triploide',
+    batches: []
   },
   {
     id: '5',
     number: 5,
-    status: 'partial',
-    remainingRopes: 40,    // 40 cordes restantes avec 2 lots (30 cordes par lot)
-    totalRopes: 100,
+    status: 'empty',
+    remainingPochons: 100,
+    totalPochons: 100,
+    type: 'triploide',
+    batches: []
+  },
+  // Colonne droite - Diploïdes (bleu)
+  {
+    id: '6',
+    number: 1,
+    status: 'full',
+    remainingPochons: 0,
+    totalPochons: 100,
+    type: 'diploide',
     batches: [
-      { id: '106', name: 'Lot 2023-F', date: new Date(2023, 7, 10) },
-      { id: '107', name: 'Lot 2023-G', date: new Date(2023, 8, 20) }
+      { id: '105', name: 'Lot Creuses 2023-A', date: new Date(2023, 2, 15) },
+      { id: '106', name: 'Lot Creuses 2023-B', date: new Date(2023, 3, 20) }
     ]
   },
   {
-    id: '6',
-    number: 6,
-    status: 'empty',
-    remainingRopes: 100,   // 100 cordes restantes car carré vide
-    totalRopes: 100,
-    batches: []            // pas de lots car carré vide
-  },
-  {
     id: '7',
-    number: 7,
-    status: 'full',
-    remainingRopes: 0,     // 0 cordes restantes car carré plein
-    totalRopes: 100,
+    number: 2,
+    status: 'partial',
+    remainingPochons: 50,
+    totalPochons: 100,
+    type: 'diploide',
     batches: [
-      { id: '108', name: 'Lot 2023-H', date: new Date(2023, 9, 15) },
-      { id: '109', name: 'Lot 2023-I', date: new Date(2023, 10, 20) },
-      { id: '110', name: 'Lot 2023-J', date: new Date(2023, 11, 10) }
+      { id: '107', name: 'Lot Creuses 2023-C', date: new Date(2023, 4, 5) }
     ]
   },
   {
     id: '8',
-    number: 8,
-    status: 'partial',
-    remainingRopes: 70,    // 70 cordes restantes avec 1 lot (30 cordes par lot)
-    totalRopes: 100,
-    batches: [
-      { id: '111', name: 'Lot 2023-K', date: new Date(2023, 0, 15) }
-    ]
+    number: 3,
+    status: 'empty',
+    remainingPochons: 100,
+    totalPochons: 100,
+    type: 'diploide',
+    batches: []
   },
   {
     id: '9',
-    number: 9,
+    number: 4,
     status: 'empty',
-    remainingRopes: 100,   // 100 cordes restantes car carré vide
-    totalRopes: 100,
-    batches: []            // pas de lots car carré vide
+    remainingPochons: 100,
+    totalPochons: 100,
+    type: 'diploide',
+    batches: []
   },
   {
     id: '10',
-    number: 10,
-    status: 'full',
-    remainingRopes: 0,     // 0 cordes restantes car carré plein
-    totalRopes: 100,
-    batches: [
-      { id: '112', name: 'Lot 2023-L', date: new Date(2023, 1, 20) },
-      { id: '113', name: 'Lot 2023-M', date: new Date(2023, 2, 10) }
-    ]
+    number: 5,
+    status: 'empty',
+    remainingPochons: 100,
+    totalPochons: 100,
+    type: 'diploide',
+    batches: []
   }
 ];
 
@@ -173,11 +178,18 @@ export function TrempeView() {
     batchNumber: `LOT-${format(new Date(), 'yyyyMMdd')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`
   });
   const [showHarvestModal, setShowHarvestModal] = useState(false);
-  const [ropesToHarvest, setRopesToHarvest] = useState(1);
+  const [pochonsToHarvest, setPochonsToHarvest] = useState<number>(0);
   const [selectedHarvestBatch, setSelectedHarvestBatch] = useState('');
 
   // Récupérer les lots depuis le store
   const { batches, updateBatch } = useStore();
+
+  // Initialiser le carré sélectionné si nécessaire
+  useEffect(() => {
+    if (trempeSquares.length > 0 && !selectedSquare) {
+      setSelectedSquare(trempeSquares[0]);
+    }
+  }, [trempeSquares, selectedSquare]);
 
   // Effet pour synchroniser les lots de traçabilité avec les carrés de trempe
   useEffect(() => {
@@ -212,7 +224,7 @@ export function TrempeView() {
         ...square,
         batches: squareBatches,
         status: status,
-        remainingRopes: squareBatches.length === 0 ? square.totalRopes : Math.max(0, square.totalRopes - (squareBatches.length * 25))
+        remainingPochons: squareBatches.length === 0 ? square.totalPochons : Math.max(0, square.totalPochons - (squareBatches.length * 25))
       };
     });
     
@@ -228,20 +240,48 @@ export function TrempeView() {
     }
   }, [batches]);
 
-  // Fonction pour gérer la sauvegarde des modifications
-  const handleSaveChanges = () => {
-    if (editedSquare) {
-      // Mettre à jour les lots dans le store de traçabilité en fonction des modifications
-      if (selectedSquare && selectedSquare.batches.length !== editedSquare.batches.length) {
-        updateLotsForTrempeSquare(selectedSquare.number, editedSquare.number);
-      }
-      
-      // Mettre à jour le carré sélectionné
-      setSelectedSquare(editedSquare);
+  // Gestion du clic sur un carré
+  const handleSquareClick = (square: TrempeSquare) => {
+    setSelectedSquare(square);
+    // Si on est en mode édition, réinitialiser
+    if (editMode) {
       setEditMode(false);
+      setEditedSquare(null);
     }
   };
-  
+
+  // Gestion des changements dans les champs d'édition
+  const handleFieldChange = (field: string, value: any) => {
+    if (!editedSquare || !selectedSquare) return;
+    
+    setEditedSquare({
+      ...editedSquare,
+      [field]: value
+    });
+  };
+
+  // Sauvegarder les modifications
+  const handleSaveChanges = () => {
+    if (!editedSquare || !selectedSquare) return;
+    
+    // Mise à jour du carré sélectionné dans la liste des carrés
+    const updatedSquares = trempeSquares.map(square => 
+      square.id === selectedSquare.id ? editedSquare : square
+    );
+    
+    setTrempeSquares(updatedSquares);
+    setSelectedSquare(editedSquare);
+    setEditMode(false);
+    setEditedSquare(null);
+  };
+
+  // Fermer le modal
+  const handleCloseModal = () => {
+    setSelectedSquare(null);
+    setEditMode(false);
+    setEditedSquare(null);
+  };
+
   // Fonction pour mettre à jour les lots dans le store lorsqu'on change le carré
   const updateLotsForTrempeSquare = (oldSquareNumber: number, newSquareNumber: number) => {
     // Récupérer le statut correspondant au nouveau carré
@@ -275,31 +315,14 @@ export function TrempeView() {
     }
   };
 
-  // Fonction pour gérer les modifications des champs
-  const handleFieldChange = (field: keyof TrempeSquare, value: any) => {
-    if (editedSquare) {
-      setEditedSquare({
-        ...editedSquare,
-        [field]: value
-      });
+  // Gestionnaire pour fermer le modal
+  const handleEscapeKey = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      handleCloseModal();
     }
   };
 
-  // Gestionnaire pour fermer le modal
-  const handleCloseModal = () => {
-    setSelectedSquare(null);
-    setEditMode(false);
-    setEditedSquare(null);
-  };
-
-  // Gestionnaire pour la touche Echap
   React.useEffect(() => {
-    const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        handleCloseModal();
-      }
-    };
-
     document.addEventListener('keydown', handleEscapeKey);
     return () => {
       document.removeEventListener('keydown', handleEscapeKey);
@@ -318,10 +341,6 @@ export function TrempeView() {
     }
   `;
 
-  const handleSquareClick = (square: TrempeSquare) => {
-    setSelectedSquare(square);
-  };
-
   const handleMouseEnter = (square: TrempeSquare, e: React.MouseEvent) => {
     setHoveredSquare(square);
     setMousePosition({ x: e.clientX, y: e.clientY });
@@ -338,9 +357,9 @@ export function TrempeView() {
   };
 
   const handleHarvestRopes = () => {
-    if (selectedSquare && ropesToHarvest > 0) {
-      // Ici vous pouvez implémenter la logique pour récolter les cordes
-      console.log(`Récolte de ${ropesToHarvest} cordes du carré ${selectedSquare.number}, lot: ${selectedHarvestBatch}`);
+    if (selectedSquare && pochonsToHarvest > 0) {
+      // Ici vous pouvez implémenter la logique pour récolter les pochons
+      console.log(`Récolte de ${pochonsToHarvest} pochons du carré ${selectedSquare.number}, lot: ${selectedHarvestBatch}`);
       
       // Fermer le modal de récolte
       setShowHarvestModal(false);
@@ -353,11 +372,17 @@ export function TrempeView() {
       <div className="p-4">
         {/* En-tête avec effet glow */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-medium text-white relative">
-            <span className="relative z-10">Vue satellite des trempes</span>
+          <h2 className="text-2xl font-bold text-white relative">
+            <span className="relative z-10">Gestion des tables de trempe</span>
             <span className="absolute -bottom-1 left-0 w-1/3 h-0.5 bg-gradient-to-r from-brand-primary via-blue-400 to-transparent rounded-full blur-[1px]"></span>
           </h2>
-          <button className="glass-effect p-2 rounded-lg hover:bg-white/5 transition-colors shadow-glow-subtle">
+          <p className="text-white/60 text-sm mt-1">
+            Suivez et gérez les tables de trempe avec 10 carrés en format portrait.
+          </p>
+          <button
+            aria-label="Ouvrir les paramètres"
+            className="glass-effect p-2 rounded-lg hover:bg-white/5 transition-colors shadow-glow-subtle"
+          >
             <Settings size={18} className="text-white/60" />
           </button>
         </div>
@@ -374,7 +399,7 @@ export function TrempeView() {
                   <div className="w-3 h-3 rounded-full bg-brand-primary glow-dot-blue"/>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-white/60 text-xs">Carrés pleins</span>
+                  <span className="text-white/60 text-xs">Tables pleines</span>
                   <span className="text-brand-primary text-lg font-medium glow-text-blue">
                     {trempeSquares.filter((s) => s.status === 'full').length}
                   </span>
@@ -387,7 +412,7 @@ export function TrempeView() {
                   <div className="w-3 h-3 rounded-full bg-brand-tertiary glow-dot-gold"/>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-white/60 text-xs">Carrés partiels</span>
+                  <span className="text-white/60 text-xs">Tables partielles</span>
                   <span className="text-brand-tertiary text-lg font-medium glow-text-gold">
                     {trempeSquares.filter((s) => s.status === 'partial').length}
                   </span>
@@ -401,7 +426,7 @@ export function TrempeView() {
                     <div className="w-3 h-3 rounded-full bg-white/20"/>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-white/60 text-xs">Carrés vides</span>
+                    <span className="text-white/60 text-xs">Tables vides</span>
                     <span className="text-white/80 text-lg font-medium">
                       {trempeSquares.filter((s) => s.status === 'empty').length}
                     </span>
@@ -410,6 +435,7 @@ export function TrempeView() {
                 
                 {/* Bouton pour activer/désactiver le modal fixe */}
                 <button
+                  aria-label="Activer/Désactiver le modal fixe"
                   onClick={() => setShowFixedModal(!showFixedModal)}
                   className={`p-2 rounded-lg transition-all duration-300 ${
                     showFixedModal 
@@ -428,9 +454,16 @@ export function TrempeView() {
               {/* Vue satellite - maintenant en pleine largeur */}
               <div className="w-full">
                 <div className="p-4 rounded-xl bg-white/5 border border-white/10 shadow-inner-glow">
-                  <h2 className="text-white/80 text-sm font-medium mb-3">Vue satellite des trempes</h2>
+                  <h2 className="text-white/80 text-sm font-medium mb-3">Visualisation des tables</h2>
+                  <p className="text-white/60 text-xs mb-4">
+                    Tables de trempe avec 10 carrés en format portrait. 
+                    <span className="ml-1 block mt-1">
+                      <span className="text-brand-burgundy">■</span> Triploïdes (gauche) | 
+                      <span className="text-blue-400 ml-1">■</span> Diploïdes (droite)
+                    </span>
+                  </p>
                   
-                  {/* Vue des carrés avec effet de glow - structure identique */}
+                  {/* Vue des carrés avec effet de glow - structure en format portrait */}
                   <div className="grid grid-cols-5 gap-3">
                     {trempeSquares.map((square) => (
                       <div
@@ -444,22 +477,25 @@ export function TrempeView() {
                         onClick={() => handleSquareClick(square)}
                         className={`relative p-3 rounded-xl border ${
                           square.status === 'full'
-                            ? 'border-blue-400/30 bg-gradient-to-br from-blue-900/20 to-blue-800/5 shadow-trempe-blue'
+                            ? `border-${square.type === 'triploide' ? 'brand-burgundy' : 'blue-400'}/30 bg-gradient-to-br from-${square.type === 'triploide' ? 'brand-burgundy' : 'blue-900'}/20 to-${square.type === 'triploide' ? 'brand-burgundy' : 'blue-800'}/5 shadow-trempe-${square.type === 'triploide' ? 'burgundy' : 'blue'}`
                             : square.status === 'partial'
                             ? 'border-yellow-400/30 bg-gradient-to-br from-yellow-700/20 to-yellow-600/5 shadow-trempe-gold'
                             : 'border-white/5 bg-gradient-to-br from-white/5 to-transparent'
                         } cursor-pointer transition-all duration-200 ease-in-out hover:scale-[1.03] hover:shadow-glow-${
                           square.status === 'full'
-                            ? 'blue-intense'
+                            ? square.type === 'triploide' ? 'burgundy-intense' : 'blue-intense'
                             : square.status === 'partial'
                             ? 'gold-intense'
                             : 'white'
-                        }`}
+                        } h-32`}
+                        aria-label={`Table ${square.number} - ${square.type === 'triploide' ? 'Plates (Triploïdes)' : 'Creuses (Diploïdes)'} - ${square.status === 'full' ? 'Pleine' : square.status === 'partial' ? 'Partiellement remplie' : 'Vide'}`}
+                        role="button"
+                        tabIndex={0}
                       >
                         {/* Indicateur de remplissage avec effet de glow */}
                         <div className={`absolute inset-0 rounded-xl transition-all duration-300 ${
                           square.status === 'full'
-                            ? 'bg-gradient-to-t from-brand-primary/30 to-brand-primary/5'
+                            ? `bg-gradient-to-t from-${square.type === 'triploide' ? 'brand-burgundy' : 'blue-400'}/30 to-${square.type === 'triploide' ? 'brand-burgundy' : 'blue-400'}/5`
                             : square.status === 'partial'
                             ? 'bg-gradient-to-t from-brand-tertiary/30 to-brand-tertiary/5'
                             : ''
@@ -471,23 +507,23 @@ export function TrempeView() {
                           <div className="flex items-center justify-between mb-2">
                             <span className={`text-lg font-medium ${
                               square.status === 'full'
-                                ? 'text-brand-primary glow-text-blue'
+                                ? square.type === 'triploide' ? 'text-brand-burgundy' : 'text-blue-400'
                                 : square.status === 'partial'
-                                ? 'text-brand-tertiary glow-text-gold'
+                                ? 'text-brand-tertiary'
                                 : 'text-white/60'
                             }`}>
                               {square.number}
                             </span>
                             <div className={`h-2.5 w-2.5 rounded-full ${
                               square.status === 'full'
-                                ? 'bg-brand-primary glow-dot-blue'
+                                ? square.type === 'triploide' ? 'bg-brand-burgundy' : 'bg-blue-400'
                                 : square.status === 'partial'
-                                ? 'bg-brand-tertiary glow-dot-gold'
+                                ? 'bg-brand-tertiary'
                                 : 'bg-white/20'
                             }`} />
                           </div>
                           
-                          {/* Indicateur de cordes */}
+                          {/* Indicateur de pochons */}
                           <div className="flex items-center justify-between">
                             <div className={`text-xs ${
                               square.batches.length > 0
@@ -495,21 +531,21 @@ export function TrempeView() {
                                 : 'text-white/40'
                             }`}>
                               {square.batches.length > 0 
-                                ? `${square.batches.length} corde${square.batches.length > 1 ? 's' : ''}`
-                                : 'Aucune corde'}
+                                ? `${square.batches.length} pochon${square.batches.length > 1 ? 's' : ''}`
+                                : 'Aucun pochon'}
                             </div>
                             
-                            {/* Indicateur de cordes */}
+                            {/* Indicateur de pochons */}
                             <div className={`text-xs flex items-center gap-1 ${
                               square.status !== 'empty'
                                 ? 'text-white/80'
                                 : 'text-white/40'
                             }`}>
-                              {square.totalRopes !== undefined && square.remainingRopes !== undefined 
-                                ? (square.totalRopes - square.remainingRopes) 
+                              {square.totalPochons !== undefined && square.remainingPochons !== undefined 
+                                ? (square.totalPochons - square.remainingPochons) 
                                 : 0}
                               <span className="text-white/20">/</span>
-                              <span className="text-white/40">{square.totalRopes !== undefined ? square.totalRopes : 0}</span>
+                              <span className="text-white/40">{square.totalPochons !== undefined ? square.totalPochons : 0}</span>
                             </div>
                           </div>
                         </div>
@@ -526,84 +562,233 @@ export function TrempeView() {
                   <div className="h-full">
                     {/* En-tête du modal */}
                     <div className="flex items-center justify-between mb-5">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-4">
                         <div className={`w-3 h-3 rounded-full ${
                           (hoveredSquare || selectedSquare).status === 'full'
-                            ? 'bg-brand-primary glow-dot-blue'
+                            ? (hoveredSquare || selectedSquare).type === 'triploide' ? 'bg-brand-burgundy' : 'bg-blue-400'
                             : (hoveredSquare || selectedSquare).status === 'partial'
-                            ? 'bg-brand-tertiary glow-dot-gold'
+                            ? 'bg-brand-tertiary'
                             : 'bg-white/20'
                         }`} />
-                        <h3 className="text-sm font-semibold text-white">Carré {(hoveredSquare || selectedSquare).number}</h3>
-                      </div>
-                      <div className={`text-xs px-3 py-1 rounded-full flex items-center gap-1.5 ${
-                        (hoveredSquare || selectedSquare).status === 'full'
-                          ? 'bg-brand-primary/20 text-brand-primary border border-brand-primary/20'
-                          : (hoveredSquare || selectedSquare).status === 'partial'
-                          ? 'bg-brand-tertiary/20 text-brand-tertiary border border-brand-tertiary/20'
-                          : 'bg-white/10 text-white/60 border border-white/10'
-                      }`}>
-                        <span className="h-1.5 w-1.5 rounded-full bg-current"></span>
-                        {(hoveredSquare || selectedSquare).status === 'full' ? 'Plein' : (hoveredSquare || selectedSquare).status === 'partial' ? 'Partiel' : 'Vide'}
+                        {editMode ? (
+                          <input
+                            type="number"
+                            value={editedSquare?.number || (selectedSquare && selectedSquare.number) || 0}
+                            onChange={(e) => handleFieldChange('number', parseInt(e.target.value))}
+                            className="bg-white/10 text-xl font-medium text-white px-3 py-1 rounded-lg outline-none focus:ring-2 focus:ring-brand-primary"
+                          />
+                        ) : (
+                          <h2 className="text-xl font-medium text-white">Table {(selectedSquare && selectedSquare.number) || ''}</h2>
+                        )}
+                        <select
+                          id="fixedModalStatusSelect"
+                          value={editMode ? (editedSquare?.status || (selectedSquare && selectedSquare.status) || 'empty') : (selectedSquare ? selectedSquare.status : 'empty')}
+                          onChange={(e) => handleFieldChange('status', e.target.value)}
+                          disabled={!editMode}
+                          aria-label="Statut de la table"
+                          className={`text-sm px-3 py-1 rounded-full ${
+                            selectedSquare.status === 'full'
+                              ? selectedSquare.type === 'triploide' ? 'bg-brand-burgundy/20 text-brand-burgundy' : 'bg-blue-400/20 text-blue-400'
+                              : selectedSquare.status === 'partial'
+                              ? 'bg-brand-tertiary/20 text-brand-tertiary'
+                              : 'bg-white/10 text-white/60'
+                          } ${!editMode && 'cursor-not-allowed'} [&>option]:bg-gray-800 [&>option]:text-white`}
+                        >
+                          <option value="full" className="text-white">Plein</option>
+                          <option value="partial" className="text-white">Partiel</option>
+                          <option value="empty" className="text-white/60">Vide</option>
+                        </select>
+                        <select
+                          id="fixedModalTypeSelect"
+                          value={editMode ? (editedSquare?.type || (selectedSquare && selectedSquare.type) || 'triploide') : (selectedSquare ? selectedSquare.type : 'triploide')}
+                          onChange={(e) => handleFieldChange('type', e.target.value)}
+                          disabled={!editMode}
+                          aria-label="Type d'huître de la table"
+                          className={`text-sm px-3 py-1 rounded-full ${
+                            selectedSquare && selectedSquare.type === 'triploide'
+                              ? 'bg-brand-burgundy/20 text-brand-burgundy'
+                              : selectedSquare && selectedSquare.type === 'diploide'
+                              ? 'bg-blue-400/20 text-blue-400'
+                              : 'bg-white/10 text-white/60'
+                          } ${!editMode && 'cursor-not-allowed'} [&>option]:bg-gray-800 [&>option]:text-white`}
+                        >
+                          <option value="triploide" className="text-white">Triploïde (Plates)</option>
+                          <option value="diploide" className="text-white">Diploïde (Creuses)</option>
+                        </select>
                       </div>
                     </div>
 
                     {/* Statistiques */}
-                    <div className="grid grid-cols-3 gap-4 mb-5">
-                      <div className={`glass-effect rounded-lg p-2 text-center flex-1 border ${
-                        (hoveredSquare || selectedSquare).batches.length > 0 
-                        ? 'border-brand-primary/20 shadow-glow-blue' 
-                        : 'border-white/10'
-                      }`}>
-                        <div className={`${(hoveredSquare || selectedSquare).batches.length > 0 ? 'text-brand-primary glow-text-blue' : 'text-white/60'} text-lg font-medium`}>
-                          {(hoveredSquare || selectedSquare).batches.length}
+                    <div className="grid grid-cols-3 gap-4 mb-6">
+                      <div className="glass-effect rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Package size={16} className="text-white/60" />
+                          <span className="text-sm text-white/60">Pochons</span>
                         </div>
-                        <div className="text-[10px] text-white/60">Cordes</div>
-                      </div>
-                      
-                      <div className={`glass-effect rounded-lg p-2 text-center flex-1 border ${
-                        (hoveredSquare || selectedSquare).status !== 'empty'
-                        ? 'border-brand-tertiary/20 shadow-glow-gold' 
-                        : 'border-white/10'
-                      }`}>
-                        <div className={`${(hoveredSquare || selectedSquare).status !== 'empty' ? 'text-brand-tertiary glow-text-gold' : 'text-white/60'} text-lg font-medium`}>
-                          {(hoveredSquare || selectedSquare).status === 'full' ? '100%' : (hoveredSquare || selectedSquare).status === 'partial' ? '50%' : '0%'}
+                        <div className="text-2xl font-medium text-white">
+                          {editMode ? (
+                            <input
+                              type="number"
+                              value={editedSquare?.batches.length || (selectedSquare && selectedSquare.batches.length) || 0}
+                              onChange={(e) => handleFieldChange('batches', Array(parseInt(e.target.value)).fill(null))}
+                              className="bg-white/10 w-20 px-2 py-1 rounded outline-none focus:ring-2 focus:ring-brand-primary"
+                            />
+                          ) : (
+                            selectedSquare ? selectedSquare.batches.length : 0
+                          )}
                         </div>
-                        <div className="text-[10px] text-white/60">Capacité</div>
                       </div>
-                      
-                      <div className="glass-effect rounded-lg p-2 flex flex-col justify-between border border-white/10">
-                        <div className="text-center">
-                          <div className="flex items-center justify-center gap-1">
-                            <span className="text-white/60 text-lg font-medium">{(hoveredSquare || selectedSquare).totalRopes !== undefined && (hoveredSquare || selectedSquare).remainingRopes !== undefined 
-                              ? ((hoveredSquare || selectedSquare).totalRopes - (hoveredSquare || selectedSquare).remainingRopes) 
-                              : 0}</span>
-                            <span className="text-white/40 text-xs">/</span>
-                            <span className="text-white/40 text-sm">{(hoveredSquare || selectedSquare).totalRopes !== undefined ? (hoveredSquare || selectedSquare).totalRopes : 0}</span>
-                          </div>
-                          <div className="text-[10px] text-white/60">Cordes</div>
+                      <div className="glass-effect rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Package size={16} className="text-white/60" />
+                          <span className="text-sm text-white/60">Pochons utilisés</span>
+                        </div>
+                        <div className="text-2xl font-medium text-white">
+                          {editMode ? (
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                value={editedSquare?.totalPochons !== undefined ? editedSquare.totalPochons - editedSquare.remainingPochons : (selectedSquare && selectedSquare.totalPochons !== undefined ? selectedSquare.totalPochons - selectedSquare.remainingPochons : 0)}
+                                onChange={(e) => handleFieldChange('remainingPochons', parseInt(e.target.value))}
+                                className="bg-white/10 w-20 px-2 py-1 rounded outline-none focus:ring-2 focus:ring-brand-primary"
+                              />
+                              <span>/</span>
+                              <input
+                                type="number"
+                                value={editedSquare?.totalPochons !== undefined ? editedSquare.totalPochons : (selectedSquare && selectedSquare.totalPochons !== undefined ? selectedSquare.totalPochons : 0)}
+                                onChange={(e) => handleFieldChange('totalPochons', parseInt(e.target.value))}
+                                className="bg-white/10 w-20 px-2 py-1 rounded outline-none focus:ring-2 focus:ring-brand-primary"
+                              />
+                            </div>
+                          ) : (
+                            selectedSquare ? `${selectedSquare.totalPochons !== undefined ? selectedSquare.totalPochons - selectedSquare.remainingPochons : 0}/${selectedSquare.totalPochons !== undefined ? selectedSquare.totalPochons : 0}` : '0/0'
+                          )}
                         </div>
                       </div>
                     </div>
 
-                    {/* Liste des cordes */}
+                    {/* Liste des pochons */}
                     <div className="mb-1">
-                      {(hoveredSquare || selectedSquare).batches.length > 0 ? (
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="p-1.5 rounded-lg bg-white/10">
-                              <History size={14} className="text-white" />
-                            </div>
-                            <span className="text-xs text-white/70 font-medium">Cordes dans ce carré</span>
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1.5 rounded-lg bg-white/10">
+                            <History size={14} className="text-white" />
                           </div>
-                          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/60">
-                            {(hoveredSquare || selectedSquare).batches.length} corde{(hoveredSquare || selectedSquare).batches.length !== 1 ? 's' : ''}
-                          </span>
+                          <span className="text-xs text-white/70 font-medium">Pochons dans cette table</span>
+                        </div>
+                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/60">
+                          {selectedSquare ? selectedSquare.batches.length : 0} pochon{(selectedSquare && selectedSquare.batches.length !== 1) ? 's' : ''}
+                        </span>
+                      </div>
+                      {(selectedSquare && selectedSquare.batches.length > 0) ? (
+                        <div className="space-y-2 max-h-[150px] overflow-y-auto custom-scrollbar pr-1">
+                          {selectedSquare.batches.map((batch) => (
+                            <div
+                              key={batch.id}
+                              className="bg-white/5 hover:bg-white/10 rounded-xl p-3 border border-white/5 transition-all duration-200 cursor-pointer transform hover:translate-x-1"
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium text-white">{batch.name}</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs bg-white/10 px-2 py-0.5 rounded-full text-white/60">
+                                    {batch.date && isValid(batch.date) 
+                                      ? format(batch.date, 'dd MMM', { locale: fr })
+                                      : 'Date inconnue'}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       ) : (
                         <div className="text-center py-4 text-white/40 text-sm">
-                          Aucune corde dans ce carré
+                          Aucun pochon dans cette table
                         </div>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-semibold text-white">Détails de la table {(selectedSquare && selectedSquare.number) || ''}</h3>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          aria-label="Récolter les pochons"
+                          onClick={() => setShowHarvestModal(true)}
+                          className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors text-white"
+                        >
+                          Récolter
+                        </button>
+                        <button
+                          aria-label="Fermer le modal"
+                          onClick={handleCloseModal}
+                          className="p-2 hover:bg-white/5 rounded-lg transition-colors"
+                        >
+                          <X size={18} className="text-white/60" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="rounded-lg bg-white/5 p-3 mt-6">
+                      <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
+                        <Info size={16} className="text-brand-primary" />
+                        Synchronisation avec la traçabilité
+                      </h3>
+                      <p className="text-xs text-white/60 mt-2">
+                        Les pochons affichés ici sont synchronisés avec la section traçabilité. 
+                        Pour ajouter ou modifier un pochon, utilisez le bouton <Plus size={12} className="inline text-red-500" /> 
+                        ci-dessus pour accéder à la section traçabilité.
+                      </p>
+                    </div>
+                    {/* Actions */}
+                    <div className="flex items-center gap-3">
+                      {editMode ? (
+                        <>
+                          <button 
+                            aria-label="Sauvegarder les modifications"
+                            onClick={handleSaveChanges}
+                            className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
+                          >
+                            <Save size={16} className="text-white/60" />
+                            <span>Sauvegarder</span>
+                          </button>
+                          <button 
+                            aria-label="Annuler les modifications"
+                            onClick={() => {
+                              setEditMode(false);
+                              setEditedSquare(null);
+                            }}
+                            className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
+                          >
+                            <X size={16} className="text-white/60" />
+                            <span>Annuler</span>
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button 
+                            aria-label="Modifier la table"
+                            onClick={() => {
+                              setEditMode(true);
+                              setEditedSquare(selectedSquare ? {...selectedSquare} : null);
+                            }}
+                            className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
+                          >
+                            <Edit2 size={16} className="text-white/60" />
+                            <span>Modifier</span>
+                          </button>
+                          <button 
+                            aria-label="Ajouter un pochon"
+                            onClick={() => setShowAddRopeModal(true)}
+                            className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
+                          >
+                            <Plus size={16} className="text-red-500" />
+                            <span>Ajouter un pochon</span>
+                          </button>
+                          <button 
+                            aria-label="Voir l'historique"
+                            className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
+                          >
+                            <History size={16} className="text-white/60" />
+                            <span>Historique</span>
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -613,7 +798,7 @@ export function TrempeView() {
                       <Info size={24} className="text-white/40" />
                     </div>
                     <p className="text-white/60 text-center">
-                      Sélectionnez un carré. Cliquez sur un carré pour voir ses détails et gérer son contenu.
+                      Sélectionnez une table. Cliquez sur une table pour voir ses détails et gérer son contenu.
                     </p>
                   </div>
                 )}
@@ -643,6 +828,7 @@ export function TrempeView() {
               >
                 {/* Bouton fermer */}
                 <button
+                  aria-label="Fermer le modal"
                   onClick={handleCloseModal}
                   className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/5 transition-colors"
                 >
@@ -654,7 +840,7 @@ export function TrempeView() {
                   <div className="flex items-center gap-4">
                     <div className={`w-3 h-3 rounded-full ${
                       selectedSquare.status === 'full'
-                        ? 'bg-brand-primary'
+                        ? selectedSquare.type === 'triploide' ? 'bg-brand-burgundy' : 'bg-blue-400'
                         : selectedSquare.status === 'partial'
                         ? 'bg-brand-tertiary'
                         : 'bg-white/20'
@@ -662,20 +848,22 @@ export function TrempeView() {
                     {editMode ? (
                       <input
                         type="number"
-                        value={editedSquare?.number || selectedSquare.number}
+                        value={editedSquare?.number || (selectedSquare && selectedSquare.number) || 0}
                         onChange={(e) => handleFieldChange('number', parseInt(e.target.value))}
                         className="bg-white/10 text-xl font-medium text-white px-3 py-1 rounded-lg outline-none focus:ring-2 focus:ring-brand-primary"
                       />
                     ) : (
-                      <h2 className="text-xl font-medium text-white">Carré {selectedSquare.number}</h2>
+                      <h2 className="text-xl font-medium text-white">Table {(selectedSquare && selectedSquare.number) || ''}</h2>
                     )}
                     <select
-                      value={editMode ? editedSquare?.status || selectedSquare.status : selectedSquare.status}
+                      id="modalStatusSelect"
+                      value={editMode ? (editedSquare?.status || (selectedSquare && selectedSquare.status) || 'empty') : (selectedSquare ? selectedSquare.status : 'empty')}
                       onChange={(e) => handleFieldChange('status', e.target.value)}
                       disabled={!editMode}
+                      aria-label="Statut de la table"
                       className={`text-sm px-3 py-1 rounded-full ${
                         selectedSquare.status === 'full'
-                          ? 'bg-brand-primary/20 text-brand-primary'
+                          ? selectedSquare.type === 'triploide' ? 'bg-brand-burgundy/20 text-brand-burgundy' : 'bg-blue-400/20 text-blue-400'
                           : selectedSquare.status === 'partial'
                           ? 'bg-brand-tertiary/20 text-brand-tertiary'
                           : 'bg-white/10 text-white/60'
@@ -685,6 +873,23 @@ export function TrempeView() {
                       <option value="partial" className="text-white">Partiel</option>
                       <option value="empty" className="text-white/60">Vide</option>
                     </select>
+                    <select
+                      id="modalTypeSelect"
+                      value={editMode ? (editedSquare?.type || (selectedSquare && selectedSquare.type) || 'triploide') : (selectedSquare ? selectedSquare.type : 'triploide')}
+                      onChange={(e) => handleFieldChange('type', e.target.value)}
+                      disabled={!editMode}
+                      aria-label="Type d'huître de la table"
+                      className={`text-sm px-3 py-1 rounded-full ${
+                        selectedSquare.type === 'triploide'
+                          ? 'bg-brand-burgundy/20 text-brand-burgundy'
+                          : selectedSquare.type === 'diploide'
+                          ? 'bg-blue-400/20 text-blue-400'
+                          : 'bg-white/10 text-white/60'
+                      } ${!editMode && 'cursor-not-allowed'} [&>option]:bg-gray-800 [&>option]:text-white`}
+                    >
+                      <option value="triploide" className="text-white">Triploïde (Plates)</option>
+                      <option value="diploide" className="text-white">Diploïde (Creuses)</option>
+                    </select>
                   </div>
                 </div>
 
@@ -693,66 +898,66 @@ export function TrempeView() {
                   <div className="glass-effect rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Package size={16} className="text-white/60" />
-                      <span className="text-sm text-white/60">Cordes</span>
+                      <span className="text-sm text-white/60">Pochons</span>
                     </div>
                     <div className="text-2xl font-medium text-white">
                       {editMode ? (
                         <input
                           type="number"
-                          value={editedSquare?.batches.length || selectedSquare.batches.length}
+                          value={editedSquare?.batches.length || (selectedSquare && selectedSquare.batches.length) || 0}
                           onChange={(e) => handleFieldChange('batches', Array(parseInt(e.target.value)).fill(null))}
                           className="bg-white/10 w-20 px-2 py-1 rounded outline-none focus:ring-2 focus:ring-brand-primary"
                         />
                       ) : (
-                        selectedSquare.batches.length
+                        selectedSquare ? selectedSquare.batches.length : 0
                       )}
                     </div>
                   </div>
                   <div className="glass-effect rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Package size={16} className="text-white/60" />
-                      <span className="text-sm text-white/60">Cordes utilisées</span>
+                      <span className="text-sm text-white/60">Pochons utilisés</span>
                     </div>
                     <div className="text-2xl font-medium text-white">
                       {editMode ? (
                         <div className="flex items-center gap-2">
                           <input
                             type="number"
-                            value={editedSquare?.totalRopes !== undefined ? editedSquare.totalRopes - editedSquare.remainingRopes : selectedSquare.totalRopes !== undefined ? selectedSquare.totalRopes - selectedSquare.remainingRopes : 0}
-                            onChange={(e) => handleFieldChange('remainingRopes', parseInt(e.target.value))}
+                            value={editedSquare?.totalPochons !== undefined ? editedSquare.totalPochons - editedSquare.remainingPochons : (selectedSquare && selectedSquare.totalPochons !== undefined ? selectedSquare.totalPochons - selectedSquare.remainingPochons : 0)}
+                            onChange={(e) => handleFieldChange('remainingPochons', parseInt(e.target.value))}
                             className="bg-white/10 w-20 px-2 py-1 rounded outline-none focus:ring-2 focus:ring-brand-primary"
                           />
                           <span>/</span>
                           <input
                             type="number"
-                            value={editedSquare?.totalRopes !== undefined ? editedSquare.totalRopes : selectedSquare.totalRopes !== undefined ? selectedSquare.totalRopes : 0}
-                            onChange={(e) => handleFieldChange('totalRopes', parseInt(e.target.value))}
+                            value={editedSquare?.totalPochons !== undefined ? editedSquare.totalPochons : (selectedSquare && selectedSquare.totalPochons !== undefined ? selectedSquare.totalPochons : 0)}
+                            onChange={(e) => handleFieldChange('totalPochons', parseInt(e.target.value))}
                             className="bg-white/10 w-20 px-2 py-1 rounded outline-none focus:ring-2 focus:ring-brand-primary"
                           />
                         </div>
                       ) : (
-                        `${selectedSquare.totalRopes !== undefined ? selectedSquare.totalRopes - selectedSquare.remainingRopes : 0}/${selectedSquare.totalRopes !== undefined ? selectedSquare.totalRopes : 0}`
+                        selectedSquare ? `${selectedSquare.totalPochons !== undefined ? selectedSquare.totalPochons - selectedSquare.remainingPochons : 0}/${selectedSquare.totalPochons !== undefined ? selectedSquare.totalPochons : 0}` : '0/0'
                       )}
                     </div>
                   </div>
                 </div>
 
-                {/* Liste des cordes */}
+                {/* Liste des pochons */}
                 <div className="mb-1">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 rounded-lg bg-white/10">
                         <History size={14} className="text-white" />
                       </div>
-                      <span className="text-xs text-white/70 font-medium">Cordes dans ce carré</span>
+                      <span className="text-xs text-white/70 font-medium">Pochons dans cette table</span>
                     </div>
                     <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/60">
-                      {(selectedSquare).batches.length} corde{(selectedSquare).batches.length !== 1 ? 's' : ''}
+                      {selectedSquare ? selectedSquare.batches.length : 0} pochon{(selectedSquare && selectedSquare.batches.length !== 1) ? 's' : ''}
                     </span>
                   </div>
-                  {(selectedSquare).batches.length > 0 ? (
+                  {(selectedSquare && selectedSquare.batches.length > 0) ? (
                     <div className="space-y-2 max-h-[150px] overflow-y-auto custom-scrollbar pr-1">
-                      {(selectedSquare).batches.map((batch) => (
+                      {selectedSquare.batches.map((batch) => (
                         <div
                           key={batch.id}
                           className="bg-white/5 hover:bg-white/10 rounded-xl p-3 border border-white/5 transition-all duration-200 cursor-pointer transform hover:translate-x-1"
@@ -772,20 +977,22 @@ export function TrempeView() {
                     </div>
                   ) : (
                     <div className="text-center py-4 text-white/40 text-sm">
-                      Aucune corde dans ce carré
+                      Aucun pochon dans cette table
                     </div>
                   )}
                 </div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-white">Détails du carré {selectedSquare.number}</h3>
+                  <h3 className="text-xl font-semibold text-white">Détails de la table {(selectedSquare && selectedSquare.number) || ''}</h3>
                   <div className="flex items-center space-x-2">
                     <button
+                      aria-label="Récolter les pochons"
                       onClick={() => setShowHarvestModal(true)}
                       className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors text-white"
                     >
                       Récolter
                     </button>
                     <button
+                      aria-label="Fermer le modal"
                       onClick={handleCloseModal}
                       className="p-2 hover:bg-white/5 rounded-lg transition-colors"
                     >
@@ -799,8 +1006,8 @@ export function TrempeView() {
                     Synchronisation avec la traçabilité
                   </h3>
                   <p className="text-xs text-white/60 mt-2">
-                    Les cordes affichées ici sont synchronisées avec la section traçabilité. 
-                    Pour ajouter ou modifier une corde, utilisez le bouton <Plus size={12} className="inline text-red-500" /> 
+                    Les pochons affichés ici sont synchronisés avec la section traçabilité. 
+                    Pour ajouter ou modifier un pochon, utilisez le bouton <Plus size={12} className="inline text-red-500" /> 
                     ci-dessus pour accéder à la section traçabilité.
                   </p>
                 </div>
@@ -809,6 +1016,7 @@ export function TrempeView() {
                   {editMode ? (
                     <>
                       <button 
+                        aria-label="Sauvegarder les modifications"
                         onClick={handleSaveChanges}
                         className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
                       >
@@ -816,6 +1024,7 @@ export function TrempeView() {
                         <span>Sauvegarder</span>
                       </button>
                       <button 
+                        aria-label="Annuler les modifications"
                         onClick={() => {
                           setEditMode(false);
                           setEditedSquare(null);
@@ -829,9 +1038,10 @@ export function TrempeView() {
                   ) : (
                     <>
                       <button 
+                        aria-label="Modifier la table"
                         onClick={() => {
                           setEditMode(true);
-                          setEditedSquare({...selectedSquare});
+                          setEditedSquare(selectedSquare ? {...selectedSquare} : null);
                         }}
                         className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
                       >
@@ -839,13 +1049,15 @@ export function TrempeView() {
                         <span>Modifier</span>
                       </button>
                       <button 
+                        aria-label="Ajouter un pochon"
                         onClick={() => setShowAddRopeModal(true)}
                         className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
                       >
                         <Plus size={16} className="text-red-500" />
-                        <span>Ajouter une corde</span>
+                        <span>Ajouter un pochon</span>
                       </button>
                       <button 
+                        aria-label="Voir l'historique"
                         className="flex-1 glass-effect rounded-lg py-3 px-4 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
                       >
                         <History size={16} className="text-white/60" />
@@ -859,7 +1071,7 @@ export function TrempeView() {
           )}
         </AnimatePresence>
 
-        {/* Modal d'ajout de corde */}
+        {/* Modal d'ajout de pochon */}
         <AnimatePresence>
           {showAddRopeModal && selectedSquare && (
             <div 
@@ -877,7 +1089,7 @@ export function TrempeView() {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className="glass-effect rounded-xl p-6 max-w-md w-full mx-4 relative"
               >
-                <h3 className="text-xl font-semibold text-white mb-4">Ajouter une corde</h3>
+                <h3 className="text-xl font-semibold text-white mb-4">Ajouter un pochon</h3>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm text-white/60 mb-1">Types d'huîtres</label>
@@ -897,21 +1109,32 @@ export function TrempeView() {
                       Numéro de lot 
                       <span className="ml-2 text-white/40">(lot en cours)</span>
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-3">
                       <select
                         value={newRopeData.batchNumber}
                         onChange={(e) => setNewRopeData({...newRopeData, batchNumber: e.target.value})}
-                        className="flex-1 bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
+                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white [&>option]:bg-gray-800 [&>option]:text-white"
                       >
                         <option value={newRopeData.batchNumber}>{newRopeData.batchNumber}</option>
                         <option value={`LOT-${format(new Date(), 'yyyyMMdd')}-001`}>LOT-{format(new Date(), 'yyyyMMdd')}-001</option>
                         <option value={`LOT-${format(new Date(), 'yyyyMMdd')}-002`}>LOT-{format(new Date(), 'yyyyMMdd')}-002</option>
                         <option value={`LOT-${format(new Date(), 'yyyyMMdd')}-003`}>LOT-{format(new Date(), 'yyyyMMdd')}-003</option>
                       </select>
+                      
+                      <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg">
+                        <span className="text-white/60 text-sm">Numéro de lot:</span>
+                        <span className="text-white font-medium">
+                          {selectedHarvestBatch ? (
+                            `LOT-${format(new Date(), 'yyyyMMdd')}-${selectedHarvestBatch.split('-')[1].padStart(3, '0')}`
+                          ) : (
+                            'LOT-000000-000'
+                          )}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm text-white/60 mb-1">Nombre de cordes</label>
+                    <label className="block text-sm text-white/60 mb-1">Nombre de pochons</label>
                     <input
                       type="number"
                       min="1"
@@ -932,8 +1155,9 @@ export function TrempeView() {
                 </div>
                 <div className="flex gap-3 mt-6">
                   <button
+                    aria-label="Ajouter le pochon"
                     onClick={() => {
-                      // Logique d'ajout de corde
+                      // Logique d'ajout de pochon
                       setShowAddRopeModal(false);
                     }}
                     className="flex-1 bg-brand-primary text-white rounded-lg py-2 px-4 hover:bg-brand-primary/80 transition-colors"
@@ -941,6 +1165,7 @@ export function TrempeView() {
                     Ajouter
                   </button>
                   <button
+                    aria-label="Annuler l'ajout"
                     onClick={() => setShowAddRopeModal(false)}
                     className="flex-1 bg-white/10 text-white rounded-lg py-2 px-4 hover:bg-white/20 transition-colors"
                   >
@@ -952,13 +1177,14 @@ export function TrempeView() {
           )}
         </AnimatePresence>
 
-        {/* Modal pour la récolte des cordes */}
+        {/* Modal pour la récolte des pochons */}
         {showHarvestModal && selectedSquare && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white">Récolte de cordes</h3>
+                <h3 className="text-xl font-bold text-white">Récolte de pochons</h3>
                 <button
+                  aria-label="Fermer le modal"
                   onClick={() => setShowHarvestModal(false)}
                   className="text-white/60 hover:text-white transition-colors"
                 >
@@ -968,55 +1194,47 @@ export function TrempeView() {
               
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-white mb-2">
+                  <label htmlFor="harvestBatch" className="block text-sm font-medium text-white mb-2">
                     Sélectionner une perche
                   </label>
-                  <div className="flex flex-col gap-3">
-                    <select
-                      value={selectedHarvestBatch}
-                      onChange={(e) => setSelectedHarvestBatch(e.target.value)}
-                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white [&>option]:bg-gray-800 [&>option]:text-white"
-                    >
-                      <option value="" className="text-white/60">Choisir une perche</option>
-                      {[...Array(5)].map((_, index) => (
-                        <option key={index} value={`perche-${index + 1}`}>
-                          Perche {index + 1}
-                        </option>
-                      ))}
-                    </select>
-                    
-                    <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg">
-                      <span className="text-white/60 text-sm">Numéro de lot:</span>
-                      <span className="text-white font-medium">
-                        {selectedHarvestBatch ? (
-                          `LOT-${format(new Date(), 'yyyyMMdd')}-${selectedHarvestBatch.split('-')[1].padStart(3, '0')}`
-                        ) : (
-                          'LOT-000000-000'
-                        )}
-                      </span>
-                    </div>
-                  </div>
+                  <select
+                    id="harvestBatch"
+                    value={selectedHarvestBatch}
+                    onChange={(e) => setSelectedHarvestBatch(e.target.value)}
+                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white [&>option]:bg-gray-800 [&>option]:text-white"
+                    aria-label="Sélectionner le lot concerné"
+                  >
+                    <option value="" className="text-white/60">Choisir une perche</option>
+                    {[...Array(5)].map((_, index) => (
+                      <option key={index} value={`perche-${index + 1}`}>
+                        Perche {index + 1}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Nombre de cordes à récolter
+                  <label htmlFor="harvestQuantity" className="block text-sm font-medium text-white mb-2">
+                    Nombre de pochons à récolter
                   </label>
                   <input
+                    id="harvestQuantity"
                     type="number"
+                    value={pochonsToHarvest}
+                    onChange={(e) => setPochonsToHarvest(parseInt(e.target.value) || 0)}
                     min="1"
-                    max={selectedSquare.ropes || 10}
-                    value={ropesToHarvest}
-                    onChange={(e) => setRopesToHarvest(Math.min(parseInt(e.target.value) || 1, selectedSquare.ropes || 10))}
-                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                    max={selectedSquare ? selectedSquare.batches.length : 0}
+                    className="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2 text-white"
+                    aria-label="Nombre de pochons à récolter"
                   />
                   <p className="mt-2 text-sm text-white/70">
-                    {selectedSquare.ropes ? `${selectedSquare.ropes} cordes disponibles` : 'Nombre de cordes inconnu'}
+                    {selectedSquare ? `${selectedSquare.batches.length} pochons disponibles` : 'Nombre de pochons inconnu'}
                   </p>
                 </div>
                 
                 <div className="flex justify-end space-x-3">
                   <button
+                    aria-label="Annuler la récolte"
                     type="button"
                     onClick={() => setShowHarvestModal(false)}
                     className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
@@ -1024,6 +1242,7 @@ export function TrempeView() {
                     Annuler
                   </button>
                   <button
+                    aria-label="Récolter les pochons"
                     type="button"
                     onClick={handleHarvestRopes}
                     className="px-4 py-2 bg-green-600 rounded-lg text-white hover:bg-green-700 transition-colors"

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Building2, Users, Package, Truck, DollarSign, Map, Scale } from 'lucide-react';
+import { Settings, Building2, Users, Package, Truck, DollarSign, Map, Scale, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CompanySettings } from '../components/CompanySettings';
 import { UserRoles } from '../components/UserRoles';
@@ -8,9 +8,11 @@ import { SupplierConfig } from '../components/SupplierConfig';
 import { PricingConfig } from '../components/PricingConfig';
 import { LocationConfig } from '../components/LocationConfig';
 import { UnitConfig } from '../components/UnitConfig';
+import { NotificationSettings } from '../components/NotificationSettings';
+import { StockThresholdConfig } from '../components/StockThresholdConfig';
 import { OysterLogo } from '@/components/ui/OysterLogo';
 
-type ConfigSection = 'company' | 'roles' | 'products' | 'suppliers' | 'pricing' | 'locations' | 'units';
+type ConfigSection = 'company' | 'roles' | 'products' | 'suppliers' | 'pricing' | 'locations' | 'units' | 'notifications' | 'stocks';
 
 const sections: { id: ConfigSection; label: string; icon: React.ReactNode; description: string }[] = [
   { 
@@ -48,6 +50,18 @@ const sections: { id: ConfigSection; label: string; icon: React.ReactNode; descr
     label: 'Unités & Mesures', 
     icon: <Scale size={20} />,
     description: 'Configuration des unités de mesure'
+  },
+  { 
+    id: 'notifications', 
+    label: 'Notifications et alertes', 
+    icon: <Bell size={20} />,
+    description: 'Configuration des notifications et des alertes'
+  },
+  { 
+    id: 'stocks', 
+    label: 'Seuils de stock', 
+    icon: <Package size={20} />,
+    description: 'Configuration des niveaux bas de stocks'
   }
 ];
 
@@ -70,8 +84,12 @@ export function ConfigPage() {
         return <LocationConfig />;
       case 'units':
         return <UnitConfig />;
+      case 'notifications':
+        return <NotificationSettings />;
+      case 'stocks':
+        return <StockThresholdConfig />;
       default:
-        return null;
+        return <CompanySettings />;
     }
   };
 

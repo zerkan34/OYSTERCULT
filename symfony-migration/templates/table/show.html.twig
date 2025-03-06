@@ -1,0 +1,364 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail Table {{ table.name }} - OYSTERCULT{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .table-detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .table-title {
+            display: flex;
+            align-items: center;
+        }
+        
+        .table-type-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            margin-left: 1rem;
+        }
+        
+        .table-type-badge.triploid {
+            background-color: rgba(140, 26, 57, 0.1);
+            color: #8c1a39; /* Bordeaux pour triploïdes */
+        }
+        
+        .table-type-badge.diploid {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: #2563eb; /* Bleu pour diploïdes */
+        }
+        
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .cell {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            -webkit-transition: transform 0.2s, box-shadow 0.2s;
+            -moz-transition: transform 0.2s, box-shadow 0.2s;
+            aspect-ratio: 1/1;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .cell:hover, .cell:focus {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            outline: 2px solid #000;
+            outline-offset: 2px;
+        }
+        
+        .cell-triploid {
+            background-color: #8c1a39; /* Bordeaux pour triploïdes */
+            color: white;
+        }
+        
+        .cell-diploid {
+            background-color: #2563eb; /* Bleu pour diploïdes */
+            color: white;
+        }
+        
+        .cell-empty {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+        
+        .cell-number {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        
+        .cell-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .cell-quantity {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+        
+        .cell-status {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            font-weight: 500;
+        }
+        
+        .stock-gauge {
+            width: 100%;
+            height: 1.5rem;
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+        
+        .stock-level {
+            height: 100%;
+            border-radius: 9999px;
+        }
+        
+        .stock-level.triploid {
+            background-color: #8c1a39; /* Bordeaux pour triploïdes */
+        }
+        
+        .stock-level.diploid {
+            background-color: #2563eb; /* Bleu pour diploïdes */
+        }
+        
+        .stock-level.mixed {
+            background: linear-gradient(90deg, #8c1a39 0%, #2563eb 100%);
+            background: -webkit-linear-gradient(90deg, #8c1a39 0%, #2563eb 100%);
+            background: -moz-linear-gradient(90deg, #8c1a39 0%, #2563eb 100%);
+        }
+        
+        .stock-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+        
+        .table-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        
+        .stat-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .stat-card.triploid .stat-value {
+            color: #8c1a39; /* Bordeaux pour triploïdes */
+        }
+        
+        .stat-card.diploid .stat-value {
+            color: #2563eb; /* Bleu pour diploïdes */
+        }
+        
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            -webkit-transition: background-color 0.2s;
+            -moz-transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .action-btn svg {
+            margin-right: 0.5rem;
+        }
+        
+        .action-btn:hover, .action-btn:focus {
+            opacity: 0.9;
+            outline: 2px solid #000;
+            outline-offset: 2px;
+        }
+        
+        .edit-btn {
+            background-color: #f59e0b;
+            color: white;
+        }
+        
+        .history-btn {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .back-btn {
+            background-color: #6b7280;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .table-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .table-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="table-detail-container p-6">
+        <div class="table-header">
+            <div class="table-title">
+                <h1 class="text-3xl font-bold">{{ table.name }}</h1>
+                <span class="table-type-badge {{ table.type == 'Plates' ? 'triploid' : 'diploid' }}">
+                    {{ table.type == 'Plates' ? 'Triploïde' : 'Diploïde' }}
+                </span>
+            </div>
+            
+            <div class="actions">
+                <a href="{{ path('app_table_edit', {'id': table.id}) }}" class="action-btn edit-btn" aria-label="Modifier la table {{ table.name }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Modifier
+                </a>
+                
+                <a href="{{ path('app_table_history', {'id': table.id}) }}" class="action-btn history-btn" aria-label="Voir l'historique de la table {{ table.name }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Historique
+                </a>
+                
+                <a href="{{ path('app_table_index') }}" class="action-btn back-btn" aria-label="Retour à la liste des tables">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour
+                </a>
+            </div>
+        </div>
+        
+        <div class="table-stats">
+            <div class="stat-card">
+                <p class="stat-title">Position</p>
+                <p class="stat-value">X{{ table.posX }} Y{{ table.posY }}</p>
+            </div>
+            
+            <div class="stat-card {{ table.type == 'Plates' ? 'triploid' : 'diploid' }}">
+                <p class="stat-title">Type</p>
+                <p class="stat-value">{{ table.type }}</p>
+            </div>
+            
+            <div class="stat-card">
+                <p class="stat-title">Occupation</p>
+                {% set filled_cells = cells|filter(cell => cell.status == 'filled')|length %}
+                {% set percentage = (filled_cells / cells|length * 100)|round %}
+                <p class="stat-value">{{ percentage }}%</p>
+            </div>
+        </div>
+        
+        <h2 class="text-xl font-semibold mb-4">Niveau de stock</h2>
+        
+        <div class="stock-gauge" role="progressbar" aria-valuenow="{{ table.fillPercentage }}" aria-valuemin="0" aria-valuemax="100">
+            <div class="stock-level {{ table.type == 'Plates' ? 'triploid' : (table.type == 'Creuses' ? 'diploid' : 'mixed') }}" style="width: {{ table.fillPercentage }}%"></div>
+        </div>
+        
+        <div class="stock-info">
+            <span>0%</span>
+            <span>{{ table.fillPercentage }}%</span>
+            <span>100%</span>
+        </div>
+        
+        <h2 class="text-xl font-semibold mt-8 mb-4">Cellules</h2>
+        
+        <div class="table-grid">
+            {% for cell in cells %}
+                <div 
+                    class="cell {{ cell.status == 'filled' ? (table.type == 'Plates' ? 'cell-triploid' : 'cell-diploid') : 'cell-empty' }}" 
+                    data-cell-id="{{ cell.id }}"
+                    tabindex="0"
+                    role="button"
+                    aria-label="Cellule {{ cell.number }}, {{ cell.status == 'filled' ? 'Occupée' : 'Vide' }}"
+                >
+                    <div class="cell-number">{{ cell.number }}</div>
+                    <div class="cell-content">
+                        {% if cell.status == 'filled' %}
+                            <div class="cell-quantity">{{ cell.quantity }}</div>
+                            <div class="cell-status">Occupée</div>
+                        {% else %}
+                            <div class="cell-status">Vide</div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cells = document.querySelectorAll('.cell');
+            
+            cells.forEach(cell => {
+                cell.addEventListener('click', function() {
+                    const cellId = this.dataset.cellId;
+                    window.location.href = '{{ path('app_cell_show', {'id': 'CELL_ID'}) }}'.replace('CELL_ID', cellId);
+                });
+                
+                // Accessibilité pour la navigation au clavier
+                cell.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

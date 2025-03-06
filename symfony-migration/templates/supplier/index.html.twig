@@ -1,0 +1,391 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fournisseurs - OYSTERCULT{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .supplier-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .supplier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .supplier-search {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            padding-left: 2.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            background-color: white;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+        
+        .supplier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .supplier-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            -webkit-transition: -webkit-transform 0.2s, box-shadow 0.2s;
+            -moz-transition: -moz-transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .supplier-card:hover, .supplier-card:focus-within {
+            transform: translateY(-5px);
+            -webkit-transform: translateY(-5px);
+            -moz-transform: translateY(-5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .supplier-header-section {
+            background-color: #1f2937;
+            color: white;
+            padding: 1.5rem;
+        }
+        
+        .supplier-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .supplier-contact {
+            font-size: 0.875rem;
+            color: #e5e7eb;
+        }
+        
+        .supplier-body {
+            padding: 1.5rem;
+        }
+        
+        .supplier-info {
+            margin-bottom: 1rem;
+        }
+        
+        .supplier-info-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+        }
+        
+        .supplier-info-value {
+            font-size: 0.875rem;
+            color: #1f2937;
+        }
+        
+        .supplier-products {
+            margin-top: 1.5rem;
+        }
+        
+        .product-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        
+        .product-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-name {
+            font-weight: 500;
+            color: #1f2937;
+        }
+        
+        .product-type {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.1rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+        
+        .product-type.triploid {
+            background-color: rgba(140, 26, 57, 0.1);
+            color: #8c1a39; /* Bordeaux pour triploïdes */
+        }
+        
+        .product-type.diploid {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: #2563eb; /* Bleu pour diploïdes */
+        }
+        
+        .supplier-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .action-btn {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem 0;
+            border-radius: 0.25rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+            -webkit-transition: background-color 0.2s;
+            -moz-transition: background-color 0.2s;
+        }
+        
+        .action-btn:hover, .action-btn:focus {
+            opacity: 0.9;
+            outline: 2px solid #000;
+            outline-offset: 2px;
+        }
+        
+        .view-btn {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        
+        .edit-btn {
+            background-color: #f59e0b;
+            color: white;
+        }
+        
+        .delete-btn {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .add-supplier-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            background-color: #10b981;
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            -webkit-transition: background-color 0.2s;
+            -moz-transition: background-color 0.2s;
+        }
+        
+        .add-supplier-btn:hover, .add-supplier-btn:focus {
+            background-color: #059669;
+            outline: 2px solid #000;
+            outline-offset: 2px;
+        }
+        
+        .add-supplier-btn svg {
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .supplier-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .supplier-search {
+                max-width: 100%;
+            }
+            
+            .supplier-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="supplier-container p-6">
+        <div class="supplier-header">
+            <h1 class="text-3xl font-bold">Fournisseurs</h1>
+            
+            <a href="{{ path('app_supplier_new') }}" class="add-supplier-btn" aria-label="Ajouter un nouveau fournisseur">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Ajouter un fournisseur
+            </a>
+        </div>
+        
+        <div class="supplier-search">
+            <label for="searchSupplier" class="sr-only">Rechercher un fournisseur</label>
+            <input type="text" id="searchSupplier" class="search-input" placeholder="Rechercher un fournisseur..." aria-label="Rechercher un fournisseur">
+            <svg xmlns="http://www.w3.org/2000/svg" class="search-icon h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </div>
+        
+        <div class="supplier-grid">
+            {% for supplier in suppliers %}
+                <div class="supplier-card">
+                    <div class="supplier-header-section">
+                        <h2 class="supplier-name">{{ supplier.name }}</h2>
+                        <p class="supplier-contact">{{ supplier.email }}</p>
+                    </div>
+                    
+                    <div class="supplier-body">
+                        <div class="supplier-info">
+                            <p class="supplier-info-label">Téléphone</p>
+                            <p class="supplier-info-value">{{ supplier.phone ?? 'Non renseigné' }}</p>
+                        </div>
+                        
+                        <div class="supplier-info">
+                            <p class="supplier-info-label">Adresse</p>
+                            <p class="supplier-info-value">{{ supplier.address ?? 'Non renseignée' }}</p>
+                        </div>
+                        
+                        {% if supplier.products is defined and supplier.products|length > 0 %}
+                            <div class="supplier-products">
+                                <h3 class="text-sm font-semibold mb-2">Produits ({{ supplier.products|length }})</h3>
+                                
+                                <ul class="product-list">
+                                    {% for product in supplier.products|slice(0, 3) %}
+                                        <li class="product-item">
+                                            <div class="product-info">
+                                                <span class="product-name">{{ product.name }}</span>
+                                                <span class="product-type {{ product.type == 'triploid' ? 'triploid' : 'diploid' }}">
+                                                    {{ product.type == 'triploid' ? 'Triploïde' : 'Diploïde' }}
+                                                </span>
+                                            </div>
+                                            <span class="text-sm font-semibold">{{ product.price ?? '' }}</span>
+                                        </li>
+                                    {% endfor %}
+                                    
+                                    {% if supplier.products|length > 3 %}
+                                        <li class="text-sm text-center mt-2">
+                                            <a href="{{ path('app_supplier_show', {'id': supplier.id}) }}" class="text-indigo-600 hover:text-indigo-800" aria-label="Voir tous les produits de {{ supplier.name }}">
+                                                Voir tous les produits ({{ supplier.products|length }})
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        {% else %}
+                            <div class="supplier-products">
+                                <p class="text-sm text-gray-500">Aucun produit enregistré</p>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="supplier-actions">
+                            <a href="{{ path('app_supplier_show', {'id': supplier.id}) }}" class="action-btn view-btn" aria-label="Voir les détails de {{ supplier.name }}">
+                                Détails
+                            </a>
+                            <a href="{{ path('app_supplier_edit', {'id': supplier.id}) }}" class="action-btn edit-btn" aria-label="Modifier {{ supplier.name }}">
+                                Modifier
+                            </a>
+                            <button type="button" class="action-btn delete-btn" data-id="{{ supplier.id }}" aria-label="Supprimer {{ supplier.name }}">
+                                Supprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-span-full text-center py-12">
+                    <p class="text-gray-500 mb-4">Aucun fournisseur trouvé</p>
+                    <a href="{{ path('app_supplier_new') }}" class="inline-block bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded font-bold" aria-label="Ajouter votre premier fournisseur">
+                        Ajouter votre premier fournisseur
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Recherche de fournisseurs
+            const searchInput = document.getElementById('searchSupplier');
+            const supplierCards = document.querySelectorAll('.supplier-card');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                
+                supplierCards.forEach(card => {
+                    const supplierName = card.querySelector('.supplier-name').textContent.toLowerCase();
+                    const supplierEmail = card.querySelector('.supplier-contact').textContent.toLowerCase();
+                    
+                    if (supplierName.includes(searchTerm) || supplierEmail.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Gestion des boutons de suppression
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const supplierId = this.dataset.id;
+                    if (confirm("Êtes-vous sûr de vouloir supprimer ce fournisseur ?")) {
+                        fetch(`/api/suppliers/${supplierId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token('delete-supplier') }}'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Supprimer la carte du fournisseur
+                                this.closest('.supplier-card').remove();
+                                alert('Fournisseur supprimé avec succès');
+                            } else {
+                                alert(`Erreur: ${data.message}`);
+                            }
+                        })
+                        .catch(error => {
+                            alert('Une erreur est survenue');
+                            console.error(error);
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

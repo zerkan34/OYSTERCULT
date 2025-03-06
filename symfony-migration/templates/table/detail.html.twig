@@ -1,0 +1,447 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail Table - OYSTERCULT{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    /* Styles globaux */
+    :root {
+        --color-triploid: #8c1a39; /* Bordeaux pour triploïdes */
+        --color-diploid: #2563eb; /* Bleu pour diploïdes */
+        --cell-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+        --animation-duration: 300ms;
+    }
+
+    /* Container principal */
+    .table-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: #1a1a1a;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* En-tête de la table */
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .table-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: white;
+        display: flex;
+        align-items: center;
+    }
+
+    .table-type-badge {
+        font-size: 0.875rem;
+        font-weight: 600;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        margin-left: 0.75rem;
+    }
+
+    .table-type-badge.triploid {
+        background-color: rgba(140, 26, 57, 0.2);
+        color: #e57c9e;
+    }
+
+    .table-type-badge.diploid {
+        background-color: rgba(37, 99, 235, 0.2);
+        color: #93c5fd;
+    }
+
+    /* Stats de la table */
+    .table-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-title {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .stat-value.triploid {
+        color: #e57c9e;
+    }
+
+    .stat-value.diploid {
+        color: #93c5fd;
+    }
+
+    /* Grille de cellules */
+    .table-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(10, 1fr);
+        gap: 0.25rem;
+        aspect-ratio: 2/10;
+        margin-top: 2rem;
+        transform: rotate(0);
+    }
+
+    .cell {
+        position: relative;
+        border-radius: 0.375rem;
+        transition: all var(--animation-duration);
+        cursor: pointer;
+        aspect-ratio: 1/1;
+    }
+
+    .cell-border {
+        position: absolute;
+        inset: 0;
+        border-radius: 0.375rem;
+        border: 2px solid white;
+        box-shadow: var(--cell-shadow);
+    }
+
+    .cell-number {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .cell-info {
+        position: absolute;
+        bottom: 0.25rem;
+        right: 0.25rem;
+        font-size: 0.5rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .cell-hover {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.4);
+        border-radius: 0.375rem;
+        opacity: 0;
+        transition: opacity var(--animation-duration);
+    }
+
+    .cell:hover .cell-hover {
+        opacity: 1;
+    }
+
+    /* Styles spécifiques aux types */
+    .cell.triploid {
+        background-color: var(--color-triploid);
+        opacity: 0.6;
+        transform: scale(0.99);
+    }
+
+    .cell.triploid:hover {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+
+    .cell.diploid {
+        background-color: var(--color-diploid);
+        opacity: 0.6;
+        transform: scale(0.99);
+    }
+
+    .cell.diploid:hover {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+
+    .cell.empty {
+        background-color: rgba(255, 255, 255, 0.1);
+        opacity: 0.3;
+    }
+
+    .cell.empty:hover {
+        opacity: 0.5;
+    }
+
+    /* Stock gauge */
+    .stock-section {
+        margin-top: 2rem;
+    }
+
+    .stock-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .stock-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: white;
+    }
+
+    .stock-percentage {
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+    }
+
+    .stock-gauge {
+        position: relative;
+        height: 1.5rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 9999px;
+        overflow: hidden;
+    }
+
+    .stock-level {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        border-radius: 9999px;
+        transition: width 1s ease-in-out;
+    }
+
+    .stock-level.triploid {
+        background-color: var(--color-triploid);
+    }
+
+    .stock-level.diploid {
+        background-color: var(--color-diploid);
+    }
+
+    .stock-level.mixed {
+        background: linear-gradient(90deg, var(--color-triploid) 0%, var(--color-diploid) 100%);
+        background: -webkit-linear-gradient(90deg, var(--color-triploid) 0%, var(--color-diploid) 100%);
+        background: -moz-linear-gradient(90deg, var(--color-triploid) 0%, var(--color-diploid) 100%);
+    }
+
+    /* Actions */
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: white;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.375rem;
+        transition: all var(--animation-duration);
+        cursor: pointer;
+    }
+
+    .btn svg {
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+    }
+
+    .btn:hover, .btn:focus {
+        background-color: rgba(255, 255, 255, 0.2);
+        outline: none;
+    }
+
+    .btn:focus {
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-primary {
+        background-color: var(--color-triploid);
+        border-color: var(--color-triploid);
+    }
+
+    .btn-primary:hover {
+        background-color: color-mix(in srgb, var(--color-triploid), white 10%);
+    }
+
+    .btn-secondary {
+        background-color: var(--color-diploid);
+        border-color: var(--color-diploid);
+    }
+
+    .btn-secondary:hover {
+        background-color: color-mix(in srgb, var(--color-diploid), white 10%);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .table-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .table-title {
+            margin-bottom: 1rem;
+        }
+
+        .actions {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="table-container">
+    <div class="table-header">
+        <div>
+            <h1 class="table-title">
+                {{ table.name }}
+                <span class="table-type-badge {{ table.type == 'Plates' ? 'triploid' : 'diploid' }}">
+                    {{ table.type == 'Plates' ? 'Triploïde' : 'Diploïde' }}
+                </span>
+            </h1>
+            <p class="text-white/60 text-sm">Dernière mise à jour: {{ table.updatedAt|date('d/m/Y H:i') }}</p>
+        </div>
+        
+        <div class="actions">
+            <button class="btn" aria-label="Modifier la table">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path>
+                </svg>
+                Modifier
+            </button>
+            
+            <button class="btn btn-primary" aria-label="Traçabilité">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"></path>
+                    <path d="M13 15v4"></path>
+                    <path d="M17 15v4"></path>
+                    <path d="M9 15v4"></path>
+                    <path d="M5 15v4"></path>
+                    <path d="M21 12V7a2 2 0 0 0-2-2h-5"></path>
+                    <path d="M14 5V3"></path>
+                    <path d="M14 9V7"></path>
+                    <path d="M10 5V3"></path>
+                    <path d="M10 9V7"></path>
+                    <path d="M6 5V3"></path>
+                    <path d="M6 9V7"></path>
+                </svg>
+                Traçabilité
+            </button>
+        </div>
+    </div>
+    
+    <div class="table-stats">
+        <div class="stat-card">
+            <div class="stat-title">Position</div>
+            <div class="stat-value">X{{ table.posX }} Y{{ table.posY }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-title">Type</div>
+            <div class="stat-value {{ table.type == 'Plates' ? 'triploid' : 'diploid' }}">
+                {{ table.type }}
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-title">Utilisation</div>
+            <div class="stat-value">{{ table.fillPercentage }}%</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-title">Capacité</div>
+            <div class="stat-value">{{ table.rows * table.columns }} cellules</div>
+        </div>
+    </div>
+    
+    <div class="stock-section">
+        <div class="stock-header">
+            <div class="stock-title">Niveau de stock</div>
+            <div class="stock-percentage">{{ table.fillPercentage }}%</div>
+        </div>
+        
+        <div class="stock-gauge" role="progressbar" aria-valuenow="{{ table.fillPercentage }}" aria-valuemin="0" aria-valuemax="100">
+            <div class="stock-level {{ table.type == 'Plates' ? 'triploid' : (table.type == 'Creuses' ? 'diploid' : 'mixed') }}" style="width: {{ table.fillPercentage }}%"></div>
+        </div>
+    </div>
+    
+    <div class="relative h-full grid grid-cols-2 grid-rows-10 gap-1 p-8 transform rotate-0">
+        {% for cell in cells %}
+            {% set cellType = cell.tableType == 'Plates' ? 'triploid' : 'diploid' %}
+            {% set isEmpty = cell.status != 'filled' %}
+            
+            <button 
+                class="cell {{ isEmpty ? 'empty' : cellType }}"
+                data-cell-id="{{ cell.id }}"
+                aria-label="Cellule {{ cell.number }}, {{ isEmpty ? 'Vide' : cell.status }}"
+            >
+                <div class="cell-border"></div>
+                <div class="cell-number">
+                    <span class="text-xs text-white font-bold">{{ cell.number }}</span>
+                </div>
+                <div class="cell-info">
+                    {% if not isEmpty %}
+                        {{ cell.quantity }}
+                    {% endif %}
+                </div>
+                <div class="cell-hover">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen text-white">
+                        <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path>
+                    </svg>
+                </div>
+            </button>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cells = document.querySelectorAll('.cell');
+        
+        cells.forEach(cell => {
+            cell.addEventListener('click', function() {
+                const cellId = this.dataset.cellId;
+                window.location.href = '{{ path('app_cell_edit', {'id': 'CELL_ID'}) }}'.replace('CELL_ID', cellId);
+            });
+        });
+    });
+</script>
+{% endblock %}

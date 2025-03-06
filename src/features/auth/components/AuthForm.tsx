@@ -74,8 +74,12 @@ export function AuthForm() {
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
               <input
+                id="password"
+                name="password"
                 type={showPassword ? "text" : "password"}
                 defaultValue="demo"
+                autoComplete="current-password"
+                aria-label="Mot de passe"
                 className="w-full pl-10 pr-12 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-burgundy/50 focus:ring-1 focus:ring-brand-burgundy/50 transition-all duration-300"
                 required
               />

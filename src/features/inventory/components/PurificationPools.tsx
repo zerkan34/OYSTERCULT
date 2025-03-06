@@ -613,7 +613,7 @@ export function PurificationPools() {
             }} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-white mb-2">
-                  Numéro de lot
+                  Numéro de lot <span className="text-white/60">({newBatchData.number})</span>
                 </label>
                 <input
                   type="text"

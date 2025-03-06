@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Modèle 3D de la Lagune de Thau pour Secours</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 300px;
+            z-index: 100;
+        }
+        #instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 100;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 999;
+            text-align: center;
+        }
+        button {
+            margin: 5px;
+            padding: 8px 15px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0055aa;
+        }
+        .port-marker {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: red;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 101;
+            border: 2px solid white;
+            pointer-events: none;
+        }
+        .port-label {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            transform: translate(-50%, -100%);
+            margin-top: -5px;
+            white-space: nowrap;
+            z-index: 101;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Chargement du modèle 3D de la Lagune de Thau...<br><br>Préparation des données pour les opérations de secours</div>
+    
+    <div id="info">
+        <h2>Lagune de Thau - Modèle de Secours</h2>
+        <p>Visualisation 3D des tables conchylicoles et des routes maritimes sécurisées pour les interventions d'urgence.</p>
+        <button id="toggleTables">Masquer les tables</button>
+        <button id="toggleRoutes">Masquer les routes</button>
+    </div>
+    
+    <div id="instructions">
+        <p>🖱️ Clic gauche + déplacement : Rotation | 🖱️ Clic droit + déplacement : Translation | 🖲️ Molette : Zoom</p>
+    </div>
+
+    <!-- Markers for ports (will be positioned via JavaScript) -->
+    <div id="port-markers"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.137.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        // Configuration
+        const CONFIG = {
+            // Dimensions générales
+            lagoonLength: 20,   // Longueur de la lagune en km (mise à l'échelle)
+            lagoonWidth: 8,     // Largeur de la lagune en km (mise à l'échelle)
+            waterHeight: 0.1,   // Hauteur de la surface de l'eau
+            
+            // Tables conchylicoles
+            tableHeight: 1,     // Hauteur des tables en mètres
+            tableWidth: 0.2,    // Largeur des tables (échelle relative)
+            tableLength: 0.7,   // Longueur des tables (échelle relative)
+            
+            // Ports et repères
+            ports: [
+                { name: "Sète", x: 12, z: 0, color: "#ff0000" },
+                { name: "Mèze", x: -2, z: -2, color: "#ff0000" },
+                { name: "Marseillan", x: -8, z: 3, color: "#ff0000" },
+                { name: "Bouzigues", x: 6, z: -3, color: "#ff0000" }
+            ],
+            
+            // Couleurs
+            waterColor: 0x3399ff,
+            tableBouziguesColor: 0x555555,
+            tableMezeColor: 0x444444,
+            tableMarsillanColor: 0x333333,
+            routeColor: 0x00ffff,
+            
+            // Éclairage
+            ambientLightIntensity: 0.7,
+            directionalLightIntensity: 0.8
+        };
+
+        // Variables globales
+        let scene, camera, renderer, controls;
+        let tables = { bouzigues: null, meze: null, marseillan: null };
+        let rescueRoutes = null;
+        let isLoading = true;
+
+        // Initialisation
+        init();
+        animate();
+
+        // Fonction d'initialisation principale
+        function init() {
+            // Création de la scène Three.js
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87ceeb); // Ciel bleu clair
+            
+            // Configuration de la caméra
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 15, 15);
+            camera.lookAt(0, 0, 0);
+            
+            // Configuration du renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+            
+            // Ajout des contrôles pour la navigation
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.screenSpacePanning = false;
+            controls.minDistance = 5;
+            controls.maxDistance = 50;
+            controls.maxPolarAngle = Math.PI / 2;
+            
+            // Lumières
+            addLights();
+            
+            // Création des éléments du modèle
+            createWater();
+            createTables();
+            createRescueRoutes();
+            createPortMarkers();
+            
+            // Gestion du redimensionnement de la fenêtre
+            window.addEventListener('resize', onWindowResize, false);
+            
+            // Gestion des boutons
+            document.getElementById('toggleTables').addEventListener('click', toggleTables);
+            document.getElementById('toggleRoutes').addEventListener('click', toggleRoutes);
+            
+            // Marquer comme chargé après un court délai
+            setTimeout(() => {
+                isLoading = false;
+                document.getElementById('loading').style.display = 'none';
+            }, 2000);
+        }
+
+        // Ajout des sources lumineuses
+        function addLights() {
+            const ambientLight = new THREE.AmbientLight(0xffffff, CONFIG.ambientLightIntensity);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, CONFIG.directionalLightIntensity);
+            directionalLight.position.set(1, 1, 1).normalize();
+            scene.add(directionalLight);
+        }
+
+        // Création de la surface d'eau
+        function createWater() {
+            const geometry = new THREE.BoxGeometry(
+                CONFIG.lagoonLength, 
+                CONFIG.waterHeight, 
+                CONFIG.lagoonWidth
+            );
+            const material = new THREE.MeshPhongMaterial({ 
+                color: CONFIG.waterColor,
+                transparent: true,
+                opacity: 0.8
+            });
+            const water = new THREE.Mesh(geometry, material);
+            water.position.y = -CONFIG.waterHeight / 2;
+            scene.add(water);
+        }
+
+        // Création des tables conchylicoles
+        function createTables() {
+            // Groupe pour les tables de Bouzigues (Nord-Est)
+            tables.bouzigues = new THREE.Group();
+            createTableGroup(
+                tables.bouzigues, 
+                6, 8, 6, 3,  // position x, z, largeur, hauteur de la zone 
+                CONFIG.tableBouziguesColor
+            );
+            scene.add(tables.bouzigues);
+            
+            // Groupe pour les tables de Mèze (Centre-Ouest)
+            tables.meze = new THREE.Group();
+            createTableGroup(
+                tables.meze, 
+                -2, -2, 5, 4,  // position x, z, largeur, hauteur de la zone
+                CONFIG.tableMezeColor
+            );
+            scene.add(tables.meze);
+            
+            // Groupe pour les tables de Marseillan (Sud-Ouest)
+            tables.marseillan = new THREE.Group();
+            createTableGroup(
+                tables.marseillan, 
+                -8, 3, 4, 5,  // position x, z, largeur, hauteur de la zone
+                CONFIG.tableMarsillanColor
+            );
+            scene.add(tables.marseillan);
+        }
+
+        // Fonction helper pour créer un groupe de tables
+        function createTableGroup(group, centerX, centerZ, width, height, color) {
+            const tableGeometry = new THREE.BoxGeometry(
+                CONFIG.tableLength, 
+                CONFIG.tableHeight, 
+                CONFIG.tableWidth
+            );
+            const tableMaterial = new THREE.MeshPhongMaterial({ color: color });
+            
+            // Créer une grille de tables
+            const tableSpacingX = CONFIG.tableLength * 1.5;
+            const tableSpacingZ = CONFIG.tableWidth * 1.5;
+            
+            const startX = centerX - (width * tableSpacingX) / 2;
+            const startZ = centerZ - (height * tableSpacingZ) / 2;
+            
+            for (let x = 0; x < width; x++) {
+                for (let z = 0; z < height; z++) {
+                    const table = new THREE.Mesh(tableGeometry, tableMaterial);
+                    table.position.set(
+                        startX + x * tableSpacingX,
+                        CONFIG.tableHeight / 2,
+                        startZ + z * tableSpacingZ
+                    );
+                    
+                    // Ajouter une légère rotation aléatoire
+                    table.rotation.y = (Math.random() - 0.5) * 0.3;
+                    
+                    group.add(table);
+                }
+            }
+        }
+
+        // Création des routes de secours
+        function createRescueRoutes() {
+            rescueRoutes = new THREE.Group();
+            
+            // Points de contrôle pour les routes (adaptés à la disposition des tables)
+            const routePoints = [
+                [-10, 0.5, 4],    // Départ Marseillan
+                [-7, 0.5, 1],     // Contournement Marseillan
+                [-5, 0.5, -0.5],  // Route principale ouest
+                [-1, 0.5, -3.5],  // Entre Marseillan et Mèze
+                [2, 0.5, -3],     // Route vers Mèze
+                [5, 0.5, -4],     // Entre Mèze et Bouzigues
+                [8, 0.5, -3],     // Arrivée Bouzigues
+                [10, 0.5, -1],    // Route Est
+                [12, 0.5, 0]      // Arrivée Sète
+            ];
+            
+            // Créer le tracé principal
+            createRoute(routePoints, CONFIG.routeColor, 0.3);
+            
+            // Ajouter quelques routes secondaires
+            const secondaryRoute1 = [
+                [-8, 0.5, 3],    // Marseillan
+                [-5, 0.5, 2],    // Route sud
+                [0, 0.5, 0],     // Centre lagune
+                [5, 0.5, -2]     // Vers Bouzigues
+            ];
+            createRoute(secondaryRoute1, 0x0088ff, 0.2);
+            
+            const secondaryRoute2 = [
+                [12, 0.5, 0],    // Sète
+                [8, 0.5, 1],     // Contournement est
+                [6, 0.5, -1],    // Zone centrale est
+                [5, 0.5, -4]     // Vers Bouzigues
+            ];
+            createRoute(secondaryRoute2, 0x0088ff, 0.2);
+            
+            scene.add(rescueRoutes);
+        }
+
+        // Fonction helper pour créer une route
+        function createRoute(points, color, width) {
+            // Créer la géométrie du tracé
+            const routeGeometry = new THREE.BufferGeometry();
+            const vertices = [];
+            
+            // Convertir les points en vertices
+            for (const point of points) {
+                vertices.push(point[0], point[1], point[2]);
+            }
+            
+            routeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            
+            // Créer le matériau de la ligne
+            const routeMaterial = new THREE.LineBasicMaterial({ 
+                color: color,
+                linewidth: width
+            });
+            
+            // Créer la ligne
+            const route = new THREE.Line(routeGeometry, routeMaterial);
+            rescueRoutes.add(route);
+            
+            // Ajouter des sphères aux points d'intersection pour les mettre en évidence
+            const intersectionGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+            const intersectionMaterial = new THREE.MeshBasicMaterial({ color: color });
+            
+            for (const point of points) {
+                const intersection = new THREE.Mesh(intersectionGeometry, intersectionMaterial);
+                intersection.position.set(point[0], point[1], point[2]);
+                rescueRoutes.add(intersection);
+            }
+        }
+
+        // Création des marqueurs de ports dans le DOM
+        function createPortMarkers() {
+            const container = document.getElementById('port-markers');
+            
+            CONFIG.ports.forEach(port => {
+                // Convertir les coordonnées 3D en coordonnées d'écran
+                const vector = new THREE.Vector3(port.x, 0, port.z);
+                vector.project(camera);
+                
+                // Créer le marqueur de port
+                const marker = document.createElement('div');
+                marker.className = 'port-marker';
+                marker.style.backgroundColor = port.color;
+                
+                // Créer le label de port
+                const label = document.createElement('div');
+                label.className = 'port-label';
+                label.textContent = port.name;
+                
+                // Ajouter au conteneur
+                container.appendChild(marker);
+                container.appendChild(label);
+                
+                // Stocker les références pour mise à jour
+                port.marker = marker;
+                port.label = label;
+            });
+        }
+
+        // Mise à jour des positions des marqueurs de ports
+        function updatePortMarkers() {
+            CONFIG.ports.forEach(port => {
+                if (port.marker && port.label) {
+                    // Convertir les coordonnées 3D en coordonnées d'écran
+                    const vector = new THREE.Vector3(port.x, 0, port.z);
+                    vector.project(camera);
+                    
+                    const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+                    const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+                    
+                    // Mettre à jour la position du marqueur et du label
+                    port.marker.style.left = x + 'px';
+                    port.marker.style.top = y + 'px';
+                    port.label.style.left = x + 'px';
+                    port.label.style.top = y + 'px';
+                }
+            });
+        }
+
+        // Fonction d'animation
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Mettre à jour les contrôles
+            controls.update();
+            
+            // Mettre à jour les marqueurs de ports
+            updatePortMarkers();
+            
+            // Rendu de la scène
+            renderer.render(scene, camera);
+        }
+
+        // Gestion du redimensionnement de la fenêtre
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Fonction pour afficher/masquer les tables
+        function toggleTables() {
+            const btn = document.getElementById('toggleTables');
+            const isVisible = tables.bouzigues.visible;
+            
+            tables.bouzigues.visible = !isVisible;
+            tables.meze.visible = !isVisible;
+            tables.marseillan.visible = !isVisible;
+            
+            btn.textContent = isVisible ? 'Afficher les tables' : 'Masquer les tables';
+        }
+
+        // Fonction pour afficher/masquer les routes
+        function toggleRoutes() {
+            const btn = document.getElementById('toggleRoutes');
+            const isVisible = rescueRoutes.visible;
+            
+            rescueRoutes.visible = !isVisible;
+            
+            btn.textContent = isVisible ? 'Afficher les routes' : 'Masquer les routes';
+        }
+    </script>
+</body>
+</html>

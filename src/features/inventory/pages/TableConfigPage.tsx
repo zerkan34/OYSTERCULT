@@ -3,8 +3,8 @@ import { useStore } from '@/lib/store';
 import { Settings, AlertCircle, Droplets, Award } from 'lucide-react';
 
 interface TableStats {
-  totalCordes: number;
-  usedCordes: number;
+  totalPochons: number;
+  usedPochons: number;
   totalOysters: number;
   usedOysters: number;
 }
@@ -14,7 +14,7 @@ export function TableConfigPage() {
   const [newTable, setNewTable] = useState({
     perchCount: 5,
     damagedPerches: [],
-    cordesPerPerch: 10,
+    pochonsPerPerch: 10,
     oystersPerCorde: 20,
     isExposed: false,
     exposureCount: 0,
@@ -22,13 +22,13 @@ export function TableConfigPage() {
 
   const calculateTableStats = (config: typeof newTable): TableStats => {
     const availablePerches = config.perchCount - config.damagedPerches.length;
-    const totalCordes = availablePerches * config.cordesPerPerch;
-    const totalOysters = totalCordes * config.oystersPerCorde;
+    const totalPochons = availablePerches * config.pochonsPerPerch;
+    const totalOysters = totalPochons * config.oystersPerCorde;
     
     // Pour l'exemple, on simule une utilisation de 70% de la capacité
     return {
-      totalCordes,
-      usedCordes: Math.floor(totalCordes * 0.7),
+      totalPochons,
+      usedPochons: Math.floor(totalPochons * 0.7),
       totalOysters,
       usedOysters: Math.floor(totalOysters * 0.7),
     };
@@ -46,7 +46,7 @@ export function TableConfigPage() {
     setNewTable({
       perchCount: 5,
       damagedPerches: [],
-      cordesPerPerch: 10,
+      pochonsPerPerch: 10,
       oystersPerCorde: 20,
       isExposed: false,
       exposureCount: 0,
@@ -82,12 +82,12 @@ export function TableConfigPage() {
           </div>
           <div>
             <label className="block text-sm text-white/60 mb-1">
-              Cordes par perche
+              Pochons par perche
             </label>
             <input
               type="number"
-              value={newTable.cordesPerPerch}
-              onChange={(e) => setNewTable(prev => ({ ...prev, cordesPerPerch: parseInt(e.target.value) }))}
+              value={newTable.pochonsPerPerch}
+              onChange={(e) => setNewTable(prev => ({ ...prev, pochonsPerPerch: parseInt(e.target.value) }))}
               className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
             />
           </div>
@@ -146,16 +146,16 @@ export function TableConfigPage() {
 
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <div className="text-sm text-white/60 mb-1">Cordes</div>
+                  <div className="text-sm text-white/60 mb-1">Pochons</div>
                   <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-brand-blue"
-                      style={{ width: `${(stats.usedCordes / stats.totalCordes) * 100}%` }}
+                      style={{ width: `${(stats.usedPochons / stats.totalPochons) * 100}%` }}
                     />
                   </div>
                   <div className="flex justify-between text-xs text-white/40 mt-1">
-                    <span>{stats.usedCordes} utilisées</span>
-                    <span>{stats.totalCordes} total</span>
+                    <span>{stats.usedPochons} utilisées</span>
+                    <span>{stats.totalPochons} total</span>
                   </div>
                 </div>
                 <div>
@@ -180,8 +180,8 @@ export function TableConfigPage() {
                     <span className="text-white">{table.perchCount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/60">Cordes/perche</span>
-                    <span className="text-white">{table.cordesPerPerch}</span>
+                    <span className="text-white/60">Pochons/perche</span>
+                    <span className="text-white">{table.pochonsPerPerch}</span>
                   </div>
                 </div>
                 <div className="space-y-2">

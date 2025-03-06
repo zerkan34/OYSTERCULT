@@ -74,6 +74,15 @@
     --mesh-opacity: 0.03;
   }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
     @apply bg-brand-dark antialiased;
     color: rgb(var(--color-text));
@@ -81,6 +90,8 @@
       radial-gradient(circle at 0% 0%, rgb(var(--color-brand-burgundy) / 0.1) 0%, transparent 50%),
       radial-gradient(circle at 100% 100%, rgb(var(--color-brand-tertiary) / 0.05) 0%, transparent 50%),
       url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0V0zm20 20h20v20H20V20zM0 20h20v20H0V20z' fill='currentColor' fill-opacity='var(--mesh-opacity)'/%3E%3C/svg%3E");
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   .font-industry {
@@ -190,6 +201,7 @@
   /* iPhone 13 Pro Max width */
   body {
     -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
   
@@ -249,12 +261,14 @@
   .glass-effect {
     background-color: rgb(var(--color-brand-surface) / var(--glass-opacity));
     border: 1px solid rgb(var(--color-border) / var(--color-border-opacity));
-    @apply backdrop-blur-md transition-all duration-300;
-    box-shadow: var(--shadow-glass);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    transition: all 0.2s ease;
   }
 
   .glass-effect-hover {
-    @apply hover:border-[rgb(var(--color-brand-burgundy)_/_0.2)];
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
     background-color: rgb(var(--color-brand-surface-light) / var(--glass-opacity));
     box-shadow: var(--shadow-neon);
   }
@@ -439,6 +453,7 @@
   }
 
   .trempe-modal {
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
 
@@ -548,5 +563,147 @@
 
   .glow-dot-green {
     box-shadow: 0 0 8px 0px rgba(74, 222, 128, 0.7);
+  }
+
+  /* Class for elements with backdrop-filter */
+  .backdrop-blur-sm, 
+  .backdrop-blur, 
+  .backdrop-blur-md, 
+  .backdrop-blur-lg {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+
+  /* Class for user-select property */
+  .select-none {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .select-text {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
+  .select-all {
+    -webkit-user-select: all;
+    -moz-user-select: all;
+    -ms-user-select: all;
+    user-select: all;
+  }
+
+  .select-auto {
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
+  }
+
+  /* Filter properties */
+  .filter-blur, .blur {
+    -webkit-filter: blur(8px);
+    filter: blur(8px);
+  }
+
+  /* Force color adjust for printing */
+  .forced-color-adjust-none {
+    -ms-high-contrast-adjust: none;
+    forced-color-adjust: none;
+  }
+}
+
+@layer utilities {
+  .backdrop-blur-effect {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  
+  .forced-colors-none {
+    -ms-high-contrast-adjust: none;
+    forced-color-adjust: none;
+  }
+  
+  .filter-blur {
+    -webkit-filter: blur(4px);
+    filter: blur(4px);
+  }
+  
+  .filter-grayscale {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+  }
+  
+  .filter-brightness {
+    -webkit-filter: brightness(1.2);
+    filter: brightness(1.2);
+  }
+  
+  .filter-contrast {
+    -webkit-filter: contrast(1.2);
+    filter: contrast(1.2);
+  }
+  
+  .touch-manipulation {
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+  }
+  
+  /* User select utilities with full browser support */
+  .select-none {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  .select-text {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+  
+  .select-all {
+    -webkit-user-select: all;
+    -moz-user-select: all;
+    -ms-user-select: all;
+    user-select: all;
+  }
+  
+  .select-auto {
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
+  }
+  
+  /* Image rendering utilities */
+  .image-rendering-auto {
+    image-rendering: auto;
+  }
+  
+  .image-rendering-crisp {
+    -ms-interpolation-mode: nearest-neighbor;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+  }
+
+  /* Image-set fallback utilities */
+  .content-image-set {
+    /* Standard version */
+    content: image-set(
+      url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABIAQMAAABvIyEEAAAABlBMVEUAAABTU1OoaSf/AAAAAXRSTlMAQObYZgAAADtJREFUKM9jYBgFRIP///8/wM16wGAhg5fF3ICbVYCfZf8fD4uBgXlAWPx/8LEKmJvxsCiwFxji/3GyANQXWAZOSFkcAAAAAElFTkSuQmCC") 1x
+    );
+    
+    /* Webkit version for backward compatibility */
+    content: -webkit-image-set(
+      url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABIAQMAAABvIyEEAAAABlBMVEUAAABTU1OoaSf/AAAAAXRSTlMAQObYZgAAADtJREFUKM9jYBgFRIP///8/wM16wGAhg5fF3ICbVYCfZf8fD4uBgXlAWPx/8LEKmJvxsCiwFxji/3GyANQXWAZOSFkcAAAAAElFTkSuQmCC") 1x
+    );
   }
 }

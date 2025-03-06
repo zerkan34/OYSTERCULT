@@ -260,15 +260,19 @@ export function PurchasesPage() {
     <div className="container mx-auto p-4 space-y-4">
       <div className="flex items-center justify-between mb-6">
         <div className="flex-1 flex items-center space-x-4">
-          <div className="flex-1">
-            <Input
-              type="text"
-              placeholder="Rechercher une commande..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full"
-              leftIcon={<Search className="w-4 h-4" />}
-            />
+          <div className="w-full">
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60">
+                <Search className="w-4 h-4" />
+              </div>
+              <Input
+                type="text"
+                placeholder="Rechercher une commande..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10"
+              />
+            </div>
           </div>
           <Button variant="outline" className="flex items-center gap-2">
             <Filter className="w-4 h-4" /> Filtres

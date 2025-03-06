@@ -101,11 +101,11 @@ export function DashboardPage() {
   const [selectedPool, setSelectedPool] = useState<typeof poolData[0] | null>(null);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" role="main" aria-label="Tableau de bord d'exploitation ostréicole">
       <div className="flex items-center space-x-3">
         <div className="relative">
-          <div className="absolute inset-0 bg-brand-burgundy/20 blur-xl rounded-full" />
-          <LineChart size={24} className="text-brand-burgundy relative z-10" />
+          <div className="absolute inset-0 bg-brand-burgundy/20 blur-xl rounded-full" aria-hidden="true" />
+          <LineChart size={24} className="text-brand-burgundy relative z-10" aria-hidden="true" />
         </div>
         <h1 className="text-2xl font-bold text-white">Tableau de bord</h1>
       </div>
@@ -117,9 +117,9 @@ export function DashboardPage() {
       <div className="glass-effect rounded-xl p-4 md:p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           {/* Colonne de gauche: Tables */}
-          <div className="space-y-4 md:space-y-6">
+          <div className="space-y-4 md:space-y-6" role="region" aria-labelledby="tables-heading">
             <div className="flex items-center justify-between">
-              <h3 className="text-base md:text-lg font-medium text-white">Occupation des tables</h3>
+              <h3 id="tables-heading" className="text-base md:text-lg font-medium text-white">Occupation des tables</h3>
               <div className="text-xs md:text-sm text-white/60">4 tables actives</div>
             </div>
             <div className="space-y-3">
@@ -135,6 +135,15 @@ export function DashboardPage() {
                     onHoverEnd={() => setHoveredTable(null)}
                     onClick={() => setSelectedTable(table)}
                     whileHover={{ y: -4 }}
+                    role="button"
+                    aria-label={`Détails de ${table.name}`}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        setSelectedTable(table);
+                        e.preventDefault();
+                      }
+                    }}
                   >
                     {/* Effet de surbrillance */}
                     <motion.div
@@ -142,12 +151,13 @@ export function DashboardPage() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: hoveredTable === table.name ? 1 : 0 }}
                       transition={{ duration: 0.2 }}
+                      aria-hidden="true"
                     />
 
                     <div className="relative z-10">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-3">
-                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: table.color }} />
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: table.color }} role="presentation" />
                           <div>
                             <div className="text-sm md:text-base text-white">{table.name}</div>
                             <div className="text-xs text-white/70">{table.type}</div>
@@ -161,12 +171,12 @@ export function DashboardPage() {
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center space-x-4 text-white/60">
                           <div className="flex items-center">
-                            <Calendar className="w-4 h-4 mr-1" />
-                            Récolte: {table.harvest}
+                            <Calendar className="w-4 h-4 mr-1" aria-hidden="true" />
+                            <span>Récolte: {table.harvest}</span>
                           </div>
                           <div className="flex items-center">
-                            <Clock className="w-4 h-4 mr-1" />
-                            {daysRemaining}j
+                            <Clock className="w-4 h-4 mr-1" aria-hidden="true" />
+                            <span>{daysRemaining}j</span>
                           </div>
                         </div>
                         <div className={`flex items-center ${
@@ -174,8 +184,8 @@ export function DashboardPage() {
                           table.mortality <= 3 ? 'text-yellow-400' :
                           'text-red-400'
                         }`}>
-                          <AlertTriangle className="w-4 h-4 mr-1" />
-                          {table.mortality}% mortalité
+                          <AlertTriangle className="w-4 h-4 mr-1" aria-hidden="true" />
+                          <span>{table.mortality}% mortalité</span>
                         </div>
                       </div>
                     </div>
@@ -186,9 +196,9 @@ export function DashboardPage() {
           </div>
 
           {/* Colonne de droite: Bassins */}
-          <div className="space-y-4 md:space-y-6 mt-6 md:mt-0">
+          <div className="space-y-4 md:space-y-6 mt-6 md:mt-0" role="region" aria-labelledby="pools-heading">
             <div className="flex items-center justify-between">
-              <h3 className="text-base md:text-lg font-medium text-white">Santé des bassins</h3>
+              <h3 id="pools-heading" className="text-base md:text-lg font-medium text-white">Santé des bassins</h3>
               <div className="text-xs md:text-sm text-white/60">3 bassins actifs</div>
             </div>
             <div className="space-y-3">
@@ -202,6 +212,15 @@ export function DashboardPage() {
                   onHoverEnd={() => setHoveredPool(null)}
                   onClick={() => setSelectedPool(pool)}
                   whileHover={{ y: -4 }}
+                  role="button"
+                  aria-label={`Détails de ${pool.name}`}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      setSelectedPool(pool);
+                      e.preventDefault();
+                    }
+                  }}
                 >
                   {/* Effet de surbrillance */}
                   <motion.div
@@ -209,6 +228,7 @@ export function DashboardPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: hoveredPool === pool.name ? 1 : 0 }}
                     transition={{ duration: 0.2 }}
+                    aria-hidden="true"
                   />
 
                   {/* Effet d'eau */}
@@ -217,12 +237,13 @@ export function DashboardPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: hoveredPool === pool.name ? 1 : 0.5 }}
                     transition={{ duration: 0.2 }}
+                    aria-hidden="true"
                   />
 
                   <div className="relative z-10">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-3">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pool.color }} />
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pool.color }} role="presentation" />
                         <div>
                           <div className="text-sm md:text-base text-white">{pool.name}</div>
                           <div className="text-xs text-white/70">{pool.type}</div>
@@ -243,9 +264,9 @@ export function DashboardPage() {
                         pool.waterQuality.quality >= 95 ? 'bg-green-500/20 text-green-300' :
                         pool.waterQuality.quality >= 90 ? 'bg-yellow-500/20 text-yellow-300' :
                         'bg-red-500/20 text-red-300'
-                      }`}>
+                      }`} role="status" aria-label={`Qualité de l'eau: ${pool.waterQuality.quality}%`}>
                         <div className="flex items-center">
-                          <Droplets className="w-3 h-3 mr-1" />
+                          <Droplets className="w-3 h-3 mr-1" aria-hidden="true" />
                           {pool.waterQuality.quality}%
                         </div>
                       </div>
@@ -253,9 +274,9 @@ export function DashboardPage() {
                         pool.waterQuality.oxygen >= 90 ? 'bg-green-500/20 text-green-300' :
                         pool.waterQuality.oxygen >= 85 ? 'bg-yellow-500/20 text-yellow-300' :
                         'bg-red-500/20 text-red-300'
-                      }`}>
+                      }`} role="status" aria-label={`Oxygène: ${pool.waterQuality.oxygen}%`}>
                         <div className="flex items-center">
-                          <Shell className="w-3 h-3 mr-1" />
+                          <Shell className="w-3 h-3 mr-1" aria-hidden="true" />
                           {pool.waterQuality.oxygen}%
                         </div>
                       </div>
@@ -263,9 +284,9 @@ export function DashboardPage() {
                         pool.waterQuality.temperature <= 13 ? 'bg-green-500/20 text-green-300' :
                         pool.waterQuality.temperature <= 14 ? 'bg-yellow-500/20 text-yellow-300' :
                         'bg-red-500/20 text-red-300'
-                      }`}>
+                      }`} role="status" aria-label={`Température: ${pool.waterQuality.temperature}°C`}>
                         <div className="flex items-center">
-                          <ThermometerSun className="w-3 h-3 mr-1" />
+                          <ThermometerSun className="w-3 h-3 mr-1" aria-hidden="true" />
                           {pool.waterQuality.temperature}°C
                         </div>
                       </div>
@@ -273,12 +294,12 @@ export function DashboardPage() {
 
                     <div className="flex items-center justify-between text-sm">
                       <div className="flex items-center text-white/60">
-                        <Shell className="w-4 h-4 mr-1" />
-                        {pool.currentLoad} / {pool.capacity} kg
+                        <Shell className="w-4 h-4 mr-1" aria-hidden="true" />
+                        <span>{pool.currentLoad} / {pool.capacity} kg</span>
                       </div>
                       <div className="flex items-center text-white/60">
-                        <Waves className="w-4 h-4 mr-1" />
-                        {pool.type === 'Purification' ? '24h restantes' : 'Stockage long terme'}
+                        <Waves className="w-4 h-4 mr-1" aria-hidden="true" />
+                        <span>{pool.type === 'Purification' ? '24h restantes' : 'Stockage long terme'}</span>
                       </div>
                     </div>
                   </div>
@@ -290,30 +311,31 @@ export function DashboardPage() {
       </div>
 
       {/* Statistiques principales */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" role="group" aria-label="Statistiques principales">
         <ModernStatCard
-          icon={<Package size={24} className="text-brand-accent" />}
+          icon={<Package size={24} className="text-brand-accent" aria-hidden="true" />}
           label="Stock total"
           value="156,000"
+          unit="kg"
           trend={{ value: 12, positive: true }}
           color="primary"
         />
         <ModernStatCard
-          icon={<Calendar size={24} className="text-brand-accent" />}
+          icon={<Calendar size={24} className="text-brand-accent" aria-hidden="true" />}
           label="Récoltes prévues"
           value="15/06"
           unit="Table A1, A2"
           color="secondary"
         />
         <ModernStatCard
-          icon={<Clock size={24} className="text-brand-accent" />}
+          icon={<Clock size={24} className="text-brand-accent" aria-hidden="true" />}
           label="Dernier échantillonnage"
           value="19/02"
           unit="Table B1, B2"
           color="tertiary"
         />
         <ModernStatCard
-          icon={<AlertTriangle size={24} className="text-brand-accent" />}
+          icon={<AlertTriangle size={24} className="text-brand-accent" aria-hidden="true" />}
           label="Taux mortalité moyen"
           value="2.4"
           unit="%"
@@ -323,16 +345,16 @@ export function DashboardPage() {
       </div>
 
       {/* Alertes */}
-      <div className="glass-effect rounded-xl p-4 md:p-6">
+      <div className="glass-effect rounded-xl p-4 md:p-6" role="region" aria-labelledby="alerts-heading">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base md:text-lg font-medium text-white">Alertes récentes</h3>
+          <h3 id="alerts-heading" className="text-base md:text-lg font-medium text-white">Alertes récentes</h3>
           <div className="text-xs md:text-sm text-white/60">3 nouvelles alertes</div>
         </div>
         {/* ... */}
       </div>
 
       {/* Statistiques supplémentaires */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" role="group" aria-label="Statistiques supplémentaires">
         {/* ... */}
       </div>
 

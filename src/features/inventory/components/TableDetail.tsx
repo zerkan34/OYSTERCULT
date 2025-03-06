@@ -29,19 +29,23 @@ import * as XLSX from 'xlsx';
 interface TableCell {
   id: string;
   type: string;
-  ropeCount: number;
+  pochonCount: number;
   size: string;
   filled: boolean;
   fillOrder?: number;
-  harvestedRopes?: number;
-  status?: string;
-  lastUpdate?: string;
 }
 
 interface Table {
   id: string;
   name: string;
-  cells: TableCell[];
+  cells?: {
+    id: string;
+    filled: boolean;
+    fillOrder?: number;
+    type: string;
+    rowIndex: number;
+    columnIndex: number;
+  }[];
   status: string;
   lastUpdate: string;
   temperature?: number;
@@ -60,7 +64,7 @@ interface Table {
 }
 
 interface TableDetailProps {
-  table: Table;
+  table?: Table;
   onClose: () => void;
   onTableUpdate?: (tableId: string, updates: Partial<Table>) => void;
 }
@@ -74,8 +78,9 @@ interface CellModalProps {
 
 function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalProps) {
   const modalRef = useClickOutside(onClose);
+  
   const [type, setType] = useState(cell.type || '');
-  const [ropeCount, setRopeCount] = useState(cell.ropeCount || 0);
+  const [pochonCount, setPochonCount] = useState(cell.pochonCount || 0);
   const [size, setSize] = useState(cell.size || '');
   const [harvestedRopes, setHarvestedRopes] = useState(0);
   const [isEditing, setIsEditing] = useState(!cell.filled);
@@ -88,7 +93,7 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
       // Mode édition - mettre à jour les propriétés existantes
       data = {
         type,
-        ropeCount,
+        pochonCount,
         size,
         filled: true
       };
@@ -102,7 +107,7 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
       // Mode nouvelle production
       data = {
         type,
-        ropeCount,
+        pochonCount,
         size,
         filled: true
       };
@@ -173,11 +178,10 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
                     Naissain
                   </button>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {[
                     { value: 'triplo', label: 'Triploïde', color: 'bg-brand-burgundy' },
                     { value: 'diplo', label: 'Diploïde', color: 'bg-brand-primary' },
-                    { value: 'naturelle', label: 'Naturelle', color: 'bg-brand-tertiary' }
                   ].map((option) => (
                     <button
                       key={option.value}
@@ -198,21 +202,21 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
 
               <div>
                 <label className="block text-sm font-medium text-white mb-2">
-                  Nombre de cordes par perche
+                  Nombre de pochons par perche
                 </label>
                 <div className="relative">
                   <div className="flex items-center justify-between bg-white/5 rounded-lg p-4">
                     <button
                       type="button"
-                      onClick={() => setRopeCount(Math.max(0, ropeCount - 1))}
+                      onClick={() => setPochonCount(Math.max(0, pochonCount - 1))}
                       className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-lg text-white hover:bg-white/20 transition-colors"
                     >
                       -
                     </button>
-                    <span className="text-2xl font-bold text-white">{ropeCount}</span>
+                    <span className="text-2xl font-bold text-white">{pochonCount}</span>
                     <button
                       type="button"
-                      onClick={() => setRopeCount(ropeCount + 1)}
+                      onClick={() => setPochonCount(pochonCount + 1)}
                       className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-lg text-white hover:bg-white/20 transition-colors"
                     >
                       +
@@ -247,7 +251,7 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
             <>
               <div>
                 <label className="block text-sm font-medium text-white mb-2">
-                  Nombre de cordes récoltées
+                  Nombre de pochons récoltés
                 </label>
                 <div className="relative">
                   <div className="flex items-center justify-between bg-white/5 rounded-lg p-4">
@@ -261,14 +265,14 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
                     <span className="text-2xl font-bold text-white">{harvestedRopes}</span>
                     <button
                       type="button"
-                      onClick={() => setHarvestedRopes(Math.min(cell.ropeCount, harvestedRopes + 1))}
+                      onClick={() => setHarvestedRopes(Math.min(cell.pochonCount, harvestedRopes + 1))}
                       className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-lg text-white hover:bg-white/20 transition-colors"
                     >
                       +
                     </button>
                   </div>
                   <div className="mt-2 text-sm text-white/60 text-center">
-                    sur {cell.ropeCount} cordes au total
+                    sur {cell.pochonCount} pochons au total
                   </div>
                 </div>
               </div>
@@ -307,7 +311,7 @@ function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalP
 }
 
 interface TableDetailProps {
-  table: Table;
+  table?: Table;
   onClose: () => void;
   onTableUpdate?: (tableId: string, updates: Partial<Table>) => void;
 }
@@ -334,7 +338,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
 
   // États pour l'édition du nom de la table
   const [isEditingName, setIsEditingName] = useState(false);
-  const [editedTableNumber, setEditedTableNumber] = useState(table.tableNumber);
+  const [editedTableNumber, setEditedTableNumber] = useState(table?.tableNumber);
 
   // États pour la modale d'échantillonnage
   const [showSamplingModal, setShowSamplingModal] = useState(false);
@@ -361,16 +365,16 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
     console.log('Updating cell:', cellId, data);
     
     // Trouver l'index de la cellule à mettre à jour
-    const cellIndex = table.cells.findIndex((c: TableCell) => c.id === cellId);
+    const cellIndex = table?.cells?.findIndex((c: any) => c.id === cellId);
     if (cellIndex === -1) return;
 
     // Créer une copie des cellules pour la mise à jour
-    const updatedCells = [...table.cells];
+    const updatedCells = [...(table?.cells || [])];
     updatedCells[cellIndex] = { ...updatedCells[cellIndex], ...data };
 
     // Mettre à jour la table avec les nouvelles cellules
     if (onTableUpdate) {
-      onTableUpdate(table.id, { cells: updatedCells });
+      onTableUpdate(table?.id, { cells: updatedCells });
     }
   };
 
@@ -395,14 +399,14 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
   // Fonction pour mettre à jour le nom de la table
   const handleTableNumberUpdate = () => {
     if (onTableUpdate && editedTableNumber.trim() !== '') {
-      onTableUpdate(table.id, { tableNumber: editedTableNumber.trim() });
+      onTableUpdate(table?.id, { tableNumber: editedTableNumber.trim() });
     }
     setIsEditingName(false);
   };
 
   // Fonction pour annuler l'édition du nom de la table
   const cancelEditing = () => {
-    setEditedTableNumber(table.tableNumber);
+    setEditedTableNumber(table?.tableNumber);
     setIsEditingName(false);
   };
 
@@ -447,7 +451,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
     
     // Mettre à jour la table avec l'information du naissain si nécessaire
     if (onTableUpdate) {
-      onTableUpdate(table.id, { 
+      onTableUpdate(table?.id, { 
         naissainSource: naissainData.source,
         naissainBatchNumber: naissainData.batchNumber
       });
@@ -522,7 +526,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
         // Ajouter d'autres champs en fonction de la structure des données importées
       };
       
-      onTableUpdate(table.id, updates);
+      onTableUpdate(table?.id, updates);
     }
     
     setShowImportModal(false);
@@ -530,10 +534,67 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
     setImportPreview([]);
   };
 
+  // Pour assurer que les cellules se suivent sans espace vide
+  // et que la colonne gauche soit remplie avant la colonne droite
+  const sortedCells = table?.cells?.sort((a, b) => {
+    // Les cellules remplies d'abord, puis les vides
+    if (a.filled && !b.filled) return -1;
+    if (!a.filled && b.filled) return 1;
+    
+    // Si les deux sont remplies, on trie par colonne d'abord (gauche puis droite)
+    // Colonne gauche = index pair, colonne droite = index impair
+    const aIndex = table?.cells?.findIndex(c => c.id === a.id);
+    const bIndex = table?.cells?.findIndex(c => c.id === b.id);
+    
+    const aIsLeftColumn = aIndex % 2 === 0;
+    const bIsLeftColumn = bIndex % 2 === 0;
+    
+    if (aIsLeftColumn && !bIsLeftColumn) return -1;
+    if (!aIsLeftColumn && bIsLeftColumn) return 1;
+    
+    // Si même colonne, trier par position (de haut en bas)
+    const aRow = Math.floor(aIndex / 2);
+    const bRow = Math.floor(bIndex / 2);
+    
+    return aRow - bRow;
+  });
+
+  // Fonctions pour générer une couleur basée sur le type d'huître
+  const getCellColor = (type?: string) => {
+    switch (type) {
+      case 'triplo':
+        return 'bg-brand-burgundy';
+      case 'diplo':
+        return 'bg-brand-primary';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
+  const getCellTextColor = (type?: string) => {
+    switch (type) {
+      case 'triplo':
+      case 'diplo':
+        return 'text-white';
+      default:
+        return 'text-gray-200';
+    }
+  };
+
+  // Cette fonction met à jour la table et informe le parent
+  const updateTable = (updates: Partial<Table>) => {
+    if (table && onTableUpdate) {
+      onTableUpdate(table.id, updates);
+    }
+  };
+
   return (
     <div 
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
       onClick={handleBackdropClick}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="table-detail-title"
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
@@ -543,7 +604,12 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
         onClick={handleModalClick}
       >
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-white">{table?.name || 'Détails de la table'}</h3>
+          <h2 id="table-detail-title" className="text-xl font-bold text-white flex items-center">
+            Table {table?.name}
+            <div className="ml-2 text-white/60 text-sm">
+              {table?.tableNumber}
+            </div>
+          </h2>
           <button
             onClick={onClose}
             className="text-white/60 hover:text-white transition-colors"
@@ -561,7 +627,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                 Température
               </div>
               <div className="text-2xl font-bold text-white">
-                {table.temperature ? `${table.temperature}°C` : "Non disponible"}
+                {table?.temperature ? `${table.temperature}°C` : "Non disponible"}
               </div>
             </div>
 
@@ -571,7 +637,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                 Salinité
               </div>
               <div className="text-2xl font-bold text-white">
-                {table.salinity}g/L
+                {table?.salinity}g/L
               </div>
             </div>
 
@@ -581,58 +647,97 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                 Mortalité
               </div>
               <div className="text-2xl font-bold text-white">
-                {table.mortalityRate}%
+                {table?.mortalityRate}%
               </div>
             </div>
           </div>
 
           {/* Détails du lot */}
-          {table?.currentBatch && (
-            <div className="glass-effect rounded-lg p-4">
-              <div className="flex items-center text-white/80 mb-4">
-                <Shell size={20} className="mr-2 text-brand-burgundy" />
-                Lot en cours
+          {table?.cells?.some(cell => cell.filled) ? (
+            <div>
+              <h3 className="text-lg font-bold text-white mb-2">Lot en cours</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-white/5 rounded-lg p-3">
+                  <div className="text-sm text-white/60 mb-1">
+                    Source de naissain
+                  </div>
+                  <div className="text-white font-medium">
+                    {table?.naissainSource || "Satmar"}
+                  </div>
+                </div>
+                
+                <div className="bg-white/5 rounded-lg p-3">
+                  <div className="text-sm text-white/60 mb-1">
+                    Numéro de lot
+                  </div>
+                  <div className="text-white font-medium">
+                    {table?.naissainBatchNumber || "SAT-2024-0342"}
+                  </div>
+                </div>
+                
+                <div className="bg-white/5 rounded-lg p-3">
+                  <div className="text-sm text-white/60 mb-1">
+                    Calibre
+                  </div>
+                  <div className="text-white font-medium">
+                    {table?.currentBatch?.size || "T3"}
+                  </div>
+                </div>
+                
+                <div className="bg-white/5 rounded-lg p-3">
+                  <div className="text-sm text-white/60 mb-1">
+                    Quantité
+                  </div>
+                  <div className="text-white font-medium">
+                    Reste 1000 pochons
+                  </div>
+                </div>
               </div>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-white/60">Calibre</span>
-                  <span className="text-white font-medium">N°{table.currentBatch.size}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-white/60">Quantité</span>
-                  <span className="text-white font-medium">{table.currentBatch.quantity} unités</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-white/60">Date de récolte estimée</span>
-                  <span className="text-white font-medium">
-                    {format(new Date(table.currentBatch.estimatedHarvestDate), 'PP', { locale: fr })}
-                  </span>
-                </div>
+            </div>
+          ) : (
+            <div className="py-4 text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-3">
+                <Shell size={24} className="text-white/60" />
               </div>
+              <h3 className="text-lg font-bold text-white mb-1">Table vide</h3>
+              <p className="text-white/60 text-sm">
+                Cette table n'a pas de lot d'huîtres en cours.
+              </p>
             </div>
           )}
 
           {/* Échantillonnage */}
-          <div className="glass-effect rounded-lg p-4">
-            <div className="flex items-center text-white/80 mb-4">
-              <Calendar size={20} className="mr-2 text-brand-tertiary" />
-              Échantillonnage
-            </div>
-            <div className="space-y-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-white/60">Dernier échantillonnage</span>
-                <span className="text-white">
-                  {format(new Date(table.lastCheck), 'PP', { locale: fr })}
-                </span>
+          {table?.cells?.some(cell => cell.filled) && (
+            <div className="glass-effect rounded-lg p-4">
+              <div className="flex items-center text-white/80 mb-4">
+                <Clock size={20} className="mr-2 text-brand-tertiary" />
+                Échantillonnage
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-white/60">Prochain échantillonnage</span>
-                <span className="text-white">
-                  {format(new Date(table.nextCheck), 'PP', { locale: fr })}
-                </span>
+              <div className="space-y-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-white/60">Dernier échantillonnage</span>
+                  <span className="text-white">
+                    {format(new Date(table.lastCheck), 'PP', { locale: fr })}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-white/60">Prochain échantillonnage</span>
+                  <span className="text-white">
+                    {format(new Date(table.nextCheck), 'PP', { locale: fr })}
+                  </span>
+                </div>
+                <div className="pt-2 border-t border-white/10">
+                  <div className="flex items-center text-brand-burgundy mb-2">
+                    <AlertCircle size={20} className="mr-2" />
+                    <span className="font-medium">Taux de mortalité estimé</span>
+                  </div>
+                  <div className="text-lg font-medium text-white">
+                    {table.mortalityRate}%
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Actions */}
           <div className="flex justify-end space-x-4 pt-4">
@@ -710,12 +815,6 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                   label: 'Diploïdes', 
                   color: 'bg-brand-primary',
                   description: 'Huîtres naturelles améliorées'
-                },
-                { 
-                  type: 'naturelle', 
-                  label: 'Naturelles', 
-                  color: 'bg-brand-tertiary',
-                  description: 'Huîtres sauvages traditionnelles'
                 }
               ].map((type) => (
                 <div key={type.type} className="flex items-center space-x-3">
@@ -739,59 +838,126 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
         className="relative w-[400px] h-[800px] bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 rounded-lg overflow-hidden border border-white/10"
       >
         <div className="relative h-full grid grid-cols-2 grid-rows-10 gap-1 p-8 transform rotate-0">
-          {table.cells.map((cell: TableCell, index: number) => (
-            <motion.button
-              key={cell.id}
-              onClick={() => setSelectedCell(cell)}
-              className={`relative rounded-md transition-all duration-300 group ${
-                cell.filled
-                  ? `${
-                      cell.type === 'triplo' ? 'bg-brand-burgundy shadow-neon' :
-                      cell.type === 'diplo' ? 'bg-brand-primary shadow-neon' :
-                      'bg-brand-tertiary shadow-neon'
-                    }`
-                  : 'bg-white/5 hover:bg-white/10'
-              }`}
-              variants={{
-                initial: { opacity: 0.6, scale: 0.95 },
-                animate: (custom: number) => ({
-                  opacity: [0.6, 1, 0.6],
-                  scale: [0.95, 1, 0.95],
-                  transition: {
-                    duration: 3,
-                    repeat: Infinity,
-                    delay: custom * 0.1,
-                    ease: "easeInOut"
-                  }
-                })
-              }}
-              initial="initial"
-              animate="animate"
-              custom={index}
-            >
-              {/* Overlay avec contour blanc et ombre */}
-              <div className="absolute inset-0 rounded-md border-2 border-white shadow-[0_0_8px_rgba(255,255,255,0.8)]">
-                {/* Affichage du numéro uniquement pour les cellules remplies */}
-                {cell.filled && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xs text-white font-bold">{cell.fillOrder || index + 1}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Informations de la cellule (seulement si remplie) */}
-              {cell.filled && (
-                <div className="absolute bottom-1 right-1 text-[8px] text-white/60">
-                  {cell.ropeCount}
-                </div>
-              )}
+          {(() => {
+            // Si la table a des cellules définies, utiliser ces données
+            if (table?.cells && table.cells.length > 0) {
+              // Trier les cellules par ligne puis par colonne pour l'affichage
+              const sortedCells = [...table.cells].sort((a, b) => {
+                if (a.rowIndex !== b.rowIndex) {
+                  return a.rowIndex - b.rowIndex;
+                }
+                return a.columnIndex - b.columnIndex;
+              });
               
-              {/* Icône d'édition qui apparaît au survol */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded-md transition-opacity">
-                <Edit size={16} className="text-white" />
-              </div>
-            </motion.button>
-          ))}
+              // Afficher les cellules triées
+              return sortedCells.map((cell, index) => {
+                const cellColor = getCellColor(cell.type);
+                const textColor = getCellTextColor(cell.type);
+                
+                return (
+                  <motion.button
+                    key={index}
+                    onClick={() => setSelectedCell({
+                      id: cell.id,
+                      type: cell.type,
+                      pochonCount: 20,
+                      size: 'T3',
+                      filled: cell.filled,
+                      fillOrder: cell.filled ? cell.fillOrder : undefined
+                    })}
+                    className={`relative rounded-md transition-all duration-300 group ${
+                      cell.filled ? `${cellColor} shadow-neon animate-pulse` : 'bg-white/5 hover:bg-white/10'
+                    }`}
+                  >
+                    {/* Overlay avec contour blanc et ombre */}
+                    <div className="absolute inset-0 rounded-md border border-white/20">
+                      {/* Affichage du numéro uniquement pour les cellules remplies */}
+                      {cell.filled && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className={`text-xs ${textColor} font-bold`}>{cell.fillOrder}</span>
+                        </div>
+                      )}
+                    </div>
+                  </motion.button>
+                );
+              });
+            }
+            
+            // Sinon, utiliser les données par défaut
+            // Créer un tableau pour chaque colonne
+            const leftCells = Array.from({ length: 10 }).map((_, idx) => ({
+              id: `left-${idx}`,
+              column: 0,
+              row: idx,
+              type: 'triplo',
+              // Les premières cellules sont toujours remplies (jusqu'à 6)
+              filled: idx < 6
+            }));
+            
+            const rightCells = Array.from({ length: 10 }).map((_, idx) => ({
+              id: `right-${idx}`,
+              column: 1,
+              row: idx,
+              type: 'diplo',
+              // Les premières cellules sont toujours remplies (jusqu'à 6)
+              filled: idx < 6
+            }));
+            
+            // Attribuer les numéros d'ordre consécutifs d'abord pour la colonne gauche, puis pour la droite
+            let counter = 1;
+            
+            leftCells.forEach(cell => {
+              if (cell.filled) {
+                cell.fillOrder = counter++;
+              }
+            });
+            
+            rightCells.forEach(cell => {
+              if (cell.filled) {
+                cell.fillOrder = counter++;
+              }
+            });
+            
+            // Recombiner en alternant gauche/droite pour l'affichage
+            const combinedCells = [];
+            for (let i = 0; i < Math.max(leftCells.length, rightCells.length); i++) {
+              if (i < leftCells.length) combinedCells.push(leftCells[i]);
+              if (i < rightCells.length) combinedCells.push(rightCells[i]);
+            }
+            
+            // Renvoyer le tableau JSX des cellules
+            return combinedCells.map((cell, index) => {
+              const cellColor = getCellColor(cell.type);
+              const textColor = getCellTextColor(cell.type);
+              
+              return (
+                <motion.button
+                  key={index}
+                  onClick={() => setSelectedCell({
+                    id: cell.id,
+                    type: cell.type,
+                    pochonCount: 20,
+                    size: 'T3',
+                    filled: cell.filled,
+                    fillOrder: cell.filled ? cell.fillOrder : undefined
+                  })}
+                  className={`relative rounded-md transition-all duration-300 group ${
+                    cell.filled ? `${cellColor} shadow-neon animate-pulse` : 'bg-white/5 hover:bg-white/10'
+                  }`}
+                >
+                  {/* Overlay avec contour blanc et ombre */}
+                  <div className="absolute inset-0 rounded-md border border-white/20">
+                    {/* Affichage du numéro uniquement pour les cellules remplies */}
+                    {cell.filled && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className={`text-xs ${textColor} font-bold`}>{cell.fillOrder}</span>
+                      </div>
+                    )}
+                  </div>
+                </motion.button>
+              );
+            });
+          })()}
         </div>
       </motion.div>
 
@@ -805,7 +971,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-white">{table.name}</h2>
+              <h2 className="text-xl font-bold text-white">{table?.name}</h2>
               {isEditingName ? (
                 <div className="flex items-center mt-1 space-x-2">
                   <input
@@ -832,7 +998,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                 </div>
               ) : (
                 <div className="flex items-center">
-                  <p className="text-white/60">{table.tableNumber}</p>
+                  <p className="text-white/60">{table?.tableNumber}</p>
                   <button
                     onClick={() => setIsEditingName(true)}
                     className="ml-2 p-1 hover:bg-white/10 rounded-lg transition-colors"
@@ -858,7 +1024,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                 Température
               </div>
               <div className="text-2xl font-bold text-white">
-                {table.temperature}°C
+                {table?.temperature}°C
               </div>
             </div>
 
@@ -868,47 +1034,49 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                 Salinité
               </div>
               <div className="text-2xl font-bold text-white">
-                {table.salinity}g/L
+                {table?.salinity}g/L
               </div>
             </div>
           </div>
 
-          <div className="bg-white/5 rounded-lg p-4">
-            <div className="flex items-center text-white/80 mb-4">
-              <Clock size={20} className="mr-2 text-brand-tertiary" />
-              Échantillonnage
-            </div>
-            <div className="space-y-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-white/60">Dernier échantillonnage</span>
-                <span className="text-white">
-                  {format(new Date(table.lastCheck), 'PP', { locale: fr })}
-                </span>
+          {table?.cells?.some(cell => cell.filled) && (
+            <div className="bg-white/5 rounded-lg p-4">
+              <div className="flex items-center text-white/80 mb-4">
+                <Clock size={20} className="mr-2 text-brand-tertiary" />
+                Échantillonnage
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-white/60">Prochain échantillonnage</span>
-                <span className="text-white">
-                  {format(new Date(table.nextCheck), 'PP', { locale: fr })}
-                </span>
-              </div>
-              <div className="pt-2 border-t border-white/10">
-                <div className="flex justify-between items-center">
-                  <span className="text-white/60">Taux de mortalité estimé</span>
-                  <span className={`text-lg font-medium ${
-                    table.mortalityRate > 3
-                      ? 'text-red-400'
-                      : table.mortalityRate > 2
-                      ? 'text-yellow-400'
-                      : 'text-green-400'
-                  }`}>
-                    {table.mortalityRate}%
+              <div className="space-y-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-white/60">Dernier échantillonnage</span>
+                  <span className="text-white">
+                    {format(new Date(table.lastCheck), 'PP', { locale: fr })}
                   </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-white/60">Prochain échantillonnage</span>
+                  <span className="text-white">
+                    {format(new Date(table.nextCheck), 'PP', { locale: fr })}
+                  </span>
+                </div>
+                <div className="pt-2 border-t border-white/10">
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/60">Taux de mortalité estimé</span>
+                    <span className={`text-lg font-medium ${
+                      table.mortalityRate > 3
+                        ? 'text-red-400'
+                        : table.mortalityRate > 2
+                        ? 'text-yellow-400'
+                        : 'text-green-400'
+                    }`}>
+                      {table.mortalityRate}%
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
-          {table.currentBatch && (
+          {table?.cells?.some(cell => cell.filled) ? (
             <div className="bg-white/5 rounded-lg p-4">
               <div className="flex items-center text-white/80 mb-4">
                 <Shell size={20} className="mr-2 text-brand-burgundy" />
@@ -918,24 +1086,40 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                 <div className="flex justify-between items-center">
                   <span className="text-white/60">Calibre</span>
                   <span className="text-white font-medium">
-                    N°{table.currentBatch.size}
+                    N°{table?.currentBatch?.size}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-white/60">Quantité</span>
                   <span className="text-white font-medium">
-                    {table.currentBatch.quantity} unités
+                    Reste 1000 pochons
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-white/60">Récolte prévue</span>
                   <span className="text-white font-medium">
-                    {table.currentBatch?.estimatedHarvestDate 
+                    {table?.currentBatch?.estimatedHarvestDate 
                       ? format(new Date(table.currentBatch.estimatedHarvestDate), 'PP', { locale: fr })
                       : 'Non définie'}
                   </span>
                 </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-white/60">Source du naissain</span>
+                  <span className="text-white font-medium">
+                    {table?.naissainSource}
+                  </span>
+                </div>
               </div>
+            </div>
+          ) : (
+            <div className="py-4 text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-3">
+                <Shell size={24} className="text-white/60" />
+              </div>
+              <h3 className="text-lg font-bold text-white mb-1">Table vide</h3>
+              <p className="text-white/60 text-sm">
+                Cette table n'a pas de lot d'huîtres en cours.
+              </p>
             </div>
           )}
           
@@ -1355,7 +1539,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-white/60">Quantité</span>
-                        <span className="text-white font-medium">5000 unités</span>
+                        <span className="text-white font-medium">Reste 1000 pochons</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-white/60">Date de récolte estimée</span>
@@ -1540,7 +1724,7 @@ export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps)
                       ? 'bg-white/20 cursor-not-allowed' 
                       : 'bg-brand-burgundy hover:bg-brand-burgundy/90'}`}
                   >
-                    <FileSpreadsheet size={18} className="mr-2" />
+                    <FileSpreadsheet size={18} />
                     Importer les données
                   </button>
                 </div>

@@ -294,7 +294,7 @@ export function LocationConfig() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-white mb-1">
-                    Nombre d'huitres par cordes
+                    Nombre d'huîtres par pochons
                   </label>
                   <input
                     type="number"

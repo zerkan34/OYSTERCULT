@@ -1,0 +1,445 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ table is defined ? 'Modifier' : 'Créer' }} une table - OYSTERCULT{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .form-header {
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+            background-color: white;
+        }
+        
+        .form-input:focus {
+            outline: 2px solid #000;
+            outline-offset: 2px;
+            border-color: #4b5563;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+            background-color: white;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+        
+        .form-select:focus {
+            outline: 2px solid #000;
+            outline-offset: 2px;
+            border-color: #4b5563;
+        }
+        
+        .form-hint {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        
+        .form-error {
+            font-size: 0.875rem;
+            color: #dc2626;
+            margin-top: 0.25rem;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .form-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .position-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-left: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .radio-input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .radio-checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 1.25rem;
+            width: 1.25rem;
+            background-color: #f3f4f6;
+            border-radius: 50%;
+            border: 2px solid #9ca3af;
+            transition: all 0.2s ease;
+            -webkit-transition: all 0.2s ease;
+            -moz-transition: all 0.2s ease;
+        }
+        
+        .radio-option:hover .radio-checkmark {
+            background-color: #e5e7eb;
+        }
+        
+        .radio-input:checked ~ .radio-checkmark {
+            background-color: white;
+        }
+        
+        .radio-input:focus ~ .radio-checkmark {
+            outline: 2px solid #000;
+            outline-offset: 2px;
+        }
+        
+        .radio-checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        
+        .radio-input:checked ~ .radio-checkmark:after {
+            display: block;
+        }
+        
+        .radio-option .radio-checkmark:after {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0.625rem;
+            height: 0.625rem;
+            border-radius: 50%;
+        }
+        
+        .radio-triploid .radio-input:checked ~ .radio-checkmark {
+            border-color: #8c1a39; /* Bordeaux pour triploïdes */
+        }
+        
+        .radio-triploid .radio-checkmark:after {
+            background-color: #8c1a39; /* Bordeaux pour triploïdes */
+        }
+        
+        .radio-diploid .radio-input:checked ~ .radio-checkmark {
+            border-color: #2563eb; /* Bleu pour diploïdes */
+        }
+        
+        .radio-diploid .radio-checkmark:after {
+            background-color: #2563eb; /* Bleu pour diploïdes */
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            -webkit-transition: all 0.2s;
+            -moz-transition: all 0.2s;
+        }
+        
+        .btn:hover, .btn:focus {
+            opacity: 0.9;
+            outline: 2px solid #000;
+            outline-offset: 2px;
+        }
+        
+        .btn svg {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: #10b981;
+            color: white;
+            border: none;
+        }
+        
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+            border: none;
+        }
+        
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 640px) {
+            .position-grid,
+            .dimension-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="form-container p-6">
+        <div class="form-header">
+            <h1 class="text-3xl font-bold">{{ table is defined ? 'Modifier' : 'Créer' }} une table</h1>
+        </div>
+        
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        
+        {% if form_errors(form) %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+                <p class="font-bold">Des erreurs sont présentes dans le formulaire</p>
+                <ul class="mt-2">
+                    {{ form_errors(form) }}
+                </ul>
+            </div>
+        {% endif %}
+        
+        <div class="form-section">
+            <h2 class="form-section-title">Informations générales</h2>
+            
+            <div class="form-group">
+                {{ form_label(form.name, 'Nom de la table', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.name, {'attr': {'class': 'form-input', 'placeholder': 'Ex: Table Nord-Est 1'}}) }}
+                {% if form_errors(form.name) %}
+                    <div class="form-error">{{ form_errors(form.name) }}</div>
+                {% endif %}
+                <div class="form-hint">Donnez un nom descriptif pour identifier facilement cette table</div>
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(form.type, 'Type d\'huîtres', {'label_attr': {'class': 'form-label'}}) }}
+                
+                <div class="radio-group" role="radiogroup" aria-labelledby="table-type-label">
+                    <label class="radio-option radio-triploid">
+                        <input type="radio" name="{{ form.type.vars.full_name }}" value="Plates" class="radio-input" {% if table is defined and table.type == 'Plates' %}checked{% endif %} aria-describedby="triploid-hint">
+                        <span class="radio-checkmark"></span>
+                        Triploïdes (Plates)
+                    </label>
+                    
+                    <label class="radio-option radio-diploid">
+                        <input type="radio" name="{{ form.type.vars.full_name }}" value="Creuses" class="radio-input" {% if table is defined and table.type == 'Creuses' %}checked{% endif %} aria-describedby="diploid-hint">
+                        <span class="radio-checkmark"></span>
+                        Diploïdes (Creuses)
+                    </label>
+                </div>
+                
+                <div id="triploid-hint" class="form-hint mt-2">Les huîtres triploïdes (Plates) sont représentées en bordeaux</div>
+                <div id="diploid-hint" class="form-hint">Les huîtres diploïdes (Creuses) sont représentées en bleu</div>
+                
+                {% if form_errors(form.type) %}
+                    <div class="form-error">{{ form_errors(form.type) }}</div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h2 class="form-section-title">Position</h2>
+            <p class="mb-4">Positionnez la table sur la vue satellite</p>
+            
+            <div class="position-grid">
+                <div class="form-group">
+                    {{ form_label(form.posX, 'Position X', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.posX, {'attr': {'class': 'form-input', 'min': '1'}}) }}
+                    {% if form_errors(form.posX) %}
+                        <div class="form-error">{{ form_errors(form.posX) }}</div>
+                    {% endif %}
+                    <div class="form-hint">1 = gauche (triploïdes), 2 = droite (diploïdes)</div>
+                </div>
+                
+                <div class="form-group">
+                    {{ form_label(form.posY, 'Position Y', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.posY, {'attr': {'class': 'form-input', 'min': '1'}}) }}
+                    {% if form_errors(form.posY) %}
+                        <div class="form-error">{{ form_errors(form.posY) }}</div>
+                    {% endif %}
+                    <div class="form-hint">Position de haut en bas (1 = haut)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h2 class="form-section-title">Dimensions</h2>
+            <p class="mb-4">Définissez la taille de la table (nombre de cellules)</p>
+            
+            <div class="dimension-grid">
+                <div class="form-group">
+                    {{ form_label(form.rows, 'Nombre de lignes', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.rows, {'attr': {'class': 'form-input', 'min': '1', 'max': '20'}}) }}
+                    {% if form_errors(form.rows) %}
+                        <div class="form-error">{{ form_errors(form.rows) }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form_label(form.columns, 'Nombre de colonnes', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.columns, {'attr': {'class': 'form-input', 'min': '1', 'max': '20'}}) }}
+                    {% if form_errors(form.columns) %}
+                        <div class="form-error">{{ form_errors(form.columns) }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-hint mt-2">
+                <p><strong>Attention :</strong> Modifier les dimensions d'une table existante peut entraîner la réinitialisation des cellules.</p>
+                <p>Les cellules seront numérotées séquentiellement de gauche à droite et de haut en bas.</p>
+                <p>Selon le standard, les 6 premières cellules (60%) de chaque table seront automatiquement remplies.</p>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{{ path('app_table_index') }}" class="btn btn-secondary" aria-label="Annuler et retourner à la liste des tables">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+                Annuler
+            </a>
+            
+            {% if table is defined %}
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" aria-label="Supprimer la table {{ table.name }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    Supprimer
+                </button>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-primary" aria-label="{{ table is defined ? 'Enregistrer les modifications' : 'Créer la table' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                {{ table is defined ? 'Enregistrer' : 'Créer' }}
+            </button>
+        </div>
+        
+        {{ form_end(form) }}
+        
+        {% if table is defined %}
+            <!-- Modal de confirmation de suppression -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Êtes-vous sûr de vouloir supprimer la table "{{ table.name }}" ?</p>
+                            <p class="text-danger"><strong>Attention :</strong> Cette action est irréversible et supprimera également toutes les cellules associées.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                            <form action="{{ path('app_table_delete', {'id': table.id}) }}" method="post">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ table.id) }}">
+                                <button type="submit" class="btn btn-danger">Supprimer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeRadios = document.querySelectorAll('input[name="{{ form.type.vars.full_name }}"]');
+            const posXInput = document.querySelector('input[name="{{ form.posX.vars.full_name }}"]');
+            
+            // Mettre à jour la position X en fonction du type d'huîtres sélectionné
+            typeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'Plates') { // Triploïdes
+                        posXInput.value = '1'; // Colonne de gauche
+                    } else if (this.value === 'Creuses') { // Diploïdes
+                        posXInput.value = '2'; // Colonne de droite
+                    }
+                });
+            });
+            
+            // Validation personnalisée pour s'assurer que posX est cohérent avec le type
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                const selectedType = document.querySelector('input[name="{{ form.type.vars.full_name }}"]:checked').value;
+                const posXValue = parseInt(posXInput.value);
+                
+                if ((selectedType === 'Plates' && posXValue !== 1) || (selectedType === 'Creuses' && posXValue !== 2)) {
+                    e.preventDefault();
+                    alert('Attention: La position X doit être cohérente avec le type d\'huîtres:\n- Position 1 (gauche) pour les Triploïdes (Plates)\n- Position 2 (droite) pour les Diploïdes (Creuses)');
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -35,6 +35,7 @@ interface Table {
   cells: {
     id: string;
     filled: boolean;
+    fillOrder?: number;
     type?: 'triplo' | 'diplo' | 'naturelle';
   }[];
   currentBatch?: {
@@ -51,146 +52,167 @@ interface OysterTableMapProps {
   onTableSelect: (table: Table) => void;
 }
 
-const mockTables: Table[] = [
-  {
-    id: '1',
-    name: 'Bouzigues',
-    tableNumber: 'T-1234',
-    position: { x: 50, y: 100 },
-    size: { width: 80, height: 200 },
-    status: 'optimal',
-    temperature: 12.5,
-    salinity: 35,
-    lastCheck: '2025-02-19',
-    nextCheck: '2025-02-26',
-    mortalityRate: 2.5,
-    cells: Array(20).fill(null).map((_, i) => ({
-      id: `b1-cell-${i}`,
-      filled: Math.random() > 0.3,
-      type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-    })),
-    currentBatch: {
-      size: '3',
-      quantity: 5000,
-      estimatedHarvestDate: '2025-06-15'
-    }
-  },
-  {
-    id: '2',
-    name: 'Bouzigues',
-    tableNumber: 'T-1235',
-    position: { x: 150, y: 100 },
-    size: { width: 80, height: 200 },
-    status: 'optimal',
-    temperature: 12.8,
-    salinity: 34,
-    lastCheck: '2025-02-19',
-    nextCheck: '2025-02-26',
-    mortalityRate: 1.8,
-    cells: Array(20).fill(null).map((_, i) => ({
-      id: `b2-cell-${i}`,
-      filled: Math.random() > 0.3,
-      type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-    })),
-    currentBatch: {
-      size: '2',
-      quantity: 4000,
-      estimatedHarvestDate: '2025-06-20'
-    }
-  },
-  {
-    id: '3',
-    name: 'Mèze',
-    tableNumber: 'T-2234',
-    position: { x: 300, y: 250 },
-    size: { width: 80, height: 200 },
-    status: 'warning',
-    temperature: 13.2,
-    salinity: 33,
-    lastCheck: '2025-02-18',
-    nextCheck: '2025-02-25',
-    mortalityRate: 4.2,
-    cells: Array(20).fill(null).map((_, i) => ({
-      id: `m1-cell-${i}`,
-      filled: Math.random() > 0.3,
-      type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-    })),
-    currentBatch: {
-      size: '3',
-      quantity: 6000,
-      estimatedHarvestDate: '2025-07-01'
-    }
-  },
-  {
-    id: '4',
-    name: 'Mèze',
-    tableNumber: 'T-2235',
-    position: { x: 400, y: 250 },
-    size: { width: 80, height: 200 },
-    status: 'warning',
-    temperature: 13.0,
-    salinity: 33,
-    lastCheck: '2025-02-18',
-    nextCheck: '2025-02-25',
-    mortalityRate: 3.7,
-    cells: Array(20).fill(null).map((_, i) => ({
-      id: `m2-cell-${i}`,
-      filled: Math.random() > 0.3,
-      type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-    })),
-    currentBatch: {
-      size: '4',
-      quantity: 3500,
-      estimatedHarvestDate: '2025-07-05'
-    }
-  },
-  {
-    id: '5',
-    name: 'Marseillan',
-    tableNumber: 'T-3234',
-    position: { x: 550, y: 400 },
-    size: { width: 80, height: 200 },
-    status: 'optimal',
-    temperature: 12.3,
-    salinity: 35,
-    lastCheck: '2025-02-19',
-    nextCheck: '2025-02-26',
-    mortalityRate: 1.5,
-    cells: Array(20).fill(null).map((_, i) => ({
-      id: `ma1-cell-${i}`,
-      filled: Math.random() > 0.3,
-      type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-    })),
-    currentBatch: {
-      size: '3',
-      quantity: 5500,
-      estimatedHarvestDate: '2025-06-25'
-    }
-  },
-  {
-    id: '6',
-    name: 'Marseillan',
-    tableNumber: 'T-3235',
-    position: { x: 650, y: 400 },
-    size: { width: 80, height: 200 },
-    status: 'optimal',
-    temperature: 12.4,
-    salinity: 35,
-    lastCheck: '2025-02-19',
-    nextCheck: '2025-02-26',
-    mortalityRate: 1.9,
-    cells: Array(20).fill(null).map((_, i) => ({
-      id: `ma2-cell-${i}`,
-      filled: Math.random() > 0.3,
-      type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-    })),
-    currentBatch: {
-      size: '2',
-      quantity: 4800,
-      estimatedHarvestDate: '2025-06-30'
-    }
-  }
-];
+const fakeData = {
+  tables: [
+    {
+      id: 'table1',
+      position: {
+        x: 50,
+        y: 100,
+      },
+      name: 'B-1',
+      size: '310x80',
+      status: 'ok',
+      cells: (() => {
+        // Créer un tableau de cellules temporaires
+        const tempCells = Array(20).fill(null).map((_, i) => {
+          const columnIndex = i % 2;
+          const rowIndex = Math.floor(i / 2);
+          // Remplir seulement les 6 premières cellules de chaque colonne (60%)
+          const isFilled = rowIndex < 6;
+          
+          return {
+            id: `b1-cell-${i}`,
+            columnIndex,
+            rowIndex,
+            filled: isFilled,
+            type: columnIndex === 0 ? 'triplo' : 'diplo'
+          };
+        });
+  
+        // Trier les cellules par colonne, puis réorganiser l'ordre de remplissage
+        const leftCells = tempCells.filter(cell => cell.columnIndex === 0).sort((a, b) => a.rowIndex - b.rowIndex);
+        const rightCells = tempCells.filter(cell => cell.columnIndex === 1).sort((a, b) => a.rowIndex - b.rowIndex);
+        
+        // Réassigner les numéros de remplissage pour éviter les espaces vides
+        let leftCounter = 1;
+        let rightCounter = 1;
+        
+        leftCells.forEach(cell => {
+          if (cell.filled) {
+            cell.fillOrder = leftCounter++;
+          }
+        });
+        
+        rightCells.forEach(cell => {
+          if (cell.filled) {
+            cell.fillOrder = rightCounter++;
+          }
+        });
+        
+        // Recombiner les cellules dans l'ordre original
+        const finalCells = Array(20).fill(null);
+        for (let i = 0; i < 20; i++) {
+          const columnIndex = i % 2;
+          const rowIndex = Math.floor(i / 2);
+          
+          if (columnIndex === 0) {
+            finalCells[i] = {
+              id: leftCells[rowIndex].id,
+              filled: leftCells[rowIndex].filled,
+              fillOrder: leftCells[rowIndex].fillOrder,
+              type: leftCells[rowIndex].type
+            };
+          } else {
+            finalCells[i] = {
+              id: rightCells[rowIndex].id,
+              filled: rightCells[rowIndex].filled,
+              fillOrder: rightCells[rowIndex].fillOrder,
+              type: rightCells[rowIndex].type
+            };
+          }
+        }
+        
+        return finalCells;
+      })(),
+      currentBatch: {
+        size: '3',
+        quantity: 300,
+        mortalityRate: 2.5,
+        type: 'triplo',
+      },
+    },
+    {
+      id: 'table2',
+      position: {
+        x: 270,
+        y: 100,
+      },
+      name: 'B-2',
+      size: '310x80',
+      status: 'warning',
+      cells: (() => {
+        // Créer un tableau de cellules temporaires
+        const tempCells = Array(20).fill(null).map((_, i) => {
+          const columnIndex = i % 2;
+          const rowIndex = Math.floor(i / 2);
+          // Remplir seulement les 6 premières cellules de chaque colonne (60%)
+          const isFilled = rowIndex < 6;
+          
+          return {
+            id: `b2-cell-${i}`,
+            columnIndex,
+            rowIndex,
+            filled: isFilled,
+            type: columnIndex === 0 ? 'triplo' : 'diplo'
+          };
+        });
+  
+        // Trier les cellules par colonne, puis réorganiser l'ordre de remplissage
+        const leftCells = tempCells.filter(cell => cell.columnIndex === 0).sort((a, b) => a.rowIndex - b.rowIndex);
+        const rightCells = tempCells.filter(cell => cell.columnIndex === 1).sort((a, b) => a.rowIndex - b.rowIndex);
+        
+        // Réassigner les numéros de remplissage pour éviter les espaces vides
+        let leftCounter = 1;
+        let rightCounter = 1;
+        
+        leftCells.forEach(cell => {
+          if (cell.filled) {
+            cell.fillOrder = leftCounter++;
+          }
+        });
+        
+        rightCells.forEach(cell => {
+          if (cell.filled) {
+            cell.fillOrder = rightCounter++;
+          }
+        });
+        
+        // Recombiner les cellules dans l'ordre original
+        const finalCells = Array(20).fill(null);
+        for (let i = 0; i < 20; i++) {
+          const columnIndex = i % 2;
+          const rowIndex = Math.floor(i / 2);
+          
+          if (columnIndex === 0) {
+            finalCells[i] = {
+              id: leftCells[rowIndex].id,
+              filled: leftCells[rowIndex].filled,
+              fillOrder: leftCells[rowIndex].fillOrder,
+              type: leftCells[rowIndex].type
+            };
+          } else {
+            finalCells[i] = {
+              id: rightCells[rowIndex].id,
+              filled: rightCells[rowIndex].filled,
+              fillOrder: rightCells[rowIndex].fillOrder,
+              type: rightCells[rowIndex].type
+            };
+          }
+        }
+        
+        return finalCells;
+      })(),
+      currentBatch: {
+        size: '2',
+        quantity: 300,
+        mortalityRate: 1.8,
+        type: 'diplo',
+      },
+    },
+    // Autres tables...
+  ],
+};
 
 export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
@@ -318,7 +340,7 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
             </div>
 
             <div className="relative h-full">
-              {mockTables.map((table) => (
+              {fakeData.tables.map((table) => (
                 <motion.div
                   key={table.id}
                   className="absolute"
@@ -342,7 +364,7 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
                   }}
                 >
                   <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 glass-effect px-3 py-1 rounded-full">
-                    <span className="text-white text-sm font-medium">{table.tableNumber}</span>
+                    <span className="text-white text-sm font-medium">{table.name}</span>
                   </div>
 
                   <div 
@@ -350,7 +372,7 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
                       ${selectedTable?.id === table.id ? 'ring-4 ring-brand-burgundy shadow-neon' : 'ring-1 ring-white/20'}`}
                   >
                     <div className={`absolute inset-0 backdrop-blur-sm ${
-                      table.status === 'optimal' ? 'bg-green-500/10' :
+                      table.status === 'ok' ? 'bg-green-500/10' :
                       table.status === 'warning' ? 'bg-yellow-500/10' :
                       'bg-blue-500/10'
                     }`}>
@@ -407,7 +429,7 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
                     {(hoveredTable || selectedTable)?.name}
                   </h3>
                   <div className="text-lg text-gradient-primary">
-                    Table {(hoveredTable || selectedTable)?.tableNumber}
+                    Table {(hoveredTable || selectedTable)?.name}
                   </div>
                 </div>
 
@@ -529,19 +551,19 @@ export function OysterTableMap({ onTableSelect }: OysterTableMapProps) {
           >
             <div className="flex items-center gap-2 mb-2">
               <Package size={16} className="text-brand-primary" />
-              <span className="text-sm text-white font-medium">Table {hoveredTable.tableNumber}</span>
+              <span className="text-sm text-white font-medium">Table {hoveredTable.name}</span>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-xs text-white/60">État</span>
                 <span className={`text-xs font-medium ${
-                  hoveredTable.status === 'optimal' 
+                  hoveredTable.status === 'ok' 
                     ? 'text-green-400' 
                     : hoveredTable.status === 'warning'
                     ? 'text-yellow-400'
                     : 'text-blue-400'
                 }`}>
-                  {hoveredTable.status === 'optimal' ? 'Optimal' : hoveredTable.status === 'warning' ? 'Avertissement' : 'Critique'}
+                  {hoveredTable.status === 'ok' ? 'Optimal' : hoveredTable.status === 'warning' ? 'Avertissement' : 'Critique'}
                 </span>
               </div>
               <div className="flex justify-between items-center">

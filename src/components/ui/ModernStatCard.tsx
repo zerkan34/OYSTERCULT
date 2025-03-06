@@ -5,6 +5,7 @@ interface ModernStatCardProps {
   icon: React.ReactNode;
   label: string;
   value: string | number;
+  unit?: string;
   trend?: {
     value: number;
     positive: boolean;
@@ -59,26 +60,38 @@ export function ModernStatCard({
   icon,
   label,
   value,
+  unit,
   trend,
   color = 'primary',
   size = 'md'
 }: ModernStatCardProps) {
   const colors = colorVariants[color];
   const sizes = sizeVariants[size];
+  const cardId = `stat-card-${label.toLowerCase().replace(/\s+/g, '-')}`;
+  const trendText = trend ? `${trend.positive ? 'Augmentation' : 'Diminution'} de ${Math.abs(trend.value)}%` : '';
+  const fullValueText = unit ? `${value} ${unit}` : `${value}`;
 
   return (
     <motion.div
       className={`relative glass-effect rounded-xl ${sizes.padding} group hover:glass-effect-hover touch-manipulation`}
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
+      role="region"
+      aria-labelledby={cardId}
     >
       {/* Background glow effect */}
-      <div className={`absolute inset-0 ${colors.bg} rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+      <div 
+        className={`absolute inset-0 ${colors.bg} rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`} 
+        aria-hidden="true"
+      />
 
       <div className="relative z-10">
         <div className="flex items-start justify-between">
           {/* Icon container with glow */}
-          <div className={`${sizes.iconSize} rounded-xl ${colors.bg} ${colors.border} border flex items-center justify-center group-hover:${colors.shadow} transition-all duration-300`}>
+          <div 
+            className={`${sizes.iconSize} rounded-xl ${colors.bg} ${colors.border} border flex items-center justify-center group-hover:${colors.shadow} transition-all duration-300`}
+            aria-hidden="true"
+          >
             <div className={`${colors.text}`}>
               {icon}
             </div>
@@ -86,15 +99,25 @@ export function ModernStatCard({
 
           {/* Trend indicator */}
           {trend && (
-            <div className={`flex items-center ${trend.positive ? 'text-green-500' : 'text-red-500'} text-xs md:text-sm font-medium`}>
-              <span className="mr-1">{trend.positive ? '↑' : '↓'}</span>
+            <div 
+              className={`flex items-center ${trend.positive ? 'text-green-500' : 'text-red-500'} text-xs md:text-sm font-medium`}
+              aria-live="polite"
+              aria-label={trendText}
+            >
+              <span className="mr-1" aria-hidden="true">{trend.positive ? '↑' : '↓'}</span>
               <span>{Math.abs(trend.value)}%</span>
             </div>
           )}
         </div>
 
         <div className="mt-4">
-          <h3 className={`${sizes.valueSize} font-bold text-white tracking-tight`}>{value}</h3>
+          <h3 
+            id={cardId}
+            className={`${sizes.valueSize} font-bold text-white tracking-tight`}
+          >
+            {fullValueText}
+            {unit && <span className="sr-only">{` ${unit}`}</span>}
+          </h3>
           <p className={`${sizes.labelSize} text-gray-300 mt-1 font-medium`}>{label}</p>
         </div>
       </div>
@@ -104,7 +127,11 @@ export function ModernStatCard({
 
 export function ModernStatGrid({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+    <div 
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+      role="group"
+      aria-label="Statistiques clés"
+    >
       {children}
     </div>
   );

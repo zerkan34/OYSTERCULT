@@ -235,6 +235,38 @@ export function ProductConfig() {
                 </select>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Stock minimum
+                  </label>
+                  <input
+                    type="number"
+                    name="minStock"
+                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                    placeholder="Ex: 100"
+                    defaultValue={editingProduct?.minStock}
+                    min="0"
+                    required
+                  />
+                  <p className="mt-1 text-xs text-white/60">Seuil d'alerte pour niveau bas de stock</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Stock maximum
+                  </label>
+                  <input
+                    type="number"
+                    name="maxStock"
+                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                    placeholder="Ex: 1000"
+                    defaultValue={editingProduct?.maxStock}
+                    min="0"
+                    required
+                  />
+                </div>
+              </div>
+
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"

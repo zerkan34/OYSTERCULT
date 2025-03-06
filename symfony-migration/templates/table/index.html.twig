@@ -1,0 +1,262 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Tables - OYSTERCULT{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .table-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .table-card {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .table-card:hover, .table-card:focus-within {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table-card.triploid {
+            border-left: 5px solid #8c1a39; /* Bordeaux pour triploïdes */
+        }
+        
+        .table-card.diploid {
+            border-left: 5px solid #2563eb; /* Bleu pour diploïdes */
+        }
+        
+        .table-header {
+            padding: 1rem;
+            color: white;
+        }
+        
+        .table-header.triploid {
+            background-color: #8c1a39; /* Bordeaux pour triploïdes */
+            background-image: linear-gradient(135deg, #8c1a39, #6d1a30);
+        }
+        
+        .table-header.diploid {
+            background-color: #2563eb; /* Bleu pour diploïdes */
+            background-image: linear-gradient(135deg, #2563eb, #1e40af);
+        }
+        
+        .table-body {
+            padding: 1rem;
+            background-color: white;
+        }
+        
+        .cell-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .cell {
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .cell.filled.triploid {
+            background-color: #8c1a39; /* Bordeaux pour triploïdes */
+        }
+        
+        .cell.filled.diploid {
+            background-color: #2563eb; /* Bleu pour diploïdes */
+        }
+        
+        .cell.empty {
+            background-color: #e5e7eb;
+            color: #6b7280;
+        }
+        
+        .filter-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .filter-btn.all {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        
+        .filter-btn.triploid {
+            background-color: #8c1a39;
+            color: white;
+        }
+        
+        .filter-btn.diploid {
+            background-color: #2563eb;
+            color: white;
+        }
+        
+        .filter-btn:hover, .filter-btn:focus {
+            opacity: 0.9;
+            outline: 2px solid #000;
+            outline-offset: 2px;
+        }
+        
+        .filter-btn.active {
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Préfixes vendeurs pour la compatibilité navigateurs */
+        .table-card {
+            -webkit-transition: -webkit-transform 0.2s, box-shadow 0.2s;
+            -moz-transition: -moz-transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .table-card:hover, .table-card:focus-within {
+            -webkit-transform: translateY(-5px);
+            -moz-transform: translateY(-5px);
+            transform: translateY(-5px);
+        }
+        
+        /* États de focus pour l'accessibilité */
+        button:focus, a:focus {
+            outline: 2px solid #000;
+            outline-offset: 2px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">Gestion des Tables</h1>
+        
+        <div class="filter-container" role="group" aria-label="Filtres par type d'huîtres">
+            <button id="filterAll" class="filter-btn all active" aria-pressed="true">
+                Toutes les tables
+            </button>
+            <button id="filterTriploid" class="filter-btn triploid" aria-pressed="false" aria-label="Filtrer par tables triploïdes">
+                Triploïdes (Plates)
+            </button>
+            <button id="filterDiploid" class="filter-btn diploid" aria-pressed="false" aria-label="Filtrer par tables diploïdes">
+                Diploïdes (Creuses)
+            </button>
+        </div>
+        
+        <div class="table-container">
+            {% for table in tables %}
+                {% set typeClass = table.type == 'Plates' ? 'triploid' : 'diploid' %}
+                {% set typeLabel = table.type == 'Plates' ? 'Triploïde' : 'Diploïde' %}
+                
+                <div class="table-card {{ typeClass }}" data-table-type="{{ typeClass }}">
+                    <div class="table-header {{ typeClass }}">
+                        <h2 class="text-xl font-bold">{{ table.name }}</h2>
+                        <p>Type: {{ typeLabel }}</p>
+                    </div>
+                    <div class="table-body">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Position: {{ table.posX }}, {{ table.posY }}</span>
+                            <span class="text-sm text-gray-600">{{ table.filledCellsCount }}/{{ table.cells|length }} cellules</span>
+                        </div>
+                        
+                        <div class="cell-grid">
+                            {% for cell in table.cells|slice(0, 10) %}
+                                {% set cellClass = cell.status == 'filled' ? 'filled ' ~ typeClass : 'empty' %}
+                                <div class="cell {{ cellClass }}" aria-label="Cellule {{ cell.number }}, {{ cell.status == 'filled' ? 'remplie' : 'vide' }}">
+                                    {{ cell.number }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mt-4 flex justify-between">
+                            <a href="{{ path('app_table_detail', {'id': table.id}) }}" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded" aria-label="Voir détails de la table {{ table.name }}">
+                                Détails
+                            </a>
+                            <a href="{{ path('app_table_edit', {'id': table.id}) }}" class="bg-gray-500 hover:bg-gray-400 text-white px-4 py-2 rounded" aria-label="Modifier la table {{ table.name }}">
+                                Modifier
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="mt-8">
+            <a href="{{ path('app_table_new') }}" class="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded font-bold" aria-label="Ajouter une nouvelle table">
+                Ajouter une table
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterAll = document.getElementById('filterAll');
+            const filterTriploid = document.getElementById('filterTriploid');
+            const filterDiploid = document.getElementById('filterDiploid');
+            const tableCards = document.querySelectorAll('.table-card');
+            
+            // Fonction pour mettre à jour les filtres
+            function updateFilters(filterType) {
+                // Mettre à jour l'état des boutons
+                filterAll.classList.remove('active');
+                filterAll.setAttribute('aria-pressed', 'false');
+                filterTriploid.classList.remove('active');
+                filterTriploid.setAttribute('aria-pressed', 'false');
+                filterDiploid.classList.remove('active'); 
+                filterDiploid.setAttribute('aria-pressed', 'false');
+                
+                // Activer le bouton sélectionné
+                if (filterType === 'all') {
+                    filterAll.classList.add('active');
+                    filterAll.setAttribute('aria-pressed', 'true');
+                } else if (filterType === 'triploid') {
+                    filterTriploid.classList.add('active');
+                    filterTriploid.setAttribute('aria-pressed', 'true');
+                } else if (filterType === 'diploid') {
+                    filterDiploid.classList.add('active');
+                    filterDiploid.setAttribute('aria-pressed', 'true');
+                }
+                
+                // Filtrer les cartes
+                tableCards.forEach(card => {
+                    if (filterType === 'all' || card.dataset.tableType === filterType) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Événements de clic pour les filtres
+            filterAll.addEventListener('click', function() {
+                updateFilters('all');
+            });
+            
+            filterTriploid.addEventListener('click', function() {
+                updateFilters('triploid');
+            });
+            
+            filterDiploid.addEventListener('click', function() {
+                updateFilters('diploid');
+            });
+        });
+    </script>
+{% endblock %}
