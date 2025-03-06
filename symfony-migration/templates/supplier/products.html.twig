@@ -1,0 +1,306 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Produits du fournisseur - OYSTERCULT{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .product-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .supplier-info {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .product-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-reference {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #059669;
+            margin-bottom: 1rem;
+        }
+
+        .product-description {
+            font-size: 0.875rem;
+            color: #4b5563;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .edit-btn {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .edit-btn:hover {
+            background-color: #bfdbfe;
+        }
+
+        .delete-btn {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .delete-btn:hover {
+            background-color: #fecaca;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="product-container">
+        <div class="product-header">
+            <h1 class="text-3xl font-bold">Produits de {{ supplier.name }}</h1>
+            <button onclick="openProductModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Ajouter un produit
+            </button>
+        </div>
+
+        <div class="supplier-info">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                    <span class="text-sm text-gray-500">Email</span>
+                    <p>{{ supplier.email ?: 'Non renseigné' }}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-500">Téléphone</span>
+                    <p>{{ supplier.phone ?: 'Non renseigné' }}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-500">Code ami</span>
+                    <p>{{ supplier.friendCode ?: 'Non renseigné' }}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-500">Statut</span>
+                    <p>{{ supplier.isFriend ? 'Ami' : 'Standard' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    {% if product.reference %}
+                        <div class="product-reference">Réf: {{ product.reference }}</div>
+                    {% endif %}
+                    <div class="product-price">{{ product.price|number_format(2, ',', ' ') }} €</div>
+                    {% if product.description %}
+                        <div class="product-description">{{ product.description }}</div>
+                    {% endif %}
+                    <div class="product-actions">
+                        <button onclick="editProduct('{{ product.id }}')" class="action-btn edit-btn">
+                            Modifier
+                        </button>
+                        <button onclick="deleteProduct('{{ product.id }}')" class="action-btn delete-btn">
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Modal d'ajout/modification de produit -->
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+            <h2 class="text-2xl font-bold mb-4" id="modalTitle">Nouveau produit</h2>
+            <form id="productForm" onsubmit="handleProductSubmit(event)">
+                <input type="hidden" id="productId">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Nom</label>
+                    <input type="text" id="productName" name="name" required
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Référence</label>
+                    <input type="text" id="productReference" name="reference"
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Prix</label>
+                    <input type="number" id="productPrice" name="price" required step="0.01" min="0"
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea id="productDescription" name="description" rows="3"
+                              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" onclick="closeModal()"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function openProductModal(productId = null) {
+            const modal = document.getElementById('productModal');
+            const form = document.getElementById('productForm');
+            const title = document.getElementById('modalTitle');
+
+            if (productId) {
+                title.textContent = 'Modifier le produit';
+                // Charger les données du produit
+                fetch(`/api/suppliers/{{ supplier.id }}/products/${productId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('productId').value = productId;
+                            document.getElementById('productName').value = data.data.name;
+                            document.getElementById('productReference').value = data.data.reference || '';
+                            document.getElementById('productPrice').value = data.data.price;
+                            document.getElementById('productDescription').value = data.data.description || '';
+                        }
+                    });
+            } else {
+                title.textContent = 'Nouveau produit';
+                form.reset();
+                document.getElementById('productId').value = '';
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        async function handleProductSubmit(event) {
+            event.preventDefault();
+            const productId = document.getElementById('productId').value;
+            const formData = new FormData(event.target);
+            const data = {
+                name: formData.get('name'),
+                reference: formData.get('reference'),
+                price: parseFloat(formData.get('price')),
+                description: formData.get('description')
+            };
+
+            try {
+                const url = productId
+                    ? `/api/suppliers/{{ supplier.id }}/products/${productId}`
+                    : `/api/suppliers/{{ supplier.id }}/products`;
+                const method = productId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token('product_form') }}'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'Une erreur est survenue');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Une erreur est survenue');
+            }
+        }
+
+        async function deleteProduct(productId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/suppliers/{{ supplier.id }}/products/${productId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token('delete_product') }}'
+                    }
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'Une erreur est survenue');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Une erreur est survenue');
+            }
+        }
+
+        function editProduct(productId) {
+            openProductModal(productId);
+        }
+    </script>
+{% endblock %}

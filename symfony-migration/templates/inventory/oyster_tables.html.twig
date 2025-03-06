@@ -1,0 +1,263 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tables d'huîtres - OYSTERCULT{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .table-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .table-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-maintenance {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .table-cells {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cell:hover {
+            border-color: #6b7280;
+        }
+
+        .cell.occupied {
+            background-color: #dbeafe;
+            border-color: #3b82f6;
+        }
+
+        .cell.selected {
+            background-color: #93c5fd;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        .maintenance-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold">Tables d'huîtres</h1>
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" onclick="createTable()">
+                Nouvelle table
+            </button>
+        </div>
+
+        <div class="flex gap-4 mb-6">
+            <input type="text" id="searchInput" placeholder="Rechercher une table..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select id="filterStatus" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Tous les statuts</option>
+                <option value="active">Active</option>
+                <option value="maintenance">Maintenance requise</option>
+            </select>
+        </div>
+
+        <div class="table-grid" id="tableGrid">
+            {% for table in tables %}
+                <div class="table-card relative" data-table-id="{{ table.id }}">
+                    {% if table.maintenanceDue %}
+                        <span class="maintenance-badge">Maintenance requise</span>
+                    {% endif %}
+                    <div class="table-header">
+                        <h3 class="font-semibold">{{ table.name }}</h3>
+                        <span class="table-status {{ table.status == 'active' ? 'status-active' : 'status-maintenance' }}">
+                            {{ table.status|capitalize }}
+                        </span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <p>Dernière maintenance: {{ table.lastMaintenance|date('d/m/Y') }}</p>
+                        <p>Capacité: {{ table.occupiedCells }}/{{ table.totalCells }} cellules</p>
+                    </div>
+                    <div class="table-cells">
+                        {% for cell in table.cells %}
+                            <div class="cell {{ cell.occupied ? 'occupied' : '' }}" 
+                                 data-cell-id="{{ cell.id }}"
+                                 onclick="toggleCell(this)">
+                                {{ cell.id }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Modal de création/édition de table -->
+    <div id="tableModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+            <h2 class="text-2xl font-bold mb-4" id="modalTitle">Nouvelle table</h2>
+            <form id="tableForm" onsubmit="handleTableSubmit(event)">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Nom</label>
+                    <input type="text" id="tableName" name="name" required
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Dimensions</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="tableRows" name="rows" required min="1" max="10"
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Lignes">
+                        <input type="number" id="tableCols" name="cols" required min="1" max="10"
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Colonnes">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" onclick="closeModal()"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        let selectedCells = new Set();
+
+        function createTable() {
+            document.getElementById('modalTitle').textContent = 'Nouvelle table';
+            document.getElementById('tableForm').reset();
+            document.getElementById('tableModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('tableModal').classList.add('hidden');
+        }
+
+        function toggleCell(cellElement) {
+            const cellId = cellElement.dataset.cellId;
+            if (cellElement.classList.contains('selected')) {
+                cellElement.classList.remove('selected');
+                selectedCells.delete(cellId);
+            } else {
+                cellElement.classList.add('selected');
+                selectedCells.add(cellId);
+            }
+        }
+
+        async function handleTableSubmit(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {
+                name: formData.get('name'),
+                rows: parseInt(formData.get('rows')),
+                cols: parseInt(formData.get('cols'))
+            };
+
+            try {
+                const response = await fetch('{{ path('api_inventory_tables_create') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token('table_create') }}'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'Une erreur est survenue');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Une erreur est survenue');
+            }
+        }
+
+        // Filtrage et recherche
+        const searchInput = document.getElementById('searchInput');
+        const filterStatus = document.getElementById('filterStatus');
+        const tableGrid = document.getElementById('tableGrid');
+
+        function filterTables() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const statusFilter = filterStatus.value;
+            const tables = tableGrid.querySelectorAll('.table-card');
+
+            tables.forEach(table => {
+                const name = table.querySelector('h3').textContent.toLowerCase();
+                const status = table.querySelector('.table-status').textContent.trim().toLowerCase();
+                const matchesSearch = name.includes(searchTerm);
+                const matchesStatus = !statusFilter || status === statusFilter;
+
+                table.style.display = matchesSearch && matchesStatus ? 'block' : 'none';
+            });
+        }
+
+        searchInput.addEventListener('input', filterTables);
+        filterStatus.addEventListener('change', filterTables);
+    </script>
+{% endblock %}

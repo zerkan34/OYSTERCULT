@@ -1,0 +1,317 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bassins de purification - OYSTERCULT{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .pool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .pool-card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .pool-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .pool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .pool-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-maintenance {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .water-parameters {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8fafc;
+            border-radius: 0.375rem;
+        }
+
+        .parameter {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .parameter-label {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .parameter-value {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #0f172a;
+        }
+
+        .uv-lamp {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #fef3c7;
+            border-radius: 0.375rem;
+        }
+
+        .uv-lamp.warning {
+            background-color: #fee2e2;
+        }
+
+        .maintenance-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold">Bassins de purification</h1>
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" onclick="createPool()">
+                Nouveau bassin
+            </button>
+        </div>
+
+        <div class="flex gap-4 mb-6">
+            <input type="text" id="searchInput" placeholder="Rechercher un bassin..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select id="filterStatus" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Tous les statuts</option>
+                <option value="active">Actif</option>
+                <option value="maintenance">Maintenance requise</option>
+            </select>
+        </div>
+
+        <div class="pool-grid" id="poolGrid">
+            {% for pool in pools %}
+                <div class="pool-card relative" data-pool-id="{{ pool.id }}">
+                    {% if pool.maintenanceDue %}
+                        <span class="maintenance-badge">Maintenance requise</span>
+                    {% endif %}
+                    <div class="pool-header">
+                        <h3 class="font-semibold">{{ pool.name }}</h3>
+                        <span class="pool-status {{ pool.status == 'active' ? 'status-active' : 'status-maintenance' }}">
+                            {{ pool.status|capitalize }}
+                        </span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <p>Dernière maintenance: {{ pool.lastMaintenance|date('d/m/Y') }}</p>
+                        <p>Capacité: {{ pool.currentCapacity }}/{{ pool.maxCapacity }} kg</p>
+                    </div>
+                    <div class="water-parameters">
+                        <div class="parameter">
+                            <span class="parameter-label">Température</span>
+                            <span class="parameter-value">{{ pool.waterParameters.temperature }}°C</span>
+                        </div>
+                        <div class="parameter">
+                            <span class="parameter-label">Salinité</span>
+                            <span class="parameter-value">{{ pool.waterParameters.salinity }}‰</span>
+                        </div>
+                        <div class="parameter">
+                            <span class="parameter-label">pH</span>
+                            <span class="parameter-value">{{ pool.waterParameters.ph }}</span>
+                        </div>
+                        <div class="parameter">
+                            <span class="parameter-label">Oxygène dissous</span>
+                            <span class="parameter-value">{{ pool.waterParameters.dissolvedOxygen }} mg/L</span>
+                        </div>
+                    </div>
+                    <div class="uv-lamp {{ pool.uvLampHours > 5000 ? 'warning' : '' }}">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Lampe UV</span>
+                            <span class="text-sm">{{ pool.uvLampHours }} heures</span>
+                        </div>
+                        {% if pool.uvLampHours > 5000 %}
+                            <p class="text-sm text-red-700 mt-1">Remplacement recommandé</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Modal de création/édition de bassin -->
+    <div id="poolModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+            <h2 class="text-2xl font-bold mb-4" id="modalTitle">Nouveau bassin</h2>
+            <form id="poolForm" onsubmit="handlePoolSubmit(event)">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Nom</label>
+                    <input type="text" id="poolName" name="name" required
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Capacité maximale (kg)</label>
+                    <input type="number" id="poolCapacity" name="maxCapacity" required min="100" step="100"
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Paramètres initiaux de l'eau</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-gray-500">Température (°C)</label>
+                            <input type="number" name="temperature" required min="0" max="30" step="0.1"
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-500">Salinité (‰)</label>
+                            <input type="number" name="salinity" required min="0" max="40" step="0.1"
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-500">pH</label>
+                            <input type="number" name="ph" required min="6" max="9" step="0.1"
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-500">Oxygène dissous (mg/L)</label>
+                            <input type="number" name="dissolvedOxygen" required min="0" max="20" step="0.1"
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" onclick="closeModal()"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function createPool() {
+            document.getElementById('modalTitle').textContent = 'Nouveau bassin';
+            document.getElementById('poolForm').reset();
+            document.getElementById('poolModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('poolModal').classList.add('hidden');
+        }
+
+        async function handlePoolSubmit(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {
+                name: formData.get('name'),
+                maxCapacity: parseInt(formData.get('maxCapacity')),
+                waterParameters: {
+                    temperature: parseFloat(formData.get('temperature')),
+                    salinity: parseFloat(formData.get('salinity')),
+                    ph: parseFloat(formData.get('ph')),
+                    dissolvedOxygen: parseFloat(formData.get('dissolvedOxygen'))
+                }
+            };
+
+            try {
+                const response = await fetch('{{ path('api_inventory_pools_create') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token('pool_create') }}'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'Une erreur est survenue');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Une erreur est survenue');
+            }
+        }
+
+        // Filtrage et recherche
+        const searchInput = document.getElementById('searchInput');
+        const filterStatus = document.getElementById('filterStatus');
+        const poolGrid = document.getElementById('poolGrid');
+
+        function filterPools() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const statusFilter = filterStatus.value;
+            const pools = poolGrid.querySelectorAll('.pool-card');
+
+            pools.forEach(pool => {
+                const name = pool.querySelector('h3').textContent.toLowerCase();
+                const status = pool.querySelector('.pool-status').textContent.trim().toLowerCase();
+                const matchesSearch = name.includes(searchTerm);
+                const matchesStatus = !statusFilter || status === statusFilter;
+
+                pool.style.display = matchesSearch && matchesStatus ? 'block' : 'none';
+            });
+        }
+
+        searchInput.addEventListener('input', filterPools);
+        filterStatus.addEventListener('change', filterPools);
+
+        // Mise à jour automatique des paramètres de l'eau
+        setInterval(async () => {
+            const pools = document.querySelectorAll('.pool-card');
+            for (const pool of pools) {
+                const poolId = pool.dataset.poolId;
+                try {
+                    const response = await fetch(`{{ path('api_inventory_pools_list') }}/${poolId}/water-parameters`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const parameters = pool.querySelector('.water-parameters');
+                        parameters.querySelector('[data-parameter="temperature"] .parameter-value').textContent = `${data.temperature}°C`;
+                        parameters.querySelector('[data-parameter="salinity"] .parameter-value').textContent = `${data.salinity}‰`;
+                        parameters.querySelector('[data-parameter="ph"] .parameter-value').textContent = data.ph;
+                        parameters.querySelector('[data-parameter="dissolvedOxygen"] .parameter-value').textContent = `${data.dissolvedOxygen} mg/L`;
+                    }
+                } catch (error) {
+                    console.error('Error updating water parameters:', error);
+                }
+            }
+        }, 60000); // Mise à jour toutes les minutes
+    </script>
+{% endblock %}

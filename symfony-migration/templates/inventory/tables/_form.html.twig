@@ -1,0 +1,64 @@
+{{ form_start(form, {'attr': {'class': 'table-form'}}) }}
+    <div class="row">
+        <div class="col-md-6">
+            {{ form_row(form.name, {
+                'attr': {'class': 'form-control'},
+                'label': 'Nom de la table'
+            }) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.location, {
+                'attr': {'class': 'form-control'},
+                'label': 'Emplacement'
+            }) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            {{ form_row(form.capacity, {
+                'attr': {'class': 'form-control'},
+                'label': 'Capacité'
+            }) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.depth, {
+                'attr': {'class': 'form-control'},
+                'label': 'Profondeur (m)'
+            }) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {{ form_row(form.description, {
+                'attr': {'class': 'form-control', 'rows': 3},
+                'label': 'Description'
+            }) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            {{ form_row(form.status, {
+                'attr': {'class': 'form-select'},
+                'label': 'Statut'
+            }) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.maintenanceDate, {
+                'attr': {'class': 'form-control'},
+                'label': 'Date de maintenance'
+            }) }}
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Enregistrer
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i> Annuler
+        </button>
+    </div>
+{{ form_end(form) }}

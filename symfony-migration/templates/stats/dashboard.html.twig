@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord - OYSTERCULT{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-container">
+    <div class="page-header">
+        <h1>Tableau de bord</h1>
+        <div class="period-selector">
+            <select id="periodSelect" class="form-select">
+                <option value="week">Cette semaine</option>
+                <option value="month" selected>Ce mois</option>
+                <option value="quarter">Ce trimestre</option>
+                <option value="year">Cette année</option>
+            </select>
+            <button class="btn btn-outline-primary" onclick="exportStats()">
+                <i class="fas fa-download"></i> Exporter
+            </button>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        {# Statistiques générales #}
+        <div class="stats-card overview">
+            <h3>Vue d'ensemble</h3>
+            <div class="stats-content">
+                <div class="stat-item">
+                    <span class="stat-value" id="totalTables">-</span>
+                    <span class="stat-label">Tables totales</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="activePools">-</span>
+                    <span class="stat-label">Bassins actifs</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="pendingOrders">-</span>
+                    <span class="stat-label">Commandes en attente</span>
+                </div>
+            </div>
+        </div>
+
+        {# Graphique d'occupation #}
+        <div class="stats-card occupancy">
+            <h3>Occupation des tables</h3>
+            <div class="chart-container">
+                <canvas id="occupancyChart"></canvas>
+            </div>
+        </div>
+
+        {# Tendances de croissance #}
+        <div class="stats-card growth">
+            <h3>Tendances de croissance</h3>
+            <div class="chart-container">
+                <canvas id="growthChart"></canvas>
+            </div>
+        </div>
+
+        {# Planning maintenance #}
+        <div class="stats-card maintenance">
+            <h3>Planning maintenance</h3>
+            <div class="maintenance-list" id="maintenanceList">
+                <div class="loading">Chargement...</div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal Export #}
+    <div class="modal fade" id="exportModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Exporter les statistiques</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Type d'export</label>
+                        <select id="exportType" class="form-select">
+                            <option value="dashboard">Tableau de bord complet</option>
+                            <option value="occupancy">Occupation des tables</option>
+                            <option value="maintenance">Planning maintenance</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Format</label>
+                        <select id="exportFormat" class="form-select">
+                            <option value="xlsx">Excel (.xlsx)</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="downloadExport()">
+                        <i class="fas fa-download"></i> Télécharger
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="{{ asset('js/stats/dashboard.js') }}"></script>
+{% endblock %}

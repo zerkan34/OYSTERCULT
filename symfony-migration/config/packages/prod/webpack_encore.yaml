@@ -1,0 +1,18 @@
+webpack_encore:
+    # Cache the entrypoints.json (rebuild Symfony's cache when entrypoints.json changes)
+    cache: true
+
+    # Asset versioning
+    strict_mode: true
+    
+    # Cache busting
+    version_strategy: 'Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy'
+
+    # If using Encore.enableSingleRuntimeChunk(), add it to the script tag
+    preload: true
+
+    # Uncomment if you use legacy applications that require $/jQuery as a global variable
+    # jquery: '@webpack/jquery.min'
+    
+    # Cache the webpack manifest
+    cache_manifest: true

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Documentation API - OYSTERCULT</title>
+    <link rel="stylesheet" href="{{ asset('swagger-ui/swagger-ui.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/api-doc.css') }}">
+</head>
+<body>
+    <div class="doc-header">
+        <div class="doc-header-content">
+            <h1>Documentation API OYSTERCULT</h1>
+            <p>Version 1.0.0</p>
+        </div>
+    </div>
+
+    <div class="doc-container">
+        <div id="swagger-ui"></div>
+    </div>
+
+    <script src="{{ asset('swagger-ui/swagger-ui-bundle.js') }}"></script>
+    <script src="{{ asset('swagger-ui/swagger-ui-standalone-preset.js') }}"></script>
+    <script>
+        window.onload = function() {
+            const ui = SwaggerUIBundle({
+                url: "{{ path('app.swagger', {'format': 'json'}) }}",
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout",
+                docExpansion: "list",
+                tagsSorter: "alpha",
+                operationsSorter: "alpha",
+                defaultModelsExpandDepth: 1,
+                defaultModelExpandDepth: 1,
+                displayRequestDuration: true,
+                filter: true
+            });
+
+            window.ui = ui;
+        };
+    </script>
+</body>
+</html>

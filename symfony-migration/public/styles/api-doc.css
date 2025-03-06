@@ -1,0 +1,108 @@
+.doc-header {
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.doc-header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.doc-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 300;
+}
+
+.doc-header p {
+    margin: 0.5rem 0 0;
+    opacity: 0.8;
+}
+
+.doc-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Personnalisation Swagger UI */
+.swagger-ui .topbar {
+    display: none;
+}
+
+.swagger-ui .info {
+    margin: 2rem 0;
+}
+
+.swagger-ui .info .title {
+    color: #2c3e50;
+}
+
+.swagger-ui .scheme-container {
+    box-shadow: none;
+    border: 1px solid #e9ecef;
+}
+
+.swagger-ui .opblock {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 0 0 1rem;
+}
+
+.swagger-ui .opblock .opblock-summary {
+    padding: 1rem;
+}
+
+.swagger-ui .opblock .opblock-summary-method {
+    border-radius: 4px;
+    min-width: 80px;
+}
+
+.swagger-ui .opblock-tag {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin: 2rem 0 1rem;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.5rem;
+}
+
+.swagger-ui .parameters-container {
+    padding: 1rem;
+}
+
+.swagger-ui .parameters-container .parameters {
+    margin: 0;
+}
+
+.swagger-ui .btn {
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+}
+
+.swagger-ui select {
+    border-radius: 4px;
+    border-color: #e9ecef;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .doc-header {
+        padding: 1.5rem 0;
+    }
+
+    .doc-header h1 {
+        font-size: 2rem;
+    }
+
+    .doc-container {
+        padding: 0 1rem;
+    }
+
+    .swagger-ui .opblock-summary-method {
+        min-width: 60px;
+        padding: 0.5rem;
+    }
+}
