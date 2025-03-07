@@ -15,8 +15,8 @@ class Cell
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
-     * @ORM\Column(type="string", length=36)
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      * @Groups({"cell:read", "table:read"})
      */
     private $id;
@@ -83,7 +83,7 @@ class Cell
         $this->createdAt = new \DateTime();
     }
     
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -137,7 +137,7 @@ class Cell
         return $this->status;
     }
     
-    public function setStatus(string $status): self
+    public function setStatus(int $status): self
     {
         $this->status = $status;
         return $this;

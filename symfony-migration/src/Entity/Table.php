@@ -17,8 +17,8 @@ class Table
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
-     * @ORM\Column(type="string", length=36)
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      * @Groups({"table:read", "table:write"})
      */
     private $id;
@@ -81,7 +81,7 @@ class Table
         $this->createdAt = new \DateTime();
     }
     
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -91,7 +91,7 @@ class Table
         return $this->name;
     }
     
-    public function setName(string $name): self
+    public function setName(int $name): self
     {
         $this->name = $name;
         return $this;
@@ -102,7 +102,7 @@ class Table
         return $this->type;
     }
     
-    public function setType(string $type): self
+    public function setType(int $type): self
     {
         $this->type = $type;
         return $this;

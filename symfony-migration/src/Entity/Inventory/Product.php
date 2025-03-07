@@ -14,8 +14,8 @@ class Product
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
-     * @ORM\Column(type="string", length=36)
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      */
     private $id;
 
@@ -79,7 +79,7 @@ class Product
      */
     private $storageLocation;
 
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -117,12 +117,12 @@ class Product
         return $this;
     }
 
-    public function getQuantity(): ?string
+    public function getQuantity(): ?float
     {
         return $this->quantity;
     }
 
-    public function setQuantity(string $quantity): self
+    public function setQuantity(float $quantity): self
     {
         $this->quantity = $quantity;
         return $this;
@@ -172,23 +172,23 @@ class Product
         return $this;
     }
 
-    public function getMinimumStock(): ?string
+    public function getMinimumStock(): ?float
     {
         return $this->minimumStock;
     }
 
-    public function setMinimumStock(string $minimumStock): self
+    public function setMinimumStock(float $minimumStock): self
     {
         $this->minimumStock = $minimumStock;
         return $this;
     }
 
-    public function getMaximumStock(): ?string
+    public function getMaximumStock(): ?float
     {
         return $this->maximumStock;
     }
 
-    public function setMaximumStock(string $maximumStock): self
+    public function setMaximumStock(float $maximumStock): self
     {
         $this->maximumStock = $maximumStock;
         return $this;

@@ -14,8 +14,8 @@ class PurificationPool
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
-     * @ORM\Column(type="string", length=36)
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      */
     private $id;
 
@@ -61,7 +61,7 @@ class PurificationPool
      */
     private $maintenanceHistory = [];
 
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }

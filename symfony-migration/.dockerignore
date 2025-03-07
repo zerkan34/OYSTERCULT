@@ -1,0 +1,10 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.prod
+var/*
+vendor/*
+node_modules/
+docker/
+tests/

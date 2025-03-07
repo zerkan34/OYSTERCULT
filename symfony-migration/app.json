@@ -1,0 +1,26 @@
+{
+    "name": "OYSTERCULT Symfony",
+    "description": "OYSTERCULT application migrated to Symfony",
+    "repository": "https://github.com/zerkan34/OYSTERCULT",
+    "keywords": ["php", "symfony", "oystercult"],
+    "addons": [
+        "heroku-postgresql:hobby-dev",
+        "heroku-redis:hobby-dev"
+    ],
+    "env": {
+        "APP_ENV": {
+            "value": "prod"
+        },
+        "APP_SECRET": {
+            "generator": "secret"
+        }
+    },
+    "buildpacks": [
+        {
+            "url": "heroku/php"
+        },
+        {
+            "url": "heroku/nodejs"
+        }
+    ]
+}

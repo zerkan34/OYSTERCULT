@@ -19,8 +19,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
-     * @ORM\Column(type="string", length=36)
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      * @Groups({"user:read"})
      */
     private $id;
@@ -53,32 +53,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
     
     /**
-     * @var string|null Le mot de passe en clair, utilisé temporairement pour l'encodage
-     * @Assert\NotBlank(message="Le mot de passe est requis", groups={"create"})
-     * @Assert\Length(
-     *     min=8,
-     *     minMessage="Le mot de passe doit contenir au moins {{ limit }} caractères",
-     *     groups={"create", "update"}
-     * )
+     * @var string|null Le mot de passe en clair (non persisté)
      * @Groups({"user:write"})
      */
     private $plainPassword;
     
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user:read"})
      */
     private $createdAt;
     
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user:read"})
      */
     private $updatedAt;
     
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user:read"})
      */
     private $lastLoginAt;
     
@@ -88,7 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = ['ROLE_USER'];
     }
     
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -148,6 +139,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
+        
         return $this;
     }
     
@@ -192,7 +184,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials()
     {
-        // If you store any temporary, sensitive data on the user, clear it here
         $this->plainPassword = null;
     }
     

@@ -15,8 +15,8 @@ class InventoryItem
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
-     * @ORM\Column(type="string", length=36)
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      * @Groups({"inventory:read", "inventory:write"})
      */
     private $id;
@@ -83,7 +83,7 @@ class InventoryItem
         $this->createdAt = new \DateTime();
     }
     
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -93,7 +93,7 @@ class InventoryItem
         return $this->name;
     }
     
-    public function setName(string $name): self
+    public function set(int $name): self
     {
         $this->name = $name;
         return $this;
@@ -104,7 +104,7 @@ class InventoryItem
         return $this->type;
     }
     
-    public function setType(string $type): self
+    public function setType(int $type): self
     {
         $this->type = $type;
         return $this;

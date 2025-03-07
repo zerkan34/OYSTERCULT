@@ -17,8 +17,8 @@ class Supplier
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
-     * @ORM\Column(type="string", length=36)
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      * @Groups({"supplier:read", "supplier:write"})
      */
     private $id;
@@ -85,7 +85,7 @@ class Supplier
         $this->createdAt = new \DateTime();
     }
     
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }

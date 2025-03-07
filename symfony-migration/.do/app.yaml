@@ -1,0 +1,30 @@
+name: oystercult
+region: fra1
+services:
+  - name: web
+    dockerfile_path: docker/php/Dockerfile.prod
+    source_dir: .
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: zerkan34/OYSTERCULT
+    health_check:
+      http_path: /health
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /
+    envs:
+      - key: APP_ENV
+        value: prod
+      - key: DATABASE_URL
+        value: ${DATABASE_URL}
+      - key: APP_SECRET
+        value: ${APP_SECRET}
+
+databases:
+  - engine: MYSQL
+    name: oystercult-db
+    num_nodes: 1
+    size: db-s-1vcpu-1gb
+    version: "8"

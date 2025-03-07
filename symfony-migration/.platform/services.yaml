@@ -1,0 +1,6 @@
+db:
+    type: mysql:8.0
+    disk: 2048
+
+cache:
+    type: redis:7.0
