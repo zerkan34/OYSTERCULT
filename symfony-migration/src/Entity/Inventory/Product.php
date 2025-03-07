@@ -48,6 +48,9 @@ class Product
     #[ORM\Column(type: "datetime", nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
 
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTimeInterface $expiryDate = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -159,6 +162,17 @@ class Product
     public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    public function getExpiryDate(): ?\DateTimeInterface
+    {
+        return $this->expiryDate;
+    }
+
+    public function setExpiryDate(?\DateTimeInterface $expiryDate): self
+    {
+        $this->expiryDate = $expiryDate;
         return $this;
     }
 

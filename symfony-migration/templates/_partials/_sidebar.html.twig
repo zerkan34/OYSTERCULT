@@ -1,36 +1,51 @@
 <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="{{ asset('images/logo.png') }}" alt="OYSTERCULT Logo" class="sidebar-logo">
+        <button class="sidebar-toggle d-md-none" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    
     <nav class="sidebar-nav">
         <div class="nav-section">
             <h3 class="nav-title">Principal</h3>
             <ul class="nav-items">
-                <li class="nav-item {{ app.request.get('_route') == 'app_dashboard' ? 'active' }}">
-                    <a href="{{ path('app_dashboard') }}" class="nav-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="14" width="7" height="7"></rect>
-                            <rect x="3" y="14" width="7" height="7"></rect>
-                        </svg>
+                <li class="nav-item {{ app.request.get('_route') == 'app_dashboard_index' ? 'active' }}">
+                    <a href="{{ path('app_dashboard_index') }}" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i>
                         <span>Tableau de bord</span>
                     </a>
                 </li>
                 
                 <li class="nav-item {{ app.request.get('_route') starts with 'app_inventory' ? 'active' }}">
                     <a href="{{ path('app_inventory_redirect') }}" class="nav-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                        </svg>
+                        <i class="fas fa-box"></i>
                         <span>Inventaire</span>
                     </a>
                 </li>
                 
                 <li class="nav-item {{ app.request.get('_route') starts with 'app_suppliers' ? 'active' }}">
-                    <a href="{{ path('app_suppliers') }}" class="nav-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                            <circle cx="12" cy="10" r="3"></circle>
-                        </svg>
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-truck"></i>
                         <span>Fournisseurs</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="nav-section">
+            <h3 class="nav-title">Production</h3>
+            <ul class="nav-items">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-water"></i>
+                        <span>Bassins</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-table"></i>
+                        <span>Tables</span>
                     </a>
                 </li>
             </ul>
@@ -41,21 +56,13 @@
             <ul class="nav-items">
                 <li class="nav-item {{ app.request.get('_route') starts with 'app_sales' ? 'active' }}">
                     <a href="{{ path('app_sales') }}" class="nav-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="1" x2="12" y2="23"></line>
-                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                        </svg>
+                        <i class="fas fa-chart-line"></i>
                         <span>Ventes</span>
                     </a>
                 </li>
-                
                 <li class="nav-item {{ app.request.get('_route') starts with 'app_accounting' ? 'active' }}">
                     <a href="{{ path('app_accounting') }}" class="nav-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                            <line x1="8" y1="21" x2="16" y2="21"></line>
-                            <line x1="12" y1="17" x2="12" y2="21"></line>
-                        </svg>
+                        <i class="fas fa-cog"></i>
                         <span>Comptabilité</span>
                     </a>
                 </li>

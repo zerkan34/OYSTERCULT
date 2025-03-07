@@ -252,4 +252,59 @@ class InventoryController extends AbstractController
             ]
         ]);
     }
+
+    #[Route('/', name: 'app_inventory_index', methods: ['GET'])]
+    public function index(): Response
+    {
+        // Données simulées pour l'affichage (à remplacer par les données réelles de la base de données)
+        $storageLocations = [
+            'Frigo 1' => [
+                ['id' => 'F1-01', 'name' => 'Huîtres Fines de Claire', 'quantity' => '50kg', 'arrivalDate' => '2025-02-25', 'expiryDate' => '2025-03-10'],
+                ['id' => 'F1-02', 'name' => 'Moules de Bouchot', 'quantity' => '25kg', 'arrivalDate' => '2025-03-01', 'expiryDate' => '2025-03-08'],
+                ['id' => 'F1-03', 'name' => 'Palourdes', 'quantity' => '15kg', 'arrivalDate' => '2025-02-28', 'expiryDate' => '2025-03-07']
+            ],
+            'Frigo 2' => [
+                ['id' => 'F2-01', 'name' => 'Huîtres Spéciales', 'quantity' => '30kg', 'arrivalDate' => '2025-02-27', 'expiryDate' => '2025-03-12'],
+                ['id' => 'F2-02', 'name' => 'Crevettes Royales', 'quantity' => '10kg', 'arrivalDate' => '2025-03-01', 'expiryDate' => '2025-03-05']
+            ],
+            'Congélateur 1' => [
+                ['id' => 'C1-01', 'name' => 'Saumon Frais', 'quantity' => '40kg', 'arrivalDate' => '2025-01-15', 'expiryDate' => '2025-04-15'],
+                ['id' => 'C1-02', 'name' => 'Huîtres Surgelées', 'quantity' => '60kg', 'arrivalDate' => '2025-02-10', 'expiryDate' => '2025-08-10'],
+                ['id' => 'C1-03', 'name' => 'Coquilles St-Jacques', 'quantity' => '35kg', 'arrivalDate' => '2025-02-20', 'expiryDate' => '2025-05-20']
+            ],
+            'Congélateur 2' => [
+                ['id' => 'C2-01', 'name' => 'Filets de Poisson', 'quantity' => '25kg', 'arrivalDate' => '2025-02-15', 'expiryDate' => '2025-06-15'],
+                ['id' => 'C2-02', 'name' => 'Fruits de Mer', 'quantity' => '20kg', 'arrivalDate' => '2025-02-25', 'expiryDate' => '2025-05-25']
+            ],
+            'Remise' => [
+                ['id' => 'R-01', 'name' => 'Matériel d\'emballage', 'quantity' => '200 unités', 'arrivalDate' => '2025-01-10', 'expiryDate' => 'N/A'],
+                ['id' => 'R-02', 'name' => 'Sachets biodégradables', 'quantity' => '500 unités', 'arrivalDate' => '2025-02-01', 'expiryDate' => 'N/A']
+            ],
+            'Cave' => [
+                ['id' => 'CA-01', 'name' => 'Vin blanc', 'quantity' => '50 bouteilles', 'arrivalDate' => '2024-10-15', 'expiryDate' => '2026-10-15'],
+                ['id' => 'CA-02', 'name' => 'Huîtres affinées', 'quantity' => '100kg', 'arrivalDate' => '2025-02-20', 'expiryDate' => '2025-04-20']
+            ]
+        ];
+
+        // Données pour les tables ostréicoles
+        $oysterTables = [
+            ['id' => 'T1', 'name' => 'Table A1', 'type' => 'Plates N°3', 'occupation' => 85, 'harvestDate' => '15/06/25'],
+            ['id' => 'T2', 'name' => 'Table A2', 'type' => 'Creuses N°2', 'occupation' => 75, 'harvestDate' => '20/06/25'],
+            ['id' => 'T3', 'name' => 'Table B1', 'type' => 'Plates N°4', 'occupation' => 90, 'harvestDate' => '01/07/25'],
+            ['id' => 'T4', 'name' => 'Table B2', 'type' => 'Creuses N°3', 'occupation' => 65, 'harvestDate' => '05/07/25']
+        ];
+
+        // Données pour les bassins de purification
+        $purificationPools = [
+            ['id' => 'P1', 'name' => 'Bassin A1', 'type' => 'Purification', 'capacity' => 1000, 'currentLoad' => 800],
+            ['id' => 'P2', 'name' => 'Bassin A2', 'type' => 'Purification', 'capacity' => 1000, 'currentLoad' => 650],
+            ['id' => 'P3', 'name' => 'Bassin B1', 'type' => 'Stockage', 'capacity' => 1500, 'currentLoad' => 1350]
+        ];
+
+        return $this->render('inventory/index.html.twig', [
+            'storageLocations' => $storageLocations,
+            'oysterTables' => $oysterTables,
+            'purificationPools' => $purificationPools,
+        ]);
+    }
 }

@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\TableRepository;
-use App\Repository\InventoryItemRepository;
+use App\Repository\Inventory\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,14 +11,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class HomeController extends AbstractController
 {
     private $tableRepository;
-    private $inventoryRepository;
+    private $productRepository;
 
     public function __construct(
         TableRepository $tableRepository,
-        InventoryItemRepository $inventoryRepository
+        ProductRepository $productRepository
     ) {
         $this->tableRepository = $tableRepository;
-        $this->inventoryRepository = $inventoryRepository;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -32,7 +32,7 @@ class HomeController extends AbstractController
         $tripoidCount = $this->tableRepository->countByType('Plates'); // Triploïdes
         $diploidCount = $this->tableRepository->countByType('Creuses'); // Diploïdes
         
-        $inventoryStats = $this->inventoryRepository->getInventoryStatsForDashboard();
+        $inventoryStats = $this->productRepository->getInventoryStatsForDashboard();
         
         return $this->render('home/index.html.twig', [
             'tableCount' => $tableCount,

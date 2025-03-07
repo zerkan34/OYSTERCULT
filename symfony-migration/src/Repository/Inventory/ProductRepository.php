@@ -49,7 +49,8 @@ class ProductRepository extends ServiceEntityRepository
     public function findByStorageLocation(int $locationId)
     {
         return $this->createQueryBuilder('p')
-            ->where('p.storageLocation = :locationId')
+            ->join('p.storageLocation', 'sl')
+            ->where('sl.id = :locationId')
             ->setParameter('locationId', $locationId)
             ->getQuery()
             ->getResult();
@@ -74,5 +75,32 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('query', '%' . $query . '%')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Récupère les statistiques d'inventaire pour le tableau de bord
+     *
+     * @return array
+     */
+    public function getInventoryStatsForDashboard(): array
+    {
+        $totalItems = $this->count([]);
+        
+        $lowStock = $this->countLowStockProducts();
+        
+        // Compter les produits qui expirent dans les 7 prochains jours
+        $expiringItems = $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->where('p.expiryDate IS NOT NULL')
+            ->andWhere('p.expiryDate <= :date')
+            ->setParameter('date', new \DateTime('+7 days'))
+            ->getQuery()
+            ->getSingleScalarResult();
+        
+        return [
+            'totalItems' => $totalItems,
+            'lowStock' => $lowStock,
+            'expiringItems' => (int)$expiringItems
+        ];
     }
 }

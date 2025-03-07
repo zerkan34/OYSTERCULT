@@ -81,4 +81,92 @@ class DashboardController extends AbstractController
 
         return $response;
     }
+
+    #[Route('/', name: 'app_dashboard')]
+    public function index(): Response
+    {
+        // Données pour l'occupation des tables
+        $tableOccupancyData = [
+            [
+                'name' => 'Table A1',
+                'value' => 85,
+                'color' => '#22c55e',
+                'type' => 'Plates N°3',
+                'harvest' => '15/06/25',
+                'mortality' => 2.1
+            ],
+            [
+                'name' => 'Table A2',
+                'value' => 75,
+                'color' => '#eab308',
+                'type' => 'Creuses N°2',
+                'harvest' => '20/06/25',
+                'mortality' => 2.8
+            ],
+            [
+                'name' => 'Table B1',
+                'value' => 90,
+                'color' => '#22c55e',
+                'type' => 'Plates N°4',
+                'harvest' => '01/07/25',
+                'mortality' => 1.9
+            ],
+            [
+                'name' => 'Table B2',
+                'value' => 65,
+                'color' => '#ef4444',
+                'type' => 'Creuses N°3',
+                'harvest' => '05/07/25',
+                'mortality' => 3.2
+            ]
+        ];
+
+        // Données pour les bassins
+        $poolData = [
+            [
+                'name' => 'Bassin A1',
+                'value' => 80,
+                'color' => '#22c55e',
+                'type' => 'Purification',
+                'capacity' => 1000,
+                'currentLoad' => 800,
+                'waterQuality' => [
+                    'quality' => 98,
+                    'oxygen' => 95,
+                    'temperature' => 12.5
+                ]
+            ],
+            [
+                'name' => 'Bassin A2',
+                'value' => 65,
+                'color' => '#eab308',
+                'type' => 'Purification',
+                'capacity' => 1000,
+                'currentLoad' => 650,
+                'waterQuality' => [
+                    'quality' => 92,
+                    'oxygen' => 88,
+                    'temperature' => 13.2
+                ]
+            ],
+            [
+                'name' => 'Bassin B1',
+                'value' => 90,
+                'color' => '#22c55e',
+                'type' => 'Stockage',
+                'capacity' => 1500,
+                'currentLoad' => 1350,
+                'waterQuality' => [
+                    'quality' => 96,
+                    'oxygen' => 92,
+                    'temperature' => 12.8
+                ]
+            ]
+        ];
+
+        return $this->render('dashboard/index.html.twig', [
+            'tableOccupancyData' => $tableOccupancyData,
+            'poolData' => $poolData
+        ]);
+    }
 }

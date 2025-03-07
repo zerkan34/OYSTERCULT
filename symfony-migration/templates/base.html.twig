@@ -2,319 +2,165 @@
 <html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}OYSTERCULT{% endblock %}</title>
         
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+        {# Favicon #}
+        <link rel="icon" href="{{ asset('react-assets/favicon.ico') }}">
         
-        {% block stylesheets %}
-            <link rel="stylesheet" href="{{ asset('css/normalize.css') }}">
-            <link rel="stylesheet" href="{{ asset('css/main.css') }}">
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        {% endblock %}
+        {# Font Awesome #}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         
-        {% block javascripts %}
-            <script src="{{ asset('js/main.js') }}" defer></script>
-        {% endblock %}
+        {# Google Fonts #}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=SF+Pro+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
         
-        <style>
-            :root {
-                --brand-burgundy: #81212f;
-                --brand-burgundy-dark: #6a1b27;
-                --brand-burgundy-light: #a02a3c;
-                --brand-blue: #3b82f6;
-                --brand-blue-dark: #2563eb;
-                --brand-blue-light: #60a5fa;
-                --text-dark: #1f2937;
-                --text-light: #6b7280;
-                --text-lighter: #9ca3af;
-                --bg-light: #f3f4f6;
-                --bg-white: #ffffff;
-                --border-color: #e5e7eb;
-                --success-color: #10b981;
-                --warning-color: #f59e0b;
-                --danger-color: #ef4444;
-            }
-            
-            * {
-                box-sizing: border-box;
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-            }
-            
-            body {
-                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-                color: var(--text-dark);
-                line-height: 1.5;
-                background-color: var(--bg-light);
-                margin: 0;
-                padding: 0;
-            }
-            
-            a {
-                color: var(--brand-burgundy);
-                text-decoration: none;
-                transition: color 0.2s ease;
-                -webkit-transition: color 0.2s ease;
-                -moz-transition: color 0.2s ease;
-            }
-            
-            a:hover {
-                color: var(--brand-burgundy-dark);
-                text-decoration: underline;
-            }
-            
-            a:focus {
-                outline: 2px solid var(--brand-burgundy);
-                outline-offset: 2px;
-            }
-            
-            button {
-                cursor: pointer;
-            }
-            
-            button:focus {
-                outline: 2px solid var(--brand-burgundy);
-                outline-offset: 2px;
-            }
-            
-            .sr-only {
-                position: absolute;
-                width: 1px;
-                height: 1px;
-                padding: 0;
-                margin: -1px;
-                overflow: hidden;
-                clip: rect(0, 0, 0, 0);
-                white-space: nowrap;
-                border-width: 0;
-            }
-            
-            .container {
-                width: 100%;
-                max-width: 1280px;
-                padding: 0 1rem;
-                margin: 0 auto;
-            }
-            
-            .site-header {
-                background-color: var(--bg-white);
-                border-bottom: 1px solid var(--border-color);
-                padding: 1rem 0;
-                position: sticky;
-                top: 0;
-                z-index: 10;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            }
-            
-            .site-footer {
-                background-color: var(--text-dark);
-                color: var(--bg-white);
-                padding: 2rem 0;
-                margin-top: 3rem;
-            }
-            
-            .btn {
-                display: inline-block;
-                padding: 0.5rem 1rem;
-                border-radius: 0.25rem;
-                font-weight: 500;
-                text-align: center;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                -webkit-transition: all 0.2s ease;
-                -moz-transition: all 0.2s ease;
-                border: 1px solid transparent;
-            }
-            
-            .btn-primary {
-                background-color: var(--brand-burgundy);
-                color: white;
-            }
-            
-            .btn-primary:hover {
-                background-color: var(--brand-burgundy-dark);
-                color: white;
-                text-decoration: none;
-            }
-            
-            .btn-secondary {
-                background-color: var(--brand-blue);
-                color: white;
-            }
-            
-            .btn-secondary:hover {
-                background-color: var(--brand-blue-dark);
-                color: white;
-                text-decoration: none;
-            }
-            
-            .btn-outline {
-                border: 1px solid var(--border-color);
-                background-color: transparent;
-                color: var(--text-dark);
-            }
-            
-            .btn-outline:hover {
-                background-color: var(--bg-light);
-                text-decoration: none;
-            }
-            
-            .alert {
-                padding: 0.75rem 1rem;
-                border-radius: 0.25rem;
-                margin-bottom: 1rem;
-            }
-            
-            .alert-success {
-                background-color: #d1fae5;
-                color: #065f46;
-            }
-            
-            .alert-warning {
-                background-color: #fef3c7;
-                color: #92400e;
-            }
-            
-            .alert-danger {
-                background-color: #fee2e2;
-                color: #b91c1c;
-            }
-            
-            /* Navigation styles */
-            .site-nav {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            
-            .site-logo {
-                font-weight: 700;
-                font-size: 1.5rem;
-                color: var(--brand-burgundy);
-            }
-            
-            .site-logo:hover {
-                text-decoration: none;
-            }
-            
-            .nav-links {
-                display: flex;
-                gap: 1.5rem;
-                align-items: center;
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-            }
-            
-            .nav-link {
-                color: var(--text-dark);
-                font-weight: 500;
-            }
-            
-            .nav-link:hover {
-                color: var(--brand-burgundy);
-            }
-            
-            .nav-link.active {
-                color: var(--brand-burgundy);
-            }
-            
-            /* Mobile navigation toggle */
-            .nav-toggle {
-                display: none;
-                background: none;
-                border: none;
-                padding: 0.5rem;
-                color: var(--text-dark);
-                font-size: 1.5rem;
-            }
-            
-            @media (max-width: 768px) {
-                .nav-toggle {
-                    display: block;
-                }
-                
-                .nav-links {
-                    position: fixed;
-                    top: 60px;
-                    left: 0;
-                    right: 0;
-                    background-color: var(--bg-white);
-                    flex-direction: column;
-                    padding: 1rem;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    -webkit-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    -moz-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    transform: translateY(-100%);
-                    -webkit-transform: translateY(-100%);
-                    -moz-transform: translateY(-100%);
-                    transition: transform 0.3s ease;
-                    -webkit-transition: -webkit-transform 0.3s ease;
-                    -moz-transition: -moz-transform 0.3s ease;
-                }
-                
-                .nav-links.active {
-                    transform: translateY(0);
-                    -webkit-transform: translateY(0);
-                    -moz-transform: translateY(0);
-                }
-            }
-        </style>
+        {# Chart.js #}
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+        {# CSS personnalisé #}
+        <link rel="stylesheet" href="{{ asset('react-assets/main.css') }}">
+        <link rel="stylesheet" href="{{ asset('react-assets/custom.css') }}">
+        
+        {% block stylesheets %}{% endblock %}
     </head>
-    <body>
-        <header class="site-header">
-            <div class="container">
-                <nav class="site-nav">
-                    <a href="{{ path('app_dashboard') }}" class="nav-logo">
-                        <span class="sr-only">OYSTERCULT</span>
-                        <img src="{{ asset('images/logo.png') }}" alt="OYSTERCULT Logo" width="150">
-                    </a>
-                    <div class="nav-links">
-                        <a href="{{ path('app_dashboard') }}" class="nav-link">Tableau de bord</a>
-                        <a href="#" class="nav-link">Fournisseurs</a>
-                        <a href="#" class="nav-link">Produits</a>
-                        <a href="#" class="nav-link">Inventaire</a>
+    <body class="bg-brand-darker text-white font-sans">
+        <div class="app-container">
+            {# Sidebar #}
+            <aside class="sidebar glass-effect" id="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo">
+                        <img src="{{ asset('react-assets/images/logo.png') }}" alt="OYSTERCULT Logo" class="logo-img">
+                        <span class="logo-text">OYSTERCULT</span>
                     </div>
-                </nav>
-            </div>
-        </header>
-        
-        <main class="container">
-            {% for label, messages in app.flashes %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ label }}" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endfor %}
-            
-            {% block body %}{% endblock %}
-        </main>
-        
-        <footer class="site-footer">
-            <div class="container">
-                <p>&copy; {{ "now"|date("Y") }} OYSTERCULT. Tous droits réservés.</p>
-            </div>
-        </footer>
-        
-        <script>
-            // Toggle mobile navigation
-            document.addEventListener('DOMContentLoaded', function() {
-                const navToggle = document.querySelector('.nav-toggle');
-                const navLinks = document.querySelector('.nav-links');
+                    <button id="sidebar-toggle-btn" class="sidebar-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
                 
-                if (navToggle && navLinks) {
-                    navToggle.addEventListener('click', function() {
-                        const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
+                <nav class="sidebar-nav">
+                    <ul class="nav-list">
+                        <li class="nav-item {% if app.request.get('_route') starts with 'app_dashboard' %}active{% endif %}">
+                            <a href="{{ path('app_dashboard_index') }}" class="nav-link">
+                                <i class="fas fa-tachometer-alt nav-icon"></i>
+                                <span class="nav-text">Tableau de bord</span>
+                            </a>
+                        </li>
+                        <li class="nav-item {% if app.request.get('_route') starts with 'app_inventory' %}active{% endif %}">
+                            <a href="{{ path('app_inventory_index') }}" class="nav-link">
+                                <i class="fas fa-box nav-icon"></i>
+                                <span class="nav-text">Stock</span>
+                            </a>
+                        </li>
                         
-                        navToggle.setAttribute('aria-expanded', !expanded);
-                        navLinks.classList.toggle('active');
+                        <li class="nav-section-title">GESTION DES STOCKS</li>
+                        
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-water nav-icon"></i>
+                                <span class="nav-text">Bassins</span>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-table nav-icon"></i>
+                                <span class="nav-text">Tables</span>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-section-title">INSTALLATIONS</li>
+                        
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-clipboard-list nav-icon"></i>
+                                <span class="nav-text">Inventaire</span>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-section-title">ADMINISTRATION</li>
+                        
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-cog nav-icon"></i>
+                                <span class="nav-text">Configuration</span>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-user-shield nav-icon"></i>
+                                <span class="nav-text">Mot de passe</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                
+                <div class="sidebar-footer">
+                    <a href="{{ path('app_logout') }}" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Déconnexion</span>
+                    </a>
+                </div>
+            </aside>
+            
+            <main class="main-content">
+                {# Header #}
+                <header class="main-header glass-effect">
+                    <div class="header-left">
+                        <div class="logo-container">
+                            <div class="logo-icon">
+                                <div class="rotating-gear">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                            </div>
+                            <span class="logo-text">OYSTERCULT</span>
+                        </div>
+                    </div>
+                    
+                    <div class="header-right">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Rechercher...">
+                        </div>
+                        
+                        <div class="header-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge">2</span>
+                            </button>
+                            
+                            <div class="user-profile">
+                                <img src="{{ asset('react-assets/images/avatar.png') }}" alt="User" class="user-avatar">
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                
+                <div class="content-wrapper">
+                    {% block body %}{% endblock %}
+                </div>
+            </main>
+        </div>
+        
+        {# Scripts #}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Toggle sidebar
+                const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.querySelector('.main-content');
+                
+                if (sidebarToggleBtn) {
+                    sidebarToggleBtn.addEventListener('click', function() {
+                        sidebar.classList.toggle('collapsed');
+                        mainContent.classList.toggle('expanded');
                     });
                 }
             });
         </script>
+        
+        {% block javascripts %}{% endblock %}
     </body>
 </html>

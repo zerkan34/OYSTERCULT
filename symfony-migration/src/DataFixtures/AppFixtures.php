@@ -2,11 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Supplier;
-use App\Entity\SupplierProduct;
-use App\Entity\Inventory\OysterTable;
 use App\Entity\Inventory\Product;
-use App\Entity\Inventory\PurificationPool;
 use App\Entity\Inventory\StorageLocation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -34,113 +30,58 @@ class AppFixtures extends Fixture
         // Création des produits
         $product1 = new Product();
         $product1->setName('Filets');
-        $product1->setSku('FIL001');
-        $product1->setCategory('equipment');
+        $product1->setDescription('Filets pour le conditionnement des huîtres');
+        $product1->setPrice('15.99');
         $product1->setQuantity(100);
-        $product1->setUnit('piece');
-        $product1->setArrivalDate(new \DateTime());
-        $product1->setMinimumStock(20);
-        $product1->setMaximumStock(200);
+        $product1->setMinQuantity(20);
+        $product1->setUnit('pièce');
+        $product1->setStatus('available');
         $product1->setStorageLocation($storageLocation2);
         $manager->persist($product1);
 
         $product2 = new Product();
         $product2->setName('Huîtres N°3');
-        $product2->setSku('HUI003');
-        $product2->setCategory('oysters');
+        $product2->setDescription('Huîtres creuses calibre n°3');
+        $product2->setPrice('9.50');
         $product2->setQuantity(1000);
+        $product2->setMinQuantity(100);
         $product2->setUnit('kg');
-        $product2->setArrivalDate(new \DateTime());
-        $product2->setExpiryDate((new \DateTime())->modify('+2 weeks'));
-        $product2->setMinimumStock(100);
-        $product2->setMaximumStock(2000);
+        $product2->setStatus('available');
         $product2->setStorageLocation($storageLocation1);
         $manager->persist($product2);
 
-        // Création des bassins de purification
-        $pool1 = new PurificationPool();
-        $pool1->setPoolNumber('P001');
-        $pool1->setStatus('active');
-        $pool1->setLastMaintenanceDate(new \DateTime());
-        $pool1->setUvLampHours(120);
-        $pool1->setWaterParameters(['temperature' => 15, 'salinity' => 35]);
-        $pool1->setCapacity(1000);
-        $pool1->setCurrentOccupancy(800);
-        $manager->persist($pool1);
+        $product3 = new Product();
+        $product3->setName('Poches ostréicoles');
+        $product3->setDescription('Poches pour l\'élevage des huîtres');
+        $product3->setPrice('12.99');
+        $product3->setQuantity(15);
+        $product3->setMinQuantity(20);
+        $product3->setUnit('pièce');
+        $product3->setStatus('low_stock');
+        $product3->setStorageLocation($storageLocation2);
+        $manager->persist($product3);
 
-        $pool2 = new PurificationPool();
-        $pool2->setPoolNumber('P002');
-        $pool2->setStatus('maintenance');
-        $pool2->setLastMaintenanceDate(new \DateTime());
-        $pool2->setUvLampHours(500);
-        $pool2->setWaterParameters(['temperature' => 14, 'salinity' => 34]);
-        $pool2->setCapacity(1000);
-        $pool2->setCurrentOccupancy(0);
-        $manager->persist($pool2);
+        $product4 = new Product();
+        $product4->setName('Huîtres plates');
+        $product4->setDescription('Huîtres plates de Cancale');
+        $product4->setPrice('12.50');
+        $product4->setQuantity(500);
+        $product4->setMinQuantity(50);
+        $product4->setUnit('kg');
+        $product4->setStatus('available');
+        $product4->setStorageLocation($storageLocation1);
+        $manager->persist($product4);
 
-        // Création des tables à huîtres
-        $table1 = new OysterTable();
-        $table1->setTableNumber('T001');
-        $table1->setCells(['A1' => 'empty', 'A2' => 'occupied', 'B1' => 'occupied', 'B2' => 'empty']);
-        $table1->setStatus('active');
-        $table1->setLastMaintenanceDate(new \DateTime());
-        $table1->setCapacity(100);
-        $manager->persist($table1);
-
-        $table2 = new OysterTable();
-        $table2->setTableNumber('T002');
-        $table2->setCells(['A1' => 'occupied', 'A2' => 'occupied', 'B1' => 'occupied', 'B2' => 'occupied']);
-        $table2->setStatus('full');
-        $table2->setLastMaintenanceDate(new \DateTime());
-        $table2->setCapacity(100);
-        $manager->persist($table2);
-
-        // Création des fournisseurs
-        $supplier1 = new Supplier();
-        $supplier1->setName('Huîtres de Bretagne');
-        $supplier1->setContact('Jean Martin');
-        $supplier1->setEmail('contact@huitres-bretagne.fr');
-        $supplier1->setPhone('0123456789');
-        $supplier1->setAddress('1 rue de la Mer, 56000 Vannes');
-        $supplier1->setNotes('Fournisseur principal d\'huîtres');
-        $manager->persist($supplier1);
-
-        $supplier2 = new Supplier();
-        $supplier2->setName('MatériOyster');
-        $supplier2->setContact('Marie Dupont');
-        $supplier2->setEmail('contact@materioyster.fr');
-        $supplier2->setPhone('0987654321');
-        $supplier2->setAddress('42 rue du Port, 44000 Nantes');
-        $supplier2->setNotes('Fournisseur de matériel ostréicole');
-        $manager->persist($supplier2);
-
-        // Création des produits fournisseurs
-        $supplierProduct1 = new SupplierProduct();
-        $supplierProduct1->setSupplier($supplier1);
-        $supplierProduct1->setName('Huîtres plates');
-        $supplierProduct1->setType('diploid');
-        $supplierProduct1->setSize('3');
-        $supplierProduct1->setPrice(8.50);
-        $supplierProduct1->setDescription('Huîtres plates de Cancale');
-        $manager->persist($supplierProduct1);
-
-        $supplierProduct2 = new SupplierProduct();
-        $supplierProduct2->setSupplier($supplier1);
-        $supplierProduct2->setName('Huîtres creuses');
-        $supplierProduct2->setType('triploid');
-        $supplierProduct2->setSize('2');
-        $supplierProduct2->setPrice(7.20);
-        $supplierProduct2->setDescription('Huîtres creuses de Marennes');
-        $manager->persist($supplierProduct2);
-
-        $supplierProduct3 = new SupplierProduct();
-        $supplierProduct3->setSupplier($supplier2);
-        $supplierProduct3->setName('Poches ostréicoles');
-        $supplierProduct3->setType('equipment');
-        $supplierProduct3->setSize('standard');
-        $supplierProduct3->setPrice(12.99);
-        $supplierProduct3->setDescription('Poches ostréicoles 14mm');
-        $manager->persist($supplierProduct3);
+        $product5 = new Product();
+        $product5->setName('Gants de protection');
+        $product5->setDescription('Gants pour la manipulation des huîtres');
+        $product5->setPrice('8.99');
+        $product5->setQuantity(5);
+        $product5->setMinQuantity(10);
+        $product5->setUnit('paire');
+        $product5->setStatus('low_stock');
+        $product5->setStorageLocation($storageLocation2);
+        $manager->persist($product5);
 
         $manager->flush();
     }

@@ -4,181 +4,97 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <style>
-        .product-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        
-        .product-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        
-        .product-details {
-            background-color: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-        }
-        
-        .detail-row {
-            display: flex;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 1rem 0;
-        }
-        
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        
-        .detail-label {
-            width: 30%;
-            font-weight: 600;
-            color: #4b5563;
-        }
-        
-        .detail-value {
-            width: 70%;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-        
-        .status-available {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-        
-        .status-out-of-stock {
-            background-color: #fee2e2;
-            color: #b91c1c;
-        }
-        
-        .status-discontinued {
-            background-color: #e5e7eb;
-            color: #4b5563;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.375rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .btn-primary {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            background-color: #2563eb;
-        }
-        
-        .btn-secondary {
-            background-color: #f3f4f6;
-            color: #1f2937;
-            border: 1px solid #d1d5db;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #e5e7eb;
-        }
-        
-        .btn-danger {
-            background-color: #ef4444;
-            color: white;
-            border: none;
-        }
-        
-        .btn-danger:hover {
-            background-color: #dc2626;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('styles/inventory.css') }}">
 {% endblock %}
 
 {% block body %}
-    <div class="product-container">
-        <div class="product-header">
-            <h1 class="text-3xl font-bold">{{ product.name }}</h1>
-            <a href="{{ path('app_inventory_index') }}" class="btn btn-secondary">
-                Retour à la liste
-            </a>
-        </div>
-        
-        <div class="product-details">
-            <div class="detail-row">
-                <div class="detail-label">Nom</div>
-                <div class="detail-value">{{ product.name }}</div>
+    <div class="content-wrapper">
+        <div class="inventory-container">
+            <div class="page-header">
+                <h1>{{ product.name }}</h1>
+                
+                <a href="{{ path('app_inventory_index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
             </div>
             
-            <div class="detail-row">
-                <div class="detail-label">Description</div>
-                <div class="detail-value">{{ product.description|default('Aucune description') }}</div>
-            </div>
-            
-            <div class="detail-row">
-                <div class="detail-label">Prix</div>
-                <div class="detail-value">{{ product.price|number_format(2, ',', ' ') }} €</div>
-            </div>
-            
-            <div class="detail-row">
-                <div class="detail-label">Quantité en stock</div>
-                <div class="detail-value">{{ product.quantity }} {{ product.unit }}</div>
-            </div>
-            
-            <div class="detail-row">
-                <div class="detail-label">Quantité minimale</div>
-                <div class="detail-value">{{ product.minQuantity }} {{ product.unit }}</div>
-            </div>
-            
-            <div class="detail-row">
-                <div class="detail-label">Statut</div>
-                <div class="detail-value">
-                    {% if product.status == 'available' %}
-                        <span class="status-badge status-available">Disponible</span>
-                    {% elseif product.status == 'out_of_stock' %}
-                        <span class="status-badge status-out-of-stock">Rupture de stock</span>
-                    {% elseif product.status == 'discontinued' %}
-                        <span class="status-badge status-discontinued">Discontinué</span>
-                    {% else %}
-                        <span class="status-badge">{{ product.status }}</span>
-                    {% endif %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Détails du produit</h5>
+                </div>
+                
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Nom:</label>
+                                <p>{{ product.name }}</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Description:</label>
+                                <p>{{ product.description|default('Aucune description') }}</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Prix:</label>
+                                <p>{{ product.price|number_format(2, ',', ' ') }} €</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Quantité en stock:</label>
+                                <p>{{ product.quantity }} {{ product.unit }}</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Quantité minimale:</label>
+                                <p>{{ product.minQuantity }} {{ product.unit }}</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Statut:</label>
+                                <p>
+                                    {% if product.status == 'available' %}
+                                        <span class="badge bg-success">Disponible</span>
+                                    {% elseif product.status == 'out_of_stock' %}
+                                        <span class="badge bg-danger">Rupture de stock</span>
+                                    {% elseif product.status == 'discontinued' %}
+                                        <span class="badge bg-secondary">Discontinué</span>
+                                    {% else %}
+                                        <span class="badge bg-info">{{ product.status }}</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            
+                            {% if product.storageLocation %}
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Emplacement de stockage:</label>
+                                <p>{{ product.storageLocation.name }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a href="{{ path('app_inventory_edit', {'id': product.id}) }}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                        <a href="{{ path('app_inventory_transfer', {'id': product.id}) }}" class="btn btn-secondary">
+                            <i class="fas fa-exchange-alt"></i> Transférer
+                        </a>
+                        <form method="post" action="{{ path('app_inventory_delete', {'id': product.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');" class="d-inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                            <button class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
-            
-            {% if product.storageLocation %}
-            <div class="detail-row">
-                <div class="detail-label">Emplacement de stockage</div>
-                <div class="detail-value">{{ product.storageLocation.name }}</div>
-            </div>
-            {% endif %}
-        </div>
-        
-        <div class="action-buttons">
-            <a href="{{ path('app_inventory_edit', {'id': product.id}) }}" class="btn btn-primary">Modifier</a>
-            <a href="{{ path('app_inventory_transfer', {'id': product.id}) }}" class="btn btn-secondary">Transférer</a>
-            <form method="post" action="{{ path('app_inventory_delete', {'id': product.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');" style="display: inline-block;">
-                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
-                <button class="btn btn-danger">Supprimer</button>
-            </form>
         </div>
     </div>
 {% endblock %}
