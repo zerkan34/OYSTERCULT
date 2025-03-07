@@ -182,4 +182,29 @@ class InventoryService
     {
         return $this->storageLocationRepository->findAvailableLocations();
     }
+    
+    public function getAllProducts(): array
+    {
+        return $this->productRepository->findAll();
+    }
+    
+    public function getAllLocations(): array
+    {
+        return $this->storageLocationRepository->findAll();
+    }
+    
+    public function getLocationById(string $id): StorageLocation
+    {
+        $location = $this->storageLocationRepository->find($id);
+        if (!$location) {
+            throw new NotFoundHttpException('Emplacement de stockage non trouvé');
+        }
+        return $location;
+    }
+    
+    public function saveProduct(Product $product): void
+    {
+        $this->entityManager->persist($product);
+        $this->entityManager->flush();
+    }
 }

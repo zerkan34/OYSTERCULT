@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau produit - OYSTERCULT{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            border: 1px solid #d1d5db;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e5e7eb;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="form-container">
+        <div class="form-header">
+            <h1 class="text-3xl font-bold">Nouveau produit</h1>
+            <a href="{{ path('app_inventory_index') }}" class="btn btn-secondary">
+                Retour à la liste
+            </a>
+        </div>
+        
+        {{ form_start(form, {'attr': {'class': 'product-form'}}) }}
+            <div class="form-group">
+                {{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.name) }}
+                {{ form_errors(form.name) }}
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.description) }}
+                {{ form_errors(form.description) }}
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    {{ form_label(form.price, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.price) }}
+                    {{ form_errors(form.price) }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form_label(form.unit, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.unit) }}
+                    {{ form_errors(form.unit) }}
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    {{ form_label(form.quantity, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.quantity) }}
+                    {{ form_errors(form.quantity) }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form_label(form.minQuantity, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.minQuantity) }}
+                    {{ form_errors(form.minQuantity) }}
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    {{ form_label(form.status, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.status) }}
+                    {{ form_errors(form.status) }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form_label(form.storageLocation, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.storageLocation) }}
+                    {{ form_errors(form.storageLocation) }}
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <a href="{{ path('app_inventory_index') }}" class="btn btn-secondary">Annuler</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

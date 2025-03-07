@@ -24,7 +24,7 @@ class PurificationPoolRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->where('p.status = :status')
             ->setParameter('status', 'available')
-            ->orderBy('p.name', 'ASC')
+            ->orderBy('p.poolNumber', 'ASC')
             ->getQuery()
             ->getResult();
     }
@@ -35,9 +35,9 @@ class PurificationPoolRepository extends ServiceEntityRepository
     public function findPoolsDueMaintenance(\DateTime $threshold): array
     {
         return $this->createQueryBuilder('p')
-            ->where('p.lastMaintenance <= :threshold OR p.lastMaintenance IS NULL')
+            ->where('p.lastMaintenanceDate <= :threshold OR p.lastMaintenanceDate IS NULL')
             ->setParameter('threshold', $threshold)
-            ->orderBy('p.lastMaintenance', 'ASC')
+            ->orderBy('p.lastMaintenanceDate', 'ASC')
             ->getQuery()
             ->getResult();
     }

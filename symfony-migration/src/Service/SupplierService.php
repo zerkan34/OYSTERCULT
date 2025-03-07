@@ -2,10 +2,10 @@
 
 namespace App\Service;
 
-use App\Entity\Supplier;
-use App\Entity\SupplierProduct;
-use App\Repository\SupplierRepository;
-use App\Repository\SupplierProductRepository;
+use App\Entity\Supplier\Supplier;
+use App\Entity\Supplier\SupplierProduct;
+use App\Repository\Supplier\SupplierRepository;
+use App\Repository\Supplier\SupplierProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 

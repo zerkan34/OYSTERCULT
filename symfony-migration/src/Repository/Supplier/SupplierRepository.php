@@ -40,6 +40,24 @@ class SupplierRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findByName(string $name)
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.name LIKE :name')
+            ->setParameter('name', '%' . $name . '%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findWithProducts()
+    {
+        return $this->createQueryBuilder('s')
+            ->leftJoin('s.products', 'p')
+            ->addSelect('p')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findOneWithProducts(string $id): ?Supplier
     {
         return $this->createQueryBuilder('s')

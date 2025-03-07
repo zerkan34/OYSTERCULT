@@ -2,10 +2,12 @@
 
 namespace App\Controller\Inventory;
 
+use App\Entity\Inventory\Product;
 use App\Service\Inventory\InventoryService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -92,6 +94,60 @@ class InventoryController extends AbstractController
             return $this->json([
                 'success' => true,
                 'message' => 'Produit supprimé avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+    
+    /**
+     * @Route("/locations", name="locations_list", methods={"GET"})
+     */
+    public function listLocations(): JsonResponse
+    {
+        $locations = $this->inventoryService->getAllLocations();
+        
+        return $this->json([
+            'success' => true,
+            'data' => $locations
+        ]);
+    }
+    
+    /**
+     * @Route("/locations/{id}", name="locations_get", methods={"GET"})
+     */
+    public function getLocation(string $id): JsonResponse
+    {
+        try {
+            $location = $this->inventoryService->getLocationById($id);
+            return $this->json([
+                'success' => true,
+                'data' => $location
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 404);
+        }
+    }
+    
+    /**
+     * @Route("/locations", name="locations_create", methods={"POST"})
+     */
+    public function createLocation(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        
+        try {
+            $location = $this->inventoryService->addLocation($data);
+            return $this->json([
+                'success' => true,
+                'message' => 'Emplacement ajouté avec succès',
+                'data' => $location
             ]);
         } catch (\Exception $e) {
             return $this->json([

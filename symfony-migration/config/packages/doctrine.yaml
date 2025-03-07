@@ -7,6 +7,9 @@ doctrine:
         use_savepoints: true
         types:
             uuid: 'Symfony\Bridge\Doctrine\Types\UuidType'
+        options:
+            1002: "SET sql_mode=(SELECT REPLACE(@@sql_mode,'STRICT_TRANS_TABLES',''))"
+            1003: "SET SESSION sql_require_primary_key=0"
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
@@ -14,9 +17,30 @@ doctrine:
         mappings:
             App:
                 is_bundle: false
+                type: attribute
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
+        dql:
+            datetime_functions:
+                date: DoctrineExtensions\Query\Mysql\Date
+                date_format: DoctrineExtensions\Query\Mysql\DateFormat
+                dateadd: DoctrineExtensions\Query\Mysql\DateAdd
+                datesub: DoctrineExtensions\Query\Mysql\DateSub
+                datediff: DoctrineExtensions\Query\Mysql\DateDiff
+                day: DoctrineExtensions\Query\Mysql\Day
+                dayname: DoctrineExtensions\Query\Mysql\DayName
+                dayofweek: DoctrineExtensions\Query\Mysql\DayOfWeek
+                dayofyear: DoctrineExtensions\Query\Mysql\DayOfYear
+                hour: DoctrineExtensions\Query\Mysql\Hour
+                minute: DoctrineExtensions\Query\Mysql\Minute
+                month: DoctrineExtensions\Query\Mysql\Month
+                monthname: DoctrineExtensions\Query\Mysql\MonthName
+                second: DoctrineExtensions\Query\Mysql\Second
+                time: DoctrineExtensions\Query\Mysql\Time
+                timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
+                week: DoctrineExtensions\Query\Mysql\Week
+                year: DoctrineExtensions\Query\Mysql\Year
 
 when@test:
     doctrine:

@@ -16,17 +16,37 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-    public function findLowStock()
+    public function countLowStockProducts(): int
     {
         return $this->createQueryBuilder('p')
-            ->where('p.quantity <= p.minimumStock')
+            ->select('COUNT(p.id)')
+            ->where('p.quantity <= p.minQuantity')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function findLowStockProducts(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.quantity <= p.minQuantity')
             ->andWhere('p.status != :status')
             ->setParameter('status', 'out_of_stock')
+            ->orderBy('p.quantity', 'ASC')
+            ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }
 
-    public function findByStorageLocation($locationId)
+    public function findByCategory(string $category)
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.category = :category')
+            ->setParameter('category', $category)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByStorageLocation(int $locationId)
     {
         return $this->createQueryBuilder('p')
             ->where('p.storageLocation = :locationId')

@@ -6,49 +6,34 @@ use App\Repository\Inventory\OysterTableRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass=OysterTableRepository::class)
- * @ORM\Table(name="inventory_oyster_tables")
- */
+#[ORM\Entity(repositoryClass: OysterTableRepository::class)]
+#[ORM\Table(name: "inventory_oyster_tables")]
 class OysterTable
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer")]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     * @Assert\NotBlank(message="Le numéro de table est requis")
-     */
-    private $tableNumber;
+    #[ORM\Column(type: "string", length: 50)]
+    #[Assert\NotBlank(message: "Le numéro de table est requis")]
+    private ?string $tableNumber = null;
 
-    /**
-     * @ORM\Column(type="json")
-     */
-    private $cells = [];
+    #[ORM\Column(type: "json")]
+    private array $cells = [];
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $status = 'active';
+    #[ORM\Column(type: "string", length: 50)]
+    private ?string $status = "active";
 
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $lastMaintenanceDate;
+    #[ORM\Column(type: "date", nullable: true)]
+    private ?\DateTimeInterface $lastMaintenanceDate = null;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $capacity;
+    #[ORM\Column(type: "integer")]
+    #[Assert\GreaterThan(value: 0, message: "La capacité doit être supérieure à zéro")]
+    private ?int $capacity = null;
 
-    /**
-     * @ORM\Column(type="json", nullable=true)
-     */
-    private $metadata = [];
+    #[ORM\Column(type: "json", nullable: true)]
+    private array $metadata = [];
 
     public function getId(): ?int
     {
@@ -110,12 +95,12 @@ class OysterTable
         return $this;
     }
 
-    public function getMetadata(): ?array
+    public function getMetadata(): array
     {
         return $this->metadata;
     }
 
-    public function setMetadata(?array $metadata): self
+    public function setMetadata(array $metadata): self
     {
         $this->metadata = $metadata;
         return $this;

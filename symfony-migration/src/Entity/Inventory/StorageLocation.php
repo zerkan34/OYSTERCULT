@@ -8,50 +8,34 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass=StorageLocationRepository::class)
- * @ORM\Table(name="inventory_storage_locations")
- */
+#[ORM\Entity(repositoryClass: StorageLocationRepository::class)]
+#[ORM\Table(name: 'inventory_storage_locations')]
 class StorageLocation
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(message="Le nom est requis")
-     */
-    private $name;
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message: 'Le nom est requis')]
+    private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $type;
+    #[ORM\Column(type: 'string', length: 50)]
+    private ?string $type = null;
 
-    /**
-     * @ORM\Column(type="integer")
-     * @Assert\PositiveOrZero(message="La capacité doit être positive ou nulle")
-     */
-    private $capacity;
+    #[ORM\Column(type: 'integer')]
+    #[Assert\PositiveOrZero(message: 'La capacité doit être positive ou nulle')]
+    private ?int $capacity = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $description;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $description = null;
 
-    /**
-     * @ORM\Column(type="json", nullable=true)
-     */
-    private $temperature = [];
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $temperature = [];
 
-    /**
-     * @ORM\OneToMany(targetEntity=Product::class, mappedBy="storageLocation")
-     */
-    private $products;
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'storageLocation')]
+    private Collection $products;
 
     public function __construct()
     {
