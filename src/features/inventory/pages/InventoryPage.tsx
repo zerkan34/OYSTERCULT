@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Filter, Search, BarChart2, Package, AlertTriangle, Droplets, ShoppingCart, Map, X, Thermometer } from 'lucide-react';
+import { Plus, Filter, Search, BarChart2, Package, AlertTriangle, Droplets, ShoppingCart, Map, X, Thermometer, DollarSign, Upload, Camera, History, Eye, FileText } from 'lucide-react';
 import { OysterTableMap, Table } from '../components/OysterTableMap';
 import { PurificationPools } from '../components/PurificationPools';
 import { TrempeView } from '../components/TrempeView';
@@ -10,8 +10,10 @@ import { InventoryFilters } from '../components/InventoryFilters';
 import { useTouchGestures } from '@/lib/hooks';
 import { PurchaseConfiguration } from '@/features/purchases/components/PurchaseConfiguration';
 import { PurchaseForm } from '@/features/purchases/components/PurchaseForm';
+import { Modal } from '@/components/ui/Modal';
+import { useForm } from 'react-hook-form';
 
-type TabType = 'tables' | 'pools' | 'trempes' | 'autres' | 'achats';
+type TabType = 'tables' | 'pools' | 'trempes' | 'autres' | 'achats' | 'charges';
 
 export function InventoryPage() {
   const [activeTab, setActiveTab] = useState<TabType>('tables');
@@ -200,9 +202,60 @@ export function InventoryPage() {
         return 'Autres emplacements';
       case 'achats':
         return 'Achats';
+      case 'charges':
+        return 'Charges';
       default:
         return '';
     }
+  };
+
+  const [showNewChargeModal, setShowNewChargeModal] = useState(false);
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      chargeName: '',
+      amount: 0,
+      description: '',
+      invoice: null
+    }
+  });
+
+  const [invoicePreview, setInvoicePreview] = useState<string | null>(null);
+
+  const handleAddCharge = (data: any) => {
+    console.log(data);
+    setShowNewChargeModal(false);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setInvoicePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveInvoice = () => {
+    setInvoicePreview(null);
+  };
+
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const pastCharges = [
+    { id: 'CH-001', name: 'Carburant voiture', amount: 50, date: '2025-03-01' },
+    { id: 'CH-002', name: 'Carburant bateau', amount: 75, date: '2025-03-03' },
+    { id: 'CH-003', name: 'Réparation équipement', amount: 200, date: '2025-03-05' }
+  ];
+
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
+
+  const [selectedCharge, setSelectedCharge] = useState(null);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+
+  const handleViewCharge = (charge: any) => {
+    setSelectedCharge(charge);
+    setShowInvoiceModal(true);
   };
 
   return (
@@ -282,6 +335,19 @@ export function InventoryPage() {
           <div className="flex items-center">
             <ShoppingCart size={16} className="mr-2" />
             Achats
+          </div>
+        </button>
+        <button
+          onClick={() => setActiveTab('charges')}
+          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'charges'
+              ? 'border-brand-primary text-white'
+              : 'border-transparent text-white/60 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center">
+            <DollarSign size={16} className="mr-2" />
+            Charges
           </div>
         </button>
       </div>
@@ -772,17 +838,17 @@ export function InventoryPage() {
             </div>
             <form className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-white mb-2">
+                <label className="block text-sm font-medium text-white mb-1">
                   Lieu de stockage
                 </label>
                 <input
                   type="text"
-                  className="w-full p-4 bg-white/5 rounded-lg text-white border border-white/10"
+                  className="w-full p-4 bg-white/5 border border-white/10 rounded-lg text-white"
                   placeholder="Ex: Entrepôt principal"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-2">
+                <label className="block text-sm font-medium text-white mb-1">
                   Type de stockage
                 </label>
                 <select className="w-full p-4 bg-brand-dark/80 rounded-lg text-white border border-brand-blue/30 focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue appearance-none">
@@ -794,13 +860,13 @@ export function InventoryPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-2">
+                <label className="block text-sm font-medium text-white mb-1">
                   Capacité (estimée)
                 </label>
                 <div className="flex items-center space-x-4">
                   <input
                     type="number"
-                    className="w-full p-4 bg-white/5 rounded-lg text-white border border-white/10"
+                    className="w-full p-4 bg-white/5 border border-white/10 rounded-lg text-white"
                     placeholder="Ex: 1000"
                   />
                   <select className="p-4 bg-brand-dark/80 rounded-lg text-white border border-brand-blue/30 focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue appearance-none">
@@ -814,13 +880,13 @@ export function InventoryPage() {
                 <button
                   type="button"
                   onClick={() => setShowNewStorageLocation(false)}
-                  className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+                  className="w-full py-2 text-sm text-white/70 hover:text-white border border-white/10 rounded-lg transition-colors"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
+                  className="w-full py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
                 >
                   Enregistrer
                 </button>
@@ -902,6 +968,236 @@ export function InventoryPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Modal pour les charges */}
+      {activeTab === 'charges' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-medium text-white">Charges</h2>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setShowNewChargeModal(true)}
+                className="flex items-center px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
+              >
+                <DollarSign size={18} className="mr-2" />
+                Nouvelle Charge
+              </button>
+              <button
+                onClick={() => setShowCalendarModal(true)}
+                className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+              >
+                <History size={18} className="mr-2" />
+                Calendrier
+              </button>
+            </div>
+          </div>
+          <div className="space-y-4 mt-6">
+            <div className="flex justify-between p-4 bg-white/5 border border-white/10 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
+                  <FileText className="text-brand-blue" size={20} />
+                </div>
+                <div>
+                  <p className="text-white font-medium">Carburant voiture</p>
+                  <p className="text-white/60 text-sm">Date: 2025-03-01</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <p className="text-white font-medium">50 €</p>
+                <button
+                  onClick={() => handleViewCharge(pastCharges[0])}
+                  className="text-white/60 hover:text-white transition-colors"
+                >
+                  <Eye size={20} />
+                </button>
+              </div>
+            </div>
+            <div className="flex justify-between p-4 bg-white/5 border border-white/10 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
+                  <FileText className="text-brand-blue" size={20} />
+                </div>
+                <div>
+                  <p className="text-white font-medium">Carburant bateau</p>
+                  <p className="text-white/60 text-sm">Date: 2025-03-03</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <p className="text-white font-medium">75 €</p>
+                <button
+                  onClick={() => handleViewCharge(pastCharges[1])}
+                  className="text-white/60 hover:text-white transition-colors"
+                >
+                  <Eye size={20} />
+                </button>
+              </div>
+            </div>
+            <div className="flex justify-between p-4 bg-white/5 border border-white/10 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
+                  <FileText className="text-brand-blue" size={20} />
+                </div>
+                <div>
+                  <p className="text-white font-medium">Réparation équipement</p>
+                  <p className="text-white/60 text-sm">Date: 2025-03-05</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <p className="text-white font-medium">200 €</p>
+                <button
+                  onClick={() => handleViewCharge(pastCharges[2])}
+                  className="text-white/60 hover:text-white transition-colors"
+                >
+                  <Eye size={20} />
+                </button>
+              </div>
+            </div>
+          </div>
+          {showNewChargeModal && (
+            <Modal
+              isOpen={showNewChargeModal}
+              onClose={() => setShowNewChargeModal(false)}
+              title="Nouvelle Charge"
+              size="lg"
+            >
+              <form onSubmit={handleSubmit(handleAddCharge)} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Nom de la charge
+                  </label>
+                  <input
+                    {...register('chargeName', { required: 'Le nom de la charge est requis' })}
+                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                  />
+                  {errors.chargeName && (
+                    <p className="mt-1 text-sm text-red-400">{errors.chargeName.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Montant (€)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    {...register('amount', { required: 'Le montant est requis' })}
+                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                  />
+                  {errors.amount && (
+                    <p className="mt-1 text-sm text-red-400">{errors.amount.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    {...register('description')}
+                    rows={3}
+                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white resize-none"
+                    placeholder="Ajoutez une description..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Facture (photo/scan)
+                  </label>
+                  <div className="flex flex-col items-center justify-center p-4 border border-dashed border-white/20 rounded-lg bg-white/5">
+                    {invoicePreview ? (
+                      <div className="w-full space-y-3">
+                        <img 
+                          src={invoicePreview} 
+                          alt="Aperçu de la facture" 
+                          className="max-h-48 mx-auto object-contain rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleRemoveInvoice}
+                          className="w-full py-2 text-sm text-white/70 hover:text-white border border-white/10 rounded-lg transition-colors"
+                        >
+                          Supprimer et choisir une autre
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="w-full space-y-4">
+                        <div className="flex justify-center">
+                          <label htmlFor="invoice-upload" className="cursor-pointer bg-white/10 hover:bg-white/15 text-white rounded-lg px-4 py-3 flex items-center justify-center transition-colors duration-200">
+                            <Upload size={20} className="mr-2" />
+                            <span>Choisir un fichier</span>
+                            <input
+                              id="invoice-upload"
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handleFileChange}
+                            />
+                          </label>
+                        </div>
+                        <div className="text-center">
+                          <span className="text-sm text-white/40">ou</span>
+                        </div>
+                        <div className="flex justify-center">
+                          <button
+                            type="button"
+                            className="bg-white/10 hover:bg-white/15 text-white rounded-lg px-4 py-3 flex items-center justify-center transition-colors duration-200"
+                          >
+                            <Camera size={20} className="mr-2" />
+                            <span>Prendre une photo</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <p className="mt-2 text-xs text-white/50">La facture sera disponible dans Comptabilité</p>
+                </div>
+                <div className="flex justify-end space-x-3 pt-3 border-t border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setShowNewChargeModal(false)}
+                    className="px-5 py-2 border border-white/10 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 bg-brand-primary hover:bg-brand-primary/90 rounded-lg text-white transition-colors"
+                  >
+                    Enregistrer
+                  </button>
+                </div>
+              </form>
+            </Modal>
+          )}
+          {showCalendarModal && (
+            <Modal
+              isOpen={showCalendarModal}
+              onClose={() => setShowCalendarModal(false)}
+              title="Calendrier"
+              size="lg"
+            >
+              <div className="p-4">
+                <p className="text-white">Ici, vous pouvez intégrer un composant de calendrier.</p>
+              </div>
+            </Modal>
+          )}
+        </div>
+      )}
+
+      {/* Modal pour afficher les détails de la facture */}
+      {showInvoiceModal && selectedCharge && (
+        <Modal
+          isOpen={showInvoiceModal}
+          onClose={() => setShowInvoiceModal(false)}
+          title="Détails de la facture"
+          size="lg"
+        >
+          <div className="p-4">
+            <p className="text-white">Détails de la facture pour {selectedCharge.name}</p>
+            {/* Add more invoice details here */}
+          </div>
+        </Modal>
       )}
 
       {/* Loading overlay for refresh */}
