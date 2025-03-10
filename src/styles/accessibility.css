@@ -1,0 +1,202 @@
+/* Styles d'accessibilité */
+@layer base {
+  /* Styles pour les lecteurs d'écran */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .sr-only-focusable:not(:focus) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* États de focus améliorés */
+  :focus {
+    outline: none;
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ring);
+    border-radius: 0.25rem;
+  }
+
+  /* Support des préférences de mouvement */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Composants accessibles */
+@layer components {
+  /* Boutons accessibles */
+  .button-accessible {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.5rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Liens accessibles */
+  .link-accessible {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transition: color 0.2s ease;
+  }
+
+  .link-accessible:hover {
+    color: var(--primary-foreground);
+  }
+
+  /* Formulaires accessibles */
+  .form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--foreground);
+  }
+
+  .form-input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    background-color: var(--input);
+    color: var(--foreground);
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: 0 0 0 2px var(--ring);
+  }
+
+  .form-error {
+    color: var(--destructive);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Utilitaires d'accessibilité */
+@layer utilities {
+  /* Contraste amélioré */
+  .high-contrast {
+    --primary: rgb(0, 102, 204);
+    --destructive: rgb(220, 38, 38);
+    --ring: rgb(59, 130, 246);
+  }
+
+  /* Taille de texte ajustable */
+  .text-scalable {
+    font-size: calc(1rem + 0.5vw);
+    line-height: 1.5;
+  }
+
+  /* Espacement des lettres amélioré */
+  .letter-spacing-improved {
+    letter-spacing: 0.05em;
+  }
+
+  /* Support du mode sombre */
+  @media (prefers-color-scheme: dark) {
+    .dark\:high-contrast {
+      --primary: rgb(56, 189, 248);
+      --destructive: rgb(239, 68, 68);
+      --ring: rgb(59, 130, 246);
+    }
+  }
+
+  /* Support des préférences de contraste */
+  @media (prefers-contrast: more) {
+    .contrast\:improved {
+      --primary: rgb(0, 84, 166);
+      --destructive: rgb(185, 28, 28);
+      --ring: rgb(37, 99, 235);
+    }
+  }
+}
+
+/* États ARIA */
+[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+[aria-busy="true"] {
+  cursor: progress;
+}
+
+[aria-hidden="true"] {
+  display: none;
+}
+
+/* Support des attributs de formulaire */
+[aria-invalid="true"] {
+  border-color: var(--destructive);
+}
+
+[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 2px var(--destructive);
+}
+
+/* Support des rôles ARIA */
+[role="alert"],
+[role="alertdialog"] {
+  position: relative;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+[role="tooltip"] {
+  position: absolute;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.25rem;
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  z-index: 50;
+}
+
+/* Support des attributs d'autocomplétion */
+input[autocomplete="current-password"],
+input[autocomplete="new-password"] {
+  font-family: -apple-system-monospace, 'SF Mono', monospace;
+}

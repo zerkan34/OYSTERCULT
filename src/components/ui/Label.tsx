@@ -1,19 +1,22 @@
 import * as React from "react"
+import * as LabelPrimitive from "@radix-ui/react-label"
+import { cn } from "@/lib/utils"
 
-export interface LabelProps
-  extends React.LabelHTMLAttributes<HTMLLabelElement> {}
-
-const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <label
-        className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className || ''}`}
-        ref={ref}
-        {...props}
-      />
-    )
-  }
-)
-Label.displayName = "Label"
+const Label = React.forwardRef<
+  React.ElementRef<typeof LabelPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
+>(({ className, ...props }, ref) => (
+  <LabelPrimitive.Root
+    ref={ref}
+    className={cn(
+      "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+      "text-white select-none cursor-pointer",
+      "transition-colors duration-200",
+      className
+    )}
+    {...props}
+  />
+))
+Label.displayName = LabelPrimitive.Root.displayName
 
 export { Label }

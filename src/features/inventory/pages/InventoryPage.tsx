@@ -264,14 +264,14 @@ export function InventoryPage() {
       className="space-y-6"
       {...handlers}
     >
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">{getTitleByTab()}</h1>
-        <div className="flex items-center space-x-3">
+      <div className="flex items-center justify-between mb-6" role="banner">
+        <h1 className="text-2xl font-bold text-white" aria-label="Titre de la page">{getTitleByTab()}</h1>
+        <div className="flex items-center space-x-3" role="toolbar">
           {/* Bouton Nouveau Lot supprimé */}
         </div>
       </div>
 
-      <div className="flex items-center space-x-4 border-b border-white/10">
+      <div className="flex items-center space-x-4 border-b border-white/10" role="tablist">
         <button
           onClick={() => setActiveTab('tables')}
           className={`py-4 text-sm font-medium border-b-2 transition-colors ${
@@ -279,9 +279,11 @@ export function InventoryPage() {
               ? 'border-brand-primary text-white'
               : 'border-transparent text-white/60 hover:text-white'
           }`}
+          aria-label="Tables"
+          aria-selected={activeTab === 'tables'}
         >
           <div className="flex items-center">
-            <Package size={16} className="mr-2" />
+            <Package size={16} className="mr-2" aria-hidden="true" />
             Tables
           </div>
         </button>
@@ -292,9 +294,11 @@ export function InventoryPage() {
               ? 'border-brand-primary text-white'
               : 'border-transparent text-white/60 hover:text-white'
           }`}
+          aria-label="Trempes"
+          aria-selected={activeTab === 'trempes'}
         >
           <div className="flex items-center">
-            <Droplets size={16} className="mr-2" />
+            <Droplets size={16} className="mr-2" aria-hidden="true" />
             Trempes
           </div>
         </button>
@@ -305,9 +309,11 @@ export function InventoryPage() {
               ? 'border-brand-primary text-white'
               : 'border-transparent text-white/60 hover:text-white'
           }`}
+          aria-label="Bassins"
+          aria-selected={activeTab === 'pools'}
         >
           <div className="flex items-center">
-            <Droplets size={16} className="mr-2" />
+            <Droplets size={16} className="mr-2" aria-hidden="true" />
             Bassins
           </div>
         </button>
@@ -318,9 +324,11 @@ export function InventoryPage() {
               ? 'border-brand-primary text-white'
               : 'border-transparent text-white/60 hover:text-white'
           }`}
+          aria-label="Autres emplacements"
+          aria-selected={activeTab === 'autres'}
         >
           <div className="flex items-center">
-            <Map size={16} className="mr-2" />
+            <Map size={16} className="mr-2" aria-hidden="true" />
             Autres emplacements
           </div>
         </button>
@@ -331,9 +339,11 @@ export function InventoryPage() {
               ? 'border-brand-primary text-white'
               : 'border-transparent text-white/60 hover:text-white'
           }`}
+          aria-label="Achats"
+          aria-selected={activeTab === 'achats'}
         >
           <div className="flex items-center">
-            <ShoppingCart size={16} className="mr-2" />
+            <ShoppingCart size={16} className="mr-2" aria-hidden="true" />
             Achats
           </div>
         </button>
@@ -344,30 +354,34 @@ export function InventoryPage() {
               ? 'border-brand-primary text-white'
               : 'border-transparent text-white/60 hover:text-white'
           }`}
+          aria-label="Charges"
+          aria-selected={activeTab === 'charges'}
         >
           <div className="flex items-center">
-            <DollarSign size={16} className="mr-2" />
+            <DollarSign size={16} className="mr-2" aria-hidden="true" />
             Charges
           </div>
         </button>
       </div>
 
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4" role="search">
         <div className="flex-1 relative">
-          <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" />
+          <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" aria-hidden="true" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Rechercher..."
             className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40"
+            aria-label="Rechercher"
           />
         </div>
         <button 
           onClick={() => setShowFilters(true)}
           className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+          aria-label="Filtres"
         >
-          <Filter size={20} className="mr-2" />
+          <Filter size={20} className="mr-2" aria-hidden="true" />
           Filtres
         </button>
       </div>
@@ -389,8 +403,9 @@ export function InventoryPage() {
             <button
               onClick={() => setShowNewStorageLocation(true)}
               className="flex items-center px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
+              aria-label="Ajouter lieu de stockage"
             >
-              <Plus size={18} className="mr-2" />
+              <Plus size={18} className="mr-2" aria-hidden="true" />
               Ajouter lieu de stockage
             </button>
           </div>
@@ -404,7 +419,7 @@ export function InventoryPage() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-md bg-blue-500/20 flex items-center justify-center mr-3">
-                      <Droplets size={18} className="text-blue-400" />
+                      <Droplets size={18} className="text-blue-400" aria-hidden="true" />
                     </div>
                     <h3 className="text-white font-medium">Frigo 1</h3>
                   </div>
@@ -438,7 +453,7 @@ export function InventoryPage() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-md bg-blue-500/20 flex items-center justify-center mr-3">
-                      <Droplets size={18} className="text-blue-400" />
+                      <Droplets size={18} className="text-blue-400" aria-hidden="true" />
                     </div>
                     <h3 className="text-white font-medium">Frigo 2</h3>
                   </div>
@@ -472,7 +487,7 @@ export function InventoryPage() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-md bg-cyan-500/20 flex items-center justify-center mr-3">
-                      <Thermometer size={18} className="text-cyan-400" />
+                      <Thermometer size={18} className="text-cyan-400" aria-hidden="true" />
                     </div>
                     <h3 className="text-white font-medium">Congélateur 1</h3>
                   </div>
@@ -506,7 +521,7 @@ export function InventoryPage() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-md bg-cyan-500/20 flex items-center justify-center mr-3">
-                      <Thermometer size={18} className="text-cyan-400" />
+                      <Thermometer size={18} className="text-cyan-400" aria-hidden="true" />
                     </div>
                     <h3 className="text-white font-medium">Congélateur 2</h3>
                   </div>
@@ -540,7 +555,7 @@ export function InventoryPage() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-md bg-amber-500/20 flex items-center justify-center mr-3">
-                      <Package size={18} className="text-amber-400" />
+                      <Package size={18} className="text-amber-400" aria-hidden="true" />
                     </div>
                     <h3 className="text-white font-medium">Remise</h3>
                   </div>
@@ -574,7 +589,7 @@ export function InventoryPage() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-md bg-purple-500/20 flex items-center justify-center mr-3">
-                      <Map size={18} className="text-purple-400" />
+                      <Map size={18} className="text-purple-400" aria-hidden="true" />
                     </div>
                     <h3 className="text-white font-medium">Cave</h3>
                   </div>
@@ -634,7 +649,7 @@ export function InventoryPage() {
 
       {/* Modal pour afficher les produits d'un lieu de stockage */}
       {selectedStorageLocation && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog">
           <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
@@ -643,18 +658,19 @@ export function InventoryPage() {
                   selectedStorageLocation.includes('Congélateur') ? 'bg-cyan-500/20' :
                   selectedStorageLocation === 'Remise' ? 'bg-amber-500/20' : 'bg-purple-500/20'
                 }`}>
-                  {selectedStorageLocation.includes('Frigo') ? <Droplets size={20} className="text-blue-400" /> :
-                   selectedStorageLocation.includes('Congélateur') ? <Thermometer size={20} className="text-cyan-400" /> :
-                   selectedStorageLocation === 'Remise' ? <Package size={20} className="text-amber-400" /> : 
-                   <Map size={20} className="text-purple-400" />}
+                  {selectedStorageLocation.includes('Frigo') ? <Droplets size={20} className="text-blue-400" aria-hidden="true" /> :
+                   selectedStorageLocation.includes('Congélateur') ? <Thermometer size={20} className="text-cyan-400" aria-hidden="true" /> :
+                   selectedStorageLocation === 'Remise' ? <Package size={20} className="text-amber-400" aria-hidden="true" /> : 
+                   <Map size={20} className="text-purple-400" aria-hidden="true" />}
                 </div>
                 <h3 className="text-xl font-bold text-white">{selectedStorageLocation}</h3>
               </div>
               <button
                 onClick={() => setSelectedStorageLocation(null)}
                 className="text-white/60 hover:text-white transition-colors"
+                aria-label="Fermer"
               >
-                <X size={24} />
+                <X size={24} aria-hidden="true" />
               </button>
             </div>
 
@@ -667,8 +683,9 @@ export function InventoryPage() {
               <button
                 onClick={() => setShowAddProduct(true)}
                 className="px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors flex items-center gap-2"
+                aria-label="Ajouter un produit"
               >
-                <Plus size={16} />
+                <Plus size={16} aria-hidden="true" />
                 Ajouter un produit
               </button>
             </div>
@@ -708,6 +725,7 @@ export function InventoryPage() {
                           initiateRemoveProduct(selectedStorageLocation, product);
                         }}
                         className="px-3 py-1 bg-brand-burgundy/80 hover:bg-brand-burgundy text-white text-xs rounded-lg transition-colors"
+                        aria-label="Sortir"
                       >
                         Sortir
                       </button>
@@ -726,7 +744,7 @@ export function InventoryPage() {
 
       {/* Modal pour ajouter un nouveau produit */}
       {showAddProduct && selectedStorageLocation && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog">
           <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white">
@@ -735,8 +753,9 @@ export function InventoryPage() {
               <button
                 onClick={() => setShowAddProduct(false)}
                 className="text-white/60 hover:text-white transition-colors"
+                aria-label="Fermer"
               >
-                <X size={24} />
+                <X size={24} aria-hidden="true" />
               </button>
             </div>
 
@@ -750,6 +769,7 @@ export function InventoryPage() {
                   required
                   className="w-full p-3 bg-brand-dark/80 rounded-lg text-white border border-brand-blue/30 focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue"
                   placeholder="Ex: Huîtres Fines de Claire"
+                  aria-label="Nom du produit"
                 />
               </div>
 
@@ -763,6 +783,7 @@ export function InventoryPage() {
                     required
                     className="w-full p-3 bg-brand-dark/80 rounded-lg text-white border border-brand-blue/30 focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue"
                     placeholder="Ex: 50"
+                    aria-label="Quantité"
                   />
                 </div>
                 <div>
@@ -771,6 +792,7 @@ export function InventoryPage() {
                     value={newProduct.unit}
                     onChange={(e) => setNewProduct({ ...newProduct, unit: e.target.value })}
                     className="w-full p-3 bg-brand-dark/80 rounded-lg text-white border border-brand-blue/30 focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue appearance-none"
+                    aria-label="Unité"
                   >
                     <option value="kg">kg</option>
                     <option value="g">g</option>
@@ -789,6 +811,7 @@ export function InventoryPage() {
                   onChange={(e) => setNewProduct({ ...newProduct, arrivalDate: e.target.value })}
                   required
                   className="w-full p-3 bg-brand-dark/80 rounded-lg text-white border border-brand-blue/30 focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue"
+                  aria-label="Date d'arrivée"
                 />
               </div>
 
@@ -799,6 +822,7 @@ export function InventoryPage() {
                   value={newProduct.expiryDate}
                   onChange={(e) => setNewProduct({ ...newProduct, expiryDate: e.target.value })}
                   className="w-full p-3 bg-brand-dark/80 rounded-lg text-white border border-brand-blue/30 focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue"
+                  aria-label="Date d'expiration (DLC)"
                 />
                 <p className="text-xs text-white/50 mt-1">Laissez vide si non applicable</p>
               </div>
@@ -808,12 +832,14 @@ export function InventoryPage() {
                   type="button"
                   onClick={() => setShowAddProduct(false)}
                   className="px-4 py-2 bg-white/10 rounded-lg text-white hover:bg-white/20 transition-colors"
+                  aria-label="Annuler"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
+                  aria-label="Ajouter"
                 >
                   Ajouter
                 </button>
@@ -825,33 +851,31 @@ export function InventoryPage() {
 
       {/* Modal pour ajouter un nouveau lieu de stockage */}
       {showNewStorageLocation && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center" role="dialog">
           <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white">Nouveau lieu de stockage</h3>
               <button
                 onClick={() => setShowNewStorageLocation(false)}
                 className="text-white/60 hover:text-white transition-colors"
+                aria-label="Fermer"
               >
-                <X size={24} />
+                <X size={24} aria-hidden="true" />
               </button>
             </div>
             <form className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
-                  Lieu de stockage
-                </label>
+                <label className="block text-sm font-medium text-white mb-1">Lieu de stockage</label>
                 <input
                   type="text"
                   className="w-full p-4 bg-white/5 border border-white/10 rounded-lg text-white"
                   placeholder="Ex: Entrepôt principal"
+                  aria-label="Lieu de stockage"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
-                  Type de stockage
-                </label>
-                <select className="w-full p-4 bg-brand-dark/80 rounded-lg text-white border border-brand-blue/30 focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue appearance-none">
+                <label className="block text-sm font-medium text-white mb-1">Type de stockage</label>
+                <select className="w-full p-4 bg-brand-dark/80 rounded-lg text-white border border-brand-blue/30 focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue appearance-none" aria-label="Type de stockage">
                   <option value="">Sélectionner un type</option>
                   <option value="frigo">Frigo</option>
                   <option value="congelateur">Congélateur</option>
@@ -860,16 +884,15 @@ export function InventoryPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
-                  Capacité (estimée)
-                </label>
+                <label className="block text-sm font-medium text-white mb-1">Capacité (estimée)</label>
                 <div className="flex items-center space-x-4">
                   <input
                     type="number"
                     className="w-full p-4 bg-white/5 border border-white/10 rounded-lg text-white"
                     placeholder="Ex: 1000"
+                    aria-label="Capacité (estimée)"
                   />
-                  <select className="p-4 bg-brand-dark/80 rounded-lg text-white border border-brand-blue/30 focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue appearance-none">
+                  <select className="p-4 bg-brand-dark/80 rounded-lg text-white border border-brand-blue/30 focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue appearance-none" aria-label="Unité">
                     <option value="kg">kg</option>
                     <option value="tonnes">tonnes</option>
                     <option value="units">unités</option>
@@ -881,12 +904,14 @@ export function InventoryPage() {
                   type="button"
                   onClick={() => setShowNewStorageLocation(false)}
                   className="w-full py-2 text-sm text-white/70 hover:text-white border border-white/10 rounded-lg transition-colors"
+                  aria-label="Annuler"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   className="w-full py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
+                  aria-label="Enregistrer"
                 >
                   Enregistrer
                 </button>
@@ -898,7 +923,7 @@ export function InventoryPage() {
 
       {/* Modal de confirmation pour sortir un produit */}
       {showRemoveConfirm && productToRemove && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog">
           <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white">
@@ -910,8 +935,9 @@ export function InventoryPage() {
                   setProductToRemove(null);
                 }}
                 className="text-white/60 hover:text-white transition-colors"
+                aria-label="Fermer"
               >
-                <X size={24} />
+                <X size={24} aria-hidden="true" />
               </button>
             </div>
             
@@ -940,6 +966,7 @@ export function InventoryPage() {
                     required
                     className="w-full p-3 bg-brand-dark/80 rounded-l-lg text-white border border-brand-blue/30 focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue"
                     placeholder="Quantité"
+                    aria-label="Quantité à sortir"
                   />
                   <span className="bg-white/10 text-white px-4 py-3 rounded-r-lg border-t border-r border-b border-brand-blue/30">
                     {extractUnit(productToRemove.quantity)}
@@ -955,12 +982,14 @@ export function InventoryPage() {
                     setProductToRemove(null);
                   }}
                   className="px-4 py-2 bg-white/10 rounded-lg text-white hover:bg-white/20 transition-colors"
+                  aria-label="Annuler"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
+                  aria-label="Confirmer"
                 >
                   Confirmer
                 </button>
@@ -979,15 +1008,17 @@ export function InventoryPage() {
               <button
                 onClick={() => setShowNewChargeModal(true)}
                 className="flex items-center px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
+                aria-label="Nouvelle Charge"
               >
-                <DollarSign size={18} className="mr-2" />
+                <DollarSign size={18} aria-hidden="true" />
                 Nouvelle Charge
               </button>
               <button
                 onClick={() => setShowCalendarModal(true)}
                 className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+                aria-label="Calendrier"
               >
-                <History size={18} className="mr-2" />
+                <History size={18} aria-hidden="true" />
                 Calendrier
               </button>
             </div>
@@ -996,7 +1027,7 @@ export function InventoryPage() {
             <div className="flex justify-between p-4 bg-white/5 border border-white/10 rounded-lg">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
-                  <FileText className="text-brand-blue" size={20} />
+                  <FileText className="text-brand-blue" size={20} aria-hidden="true" />
                 </div>
                 <div>
                   <p className="text-white font-medium">Carburant voiture</p>
@@ -1008,15 +1039,16 @@ export function InventoryPage() {
                 <button
                   onClick={() => handleViewCharge(pastCharges[0])}
                   className="text-white/60 hover:text-white transition-colors"
+                  aria-label="Voir"
                 >
-                  <Eye size={20} />
+                  <Eye size={20} aria-hidden="true" />
                 </button>
               </div>
             </div>
             <div className="flex justify-between p-4 bg-white/5 border border-white/10 rounded-lg">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
-                  <FileText className="text-brand-blue" size={20} />
+                  <FileText className="text-brand-blue" size={20} aria-hidden="true" />
                 </div>
                 <div>
                   <p className="text-white font-medium">Carburant bateau</p>
@@ -1028,15 +1060,16 @@ export function InventoryPage() {
                 <button
                   onClick={() => handleViewCharge(pastCharges[1])}
                   className="text-white/60 hover:text-white transition-colors"
+                  aria-label="Voir"
                 >
-                  <Eye size={20} />
+                  <Eye size={20} aria-hidden="true" />
                 </button>
               </div>
             </div>
             <div className="flex justify-between p-4 bg-white/5 border border-white/10 rounded-lg">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
-                  <FileText className="text-brand-blue" size={20} />
+                  <FileText className="text-brand-blue" size={20} aria-hidden="true" />
                 </div>
                 <div>
                   <p className="text-white font-medium">Réparation équipement</p>
@@ -1048,8 +1081,9 @@ export function InventoryPage() {
                 <button
                   onClick={() => handleViewCharge(pastCharges[2])}
                   className="text-white/60 hover:text-white transition-colors"
+                  aria-label="Voir"
                 >
-                  <Eye size={20} />
+                  <Eye size={20} aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -1069,6 +1103,7 @@ export function InventoryPage() {
                   <input
                     {...register('chargeName', { required: 'Le nom de la charge est requis' })}
                     className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                    aria-label="Nom de la charge"
                   />
                   {errors.chargeName && (
                     <p className="mt-1 text-sm text-red-400">{errors.chargeName.message}</p>
@@ -1084,6 +1119,7 @@ export function InventoryPage() {
                     min="0"
                     {...register('amount', { required: 'Le montant est requis' })}
                     className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                    aria-label="Montant (€)"
                   />
                   {errors.amount && (
                     <p className="mt-1 text-sm text-red-400">{errors.amount.message}</p>
@@ -1098,6 +1134,7 @@ export function InventoryPage() {
                     rows={3}
                     className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white resize-none"
                     placeholder="Ajoutez une description..."
+                    aria-label="Description"
                   />
                 </div>
                 <div>
@@ -1111,11 +1148,13 @@ export function InventoryPage() {
                           src={invoicePreview} 
                           alt="Aperçu de la facture" 
                           className="max-h-48 mx-auto object-contain rounded-lg"
+                          aria-label="Aperçu de la facture"
                         />
                         <button
                           type="button"
                           onClick={handleRemoveInvoice}
                           className="w-full py-2 text-sm text-white/70 hover:text-white border border-white/10 rounded-lg transition-colors"
+                          aria-label="Supprimer et choisir une autre"
                         >
                           Supprimer et choisir une autre
                         </button>
@@ -1124,7 +1163,7 @@ export function InventoryPage() {
                       <div className="w-full space-y-4">
                         <div className="flex justify-center">
                           <label htmlFor="invoice-upload" className="cursor-pointer bg-white/10 hover:bg-white/15 text-white rounded-lg px-4 py-3 flex items-center justify-center transition-colors duration-200">
-                            <Upload size={20} className="mr-2" />
+                            <Upload size={20} aria-hidden="true" />
                             <span>Choisir un fichier</span>
                             <input
                               id="invoice-upload"
@@ -1132,6 +1171,7 @@ export function InventoryPage() {
                               accept="image/*"
                               className="hidden"
                               onChange={handleFileChange}
+                              aria-label="Choisir un fichier"
                             />
                           </label>
                         </div>
@@ -1142,8 +1182,9 @@ export function InventoryPage() {
                           <button
                             type="button"
                             className="bg-white/10 hover:bg-white/15 text-white rounded-lg px-4 py-3 flex items-center justify-center transition-colors duration-200"
+                            aria-label="Prendre une photo"
                           >
-                            <Camera size={20} className="mr-2" />
+                            <Camera size={20} aria-hidden="true" />
                             <span>Prendre une photo</span>
                           </button>
                         </div>
@@ -1157,12 +1198,14 @@ export function InventoryPage() {
                     type="button"
                     onClick={() => setShowNewChargeModal(false)}
                     className="px-5 py-2 border border-white/10 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                    aria-label="Annuler"
                   >
                     Annuler
                   </button>
                   <button
                     type="submit"
                     className="px-5 py-2 bg-brand-primary hover:bg-brand-primary/90 rounded-lg text-white transition-colors"
+                    aria-label="Enregistrer"
                   >
                     Enregistrer
                   </button>
@@ -1202,7 +1245,7 @@ export function InventoryPage() {
 
       {/* Loading overlay for refresh */}
       {isRefreshing && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" role="alert">
           <div className="bg-white/5 rounded-full p-4">
             <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
           </div>

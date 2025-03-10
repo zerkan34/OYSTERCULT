@@ -1,0 +1,215 @@
+/* Responsive styles for iPhone */
+@media only screen and (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .text-2xl {
+    font-size: 1.5rem;
+  }
+  .text-lg {
+    font-size: 1.125rem;
+  }
+  .p-6 {
+    padding: 1rem;
+  }
+  .space-y-6 > * + * {
+    margin-top: 1rem;
+  }
+}
+
+/* Fix header overlap and improve layout */
+@media only screen and (max-width: 600px) {
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.7);
+    margin-bottom: 1rem;
+  }
+
+  .header-title {
+    font-size: 1.5rem;
+    margin: 0;
+  }
+
+  .header-icons {
+    margin-top: 0.5rem;
+  }
+
+  .content {
+    padding-top: 1rem;
+  }
+}
+
+/* Enhanced responsive styles for iPhones */
+@media only screen and (max-width: 428px) {
+  .dashboard-container {
+    padding: 0.5rem;
+    height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dashboard-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.2rem;
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    padding: 0.5rem 3rem; /* Espace pour les icônes de chaque côté */
+  }
+
+  .dashboard-icons {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    white-space: nowrap; /* Empêche le wrapping */
+  }
+
+  .dashboard-icons > * {
+    min-width: auto; /* Permet aux icônes de garder leur taille naturelle */
+    flex-shrink: 0; /* Empêche la compression des icônes */
+  }
+
+  /* Assure que les icônes restent cliquables */
+  .dashboard-icons button,
+  .dashboard-icons a {
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dashboard-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .weather-card,
+  .wind-card,
+  .sea-card,
+  .tide-card {
+    background: rgba(22, 33, 62, 0.8);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-title {
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-content {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  /* Éviter la superposition des éléments */
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Align top sidebar elements for responsive mode */
+@media only screen and (max-width: 428px) {
+  .dashboard-header {
+    padding: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.8);
+    position: relative;
+  }
+
+  .dashboard-title {
+    font-size: 1.2rem;
+    color: #fff;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .dashboard-icons {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+  }
+}
+
+/* Styles pour mobile */
+@media only screen and (max-width: 428px) {
+  /* Container principal */
+  .space-y-6 {
+    padding: 1rem;
+    padding-top: 0;
+  }
+
+  /* Header fixe */
+  .space-y-6 > div:first-child {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 1rem;
+    margin: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Style pour le conteneur des ModernStatCard */
+  .space-y-6 > div:nth-child(2) {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 1rem;
+    padding-bottom: 0.5rem;
+    margin: 4rem -1rem 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    white-space: nowrap;
+  }
+
+  .space-y-6 > div:nth-child(2)::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Style des cartes ModernStatCard */
+  .ModernStatCard {
+    flex: 0 0 auto;
+    min-width: 180px;
+    margin: 0 !important;
+  }
+
+  /* Ajuster les marges des autres éléments */
+  .glass-effect {
+    margin-top: 1rem;
+  }
+
+  /* Assurer que le texte ne wrap pas dans les cartes */
+  .ModernStatCard * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

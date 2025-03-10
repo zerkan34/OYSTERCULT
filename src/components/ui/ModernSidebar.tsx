@@ -28,6 +28,28 @@ import { useStore } from '@/lib/store';
 import { OysterLogo } from './OysterLogo';
 import { ThemeToggle } from './ThemeToggle';
 import { motion, AnimatePresence } from 'framer-motion';
+import cn from 'classnames';
+
+interface NavItem {
+  name: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  items: NavItem[];
+}
+
+interface ModernSidebarProps {
+  showMobileMenu: boolean;
+  onCloseMobileMenu: () => void;
+  onShowEmergency: () => void;
+  onEmergencyClick: () => void;
+  onToggleMessages: () => void;
+  categories: Category[];
+}
 
 const pulseAnimation = {
   pulse: {
@@ -59,15 +81,6 @@ const createColorPulse = (color: string) => ({
   }
 });
 
-interface ModernSidebarProps {
-  showMobileMenu: boolean;
-  onCloseMobileMenu: () => void;
-  onEmergencyClick: () => void;
-  onToggleMessages?: () => void;
-  onToggleNotifications?: () => void;
-}
-
-// Catégories avec leurs couleurs spécifiques
 const categories = {
   "Principal": {
     color: "from-blue-500/30 to-blue-600/10",
@@ -189,12 +202,13 @@ const navItems = [
   }
 ];
 
-export function ModernSidebar({ 
-  showMobileMenu, 
+export function ModernSidebar({
+  showMobileMenu,
   onCloseMobileMenu,
+  onShowEmergency,
   onEmergencyClick,
   onToggleMessages,
-  onToggleNotifications
+  categories
 }: ModernSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -209,15 +223,18 @@ export function ModernSidebar({
     navigate('/auth');
   };
 
-  // Gérer l'ouverture/fermeture avec animation fluide
+  const handleLogoClick = () => {
+    if (location.pathname !== '/dashboard') {
+      navigate('/dashboard');
+    }
+  };
+
   const toggleSidebar = () => {
     setIsAnimating(true);
     setCollapsed(!collapsed);
-    // Reset animation state after completion
     setTimeout(() => setIsAnimating(false), 300);
   };
 
-  // Animation variants for menu items
   const menuItemVariants = {
     hidden: { opacity: 0, x: -10 },
     visible: (i: number) => ({
@@ -230,10 +247,9 @@ export function ModernSidebar({
     })
   };
 
-  // Animation variants for sidebar
   const sidebarVariants = {
     expanded: { 
-      width: "18rem", // 72 * 4 = 288px equivalent to 18rem
+      width: "18rem", 
       transition: { 
         type: "spring", 
         stiffness: 300, 
@@ -242,7 +258,7 @@ export function ModernSidebar({
       }
     },
     collapsed: { 
-      width: "5rem", // 80px equivalent to 5rem
+      width: "5rem", 
       transition: { 
         type: "spring", 
         stiffness: 300, 
@@ -260,8 +276,8 @@ export function ModernSidebar({
     },
     mobileVisible: {
       x: 0,
-      width: "85vw", // Utiliser une largeur relative à l'écran sur mobile
-      maxWidth: "300px", // Mais avec une taille maximale
+      width: "85vw", 
+      maxWidth: "300px", 
       transition: {
         type: "spring",
         stiffness: 400,
@@ -270,7 +286,6 @@ export function ModernSidebar({
     }
   };
 
-  // Animation variants for content fade
   const contentFadeVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -294,12 +309,13 @@ export function ModernSidebar({
       />
 
       <motion.div
-        className={`
-          fixed top-0 left-0 bottom-0 z-50 bg-brand-dark
-          border-r border-white/10 shadow-xl shadow-black/40
-          overflow-hidden
-          ${showMobileMenu ? 'safe-area-inset-bottom' : ''}
-        `}
+        className={cn(
+          "fixed inset-y-0 left-0 w-64 bg-background border-r z-50",
+          "md:w-[var(--sidebar-width)] md:relative md:block",
+          "transition-transform duration-300 ease-in-out",
+          "mobile-sidebar safe-area-top safe-area-bottom",
+          !showMobileMenu && "transform -translate-x-full md:translate-x-0"
+        )}
         initial="collapsed"
         animate={
           window.innerWidth >= 1024 
@@ -309,309 +325,99 @@ export function ModernSidebar({
         variants={sidebarVariants}
       >
         <div className="flex flex-col h-full">
-          {/* Logo avec effet de lumière */}
-          <motion.div 
-            className="p-6 flex items-center justify-between border-b border-white/10 relative overflow-hidden"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
+          <div 
+            className="cursor-pointer flex items-center mobile-touch-target" 
+            onClick={handleLogoClick}
+            role="button"
+            aria-label="Retour au tableau de bord"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-brand-burgundy/5 to-transparent opacity-50"></div>
-            <AnimatePresence mode="wait">
-              {!collapsed ? (
-                <motion.div 
-                  key="expanded-logo"
-                  className="flex items-center justify-between px-4 py-2 relative z-10 w-full"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="flex items-center">
-                    <div className="relative z-10">
-                      <OysterLogo />
-                    </div>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div 
-                  key="collapsed-logo" 
-                  className="flex items-center justify-center px-2 py-2 relative z-10"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <motion.button
-              onClick={toggleSidebar}
-              className={`
-                rounded-lg hidden lg:flex items-center justify-center transition-all duration-300 relative z-10
-                ${collapsed ? 
-                  "p-2.5 bg-white/15 hover:bg-white/25 border border-white/20" : 
-                  "p-2.5 bg-white/15 hover:bg-white/25 border border-white/20"
-                }
-              `}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              disabled={isAnimating}
-              aria-label={collapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
-            >
-              {collapsed ? (
-                <ChevronRight className="w-[22px] h-[22px] text-white hover:text-white" />
-              ) : (
-                <ChevronLeft className="w-[22px] h-[22px] text-white hover:text-white" />
-              )}
-            </motion.button>
-          </motion.div>
+            <OysterLogo size={24} />
+            <span className="ml-2 text-base font-bold tracking-wide text-white">OYSTER CULT</span>
+          </div>
 
-          {/* Navigation avec catégories colorées */}
-          <nav className="flex-1 space-y-2 md:space-y-4 p-3 md:p-4 overflow-y-auto custom-scrollbar">
-            {navItems.map((group, index) => {
-              const categoryStyle = categories[group.category as keyof typeof categories];
-              return (
-                <motion.div 
-                  key={index} 
-                  className="mb-8"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
-                  onMouseEnter={() => setHoveredCategory(group.category)}
-                  onMouseLeave={() => setHoveredCategory(null)}
-                >
-                  <AnimatePresence>
-                    {!collapsed && (
-                      <motion.div 
-                        className={`px-4 mb-3 relative rounded-lg`}
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
-                        whileHover={{ scale: 1.02 }}
+          <nav className="flex-1 overflow-y-auto">
+            <div className="px-2 py-2 space-y-1">
+              {categories.map((category) => (
+                <div key={category.id} className="mb-4">
+                  <div className="px-3 mb-2">
+                    <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider">
+                      {category.name}
+                    </h2>
+                  </div>
+                  {category.items.map((item) => {
+                    const isActive = location.pathname === item.href;
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.name}
+                        to={item.href}
+                        className={cn(
+                          "mobile-nav-item group flex items-center w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                          "mobile-touch-target focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20",
+                          isActive
+                            ? "bg-white/10 text-white"
+                            : "text-white/60 hover:text-white hover:bg-white/5"
+                        )}
+                        onClick={() => onCloseMobileMenu()}
+                        aria-current={isActive ? "page" : undefined}
                       >
-                        <div className={`absolute inset-0 bg-gradient-to-r ${categoryStyle.color} opacity-0 rounded-lg ${hoveredCategory === group.category ? 'opacity-30' : ''} transition-opacity duration-300`} />
-                        <p className={`text-xs font-medium ${categoryStyle.textColor} uppercase tracking-wider relative z-10`}>
-                          {group.category}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                  <div className="space-y-2">
-                    {group.items.map((item, itemIndex) => {
-                      const isActive = location.pathname === item.path;
-                      return (
-                        <motion.div
-                          key={item.path}
-                          custom={itemIndex}
-                          variants={menuItemVariants}
-                          initial="hidden"
-                          animate="visible"
-                          whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-                          onMouseEnter={() => setHoveredItem(item.path)}
-                          onMouseLeave={() => setHoveredItem(null)}
-                        >
-                          <Link
-                            to={item.path}
-                            className={`
-                              relative flex items-center px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm
-                              transition-all duration-200 ease-in-out overflow-hidden
-                              ${isActive
-                                ? `bg-white/10 text-white shadow-[0_0_12px_rgba(255,255,255,0.1)] 
-                                   ${
-                                     categoryStyle.textColor.includes('blue') ? 'shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 
-                                     categoryStyle.textColor.includes('green') ? 'shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 
-                                     categoryStyle.textColor.includes('purple') ? 'shadow-[0_0_8px_rgba(139,92,246,0.5)]' : 
-                                     categoryStyle.textColor.includes('amber') ? 'shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 
-                                     'shadow-[0_0_8px_rgba(6,182,212,0.5)]'
-                                   }`
-                                : `text-white/70 hover:bg-white/8 hover:text-white hover:shadow-[0_0_8px_rgba(255,255,255,0.07)]
-                                   hover:${
-                                     categoryStyle.textColor.includes('blue') ? 'shadow-[0_0_6px_rgba(59,130,246,0.4)]' : 
-                                     categoryStyle.textColor.includes('green') ? 'shadow-[0_0_6px_rgba(16,185,129,0.4)]' : 
-                                     categoryStyle.textColor.includes('purple') ? 'shadow-[0_0_6px_rgba(139,92,246,0.4)]' : 
-                                     categoryStyle.textColor.includes('amber') ? 'shadow-[0_0_6px_rgba(245,158,11,0.4)]' : 
-                                     'shadow-[0_0_6px_rgba(6,182,212,0.4)]'
-                                   }`
-                              }
-                            `}
-                          >
-                            {isActive && (
-                              <motion.div 
-                                className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-30"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 0.3 }}
-                                transition={{ duration: 0.3 }}
-                              />
-                            )}
-                            <div className={`
-                              relative z-10 transition-all duration-200
-                              ${isActive ? `text-${categoryStyle.textColor.split('-')[1]}` : 'text-white/70 group-hover:text-white'}
-                              flex items-center justify-center w-7 h-7 rounded-full
-                              ${!isActive && hoveredItem === item.path ? 'shadow-[0_0_5px_rgba(255,255,255,0.4)] filter brightness-110' : ''}
-                              transition-all transform hover:scale-110
-                            `}>
-                              {isActive ? (
-                                <motion.div
-                                  animate="pulse"
-                                  variants={createColorPulse(
-                                    categoryStyle.textColor.includes('blue') ? '#3b82f680' : 
-                                    categoryStyle.textColor.includes('green') ? '#10b98180' : 
-                                    categoryStyle.textColor.includes('purple') ? '#8b5cf680' : 
-                                    categoryStyle.textColor.includes('amber') ? '#f59e0b80' : 
-                                    '#06b6d480'
-                                  )}
-                                  className="flex items-center justify-center"
-                                >
-                                  {item.icon}
-                                </motion.div>
-                              ) : (
-                                <div 
-                                  className={hoveredItem === item.path ? "animate-pulse" : ""}
-                                >
-                                  {item.icon}
-                                </div>
-                              )}
-                            </div>
-                            <AnimatePresence>
-                              {!collapsed && (
-                                <motion.span 
-                                  className={`ml-2 md:ml-3 relative z-10 ${isActive ? 'font-medium' : ''} whitespace-nowrap`}
-                                  variants={contentFadeVariants}
-                                  initial="hidden"
-                                  animate="visible"
-                                  exit="hidden"
-                                >
-                                  {item.label}
-                                </motion.span>
-                              )}
-                            </AnimatePresence>
-
-                            {/* Infobulle personnalisée et stylisée qui s'affiche uniquement quand la sidebar est réduite */}
-                            {collapsed && (
-                              <AnimatePresence>
-                                {hoveredItem === item.path && (
-                                  <motion.div
-                                    initial={{ opacity: 0, x: 10 }}
-                                    animate={{ opacity: 1, x: 20 }}
-                                    exit={{ opacity: 0, x: 5 }}
-                                    transition={{ 
-                                      type: "spring",
-                                      stiffness: 350,
-                                      damping: 25
-                                    }}
-                                    className={`
-                                      absolute left-14 px-4 py-2 rounded-lg z-50
-                                      text-sm font-medium whitespace-nowrap
-                                      bg-gradient-to-r 
-                                      ${categoryStyle.color.replace('/30', '/70').replace('/10', '/40')} 
-                                      backdrop-blur-sm border border-white/10
-                                      ${
-                                        categoryStyle.textColor.includes('blue') ? 'shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 
-                                        categoryStyle.textColor.includes('green') ? 'shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 
-                                        categoryStyle.textColor.includes('purple') ? 'shadow-[0_0_10px_rgba(139,92,246,0.5)]' : 
-                                        categoryStyle.textColor.includes('amber') ? 'shadow-[0_0_10px_rgba(245,158,11,0.5)]' : 
-                                        'shadow-[0_0_10px_rgba(6,182,212,0.5)]'
-                                      }
-                                    `}
-                                  >
-                                    <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-2 h-2 rotate-45"
-                                      style={{
-                                        background: categoryStyle.textColor.includes('blue') ? 'rgba(59,130,246,0.3)' : 
-                                                    categoryStyle.textColor.includes('green') ? 'rgba(16,185,129,0.3)' : 
-                                                    categoryStyle.textColor.includes('purple') ? 'rgba(139,92,246,0.3)' : 
-                                                    categoryStyle.textColor.includes('amber') ? 'rgba(245,158,11,0.3)' : 
-                                                    'rgba(6,182,212,0.3)'
-                                      }}
-                                    ></div>
-                                    <span className={`text-white font-medium`}>{item.label}</span>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            )}
-                            {isActive && (
-                              <motion.div 
-                                className={`absolute left-0 w-1.5 h-8 rounded-r-md`}
-                                style={{ 
-                                  background: `linear-gradient(to bottom, ${categoryStyle.textColor.includes('blue') ? '#3b82f6' : 
-                                    categoryStyle.textColor.includes('green') ? '#10b981' : 
-                                    categoryStyle.textColor.includes('purple') ? '#8b5cf6' : 
-                                    categoryStyle.textColor.includes('amber') ? '#f59e0b' : 
-                                    '#06b6d4'}, transparent)`
-                                }}
-                                initial={{ height: 0 }}
-                                animate={{ height: 24 }}
-                                transition={{ duration: 0.2 }}
-                              />
-                            )}
-                          </Link>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              );
-            })}
+                        <Icon className="flex-shrink-0 w-5 h-5 mr-3" />
+                        <span className="truncate">{item.name}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
           </nav>
 
-          {/* Footer avec effet de relief */}
-          <motion.div 
-            className="p-4 border-t border-white/10 space-y-2 relative"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: 0.5 }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-50"></div>
+          <div className="p-4 border-t border-white/5">
             <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
               onClick={onEmergencyClick}
-              className="w-full flex items-center px-4 py-2.5 text-white bg-red-500 hover:bg-red-600 rounded-lg transition-all duration-200 relative z-10 shadow-[0_0_15px_rgba(239,68,68,0.3)]"
+              className={cn(
+                "mobile-touch-target w-full flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg",
+                "bg-red-500 text-white hover:bg-red-600 transition-colors",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20"
+              )}
+              aria-label="Appel d'urgence"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-500 opacity-100 rounded-lg"></div>
-              <Phone size={22} className="relative z-10" />
-              <AnimatePresence>
-                {!collapsed && (
-                  <motion.span 
-                    className="ml-3 relative z-10 font-medium"
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    Urgence
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              <Phone className="w-4 h-4 mr-2" />
+              <span>Appel d'urgence</span>
             </motion.button>
+
             <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
               onClick={handleLogout}
-              className="w-full flex items-center px-4 py-2.5 text-white/60 hover:text-white hover:bg-white/8 rounded-lg transition-all duration-200 relative z-10"
+              className={cn(
+                "mobile-touch-target w-full flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg mt-2",
+                "text-white/60 hover:text-white hover:bg-white/8 transition-colors",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20"
+              )}
+              aria-label="Déconnexion"
             >
-              <LogOut size={22} className="relative z-10" />
-              <AnimatePresence>
-                {!collapsed && (
-                  <motion.span 
-                    className="ml-3 relative z-10"
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    Déconnexion
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              <LogOut className="w-4 h-4 mr-2" />
+              <span>Déconnexion</span>
             </motion.button>
-            <div className="px-4 relative z-10">
-              <ThemeToggle />
-            </div>
-          </motion.div>
+          </div>
         </div>
       </motion.div>
+
+      <motion.button
+        onClick={toggleSidebar}
+        className={cn(
+          "hidden md:flex items-center justify-center w-6 h-6 rounded-lg transition-colors",
+          "hover:bg-white/5",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20",
+          "absolute -right-3 top-[72px]",
+          "bg-background border border-border shadow-lg shadow-black/20"
+        )}
+        aria-label={collapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
+      >
+        {collapsed ? (
+          <ChevronRight className="w-[22px] h-[22px] text-white hover:text-white" />
+        ) : (
+          <ChevronLeft className="w-[22px] h-[22px] text-white hover:text-white" />
+        )}
+      </motion.button>
     </>
   );
 }
