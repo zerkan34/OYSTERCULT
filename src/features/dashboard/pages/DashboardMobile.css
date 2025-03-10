@@ -1,0 +1,453 @@
+/* Styles pour adapter le tableau de bord sur iPhone */
+
+@media screen and (max-width: 767px) {
+  /* Conteneur principal du dashboard avec largeur 100vw */
+  .dashboard-container {
+    width: 100vw;
+    max-width: 100vw;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    transform: none; /* Supprimer le scale qui peut causer des problèmes */
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Tous les éléments directs ont une largeur fixe */
+  .dashboard-container > * {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    box-sizing: border-box;
+    position: relative;
+  }
+  
+  /* Réduire les espacements pour tout montrer sans scrolling */
+  .dashboard-container .space-y-6 > * {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Titre du dashboard */
+  .dashboard-container h1 {
+    font-size: 1.25rem;
+    white-space: nowrap;
+    margin-bottom: 0.5rem;
+    padding-left: 0.75rem;
+  }
+  
+  /* Widget météo - pleine largeur sans bordure */
+  .dashboard-container .weather-widget {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    border-radius: 0;
+    padding: 0.75rem 1rem;
+    overflow: hidden;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Widget météo avec bordure blanche - centré */
+  .dashboard-container .bg-gradient-to-br.from-brand-dark\/95.to-brand-purple\/95.border.border-white\/10.rounded-lg.overflow-hidden.weather-widget,
+  .dashboard-container .weather-widget.border.border-white\/10 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0 auto;
+  }
+  
+  /* Centrer les éléments à l'intérieur du widget météo */
+  .dashboard-container .weather-widget .grid {
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Centrer la grille principale du widget météo et assurer qu'elle prend toute la largeur */
+  .dashboard-container .weather-widget .grid.grid-cols-1.md\:grid-cols-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Assurer que les widgets prennent toute la largeur du fond bleu marine */
+  .dashboard-container .weather-widget .grid.grid-cols-1.md\:grid-cols-2 > div {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Centrer les éléments à l'intérieur des cartes du widget météo */
+  .dashboard-container .weather-widget .bg-white\/5 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+  
+  /* Centrer les éléments du titre des cartes météo */
+  .dashboard-container .weather-widget .flex.items-center.space-x-3.mb-4 {
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Centrer les grilles internes dans les cartes */
+  .dashboard-container .weather-widget .grid.grid-cols-2 {
+    justify-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* S'assurer que le contenu interne des cartes météo prend toute la largeur disponible */
+  .dashboard-container .weather-widget .relative.z-10 {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Faire en sorte que les flex containers internes prennent toute la largeur */
+  .dashboard-container .weather-widget .flex.items-center.justify-between,
+  .dashboard-container .weather-widget .flex.items-center.space-x-4 {
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+  }
+  
+  /* Centrer les éléments des prévisions horaires */
+  .dashboard-container .forecast-container .grid {
+    justify-items: center;
+    text-align: center;
+  }
+  
+  /* Toutes les cartes avec effet vitré - pleine largeur */
+  .dashboard-container .glass-effect {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    border-radius: 0;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Centrer les éléments à l'intérieur des glass-effect (occupation des tables) */
+  .dashboard-container .glass-effect .grid.grid-cols-1.md\:grid-cols-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* S'assurer que les containers internes prennent toute la largeur */
+  .dashboard-container .glass-effect .grid.grid-cols-1.md\:grid-cols-2 > div {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Centrer les titres des sections */
+  .dashboard-container .glass-effect .flex.items-center.justify-between {
+    justify-content: center;
+    text-align: center;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Centrer le contenu des infos tables */
+  .dashboard-container .glass-effect .space-y-4.md\:space-y-6,
+  .dashboard-container .glass-effect .space-y-3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Centrer les éléments dans les cartes individuelles */
+  .dashboard-container .glass-effect .relative.bg-white\/5 {
+    text-align: center;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 1rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* S'assurer que le contenu interne des cartes tables prend toute la largeur disponible */
+  .dashboard-container .glass-effect .relative.z-10 {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Faire en sorte que les flex containers internes des tables prennent toute la largeur */
+  .dashboard-container .glass-effect .flex.items-center.justify-between,
+  .dashboard-container .glass-effect .flex.items-center.space-x-3,
+  .dashboard-container .glass-effect .flex.items-center.space-x-4 {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Ajuster les grilles dans les sections tables/bassins */
+  .dashboard-container .glass-effect .grid.grid-cols-2.gap-4.mt-4,
+  .dashboard-container .glass-effect .grid.grid-cols-2.gap-4,
+  .dashboard-container .glass-effect .grid.grid-cols-3.gap-2.mb-3 {
+    width: 100%;
+    max-width: 100%;
+    justify-items: center;
+  }
+  
+  /* Style pour les conteneurs de tables et bassins */
+  .dashboard-container .grid-cols-1.md\:grid-cols-2 {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    padding: 0.75rem 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.2), rgba(33, 0, 57, 0.2));
+    overflow: hidden;
+  }
+  
+  /* Cards pour tables et bassins avec bordures */
+  .dashboard-container .space-y-3 > div {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    width: 100%;
+    max-width: 100%;
+    margin: 0.25rem 0;
+  }
+  
+  /* Effet d'élévation pour la carte sélectionnée */
+  .dashboard-container .space-y-3 > div.ring-2 {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Ajuster les grilles internes pour occuper toute la largeur */
+  .dashboard-container .glass-effect .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Forcer la disposition en colonne pour les grands écrans */
+  .dashboard-container .grid-cols-1.md\:grid-cols-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.625rem;
+    width: 100%;
+  }
+  
+  /* S'assurer que tout texte ne wrappe pas */
+  .dashboard-container h3,
+  .dashboard-container .text-sm,
+  .dashboard-container .text-xs,
+  .dashboard-container .text-base {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Cartes de statistiques en grille 2x2 */
+  .dashboard-container .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0 0.5rem;
+  }
+  
+  /* Cartes de statistiques individuelles */
+  .dashboard-container .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 > * {
+    width: 100%;
+    margin: 0;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  /* Taille des icônes */
+  .dashboard-container svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+  
+  /* Désactiver complètement le défilement horizontal */
+  .dashboard-container .overflow-x-auto {
+    width: 100%;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Masquer les barres de défilement */
+  .dashboard-container .overflow-x-auto::-webkit-scrollbar,
+  .dashboard-container::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Forcer les éléments de prévision à s'adapter à la largeur disponible */
+  .dashboard-container .forecast-container {
+    width: 100%;
+    overflow-x: hidden !important;
+  }
+  
+  .dashboard-container .forecast-container .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.25rem;
+    min-width: 0 !important;
+    width: 100%;
+  }
+  
+  /* Les grilles à 3 colonnes */
+  .dashboard-container .grid-cols-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.25rem;
+    width: 100%;
+  }
+  
+  /* Ajustement des petits textes */
+  .dashboard-container .px-2,
+  .dashboard-container .px-3 {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    font-size: 0.7rem;
+  }
+  
+  /* Consistent spacing */
+  .dashboard-container .space-y-3 > * {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .dashboard-container .mb-3 {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Grilles de prévisualisation à 2 colonnes au lieu de 4 */
+  .dashboard-container .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+  }
+  
+  /* Cartes de statistiques */
+  .dashboard-container .ModernStatCard {
+    width: 100%;
+    height: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  /* Afficher les alertes en une seule colonne */
+  .dashboard-container .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  /* Amélioration de l'espacement entre les sections */
+  .dashboard-container > div:not(:first-child) {
+    margin-top: 1rem;
+  }
+  
+  /* Ajout d'un fond bleu marine global avec bordure blanche pour toute la page en responsive */
+  @media (max-width: 768px) {
+    .dashboard-container .glass-effect {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .dashboard-container .glass-effect::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0, 40, 80, 0.25), rgba(0, 20, 60, 0.35));
+      z-index: 0;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: inherit;
+      pointer-events: none;
+    }
+    
+    .dashboard-container .glass-effect > * {
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Modification de la disposition des titres et sous-titres en version responsive */
+    .dashboard-container .glass-effect .flex.items-center.justify-between {
+      flex-direction: column;
+      gap: 0.25rem;
+      margin-bottom: 1rem;
+    }
+    
+    .dashboard-container .glass-effect .flex.items-center.justify-between h3 {
+      margin-bottom: 0;
+    }
+    
+    .dashboard-container .glass-effect .flex.items-center.justify-between .text-xs.md\:text-sm.text-white\/60 {
+      margin-top: 0;
+    }
+  }
+  
+  /* Cartes de statistiques en grille 2x2 */
+  .dashboard-container .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0 0.5rem;
+  }
+}
