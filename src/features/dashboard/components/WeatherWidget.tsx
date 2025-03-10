@@ -13,6 +13,7 @@ import {
   ArrowUp, 
   ArrowDown 
 } from 'lucide-react';
+import './WeatherWidget.css';
 
 interface WeatherData {
   temperature: number;
@@ -125,10 +126,10 @@ const WeatherCard = ({
 
 export function WeatherWidget() {
   return (
-    <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 border border-white/10 rounded-lg overflow-hidden">
-      <div className="grid grid-cols-2 gap-6 p-6">
+    <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 border border-white/10 rounded-lg overflow-hidden weather-widget">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 p-4 md:p-6">
         {/* Conditions actuelles */}
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           <WeatherCard 
             title="Conditions actuelles" 
             icon={<ThermometerSun size={20} />}
@@ -137,19 +138,19 @@ export function WeatherWidget() {
               <div className="flex items-center space-x-4">
                 <WeatherIcon condition={mockWeather.conditions} />
                 <div>
-                  <div className="text-3xl font-bold text-white">{mockWeather.temperature}°C</div>
-                  <div className="text-white/60">Partiellement nuageux</div>
+                  <div className="text-3xl font-bold text-white whitespace-nowrap">{mockWeather.temperature}°C</div>
+                  <div className="text-white/60 whitespace-nowrap">Partiellement nuageux</div>
                 </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
-                <div className="text-sm text-white/60">Humidité</div>
-                <div className="text-lg font-medium text-white">{mockWeather.humidity}%</div>
+                <div className="text-sm text-white/60 whitespace-nowrap">Humidité</div>
+                <div className="text-lg font-medium text-white whitespace-nowrap">{mockWeather.humidity}%</div>
               </div>
               <div>
-                <div className="text-sm text-white/60">Visibilité</div>
-                <div className="text-lg font-medium text-white">{mockWeather.visibility} km</div>
+                <div className="text-sm text-white/60 whitespace-nowrap">Visibilité</div>
+                <div className="text-lg font-medium text-white whitespace-nowrap">{mockWeather.visibility} km</div>
               </div>
             </div>
           </WeatherCard>
@@ -161,18 +162,18 @@ export function WeatherWidget() {
           >
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-sm text-white/60">Vitesse</div>
-                <div className="text-lg font-medium text-white">{mockWeather.windSpeed} km/h</div>
+                <div className="text-sm text-white/60 whitespace-nowrap">Vitesse</div>
+                <div className="text-lg font-medium text-white whitespace-nowrap">{mockWeather.windSpeed} km/h</div>
               </div>
               <div>
-                <div className="text-sm text-white/60">Direction</div>
+                <div className="text-sm text-white/60 whitespace-nowrap">Direction</div>
                 <div className="flex items-center">
                   <Navigation 
                     className="text-brand-burgundy mr-2" 
                     size={16}
                     style={{ transform: `rotate(${mockWeather.windDirection}deg)` }}
                   />
-                  <span className="text-lg font-medium text-white">
+                  <span className="text-lg font-medium text-white whitespace-nowrap">
                     {getWindDirection(mockWeather.windDirection)}
                   </span>
                 </div>
@@ -182,7 +183,7 @@ export function WeatherWidget() {
         </div>
 
         {/* Mer et marées */}
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           {/* État de la mer */}
           <WeatherCard 
             title="État de la mer"
@@ -190,18 +191,18 @@ export function WeatherWidget() {
           >
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-sm text-white/60">Hauteur</div>
-                <div className="text-lg font-medium text-white">{mockWeather.waveHeight}m</div>
+                <div className="text-sm text-white/60 whitespace-nowrap">Hauteur</div>
+                <div className="text-lg font-medium text-white whitespace-nowrap">{mockWeather.waveHeight}m</div>
               </div>
               <div>
-                <div className="text-sm text-white/60">Direction</div>
+                <div className="text-sm text-white/60 whitespace-nowrap">Direction</div>
                 <div className="flex items-center">
                   <Navigation 
                     className="text-brand-burgundy mr-2" 
                     size={16}
                     style={{ transform: `rotate(${mockWeather.waveDirection}deg)` }}
                   />
-                  <span className="text-lg font-medium text-white">
+                  <span className="text-lg font-medium text-white whitespace-nowrap">
                     {getWindDirection(mockWeather.waveDirection)}
                   </span>
                 </div>
@@ -216,25 +217,25 @@ export function WeatherWidget() {
           >
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-sm text-white/60">Niveau actuel</div>
-                <div className="text-lg font-medium text-white">{mockWeather.tideLevel}m</div>
+                <div className="text-sm text-white/60 whitespace-nowrap">Niveau actuel</div>
+                <div className="text-lg font-medium text-white whitespace-nowrap">{mockWeather.tideLevel}m</div>
               </div>
               <div>
-                <div className="text-sm text-white/60">Coefficient</div>
-                <div className="text-lg font-medium text-white">95</div>
+                <div className="text-sm text-white/60 whitespace-nowrap">Coefficient</div>
+                <div className="text-lg font-medium text-white whitespace-nowrap">95</div>
               </div>
               <div>
-                <div className="text-sm text-white/60">Prochaine PM</div>
+                <div className="text-sm text-white/60 whitespace-nowrap">Prochaine PM</div>
                 <div className="flex items-center">
                   <ArrowUp className="w-4 h-4 text-brand-burgundy mr-1" />
-                  <span className="text-lg font-medium text-white">{mockWeather.nextHighTide}</span>
+                  <span className="text-lg font-medium text-white whitespace-nowrap">{mockWeather.nextHighTide}</span>
                 </div>
               </div>
               <div>
-                <div className="text-sm text-white/60">Prochaine BM</div>
+                <div className="text-sm text-white/60 whitespace-nowrap">Prochaine BM</div>
                 <div className="flex items-center">
                   <ArrowDown className="w-4 h-4 text-brand-burgundy mr-1" />
-                  <span className="text-lg font-medium text-white">{mockWeather.nextLowTide}</span>
+                  <span className="text-lg font-medium text-white whitespace-nowrap">{mockWeather.nextLowTide}</span>
                 </div>
               </div>
             </div>
@@ -243,48 +244,47 @@ export function WeatherWidget() {
       </div>
 
       {/* Prévisions horaires en bas */}
-      <div className="border-t border-white/10 p-6">
-        <h3 className="text-white font-medium mb-4">Prévisions horaires</h3>
-        <div className="grid grid-cols-4 gap-4">
-          {mockWeather.forecast.map((forecast, index) => (
-            <motion.div 
-              key={index} 
-              className="bg-white/5 rounded-lg p-3 transition-all duration-200 relative overflow-hidden"
-              whileHover={{ 
-                scale: 1.03,
-                boxShadow: "0 0 15px rgba(59, 130, 246, 0.3)"
-              }}
-              onHoverStart={(e) => {
-                // Ajouter une classe pour l'effet de surbrillance si nécessaire
-              }}
-            >
-              {/* Effet de surbrillance au survol */}
-              <motion.div
-                className="absolute inset-0 bg-blue-500/10 pointer-events-none"
-                initial={{ opacity: 0 }}
-                whileHover={{ opacity: 0.3 }}
-                transition={{ duration: 0.2 }}
-              />
-              
-              <div className="relative z-10">
-                <div className="text-sm text-white/60 mb-2">{forecast.time}</div>
-                <div className="text-lg font-medium text-white mb-2">{forecast.temp}°C</div>
-                <div className="space-y-2 text-sm text-white/60">
-                  <div className="flex items-center">
-                    <Navigation 
-                      className="w-4 h-4 text-brand-burgundy mr-1" 
-                      style={{ transform: `rotate(${forecast.windDirection}deg)` }}
-                    />
-                    <span>{forecast.windSpeed} km/h</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Wave className="w-4 h-4 text-brand-burgundy mr-1" />
-                    <span>{forecast.waveHeight}m</span>
+      <div className="border-t border-white/10 p-4 md:p-6 overflow-hidden">
+        <h3 className="text-white font-medium mb-4 whitespace-nowrap">Prévisions horaires</h3>
+        <div className="overflow-hidden pb-2 forecast-container" style={{ scrollbarWidth: 'none' }}>
+          <div className="grid grid-cols-4 gap-4 w-full">
+            {mockWeather.forecast.map((forecast, index) => (
+              <motion.div 
+                key={index} 
+                className="bg-white/5 rounded-lg p-3 transition-all duration-200 relative overflow-hidden"
+                whileHover={{ 
+                  scale: 1.03,
+                  boxShadow: "0 0 15px rgba(59, 130, 246, 0.3)"
+                }}
+              >
+                {/* Effet de surbrillance au survol */}
+                <motion.div
+                  className="absolute inset-0 bg-blue-500/10 pointer-events-none"
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 0.3 }}
+                  transition={{ duration: 0.2 }}
+                />
+                
+                <div className="relative z-10">
+                  <div className="text-sm text-white/60 mb-2 whitespace-nowrap">{forecast.time}</div>
+                  <div className="text-lg font-medium text-white mb-2 whitespace-nowrap">{forecast.temp}°C</div>
+                  <div className="space-y-2 text-sm text-white/60">
+                    <div className="flex items-center whitespace-nowrap">
+                      <Navigation 
+                        className="w-4 h-4 text-brand-burgundy mr-1" 
+                        style={{ transform: `rotate(${forecast.windDirection}deg)` }}
+                      />
+                      <span>{forecast.windSpeed} km/h</span>
+                    </div>
+                    <div className="flex items-center whitespace-nowrap">
+                      <Wave className="w-4 h-4 text-brand-burgundy mr-1" />
+                      <span>{forecast.waveHeight}m</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,26 @@
+/* Styles pour adapter le widget météo sur iPhone */
+
+@media screen and (max-width: 767px) {
+  /* Réduire la taille globale du widget */
+  .weather-widget {
+    transform: scale(0.9);
+    transform-origin: top center;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 96%;
+  }
+  
+  /* Conteneur de prévisions */
+  .forecast-container::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Réduire légèrement la taille des textes */
+  .weather-widget .text-3xl {
+    font-size: 1.5rem;
+  }
+  
+  .weather-widget .text-lg {
+    font-size: 0.95rem;
+  }
+}

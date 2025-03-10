@@ -6,6 +6,7 @@ import { WeatherWidget } from '../components/WeatherWidget';
 import { differenceInDays } from 'date-fns';
 import { TableDetailModal } from '../components/TableDetailModal';
 import { PoolDetailModal } from '../components/PoolDetailModal';
+import './DashboardMobile.css';
 
 // Fonction pour calculer le nombre de jours restants
 const getDaysRemaining = (harvestDate: string) => {
@@ -101,7 +102,7 @@ export function DashboardPage() {
   const [selectedPool, setSelectedPool] = useState<typeof poolData[0] | null>(null);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 dashboard-container">
       <div className="flex items-center space-x-3">
         <div className="relative">
           <div className="absolute inset-0 bg-brand-burgundy/20 blur-xl rounded-full" />

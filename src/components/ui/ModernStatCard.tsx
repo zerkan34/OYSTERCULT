@@ -5,6 +5,7 @@ interface ModernStatCardProps {
   icon: React.ReactNode;
   label: string;
   value: string | number;
+  unit?: string;
   trend?: {
     value: number;
     positive: boolean;
@@ -59,6 +60,7 @@ export function ModernStatCard({
   icon,
   label,
   value,
+  unit,
   trend,
   color = 'primary',
   size = 'md'
@@ -94,7 +96,7 @@ export function ModernStatCard({
         </div>
 
         <div className="mt-4">
-          <h3 className={`${sizes.valueSize} font-bold text-white tracking-tight`}>{value}</h3>
+          <h3 className={`${sizes.valueSize} font-bold text-white tracking-tight`}>{value}{unit && <span className="text-gray-300">{unit}</span>}</h3>
           <p className={`${sizes.labelSize} text-gray-300 mt-1 font-medium`}>{label}</p>
         </div>
       </div>
