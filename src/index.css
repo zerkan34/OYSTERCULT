@@ -74,6 +74,40 @@
     --mesh-opacity: 0.03;
   }
 
+  /* Désactiver les interactions indésirables sur mobile */
+  html, body {
+    overflow-x: hidden;
+    position: relative;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prévenir le zoom sur focus des inputs sur iOS */
+  input, select, textarea, button {
+    font-size: 16px; /* Prévenir le zoom automatique sur iOS */
+  }
+
+  /* Empêcher le wrapping pour les éléments de navigation et titres de section */
+  .lucide, svg {
+    flex-shrink: 0;
+  }
+
+  /* Stabiliser les éléments de navigation et empêcher le wrapping */
+  [class*="flex items-center"] {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Spécifiquement pour les éléments de navigation avec des icônes */
+  .flex.items-center svg + * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   body {
     @apply bg-brand-dark antialiased;
     color: rgb(var(--color-text));
@@ -548,5 +582,86 @@
 
   .glow-dot-green {
     box-shadow: 0 0 8px 0px rgba(74, 222, 128, 0.7);
+  }
+}
+
+/* Optimisations spécifiques pour iPhone et appareils mobiles */
+@media screen and (max-width: 428px) {
+  /* Réduire la taille de base du texte pour les petits écrans */
+  html {
+    font-size: 14px;
+  }
+
+  /* Réduire la taille des icônes sur mobile */
+  .lucide {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* Optimisation des espaces pour iPhone */
+  .dashboard-container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  /* Assurer que tous les textes d'en-tête ne wrappent pas */
+  h1, h2, h3, h4, h5, h6, 
+  .text-sm, .text-xs, .text-lg, .text-xl, .text-2xl {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Assurer que tous les éléments flex horizontaux ne wrappent pas sur iPhone */
+  .flex:not(.flex-col):not(.flex-wrap) {
+    white-space: nowrap;
+    overflow-x: hidden;
+  }
+
+  /* Contraction des paddings et marges pour iPhone */
+  .p-4 {
+    padding: 0.75rem !important;
+  }
+  
+  .px-4 {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .py-4 {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+
+  .gap-4 {
+    gap: 0.75rem !important;
+  }
+
+  /* Assurer que la barre de navigation reste compacte */
+  nav .flex.items-center {
+    gap: 0.5rem !important;
+  }
+}
+
+/* Ajustements spécifiques pour iPhone SE et autres très petits écrans */
+@media screen and (max-width: 375px) {
+  html {
+    font-size: 13px;
+  }
+  
+  /* Réduire davantage les marges */
+  .dashboard-container {
+    padding-left: 0.375rem;
+    padding-right: 0.375rem;
+  }
+  
+  /* Réduire encore plus l'espace entre les éléments */
+  nav .flex.items-center {
+    gap: 0.375rem !important;
+  }
+  
+  /* Réduire encore plus les paddings sur les plus petits écrans */
+  .p-4 {
+    padding: 0.5rem !important;
   }
 }
