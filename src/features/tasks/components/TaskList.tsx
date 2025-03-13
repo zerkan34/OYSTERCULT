@@ -1,253 +1,300 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Clock, 
-  AlertCircle, 
-  CheckCircle2, 
-  User,
-  Calendar,
-  Star,
-  Tag,
-  MapPin,
-  ArrowRight,
-  Send,
-  MessageSquare
-} from 'lucide-react';
-import { TaskDetails } from './TaskDetails';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
 import { useStore } from '@/lib/store';
+import { 
+  Calendar, 
+  MapPin, 
+  User, 
+  Tag, 
+  Clock, 
+  Edit, 
+  Trash2, 
+  CheckCircle, 
+  AlertCircle,
+  ChevronDown,
+  PlusCircle,
+  Flag,
+  MoreHorizontal,
+  Hourglass
+} from 'lucide-react';
+import { TaskForm } from './TaskForm';
+import { exampleTasks } from './TaskBlock';
+import './TaskList.css';
+import './TaskCard.css';
 
+// Définition du type Task (à placer dans un fichier types plus tard)
 interface Task {
   id: string;
   title: string;
-  description: string;
-  status: 'sent' | 'received' | 'in_progress' | 'completed' | 'problem';
+  description?: string;
+  status: 'pending' | 'in_progress' | 'completed';
   priority: 'low' | 'medium' | 'high';
   dueDate: string;
-  assignedTo: {
-    name: string;
-    avatar?: string;
-  };
+  assignedTo?: string;
+  category: string;
   location?: string;
-  progress?: number;
   tags?: string[];
   estimatedTime?: number;
   actualTime?: number;
 }
 
-const statusColors = {
-  sent: 'bg-blue-500/20 text-blue-300',
-  received: 'bg-yellow-500/20 text-yellow-300',
-  in_progress: 'bg-purple-500/20 text-purple-300',
-  completed: 'bg-green-500/20 text-green-300',
-  problem: 'bg-blue-500/20 text-blue-300'
-};
-
-const statusLabels = {
-  sent: 'ENVOYÉ',
-  received: 'REÇUE',
-  in_progress: 'EN COURS',
-  completed: 'TERMINÉ',
-  problem: 'PROBLÈME'
-};
-
-const statusIcons = {
-  sent: Send,
-  received: CheckCircle2,
-  in_progress: Clock,
-  completed: CheckCircle2,
-  problem: AlertCircle
-};
+interface TaskFormProps {
+  onClose: () => void;
+  task?: Task;
+}
 
 interface TaskListProps {
   searchQuery: string;
+  onTaskSelect?: (task: Task) => void;
 }
 
-export function TaskList({ searchQuery }: TaskListProps) {
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [hoveredTaskId, setHoveredTaskId] = useState<string | null>(null);
-  const { session } = useStore();
-  const isAdmin = session?.user?.role === 'admin';
+// Styles de priorité avec dégradés
+const priorityStyles = {
+  high: {
+    badgeClass: "text-red-300 bg-red-500/20 border-red-500/30",
+    iconColor: "text-red-400",
+    gradientClass: "from-red-500/10 to-transparent"
+  },
+  medium: {
+    badgeClass: "text-amber-300 bg-amber-500/20 border-amber-500/30",
+    iconColor: "text-amber-400",
+    gradientClass: "from-amber-500/10 to-transparent"
+  },
+  low: {
+    badgeClass: "text-green-300 bg-green-500/20 border-green-500/30",
+    iconColor: "text-green-400", 
+    gradientClass: "from-green-500/10 to-transparent"
+  }
+};
 
-  const mockTasks: Task[] = [
-    {
-      id: '1',
-      title: 'Inspection des tables',
-      description: 'Vérification de l\'état des tables de production',
-      status: 'in_progress',
-      priority: 'high',
-      dueDate: '2025-02-20',
-      assignedTo: {
-        name: 'Jean Dupont'
-      },
-      location: 'Zone Nord - Table A1',
-      progress: 65,
-      tags: ['inspection', 'maintenance'],
-      estimatedTime: 2.5,
-      actualTime: 2
-    },
-    {
-      id: '2',
-      title: 'Maintenance des équipements',
-      description: 'Entretien régulier des équipements de production',
-      status: 'sent',
-      priority: 'medium',
-      dueDate: '2025-02-22',
-      assignedTo: {
-        name: 'Marie Martin'
-      },
-      location: 'Atelier principal',
-      progress: 0,
-      tags: ['maintenance', 'équipement'],
-      estimatedTime: 4,
-      actualTime: 0
-    }
-  ];
+// Styles de statut avec dégradés
+const statusStyles = {
+  pending: {
+    badgeClass: "text-blue-300 bg-blue-500/20 border-blue-500/30",
+    iconColor: "text-blue-400"
+  },
+  inProgress: {
+    badgeClass: "text-amber-300 bg-amber-500/20 border-amber-500/30",
+    iconColor: "text-amber-400"
+  },
+  completed: {
+    badgeClass: "text-green-300 bg-green-500/20 border-green-500/30",
+    iconColor: "text-green-400"
+  },
+  cancelled: {
+    badgeClass: "text-gray-300 bg-gray-500/20 border-gray-500/30",
+    iconColor: "text-gray-400"
+  }
+};
 
-  const filteredTasks = mockTasks.filter(task =>
-    task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    task.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    task.assignedTo.name.toLowerCase().includes(searchQuery.toLowerCase())
+export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [expandedTask, setExpandedTask] = useState<string | null>(null);
+  
+  // Utilisation des tâches d'exemple au lieu du store
+  // const { tasks } = useStore();
+  const tasks = exampleTasks;
+  
+  // Filtrage des tâches basé sur la recherche
+  const filteredTasks = tasks.filter(task => 
+    task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const calculateEfficiency = (task: Task) => {
-    if (!task.estimatedTime || !task.actualTime) return null;
-    const efficiency = (task.estimatedTime / task.actualTime) * 100;
-    return Math.round(efficiency);
+  const toggleTaskExpansion = (taskId: string) => {
+    setExpandedTask(expandedTask === taskId ? null : taskId);
+  };
+
+  const handleEditClick = (task: Task) => {
+    setEditingTask(task);
+  };
+
+  const handleDeleteClick = (taskId: string) => {
+    // Logique de suppression à implémenter
+    console.log(`Delete task: ${taskId}`);
+  };
+
+  const handleStatusUpdate = (taskId: string, newStatus: string) => {
+    // Logique de mise à jour du statut à implémenter
+    console.log(`Update task ${taskId} status to ${newStatus}`);
+  };
+
+  const openTaskDetails = (task: Task) => {
+    if (onTaskSelect) {
+      onTaskSelect(task);
+    }
+  };
+
+  // Fonction pour formater une date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   return (
-    <>
-      <motion.div 
-        className="space-y-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        {filteredTasks.map((task) => {
-          const StatusIcon = statusIcons[task.status];
-          const efficiency = calculateEfficiency(task);
-
-          return (
-            <motion.div 
-              key={task.id}
-              className="glass-effect rounded-lg hover:glass-effect-hover cursor-pointer group"
-              onClick={() => setSelectedTask(task)}
-              onHoverStart={() => setHoveredTaskId(task.id)}
-              onHoverEnd={() => setHoveredTaskId(null)}
-              whileHover={{ y: -2 }}
-            >
-              <div className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3">
-                      <h3 className="text-lg font-medium text-white group-hover:text-brand-burgundy transition-colors">
-                        {task.title}
-                      </h3>
-                      <span className={`px-3 py-1 rounded-full text-sm flex items-center ${statusColors[task.status]}`}>
-                        <StatusIcon size={16} className="mr-1.5" />
-                        {statusLabels[task.status]}
-                      </span>
-                    </div>
-                    
-                    <p className="mt-2 text-sm text-white/70 group-hover:text-white/90 transition-colors">
-                      {task.description}
-                    </p>
-
-                    {task.tags && task.tags.length > 0 && (
-                      <div className="flex items-center space-x-2 mt-4">
-                        <Tag size={16} className="text-white/40" />
-                        <div className="flex space-x-2">
-                          {task.tags.map((tag, index) => (
-                            <span
-                              key={index}
-                              className="px-2 py-1 bg-white/5 rounded-full text-xs text-white/60"
-                            >
-                              {tag}
-                            </span>
-                          ))}
+    <div className="task-list">
+      {filteredTasks.length === 0 ? (
+        <div 
+          className="empty-task-state"
+        >
+          <div className="empty-task-icon">
+            <PlusCircle size={40} />
+          </div>
+          <h3 className="empty-task-title">Aucune tâche trouvée</h3>
+          <p className="empty-task-text">
+            Commencez à ajouter de nouvelles tâches ou modifiez vos critères de recherche.
+          </p>
+        </div>
+      ) : (
+        <div 
+          className="task-grid"
+        >
+          {filteredTasks.map(task => {
+            const priority = task.priority;
+            const status = task.status;
+            const isExpanded = expandedTask === task.id;
+            
+            // Mappage des statuts pour les icônes et styles
+            const statusIcon = 
+              status === 'completed' ? <CheckCircle size={14} /> : 
+              status === 'in_progress' ? <Clock size={14} /> : 
+              <Hourglass size={14} />;
+            
+            const statusText = 
+              status === 'completed' ? 'Terminée' : 
+              status === 'in_progress' ? 'En cours' : 
+              'En attente';
+            
+            const statusStyleKey = 
+              status === 'completed' ? 'completed' : 
+              status === 'in_progress' ? 'inProgress' : 
+              'pending';
+            
+            return (
+              <div
+                key={task.id}
+                className="task-card-wrapper"
+                onClick={() => openTaskDetails(task)}
+              >
+                <div className="task-card shadow-md">
+                  {/* En-tête de la carte avec icône de priorité */}
+                  <div className={`task-card-header ${priorityStyles[priority].gradientClass}`}>
+                    <div className="task-header-content">
+                      <div className={`priority-badge ${priorityStyles[priority].badgeClass}`}>
+                        <Flag size={14} />
+                        <span>
+                          {priority === 'high' ? 'Haute' : priority === 'medium' ? 'Moyenne' : 'Basse'}
+                        </span>
+                      </div>
+                      
+                      <div className="task-status">
+                        <div className={`status-badge ${statusStyles[statusStyleKey as keyof typeof statusStyles].badgeClass}`}>
+                          {statusIcon}
+                          <span>{statusText}</span>
                         </div>
                       </div>
-                    )}
-                    
-                    <div className="mt-4 flex items-center space-x-6 text-sm text-white/60">
-                      <div className="flex items-center">
-                        <User size={16} className="mr-2" />
-                        {task.assignedTo.name}
-                      </div>
-                      <div className="flex items-center">
-                        <Calendar size={16} className="mr-2" />
-                        {format(new Date(task.dueDate), 'PPP', { locale: fr })}
-                      </div>
-                      {task.location && (
-                        <div className="flex items-center">
-                          <MapPin size={16} className="mr-2" />
-                          {task.location}
-                        </div>
-                      )}
-                      {isAdmin && task.status === 'completed' && efficiency !== null && (
-                        <div className="flex items-center">
-                          <Clock size={16} className="mr-2" />
-                          <span className={
-                            efficiency >= 100 ? 'text-green-400' :
-                            efficiency >= 80 ? 'text-yellow-400' :
-                            'text-blue-400'
-                          }>
-                            Rendement: {efficiency}%
-                          </span>
-                        </div>
-                      )}
+                      
+                      <button 
+                        className="expand-task-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleTaskExpansion(task.id);
+                        }}
+                      >
+                        <ChevronDown 
+                          size={16} 
+                          className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+                        />
+                      </button>
                     </div>
                   </div>
                   
-                  <motion.div 
-                    className="flex items-center space-x-2"
-                    animate={{ opacity: hoveredTaskId === task.id ? 1 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="p-2 text-white/60 hover:text-white transition-colors rounded-lg hover:bg-white/5"
-                    >
-                      <Star size={20} />
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="p-2 text-white/60 hover:text-white transition-colors rounded-lg hover:bg-white/5"
-                    >
-                      <MessageSquare size={20} />
-                    </motion.button>
-                  </motion.div>
+                  {/* Corps de la carte */}
+                  <div className="task-card-body">
+                    <h3 className="task-title">{task.title}</h3>
+                    <p className="task-description">{task.description}</p>
+                    
+                    {/* Métadonnées de la tâche */}
+                    <div className="task-metadata">
+                      {task.dueDate && (
+                        <div className="metadata-item">
+                          <Calendar size={14} className="metadata-icon" />
+                          <span>{formatDate(task.dueDate)}</span>
+                        </div>
+                      )}
+                      
+                      {task.assignedTo && (
+                        <div className="metadata-item">
+                          <User size={14} className="metadata-icon" />
+                          <span>{task.assignedTo}</span>
+                        </div>
+                      )}
+                      
+                      {task.location && (
+                        <div className="metadata-item">
+                          <MapPin size={14} className="metadata-icon" />
+                          <span>{task.location}</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Expanded content with actions */}
+                    <div className={`expanded-content ${isExpanded ? 'expanded' : ''}`}>
+                      {/* Tags */}
+                      {task.tags && task.tags.length > 0 && (
+                        <div className="task-tags">
+                          {task.tags.map((tag, idx) => (
+                            <div key={idx} className="task-tag">
+                              <Tag size={12} />
+                              <span>{tag}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Action buttons */}
+                      <div className="task-actions">
+                        <button 
+                          className="task-action-btn edit"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditClick(task);
+                          }}
+                        >
+                          <Edit size={14} />
+                          <span>Modifier</span>
+                        </button>
+                        
+                        <button 
+                          className="task-action-btn delete"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(task.id);
+                          }}
+                        >
+                          <Trash2 size={14} />
+                          <span>Supprimer</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-
-                {/* Indicateur de hover */}
-                <motion.div
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-burgundy"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ 
-                    opacity: hoveredTaskId === task.id ? 1 : 0,
-                    x: hoveredTaskId === task.id ? 0 : -10
-                  }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <ArrowRight size={24} />
-                </motion.div>
               </div>
-            </motion.div>
-          );
-        })}
-      </motion.div>
-
-      <AnimatePresence>
-        {selectedTask && (
-          <TaskDetails 
-            task={selectedTask}
-            onClose={() => setSelectedTask(null)} 
-          />
-        )}
-      </AnimatePresence>
-    </>
+            );
+          })}
+        </div>
+      )}
+      
+      {/* Formulaire d'édition */}
+      {editingTask && (
+        <TaskForm 
+          onClose={() => setEditingTask(null)} 
+          task={editingTask}
+        />
+      )}
+    </div>
   );
 }
