@@ -61,6 +61,7 @@ const createColorPulse = (color: string) => ({
 
 interface ModernSidebarProps {
   showMobileMenu: boolean;
+  isOpen: boolean;
   onCloseMobileMenu: () => void;
   onEmergencyClick: () => void;
   onToggleMessages?: () => void;
@@ -191,6 +192,7 @@ const navItems = [
 
 export function ModernSidebar({ 
   showMobileMenu, 
+  isOpen, 
   onCloseMobileMenu,
   onEmergencyClick,
   onToggleMessages,
@@ -295,16 +297,25 @@ export function ModernSidebar({
 
       <motion.div
         className={`
-          fixed top-0 left-0 bottom-0 z-50 bg-brand-dark
+          fixed top-0 left-0 bottom-0 z-50
           border-r border-white/10 shadow-xl shadow-black/40
           overflow-hidden
           ${showMobileMenu ? 'safe-area-inset-bottom' : ''}
         `}
+        style={{
+          background: "linear-gradient(135deg, rgba(0, 10, 40, 0.97) 0%, rgba(0, 90, 90, 0.95) 100%)",
+          WebkitBackdropFilter: "blur(20px)",
+          backdropFilter: "blur(20px)",
+          boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(255, 255, 255, 0.1) 0px -1px 5px 0px inset, rgba(0, 180, 180, 0.15) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
+          borderRight: "none",
+          zIndex: 60,
+          width: collapsed ? "72px" : "260px",
+          willChange: "transform",
+          transform: "translate3d(0,0,0)"
+        }}
         initial="collapsed"
         animate={
-          window.innerWidth >= 1024 
-            ? (collapsed ? "collapsed" : "expanded") 
-            : (showMobileMenu ? "mobileVisible" : "mobileHidden")
+          collapsed ? "collapsed" : "expanded"
         }
         variants={sidebarVariants}
       >
@@ -417,25 +428,19 @@ export function ModernSidebar({
                             className={`
                               relative flex items-center px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm
                               transition-all duration-200 ease-in-out overflow-hidden
-                              ${isActive
-                                ? `bg-white/10 text-white shadow-[0_0_12px_rgba(255,255,255,0.1)] 
-                                   ${
-                                     categoryStyle.textColor.includes('blue') ? 'shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 
-                                     categoryStyle.textColor.includes('green') ? 'shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 
-                                     categoryStyle.textColor.includes('purple') ? 'shadow-[0_0_8px_rgba(139,92,246,0.5)]' : 
-                                     categoryStyle.textColor.includes('amber') ? 'shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 
-                                     'shadow-[0_0_8px_rgba(6,182,212,0.5)]'
-                                   }`
-                                : `text-white/70 hover:bg-white/8 hover:text-white hover:shadow-[0_0_8px_rgba(255,255,255,0.07)]
-                                   hover:${
-                                     categoryStyle.textColor.includes('blue') ? 'shadow-[0_0_6px_rgba(59,130,246,0.4)]' : 
-                                     categoryStyle.textColor.includes('green') ? 'shadow-[0_0_6px_rgba(16,185,129,0.4)]' : 
-                                     categoryStyle.textColor.includes('purple') ? 'shadow-[0_0_6px_rgba(139,92,246,0.4)]' : 
-                                     categoryStyle.textColor.includes('amber') ? 'shadow-[0_0_6px_rgba(245,158,11,0.4)]' : 
-                                     'shadow-[0_0_6px_rgba(6,182,212,0.4)]'
-                                   }`
-                              }
+                              ${isActive ? 'text-white shadow-[0_0_12px_rgba(255,255,255,0.1)]' : 'text-white/70 hover:bg-white/8 hover:text-white hover:shadow-[0_0_8px_rgba(255,255,255,0.07)]'}
                             `}
+                            style={{
+                              background: isActive 
+                                ? "linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%)"
+                                : "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
+                              boxShadow: isActive
+                                ? "rgba(0, 0, 0, 0.3) 0px 4px 8px 0px, rgba(255, 255, 255, 0.2) 0px 1px 2px 0px inset, rgba(0, 0, 0, 0.5) 0px 2px 4px inset, rgba(255, 255, 255, 0.1) 0px 0px 8px"
+                                : "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset",
+                              border: "none",
+                              transform: isActive ? "translateY(-1px)" : "none",
+                              willChange: "transform"
+                            }}
                           >
                             {isActive && (
                               <motion.div 
@@ -563,39 +568,104 @@ export function ModernSidebar({
             transition={{ duration: 0.3, delay: 0.5 }}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-50"></div>
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
+            <motion.button 
+              className="
+              flex items-center justify-center px-4 py-2.5 rounded-lg text-sm text-white transition-all duration-200
+              relative group
+            " 
+              tabIndex={0}
               onClick={onEmergencyClick}
-              className="w-full flex items-center px-4 py-2.5 text-white bg-red-500 hover:bg-red-600 rounded-lg transition-all duration-200 relative z-10 shadow-[0_0_15px_rgba(239,68,68,0.3)]"
+              style={{
+                background: "linear-gradient(135deg, rgba(180, 38, 72, 0.35) 0%, rgba(180, 38, 72, 0.15) 100%)",
+                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 10px, rgba(255, 255, 255, 0.2) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px",
+                border: "none"
+              }}
+              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.98 }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-500 opacity-100 rounded-lg"></div>
-              <Phone size={22} className="relative z-10" />
+              <motion.div 
+                className="absolute inset-0 bg-red-500/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                initial={false}
+                transition={{ duration: 0.2 }}
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-phone w-4 h-4 mr-2 text-red-500 drop-shadow-[0_0_3px_rgba(239,68,68,0.5)]">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
               <AnimatePresence>
                 {!collapsed && (
-                  <motion.span 
-                    className="ml-3 relative z-10 font-medium"
+                  <motion.span
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: "auto" }}
                     exit={{ opacity: 0, width: 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    Urgence
+                    Appel d'urgence
                   </motion.span>
                 )}
               </AnimatePresence>
             </motion.button>
             <motion.button
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.98 }}
-              onClick={handleLogout}
-              className="w-full flex items-center px-4 py-2.5 text-white/60 hover:text-white hover:bg-white/8 rounded-lg transition-all duration-200 relative z-10"
+              onClick={onToggleMessages}
+              className="
+                flex items-center justify-center px-4 py-2.5 rounded-lg text-sm text-white transition-all duration-200
+                relative group
+              "
+              style={{
+                background: "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)",
+                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 10px, rgba(255, 255, 255, 0.2) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px",
+                border: "none"
+              }}
             >
-              <LogOut size={22} className="relative z-10" />
+              <motion.div 
+                className="absolute inset-0 bg-blue-500/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                initial={false}
+                transition={{ duration: 0.2 }}
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle w-4 h-4 mr-2 text-blue-400 drop-shadow-[0_0_3px_rgba(59,130,246,0.5)]">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+              </svg>
               <AnimatePresence>
                 {!collapsed && (
-                  <motion.span 
-                    className="ml-3 relative z-10"
+                  <motion.span
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: "auto" }}
+                    exit={{ opacity: 0, width: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    Messages
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleLogout}
+              className="
+                flex items-center justify-center px-4 py-2.5 rounded-lg text-sm text-white transition-all duration-200
+                relative group
+              "
+              style={{
+                background: "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)",
+                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 10px, rgba(255, 255, 255, 0.2) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px",
+                border: "none"
+              }}
+            >
+              <motion.div 
+                className="absolute inset-0 bg-white/10 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                initial={false}
+                transition={{ duration: 0.2 }}
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-log-out w-4 h-4 mr-2 text-white/90 drop-shadow-[0_0_3px_rgba(255,255,255,0.3)]">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.span
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: "auto" }}
                     exit={{ opacity: 0, width: 0 }}

@@ -1,0 +1,115 @@
+/**
+ * Corrections d'accessibilité et de compatibilité supplémentaires
+ * Résout les problèmes signalés dans les avertissements d'accessibilité et de compatibilité
+ */
+
+/* === ACCESSIBILITÉ === */
+
+/* Fix pour les boutons de recherche sans texte accessible */
+.search-icon:not([aria-label]):not([title]) {
+  position: relative;
+}
+
+.search-icon:not([aria-label]):not([title])::after {
+  content: "Recherche";
+  display: inline;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Amélioration de l'accessibilité pour les images sans texte alternatif */
+img:not([alt]),
+svg:not([aria-label]):not([aria-labelledby]) {
+  position: relative;
+}
+
+img:not([alt])::after {
+  content: "Image sans description";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 0, 0, 0.1);
+  color: red;
+  font-size: 10px;
+  text-align: center;
+}
+
+/* Amélioration des formulaires pour accessibilité */
+input:not([aria-label]):not([placeholder]):not([title])::before,
+select:not([aria-label]):not([title])::before,
+textarea:not([aria-label]):not([placeholder]):not([title])::before {
+  content: attr(id);
+  display: inline;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* === COMPATIBILITÉ === */
+
+/* Ajouter la propriété standard 'filter' pour Chrome Android */
+[style*="-webkit-filter"] {
+  filter: var(--filter-value, inherit);
+}
+
+/* Préfixes pour filter */
+.filter,
+[class*="filter-"] {
+  -webkit-filter: var(--filter-value, none);
+  filter: var(--filter-value, none);
+}
+
+/* Ajouter 'text-size-adjust' pour les navigateurs modernes */
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Ajouter le préfixe -webkit pour backdrop-filter pour Safari */
+[style*="backdrop-filter"] {
+  -webkit-backdrop-filter: var(--backdrop-filter-value, blur(8px));
+  backdrop-filter: var(--backdrop-filter-value, blur(8px));
+}
+
+.backdrop-blur,
+[class*="backdrop-blur-"] {
+  -webkit-backdrop-filter: blur(var(--blur-amount, 8px));
+  backdrop-filter: blur(var(--blur-amount, 8px));
+}
+
+/* Ajouter le préfixe -webkit pour user-select pour Safari */
+[style*="user-select"] {
+  -webkit-user-select: var(--user-select-value, none);
+  -moz-user-select: var(--user-select-value, none);
+  -ms-user-select: var(--user-select-value, none);
+  user-select: var(--user-select-value, none);
+}
+
+/* Support pour forced-color-adjust */
+.forced-colors-mode {
+  forced-color-adjust: none;
+  -ms-high-contrast-adjust: none;
+}
+
+/* Correction pour les problèmes d'image-set */
+[class*="image-set"] {
+  content: "";
+}

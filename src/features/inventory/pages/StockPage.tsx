@@ -1,132 +1,132 @@
-import React, { useState } from 'react';
-import { Package, Search, Filter, Eye } from 'lucide-react';
+import React from 'react';
+import { motion } from 'framer-motion';
 import { ModernCardBase } from '@/components/ui/ModernCardBase';
-import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { OysterTableMap } from '../components/OysterTableMap';
-import { TableDetail } from '../components/TableDetail';
-import { TrempeView } from '../components/TrempeView';
-import { PurchaseConfiguration } from '@/features/purchases/components/PurchaseConfiguration';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
+import { Plus, Search, Filter } from 'lucide-react';
+import { Input } from '@/components/ui/Input';
+import { useStore } from '@/lib/store';
+import { OtherLocations } from '../components/OtherLocations';
 
-export function StockPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showCatalog, setShowCatalog] = useState(false);
-  const [selectedTable, setSelectedTable] = useState(null);
-  const [hoveredTable, setHoveredTable] = useState(null);
-  const [activeTab, setActiveTab] = useState('bassins');
+interface Stock {
+  id: string;
+  name: string;
+  quantity: number;
+  unit: string;
+  location: string;
+  lastUpdate: Date;
+}
 
-  // Gestionnaire pour fermer le catalogue si on clique ailleurs
-  const handlePageClick = (e: React.MouseEvent) => {
-    const target = e.target as HTMLElement;
-    // Si le clic n'est pas sur le catalogue ou le bouton de catalogue
-    if (!target.closest('.catalog-content') && !target.closest('.catalog-button')) {
-      setShowCatalog(false);
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1
     }
-  };
+  }
+};
+
+const itemVariants = {
+  hidden: { 
+    opacity: 0,
+    transform: 'translateY(20px)'
+  },
+  visible: { 
+    opacity: 1,
+    transform: 'translateY(0px)',
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.25, 0, 1]
+    }
+  }
+};
+
+const mockStocks: Stock[] = [
+  { id: '1', name: 'Huîtres N°3', quantity: 1000, unit: 'pièces', location: 'Bassin A', lastUpdate: new Date() },
+  { id: '2', name: 'Huîtres N°2', quantity: 500, unit: 'pièces', location: 'Bassin B', lastUpdate: new Date() },
+  { id: '3', name: 'Huîtres N°1', quantity: 300, unit: 'pièces', location: 'Bassin C', lastUpdate: new Date() }
+];
+
+export const StockPage: React.FC = () => {
+  const [stocks, setStocks] = React.useState<Stock[]>(mockStocks);
+  const [searchTerm, setSearchTerm] = React.useState('');
 
   return (
-    <div onClick={handlePageClick} className="h-full">
-      {/* En-tête */}
-      <div className="mb-8">
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Stock</h1>
-            <p className="text-sm text-white/60 mt-1">Visualisez et gérez votre inventaire</p>
-          </div>
-          <Button 
-            className="catalog-button bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowCatalog(!showCatalog);
-            }}
-          >
-            <Eye className="w-4 h-4 mr-2" />
-            {showCatalog ? 'Masquer le catalogue' : 'Voir le catalogue'}
-          </Button>
-        </div>
-        <div className="flex gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-            <Input
-              type="text"
-              placeholder="Rechercher dans le stock..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Button variant="outline" className="gap-2">
-            <Filter className="w-4 h-4" />
-            Filtres
-          </Button>
-        </div>
-      </div>
-
-      {/* Contenu principal */}
-      <div className="relative">
-        {/* Table des stocks */}
-        <div className={`transition-all duration-300 ${showCatalog ? 'mr-80' : ''}`}>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList>
-              <TabsTrigger value="bassins">Bassins</TabsTrigger>
-              <TabsTrigger value="trempes">Trempes</TabsTrigger>
-              <TabsTrigger value="achats">Achats</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="bassins">
-              <ModernCardBase>
-                <div className="p-6">
-                  <OysterTableMap
-                    onTableSelect={setSelectedTable}
-                    onTableHover={setHoveredTable}
-                    hoveredTable={hoveredTable}
-                    selectedTable={selectedTable}
-                  />
-                </div>
-              </ModernCardBase>
-            </TabsContent>
-
-            <TabsContent value="trempes">
-              <TrempeView />
-            </TabsContent>
-
-            <TabsContent value="achats">
-              <PurchaseConfiguration />
-            </TabsContent>
-          </Tabs>
-        </div>
-
-        {/* Catalogue */}
-        <div 
-          className={`catalog-content fixed top-0 right-0 h-full w-80 bg-brand-dark border-l border-white/10 transform transition-transform duration-300 ${
-            showCatalog ? 'translate-x-0' : 'translate-x-full'
-          }`}
-        >
-          <div className="p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Catalogue</h2>
-            <div className="space-y-4">
-              {/* Contenu du catalogue */}
-              <div className="bg-white/5 p-4 rounded-lg">
-                <h3 className="text-white font-medium">Huîtres Spéciales</h3>
-                <p className="text-sm text-white/60 mt-1">Calibre 2</p>
-              </div>
-              <div className="bg-white/5 p-4 rounded-lg">
-                <h3 className="text-white font-medium">Huîtres Fines</h3>
-                <p className="text-sm text-white/60 mt-1">Calibre 3</p>
-              </div>
-              {/* Ajoutez d'autres éléments du catalogue ici */}
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="w-full space-y-6"
+    >
+      <ModernCardBase>
+        <div className="glass-effect rounded-xl p-6 border border-white/10">
+          <motion.div variants={itemVariants} className="flex justify-between items-center mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-white">Stock</h2>
+              <p className="text-sm text-white/60 mt-1">Gérez votre inventaire d'huîtres</p>
             </div>
-          </div>
-        </div>
-      </div>
+            <Button className="bg-brand-burgundy hover:bg-brand-burgundy/90 text-white px-4 py-2 rounded-lg transition-all duration-200 ease-out transform hover:-translate-y-px">
+              <Plus className="w-4 h-4 mr-2" />
+              Nouveau stock
+            </Button>
+          </motion.div>
 
-      {selectedTable && (
-        <TableDetail
-          table={selectedTable}
-          onClose={() => setSelectedTable(null)}
-        />
-      )}
-    </div>
+          <motion.div variants={itemVariants} className="flex gap-4 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+              <Input
+                type="text"
+                placeholder="Rechercher un stock..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white"
+              />
+            </div>
+            <Button variant="outline" className="px-4 py-2 rounded-lg text-white hover:bg-white/5 transition-all duration-200 ease-out transform hover:-translate-y-px">
+              <Filter className="w-4 h-4 mr-2" />
+              Filtres
+            </Button>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {stocks.map((stock) => (
+              <motion.div
+                key={stock.id}
+                variants={itemVariants}
+                className="bg-white/5 rounded-xl p-4 border border-white/10 hover:border-white/20 transition-colors"
+                style={{ willChange: 'transform, opacity' }}
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <h3 className="text-lg font-semibold text-white">{stock.name}</h3>
+                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-brand-burgundy/20 text-brand-burgundy">
+                    {stock.location}
+                  </span>
+                </div>
+                <div className="space-y-2 text-sm text-white/60">
+                  <p>Quantité: {stock.quantity} {stock.unit}</p>
+                  <p>Dernière mise à jour: {stock.lastUpdate.toLocaleDateString()}</p>
+                </div>
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <Button variant="outline" className="w-full px-4 py-2 rounded-lg text-white hover:bg-white/5 transition-all duration-200 ease-out transform hover:-translate-y-px">
+                    Voir les détails
+                  </Button>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </ModernCardBase>
+
+      <ModernCardBase>
+        <motion.div variants={itemVariants}>
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-white">Autres emplacements</h2>
+            <p className="text-sm text-white/60 mt-1">Gérez vos espaces de stockage additionnels</p>
+          </div>
+          <OtherLocations />
+        </motion.div>
+      </ModernCardBase>
+    </motion.div>
   );
-}
+};

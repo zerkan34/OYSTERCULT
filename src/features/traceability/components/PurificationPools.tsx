@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Waves, ThermometerSun, Timer, Activity, Filter, Shell, Droplets, X, Edit2, Save } from 'lucide-react';
+import { 
+  Waves, 
+  ThermometerSun, 
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+  Edit2,
+  Save,
+  X
+} from 'lucide-react';
 import { AnimatedCard } from '@/components/ui/AnimatedCard';
 import { Input } from '@/components/ui/Input';
 
@@ -7,440 +16,286 @@ interface Pool {
   id: string;
   name: string;
   filterType: string;
-  filterStatus: 'active' | 'maintenance' | 'error';
-  currentOccupancy: number;
-  capacity: number;
-  waterQuality: number;
+  filterStatus: 'active' | 'inactive' | 'maintenance';
   temperature: number;
+  salinity: number;
   lastMaintenance: string;
   nextMaintenance: string;
-  batches: {
+  currentBatch?: {
     id: string;
-    number: string;
-    quantity: number;
-    remainingTime: number;
-  }[];
+    name: string;
+    quantity: string;
+    startDate: string;
+    endDate: string;
+  };
 }
-
-const mockPools: Pool[] = [
-  {
-    id: '1',
-    name: 'Bassin A1',
-    filterType: 'Bio-filtre',
-    filterStatus: 'active',
-    currentOccupancy: 800,
-    capacity: 1000,
-    waterQuality: 98,
-    temperature: 12.5,
-    lastMaintenance: '2025-02-25',
-    nextMaintenance: '2025-03-03',
-    batches: [
-      {
-        id: '1',
-        number: 'LOT-2025-001',
-        quantity: 500,
-        remainingTime: 18
-      }
-    ]
-  },
-  {
-    id: '2',
-    name: 'Bassin A2',
-    filterType: 'Bio-filtre',
-    filterStatus: 'maintenance',
-    currentOccupancy: 600,
-    capacity: 1000,
-    waterQuality: 92,
-    temperature: 12.3,
-    lastMaintenance: '2025-02-24',
-    nextMaintenance: '2025-03-02',
-    batches: [
-      {
-        id: '2',
-        number: 'LOT-2025-002',
-        quantity: 300,
-        remainingTime: 6
-      }
-    ]
-  },
-  {
-    id: '3',
-    name: 'Bassin B1',
-    filterType: 'UV-filtre',
-    filterStatus: 'active',
-    currentOccupancy: 900,
-    capacity: 1000,
-    waterQuality: 95,
-    temperature: 12.4,
-    lastMaintenance: '2025-02-23',
-    nextMaintenance: '2025-03-01',
-    batches: [
-      {
-        id: '3',
-        number: 'LOT-2025-003',
-        quantity: 600,
-        remainingTime: 12
-      }
-    ]
-  },
-  {
-    id: '4',
-    name: 'Bassin B2',
-    filterType: 'UV-filtre',
-    filterStatus: 'error',
-    currentOccupancy: 0,
-    capacity: 1000,
-    waterQuality: 85,
-    temperature: 12.6,
-    lastMaintenance: '2025-02-22',
-    nextMaintenance: '2025-02-28',
-    batches: []
-  }
-];
 
 export function PurificationPools() {
   const [selectedPool, setSelectedPool] = useState<Pool | null>(null);
-  const [editMode, setEditMode] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editedPool, setEditedPool] = useState<Pool | null>(null);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'bg-emerald-500/20 text-emerald-300';
-      case 'maintenance':
-        return 'bg-yellow-500/20 text-yellow-300';
-      case 'error':
-        return 'bg-red-500/20 text-red-300';
-      default:
-        return 'bg-white/20 text-white';
+  const [pools, setPools] = useState<Pool[]>([
+    {
+      id: '1',
+      name: 'Bassin A1',
+      filterType: 'UV + Mécanique',
+      filterStatus: 'active',
+      temperature: 12.5,
+      salinity: 35.2,
+      lastMaintenance: '2025-03-01',
+      nextMaintenance: '2025-03-15',
+      currentBatch: {
+        id: 'B1',
+        name: 'Huîtres Fines de Claire',
+        quantity: '200kg',
+        startDate: '2025-03-10',
+        endDate: '2025-03-13'
+      }
+    },
+    {
+      id: '2',
+      name: 'Bassin A2',
+      filterType: 'UV + Mécanique',
+      filterStatus: 'active',
+      temperature: 12.8,
+      salinity: 34.9,
+      lastMaintenance: '2025-03-05',
+      nextMaintenance: '2025-03-19',
+      currentBatch: {
+        id: 'B2',
+        name: 'Huîtres Spéciales',
+        quantity: '150kg',
+        startDate: '2025-03-11',
+        endDate: '2025-03-14'
+      }
+    },
+    {
+      id: '3',
+      name: 'Bassin B1',
+      filterType: 'UV + Mécanique',
+      filterStatus: 'maintenance',
+      temperature: 0,
+      salinity: 0,
+      lastMaintenance: '2025-03-12',
+      nextMaintenance: '2025-03-13',
     }
-  };
+  ]);
 
-  const handleEdit = () => {
-    setEditedPool(selectedPool);
-    setEditMode(true);
+  const handleEdit = (pool: Pool) => {
+    setEditedPool({ ...pool });
+    setIsEditModalOpen(true);
   };
 
   const handleSave = () => {
     if (editedPool) {
-      // Dans un environnement réel, nous ferions un appel API ici
-      const updatedPools = mockPools.map(pool => 
+      const updatedPools = pools.map(pool => 
         pool.id === editedPool.id ? editedPool : pool
       );
-      // Mettre à jour le state global (à implémenter avec un vrai backend)
-      setSelectedPool(editedPool);
-      setEditMode(false);
+      setPools(updatedPools);
+      setIsEditModalOpen(false);
       setEditedPool(null);
     }
   };
 
-  const handleCancel = () => {
-    setEditMode(false);
-    setEditedPool(null);
+  const getStatusIcon = (status: Pool['filterStatus']) => {
+    switch (status) {
+      case 'active':
+        return <CheckCircle2 className="w-5 h-5 text-green-500" />;
+      case 'inactive':
+        return <XCircle className="w-5 h-5 text-red-500" />;
+      case 'maintenance':
+        return <AlertCircle className="w-5 h-5 text-yellow-500" />;
+    }
   };
 
-  const handleInputChange = (field: keyof Pool, value: string | number) => {
-    if (editedPool) {
-      setEditedPool({
-        ...editedPool,
-        [field]: value
-      });
+  const getStatusText = (status: Pool['filterStatus']) => {
+    switch (status) {
+      case 'active':
+        return 'Actif';
+      case 'inactive':
+        return 'Inactif';
+      case 'maintenance':
+        return 'En maintenance';
     }
   };
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-medium text-white">État des bassins de purification</h2>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {mockPools.map((pool) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {pools.map((pool) => (
           <AnimatedCard
             key={pool.id}
             onClick={() => setSelectedPool(pool)}
-            className="bg-white/5 border border-white/10 rounded-lg p-6 hover:border-white/20 transition-all duration-200 cursor-pointer"
+            className="p-4 cursor-pointer hover:shadow-lg transition-shadow bg-white/5 backdrop-blur-sm border border-white/10"
           >
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
-                  <Waves className="text-brand-blue" size={20} />
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-white">{pool.name}</h3>
+                <div className="flex items-center gap-2 mt-1">
+                  {getStatusIcon(pool.filterStatus)}
+                  <span className="text-sm text-white/60">
+                    {getStatusText(pool.filterStatus)}
+                  </span>
                 </div>
-                <div>
-                  <h3 className="text-lg font-medium text-white">{pool.name}</h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${getStatusColor(pool.filterStatus)}`}>
-                      {pool.filterStatus === 'active' ? 'Actif' : 
-                       pool.filterStatus === 'maintenance' ? 'Maintenance' : 'Erreur'}
-                    </span>
-                    <span className="text-xs text-white/60">
-                      <Filter size={12} className="inline mr-1" />
-                      {pool.filterType}
-                    </span>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEdit(pool);
+                }}
+                className="p-1 hover:bg-white/10 rounded-full text-white/60 hover:text-white/80 transition-colors"
+              >
+                <Edit2 className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-white/5 p-2 rounded-md border border-white/10">
+                  <div className="text-xs text-teal-400 mb-1">Température</div>
+                  <div className="font-medium text-white">
+                    {pool.temperature}°C
+                  </div>
+                </div>
+                <div className="bg-white/5 p-2 rounded-md border border-white/10">
+                  <div className="text-xs text-teal-400 mb-1">Salinité</div>
+                  <div className="font-medium text-white">
+                    {pool.salinity}g/L
                   </div>
                 </div>
               </div>
-              
-              {pool.batches.length > 0 && (
-                <div className="text-right">
-                  <div className="text-sm text-white/60">Lot en cours</div>
-                  <div className="text-white font-medium">{pool.batches[0].number}</div>
-                  <div className="flex items-center gap-1 text-xs text-white/60 mt-1">
-                    <Timer size={12} />
-                    <span>Reste {pool.batches[0].remainingTime}h</span>
+
+              {pool.currentBatch && (
+                <div className="bg-white/5 p-2 rounded-md border border-white/10">
+                  <div className="text-xs text-white/60 mb-1">Lot en cours</div>
+                  <div className="font-medium text-white">{pool.currentBatch.name}</div>
+                  <div className="text-sm text-white/60 mt-1">
+                    {pool.currentBatch.quantity} • {new Date(pool.currentBatch.endDate).toLocaleDateString('fr-FR')}
                   </div>
                 </div>
               )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center gap-2 text-sm text-white/60 mb-1">
-                  <ThermometerSun size={14} />
-                  <span>Température</span>
-                </div>
-                <div className="text-white font-medium">{pool.temperature}°C</div>
-              </div>
-
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center gap-2 text-sm text-white/60 mb-1">
-                  <Activity size={14} />
-                  <span>Qualité eau</span>
-                </div>
-                <div className={`text-white font-medium ${
-                  pool.waterQuality >= 95 ? 'text-emerald-400' :
-                  pool.waterQuality >= 90 ? 'text-yellow-400' :
-                  'text-red-400'
-                }`}>
-                  {pool.waterQuality}%
-                </div>
-              </div>
-
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center gap-2 text-sm text-white/60 mb-1">
-                  <Shell size={14} />
-                  <span>Occupation</span>
-                </div>
-                <div className="text-white font-medium">
-                  {Math.round((pool.currentOccupancy / pool.capacity) * 100)}%
-                </div>
-                <div className="text-xs text-white/60">
-                  {pool.currentOccupancy}/{pool.capacity}
-                </div>
-              </div>
-
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="text-sm text-white/60 mb-1">Maintenance</div>
-                <div className="text-white font-medium">
-                  {new Date(pool.nextMaintenance).toLocaleDateString('fr-FR')}
-                </div>
-              </div>
             </div>
           </AnimatedCard>
         ))}
       </div>
 
-      {selectedPool && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[rgb(var(--color-brand-surface)_/_var(--glass-opacity))] backdrop-blur-md border border-white/10 rounded-lg p-6 w-full max-w-2xl">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-brand-blue/20 rounded-lg flex items-center justify-center">
-                  <Waves className="text-brand-blue" size={20} />
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-white">{selectedPool.name}</h2>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${getStatusColor(selectedPool.filterStatus)}`}>
-                      {selectedPool.filterStatus === 'active' ? 'Actif' : 
-                       selectedPool.filterStatus === 'maintenance' ? 'Maintenance' : 'Erreur'}
-                    </span>
-                    <span className="text-xs text-white/60">
-                      <Filter size={12} className="inline mr-1" />
-                      {selectedPool.filterType}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleEdit}
-                  className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
-                >
-                  <Edit2 size={20} className="mr-2" />
-                  Modifier
-                </button>
-                <button
-                  onClick={() => setSelectedPool(null)}
-                  className="p-2 hover:bg-white/5 rounded-lg"
-                >
-                  <X className="text-white/60" size={20} />
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white/5 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-sm text-white/60 mb-2">
-                    <ThermometerSun size={16} />
-                    <span>Température</span>
-                  </div>
-                  <div className="text-2xl font-medium text-white">{selectedPool.temperature}°C</div>
-                </div>
-
-                <div className="bg-white/5 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-sm text-white/60 mb-2">
-                    <Activity size={16} />
-                    <span>Qualité eau</span>
-                  </div>
-                  <div className={`text-2xl font-medium ${
-                    selectedPool.waterQuality >= 95 ? 'text-emerald-400' :
-                    selectedPool.waterQuality >= 90 ? 'text-yellow-400' :
-                    'text-red-400'
-                  }`}>
-                    {selectedPool.waterQuality}%
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white/5 rounded-lg p-4">
-                <h3 className="text-lg font-medium text-white mb-4">Lots en cours</h3>
-                <div className="space-y-3">
-                  {selectedPool.batches.length === 0 ? (
-                    <div className="text-center py-4 text-white/60">
-                      Aucun lot en cours dans ce bassin
-                    </div>
-                  ) : (
-                    selectedPool.batches.map((batch) => (
-                      <div key={batch.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                        <div>
-                          <div className="text-white font-medium">{batch.number}</div>
-                          <div className="text-sm text-white/60">{batch.quantity} kg</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-white">{batch.remainingTime}h</div>
-                          <div className="text-sm text-white/60">restantes</div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              <div className="bg-white/5 rounded-lg p-4">
-                <h3 className="text-lg font-medium text-white mb-4">Maintenance</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-sm text-white/60 mb-1">Dernière maintenance</div>
-                    <div className="text-white font-medium">
-                      {new Date(selectedPool.lastMaintenance).toLocaleDateString('fr-FR')}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-white/60 mb-1">Prochaine maintenance</div>
-                    <div className="text-white font-medium">
-                      {new Date(selectedPool.nextMaintenance).toLocaleDateString('fr-FR')}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {editMode && editedPool && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[rgb(var(--color-brand-surface)_/_var(--glass-opacity))] backdrop-blur-md border border-white/10 rounded-lg p-6 w-full max-w-2xl">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-white">Modifier {editedPool.name}</h2>
+      {isEditModalOpen && editedPool && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900/90 backdrop-blur-xl rounded-lg p-6 max-w-md w-full border border-white/10">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-white">Modifier le bassin</h2>
               <button
-                onClick={handleCancel}
-                className="p-2 hover:bg-white/5 rounded-lg"
+                onClick={() => setIsEditModalOpen(false)}
+                className="p-2 hover:bg-white/10 rounded-full text-white/60 hover:text-white/80 transition-colors"
               >
-                <X className="text-white/60" size={20} />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-white/60 mb-2">Nom du bassin</label>
+                <label className="block text-sm font-medium text-white/80 mb-1">
+                  Nom du bassin
+                </label>
                 <Input
-                  type="text"
                   value={editedPool.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full"
+                  onChange={(e) => setEditedPool({ ...editedPool, name: e.target.value })}
+                  className="mt-1"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-white/60 mb-2">Type de filtre</label>
+                <label className="block text-sm font-medium text-white/80 mb-1">
+                  Type de filtration
+                </label>
                 <Input
-                  type="text"
                   value={editedPool.filterType}
-                  onChange={(e) => handleInputChange('filterType', e.target.value)}
-                  className="w-full"
+                  onChange={(e) => setEditedPool({ ...editedPool, filterType: e.target.value })}
+                  className="mt-1"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-white/60 mb-2">Statut du filtre</label>
+                <label className="block text-sm font-medium text-white/80 mb-1">
+                  Statut
+                </label>
                 <select
                   value={editedPool.filterStatus}
-                  onChange={(e) => handleInputChange('filterStatus', e.target.value)}
-                  className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
+                  onChange={(e) => setEditedPool({ ...editedPool, filterStatus: e.target.value as Pool['filterStatus'] })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 >
                   <option value="active">Actif</option>
-                  <option value="maintenance">Maintenance</option>
-                  <option value="error">Erreur</option>
+                  <option value="inactive">Inactif</option>
+                  <option value="maintenance">En maintenance</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm text-white/60 mb-2">Capacité</label>
-                <Input
-                  type="number"
-                  value={editedPool.capacity}
-                  onChange={(e) => handleInputChange('capacity', parseInt(e.target.value))}
-                  className="w-full"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-white/60 mb-2">Température (°C)</label>
+                <label className="block text-sm font-medium text-white/80 mb-1">
+                  Température (°C)
+                </label>
                 <Input
                   type="number"
                   step="0.1"
                   value={editedPool.temperature}
-                  onChange={(e) => handleInputChange('temperature', parseFloat(e.target.value))}
-                  className="w-full"
+                  onChange={(e) => setEditedPool({ ...editedPool, temperature: parseFloat(e.target.value) })}
+                  className="mt-1"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-white/60 mb-2">Prochaine maintenance</label>
+                <label className="block text-sm font-medium text-white/80 mb-1">
+                  Salinité (g/L)
+                </label>
                 <Input
-                  type="date"
-                  value={editedPool.nextMaintenance}
-                  onChange={(e) => handleInputChange('nextMaintenance', e.target.value)}
-                  className="w-full"
+                  type="number"
+                  step="0.1"
+                  value={editedPool.salinity}
+                  onChange={(e) => setEditedPool({ ...editedPool, salinity: parseFloat(e.target.value) })}
+                  className="mt-1"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  onClick={handleCancel}
-                  className="px-4 py-2 text-white hover:bg-white/5 rounded-lg transition-colors"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={handleSave}
-                  className="flex items-center px-4 py-2 bg-brand-blue hover:bg-brand-blue/90 rounded-lg text-white transition-colors"
-                >
-                  <Save size={20} className="mr-2" />
-                  Enregistrer
-                </button>
+              <div>
+                <label className="block text-sm font-medium text-white/80 mb-1">
+                  Dernière maintenance
+                </label>
+                <Input
+                  type="date"
+                  value={editedPool.lastMaintenance}
+                  onChange={(e) => setEditedPool({ ...editedPool, lastMaintenance: e.target.value })}
+                  className="mt-1"
+                />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white/80 mb-1">
+                  Prochaine maintenance
+                </label>
+                <Input
+                  type="date"
+                  value={editedPool.nextMaintenance}
+                  onChange={(e) => setEditedPool({ ...editedPool, nextMaintenance: e.target.value })}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleSave}
+                className="px-4 py-2 text-sm font-medium text-white bg-teal-500 hover:bg-teal-600 rounded-md"
+              >
+                <Save className="w-4 h-4 inline-block mr-2" />
+                Enregistrer
+              </button>
             </div>
           </div>
         </div>

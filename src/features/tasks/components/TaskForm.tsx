@@ -25,9 +25,10 @@ interface TaskFormData {
 
 interface TaskFormProps {
   onClose: () => void;
+  task?: any;  // Rendre la propriété task optionnelle
 }
 
-export function TaskForm({ onClose }: TaskFormProps) {
+export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
   const { register, handleSubmit, formState: { errors } } = useForm<TaskFormData>();
 
   const onSubmit = (data: TaskFormData) => {

@@ -1,268 +1,218 @@
 @import url('https://fonts.cdnfonts.com/css/sf-pro-display');
 @import url('https://fonts.cdnfonts.com/css/sf-mono');
+@import './styles/mobile.css';
+@import './styles/effects.css';
+@import './styles/accessibility.css';
 
 @font-face {
   font-family: 'Industry Inc Base';
   src: local('Arial'), local('Helvetica');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
+/* Directives Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Base styles */
+/* Variables CSS */
+:root {
+  /* Variables de couleur */
+  --background: #000000;
+  --foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: rgba(255, 255, 255, 0.2);
+  
+  /* Variables primaires */
+  --primary: rgb(59, 130, 246);
+  --primary-foreground: #ffffff;
+  
+  /* Variables secondaires */
+  --secondary: rgba(255, 255, 255, 0.1);
+  --secondary-foreground: #ffffff;
+  
+  /* Variables destructives */
+  --destructive: rgb(239, 68, 68);
+  --destructive-foreground: #ffffff;
+  
+  /* Variables atténuées */
+  --muted: rgba(255, 255, 255, 0.1);
+  --muted-foreground: rgba(255, 255, 255, 0.5);
+  
+  /* Variables d'accentuation */
+  --accent: rgba(255, 255, 255, 0.1);
+  --accent-foreground: #ffffff;
+  
+  /* Variables de popover */
+  --popover: rgba(0, 0, 0, 0.9);
+  --popover-foreground: #ffffff;
+  
+  /* Variables de carte */
+  --card: rgba(0, 0, 0, 0.8);
+  --card-foreground: #ffffff;
+
+  /* Variables de sidebar */
+  --sidebar-width: 18rem;
+
+  /* Mode sombre - Thème océanique */
+  --color-brand-dark: 22 33 62;
+  --color-brand-darker: 15 25 50;
+  --color-brand-surface: 30 45 84;
+  --color-brand-surface-light: 40 60 110;
+  --color-brand-primary: 56 189 248;
+  --color-brand-secondary: 14 165 233;
+  --color-brand-tertiary: 99 102 241;
+  --color-brand-burgundy: 0 128 155;
+  
+  --color-text: 248 250 252;
+  --color-text-secondary: 226 232 240;
+  --color-text-tertiary: 203 213 225;
+  
+  --color-text-opacity-secondary: 0.8;
+  --color-text-opacity-tertiary: 0.6;
+  --color-border: 248 250 252;
+  --color-border-opacity: 0.15;
+  --color-border-hover-opacity: 0.25;
+  --color-background-hover: 248 250 252;
+  --color-background-hover-opacity: 0.08;
+  
+  --shadow-neon: 0 0 20px rgb(56 189 248 / 0.35);
+  --shadow-neon-hover: 0 0 30px rgb(56 189 248 / 0.5);
+  --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.2);
+  --glass-opacity: 0.85;
+  --mesh-opacity: 0.05;
+}
+
+/* Styles de base */
 @layer base {
   :root {
-    /* Mode sombre - Thème océanique */
-    --color-brand-dark: 15 23 42;      /* Bleu marine foncé */
-    --color-brand-darker: 8 12 22;     /* Bleu marine très foncé */
-    --color-brand-surface: 22 33 62;   /* Bleu profond */
-    --color-brand-surface-light: 30 45 84; /* Bleu océan */
-    --color-brand-primary: 56 189 248;    /* Bleu clair vif */
-    --color-brand-secondary: 14 165 233;  /* Bleu azur */
-    --color-brand-tertiary: 99 102 241;   /* Bleu indigo */
-    --color-brand-burgundy: 0 108 134;    /* Bleu pétrole */
-    
-    --color-text: 248 250 252;          /* Blanc cassé */
-    --color-text-secondary: 226 232 240; /* Gris clair */
-    --color-text-tertiary: 203 213 225;  /* Gris plus foncé */
-    
-    --color-text-opacity-secondary: 0.8;
-    --color-text-opacity-tertiary: 0.6;
-    --color-border: 248 250 252;
-    --color-border-opacity: 0.15;
-    --color-border-hover-opacity: 0.25;
-    --color-background-hover: 248 250 252;
-    --color-background-hover-opacity: 0.08;
-    
-    --shadow-neon: 0 0 20px rgb(56 189 248 / 0.35);
-    --shadow-neon-hover: 0 0 30px rgb(56 189 248 / 0.5);
-    --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.2);
-    --glass-opacity: 0.95;
-    --mesh-opacity: 0.05;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --brand-dark: 230 14% 4%;
+    --brand-purple: 267 100% 61%;
+    --safe-top: env(safe-area-inset-top);
+    --safe-bottom: env(safe-area-inset-bottom);
   }
 
-  [data-theme="light"] {
-    /* Mode clair - Thème côtier */
-    --color-brand-dark: 241 245 249;     /* Gris très clair */
-    --color-brand-darker: 226 232 240;   /* Gris clair */
-    --color-brand-surface: 248 250 252;  /* Blanc cassé */
-    --color-brand-surface-light: 255 255 255; /* Blanc pur */
-    --color-brand-primary: 14 165 233;     /* Bleu azur */
-    --color-brand-secondary: 2 132 199;    /* Bleu océan */
-    --color-brand-tertiary: 51 65 85;      /* Bleu gris */
-    --color-brand-burgundy: 0 98 114;      /* Bleu pétrole clair */
-    
-    --color-text: 15 23 42;             /* Bleu marine foncé */
-    --color-text-secondary: 51 65 85;    /* Bleu gris */
-    --color-text-tertiary: 71 85 105;    /* Gris bleuté */
-    
-    --color-text-opacity-secondary: 1;
-    --color-text-opacity-tertiary: 1;
-    --color-border: 51 65 85;
-    --color-border-opacity: 0.15;
-    --color-border-hover-opacity: 0.25;
-    --color-background-hover: 51 65 85;
-    --color-background-hover-opacity: 0.05;
-    
-    --shadow-neon: 0 0 20px rgb(14 165 233 / 0.25);
-    --shadow-neon-hover: 0 0 30px rgb(14 165 233 / 0.4);
-    --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.1);
-    --glass-opacity: 0.98;
-    --mesh-opacity: 0.03;
+  html {
+    @apply antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 
   body {
-    @apply bg-brand-dark antialiased;
-    color: rgb(var(--color-text));
-    background-image: 
-      radial-gradient(circle at 0% 0%, rgb(var(--color-brand-burgundy) / 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 100% 100%, rgb(var(--color-brand-tertiary) / 0.05) 0%, transparent 50%),
-      url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0V0zm20 20h20v20H20V20zM0 20h20v20H0V20z' fill='currentColor' fill-opacity='var(--mesh-opacity)'/%3E%3C/svg%3E");
+    @apply bg-brand-dark text-white;
   }
 
-  .font-industry {
-    font-family: 'Industry Inc Base', 'SF Pro Display', sans-serif;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+  /* Focus Styles */
+  :focus-visible {
+    outline: 2px solid rgb(var(--color-brand-burgundy));
+    outline-offset: 2px;
   }
 
-  .text-gradient-cool {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(
-      to right,
-      rgb(var(--color-brand-burgundy)),
-      rgb(var(--color-brand-burgundy) / 0.8)
-    );
+  /* Mobile Optimizations */
+  @supports (padding: env(safe-area-inset-top)) {
+    .safe-top {
+      padding-top: var(--safe-top);
+    }
+    .safe-bottom {
+      padding-bottom: var(--safe-bottom);
+    }
   }
 
-  .margin-top-65 {
-    margin-top: 65px;
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-/* Support pour les appareils iOS et iPhone avec l'encoche/notch */
-.safe-area-inset-top {
-  padding-top: env(safe-area-inset-top, 0px);
+/* Meta viewport */
+@viewport {
+  width: device-width;
+  zoom: 1;
+  min-zoom: 1;
+  max-zoom: 5;
+  user-zoom: zoom;
 }
 
-.safe-area-inset-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-.safe-area-inset-left {
-  padding-left: env(safe-area-inset-left, 0px);
-}
-
-.safe-area-inset-right {
-  padding-right: env(safe-area-inset-right, 0px);
-}
-
-/* Classe utilitaire pour le padding-bottom sur iOS */
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 16px);
-}
-
-/* Styles pour la classe ios-device */
-.ios-device input[type="text"],
-.ios-device input[type="email"],
-.ios-device input[type="password"],
-.ios-device textarea {
-  font-size: 16px; /* Empêche le zoom automatique sur les champs de formulaire sur iOS */
-  appearance: none; /* Supprimer l'apparence par défaut des champs sur iOS */
-  -webkit-appearance: none;
-}
-
-/* Styles pour éliminer le mode de surbrillance */
-.ios-device * {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Styles spécifiques pour iPhone */
-@media screen and (max-width: 428px) and (orientation: portrait), 
-       screen and (max-width: 926px) and (orientation: landscape) {
-  /* Ajustements généraux pour les iPhone */
-  :root {
-    --mesh-opacity: 0.025; /* Réduire l'intensité du motif de fond */
-  }
-  
-  body {
-    /* Prévenir les rebonds/overscroll sur iOS */
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: none;
-  }
-  
-  /* Éviter le zoom sur les boutons et inputs */
-  button, input, select, textarea {
-    font-size: 16px;
-  }
-  
-  /* Améliorer la lisibilité des textes */
-  h1 {
-    font-size: 1.5rem !important;
-  }
-  
-  h2 {
-    font-size: 1.25rem !important;
-  }
-  
-  /* Ajuster la taille des éléments trop petits */
-  .text-xs {
-    font-size: 0.75rem !important;
-  }
-  
-  /* Ajuster le scroll pour éviter les rebonds */
-  .custom-scrollbar {
-    -webkit-overflow-scrolling: touch !important;
-    scroll-behavior: smooth !important;
-  }
-  
-  /* Ajuster les ombres pour de meilleures performances */
-  .shadow-xl {
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2) !important;
+/* Support des préfixes vendeurs */
+@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+  .backdrop-blur {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
   }
 }
 
-/* Optimisations pour iPhone */
-@media screen and (max-width: 428px) {
-  /* iPhone 13 Pro Max width */
-  body {
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  /* Empêcher le zoom automatique sur les inputs */
-  input, 
-  textarea, 
-  select, 
-  button {
-    font-size: 16px !important; /* Taille min pour iOS pour éviter le zoom auto */
-  }
-  
-  /* S'assurer que les modals et popovers sont bien dimensionnés */
-  .modal-content,
-  .popover,
-  .dropdown-menu {
-    max-width: 90vw !important;
-    max-height: 80vh !important;
-    overflow-y: auto !important;
-  }
-  
-  /* Assurer que les textes ne débordent pas */
-  p, h1, h2, h3, h4, h5, h6, span, button {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    -ms-word-break: break-all;
-    word-break: break-word;
-    -ms-hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphens: auto;
-  }
-  
-  /* Ajuster la taille des boutons pour faciliter la prise en main */
-  button,
-  .btn,
-  .button {
-    min-height: 44px; /* Hauteur minimale pour les cibles tactiles sur iOS */
-    padding: 10px 15px;
-  }
-  
-  /* Assurer que les éléments interactifs sont suffisamment espacés */
-  .button-group > * {
-    margin: 5px;
+@supports not (backdrop-filter: blur(8px)) {
+  .backdrop-blur {
+    background-color: rgba(0, 0, 0, 0.8);
   }
 }
 
-@supports(padding: max(0px)) {
-  body {
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
+/* Support des safe areas */
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-area-inset {
     padding-top: env(safe-area-inset-top);
+    padding-right: env(safe-area-inset-right);
     padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
   }
 }
 
+/* Support du mode sombre */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* Support du contraste élevé */
+@media (prefers-contrast: more) {
+  :root {
+    --primary: rgb(0, 84, 166);
+    --destructive: rgb(185, 28, 28);
+    --ring: rgb(37, 99, 235);
+  }
+}
+
+/* Thèmes */
 @layer components {
   /* Glass effect modernisé */
   .glass-effect {
     background-color: rgb(var(--color-brand-surface) / var(--glass-opacity));
     border: 1px solid rgb(var(--color-border) / var(--color-border-opacity));
-    @apply backdrop-blur-md transition-all duration-300;
+    backdrop-filter: blur(12px);
     box-shadow: var(--shadow-glass);
   }
 
   .glass-effect-hover {
-    @apply hover:border-[rgb(var(--color-brand-burgundy)_/_0.2)];
+    border-color: rgb(var(--color-brand-burgundy) / 0.2);
     background-color: rgb(var(--color-brand-surface-light) / var(--glass-opacity));
     box-shadow: var(--shadow-neon);
   }
 
   /* Buttons modernisés */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors;
+    @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-burgundy;
+    @apply disabled:pointer-events-none disabled:opacity-50;
+    @apply min-h-[44px] min-w-[44px];
+  }
+
   .btn-primary {
     background-color: rgb(var(--color-brand-burgundy));
-    @apply flex items-center px-4 py-2 rounded-lg transition-all duration-300;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
     color: white !important;
     box-shadow: var(--shadow-neon);
   }
@@ -277,7 +227,11 @@
     background-color: rgb(var(--color-background-hover));
     border: 1px solid rgb(var(--color-border));
     color: rgb(var(--color-text)) !important;
-    @apply flex items-center px-4 py-2 rounded-lg transition-all duration-300;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
   }
 
   .btn-secondary:hover {
@@ -287,11 +241,23 @@
   }
 
   /* Inputs modernisés */
+  .input {
+    @apply flex h-11 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2;
+    @apply text-sm text-white placeholder:text-white/60;
+    @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-burgundy;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+    @apply min-h-[44px];
+  }
+
   .input-modern {
     background-color: rgb(var(--color-background-hover));
     border: 1px solid rgb(var(--color-border));
     color: rgb(var(--color-text));
-    @apply w-full px-4 py-2 rounded-lg transition-all duration-300;
+    display: block;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
   }
 
   .input-modern::placeholder {
@@ -344,35 +310,35 @@
 
     /* Statuts et badges */
     .bg-green-500\/20 {
-      @apply bg-green-100 !important;
+      background-color: rgb(34 197 94 / 0.2) !important;
     }
     
     .bg-yellow-500\/20 {
-      @apply bg-yellow-100 !important;
+      background-color: rgb(234 179 8 / 0.2) !important;
     }
     
     .bg-red-500\/20 {
-      @apply bg-red-100 !important;
+      background-color: rgb(239 68 68 / 0.2) !important;
     }
     
     .bg-blue-500\/20 {
-      @apply bg-blue-100 !important;
+      background-color: rgb(14 165 233 / 0.2) !important;
     }
 
     .text-green-300, .text-green-400 {
-      @apply text-green-700 !important;
+      color: rgb(34 197 94) !important;
     }
     
     .text-yellow-300, .text-yellow-400 {
-      @apply text-yellow-700 !important;
+      color: rgb(234 179 8) !important;
     }
     
     .text-red-300, .text-red-400 {
-      @apply text-red-700 !important;
+      color: rgb(239 68 68) !important;
     }
     
     .text-blue-300, .text-blue-400 {
-      @apply text-blue-700 !important;
+      color: rgb(14 165 233) !important;
     }
 
     /* Placeholders */
@@ -444,11 +410,27 @@
 
   /* Modal */
   .modal-overlay {
-    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-[100];
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    z-index: 100;
   }
 
   .modal-content {
-    @apply fixed inset-0 flex items-center justify-center z-[101];
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(var(--color-brand-surface));
+    color: rgb(var(--color-text));
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-glass);
+    z-index: 101;
   }
 
   /* Barre de défilement personnalisée */
@@ -548,5 +530,107 @@
 
   .glow-dot-green {
     box-shadow: 0 0 8px 0px rgba(74, 222, 128, 0.7);
+  }
+}
+
+@supports(padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+@media screen and (max-width: 428px) and (orientation: portrait), 
+       screen and (max-width: 926px) and (orientation: landscape) {
+  /* Ajustements généraux pour les iPhone */
+  :root {
+    --mesh-opacity: 0.025; /* Réduire l'intensité du motif de fond */
+  }
+  
+  body {
+    /* Prévenir les rebonds/overscroll sur iOS */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+  }
+  
+  /* Éviter le zoom sur les boutons et inputs */
+  button, input, select, textarea {
+    font-size: 16px;
+  }
+  
+  /* Améliorer la lisibilité des textes */
+  h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  /* Ajuster la taille des éléments trop petits */
+  .text-xs {
+    font-size: 0.75rem !important;
+  }
+  
+  /* Ajuster le scroll pour éviter les rebonds */
+  .custom-scrollbar {
+    -webkit-overflow-scrolling: touch !important;
+    scroll-behavior: smooth !important;
+  }
+  
+  /* Ajuster les ombres pour de meilleures performances */
+  .shadow-xl {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2) !important;
+  }
+}
+
+@media screen and (max-width: 428px) {
+  /* iPhone 13 Pro Max width */
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Empêcher le zoom automatique sur les inputs */
+  input, 
+  textarea, 
+  select, 
+  button {
+    font-size: 16px !important; /* Taille min pour iOS pour éviter le zoom auto */
+  }
+  
+  /* S'assurer que les modals et popovers sont bien dimensionnés */
+  .modal-content,
+  .popover,
+  .dropdown-menu {
+    max-width: 90vw !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Assurer que les textes ne débordent pas */
+  p, h1, h2, h3, h4, h5, h6, span, button {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+  
+  /* Ajuster la taille des boutons pour faciliter la prise en main */
+  button,
+  .btn,
+  .button {
+    min-height: 44px; /* Hauteur minimale pour les cibles tactiles sur iOS */
+    padding: 10px 15px;
+  }
+  
+  /* Assurer que les éléments interactifs sont suffisamment espacés */
+  .button-group > * {
+    margin: 5px;
   }
 }

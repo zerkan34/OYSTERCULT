@@ -1,0 +1,83 @@
+/* Effets visuels */
+
+/* Effet de halo lumineux pour le curseur de calibre */
+.calibre-cursor {
+  --halo-color: rgb(59, 130, 246);
+  box-shadow: 0 0 15px var(--halo-color);
+  animation: pulse 2s infinite;
+}
+
+.calibre-cursor.green {
+  --halo-color: rgb(34, 197, 94);
+}
+
+.calibre-cursor.red {
+  --halo-color: rgb(239, 68, 68);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 15px var(--halo-color);
+  }
+  50% {
+    box-shadow: 0 0 25px var(--halo-color);
+  }
+  100% {
+    box-shadow: 0 0 15px var(--halo-color);
+  }
+}
+
+/* Dégradé progressif pour la jauge de calibre */
+.calibre-gauge {
+  background: linear-gradient(
+    to right,
+    rgb(59, 130, 246) 0%,    /* Bleu */
+    rgb(59, 130, 246) 30%,   /* Variation de bleu */
+    rgb(59, 130, 246) 50%,   /* Variation de bleu */
+    rgb(59, 130, 246) 75%,   /* Variation de bleu */
+    rgb(34, 197, 94) 85%,    /* Vert à l'objectif */
+    rgb(234, 179, 8) 95%,    /* Orange */
+    rgb(239, 68, 68) 100%    /* Rouge */
+  );
+}
+
+/* Effet de verre */
+.glass {
+  background: rgba(7, 26, 64, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Grille d'occupation */
+.occupation-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  background: #071a40;
+}
+
+.occupation-cell {
+  aspect-ratio: 1;
+  border-radius: 2px;
+}
+
+.occupation-cell.empty {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.occupation-cell.half {
+  background: linear-gradient(45deg, #a02648 50%, transparent 50%);
+}
+
+.occupation-cell.full {
+  background: #a02648;
+}
+
+/* Optimisations de performance */
+.hardware-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}

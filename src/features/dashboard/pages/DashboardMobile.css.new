@@ -1,0 +1,277 @@
+@import "./DashboardPage.css";
+
+/* Reset mobile-specific formatting */
+.dashboard-container {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+/* Dashboard content padding */
+.dashboard-page-content {
+  padding: 12px !important;
+}
+
+.dashboard-container .glass-effect {
+  margin-bottom: 16px !important;
+}
+
+/* Centre le contenu de la page */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Assure que les éléments prennent toute la largeur */
+.dashboard-container > * {
+  width: 100%;
+}
+
+/* Améliorer l'apparence des entêtes de tables */
+.dashboard-container .glass-effect .relative.bg-white\/5 .flex.items-center.justify-between {
+  justify-content: space-between !important;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(to right, rgba(25, 35, 55, 0.8), rgba(30, 40, 60, 0.6));
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+/* Style spécifique pour les titres de tables comme "Table A1" */
+.dashboard-container .glass-effect .relative.bg-white\/5 .flex.items-center.justify-between h3,
+.dashboard-container .glass-effect .relative.bg-white\/5 .flex.items-center.justify-between .font-medium {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Améliorer l'apparence des badges d'état dans les entêtes */
+.dashboard-container .glass-effect .relative.bg-white\/5 .flex.items-center.justify-between .inline-flex {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  font-size: 0.8rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Centrer les éléments du contenu des tables */
+.dashboard-container .glass-effect .relative.bg-white\/5 > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Augmenter l'espacement entre les éléments */
+.dashboard-container .glass-effect .relative.bg-white\/5 .mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+/* Ajuster la taille des graphiques */
+.dashboard-container .glass-effect .relative.bg-white\/5 .recharts-wrapper {
+  max-width: 100% !important;
+  margin: 0 auto;
+}
+
+/* Centrer les tables du dashboard */
+.dashboard-container .glass-effect .flex.flex-col.space-y-4 {
+  max-width: 100%;
+}
+
+/* Augmenter la marge entre les cartes */
+.dashboard-container .glass-effect.p-4 {
+  margin-bottom: 16px !important;
+}
+
+/* Rendre les jauges plus grandes */
+.dashboard-container .glass-effect .relative.bg-white\/5 .h-2\.5 {
+  height: 12px !important;
+  border-radius: 6px !important;
+}
+
+/* Rendre les textes des jauges plus visibles */
+.dashboard-container .glass-effect .relative.bg-white\/5 .text-xs {
+  font-size: 0.8rem !important;
+  margin-bottom: 4px;
+}
+
+/* Améliorer l'apparence des jauges de mortalité */
+.dashboard-container .glass-effect .relative.bg-white\/5 .w-full.bg-white\/10.rounded-full {
+  height: 12px !important;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+/* Optimiser l'espacement des titres principaux */
+.dashboard-container h2 {
+  margin-bottom: 12px !important;
+  font-size: 1.2rem !important;
+}
+
+/* Rendre les titres plus lisibles */
+.dashboard-container .text-lg {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+}
+
+/* Rendre la navigation plus simple */
+.dashboard-container .flex.items-center.justify-between.mb-4 {
+  margin-bottom: 16px !important;
+}
+
+/* Assurer que les boutons sont assez grands pour être cliqués */
+.dashboard-container button {
+  min-height: 40px;
+  padding: 10px 16px !important;
+}
+
+/* Style pour les titres de section */
+.dashboard-container .glass-effect .flex.items-center.justify-between {
+  padding: 0.75rem 1rem;
+  background: linear-gradient(to right, rgba(20, 30, 50, 0.9), rgba(25, 35, 55, 0.8));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem 0.75rem 0 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Style pour les titres h2 dans les entêtes de section */
+.dashboard-container .glass-effect .flex.items-center.justify-between h2 {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Style pour les badges dans les entêtes principales */
+.dashboard-container .glass-effect .flex.items-center.justify-between .text-sm {
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Titres des sections */
+.dashboard-container .glass-effect .flex.items-center.justify-between {
+  padding: 0.75rem 1rem;
+  background: linear-gradient(to right, rgba(20, 30, 50, 0.9), rgba(25, 35, 55, 0.8));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem 0.75rem 0 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Tables et bassins */
+.dashboard-container .grid.grid-cols-2.gap-4 > div {
+  margin-bottom: 12px;
+}
+
+/* Alignement des éléments de table en responsive uniquement */
+@media screen and (max-width: 767px) {
+  /* Style pour le header des cartes avec alignement précis */
+  .dashboard-container .glass-effect .relative.bg-white\/5 .flex.items-center.justify-between {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    align-items: start;
+  }
+  
+  /* Aligner les éléments de nom et type de table */
+  .dashboard-container .glass-effect .relative.bg-white\/5 .flex.items-center.gap-3 > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  /* Fixer la même hauteur pour les noms de table */
+  .dashboard-container .glass-effect .relative.bg-white\/5 .flex.items-center.gap-3 > div .text-sm.font-semibold {
+    min-height: 1.5rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Fixer la même position pour le type de table */
+  .dashboard-container .glass-effect .relative.bg-white\/5 .flex.items-center.gap-3 > div .text-xs.px-2.py-0\.5.bg-white\/10 {
+    min-width: 80px;
+    text-align: center;
+    margin: 0.25rem 0;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Aligner les éléments de date et jours restants */
+  .dashboard-container .glass-effect .relative.bg-white\/5 .flex.flex-col.items-end {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
+  
+  /* Fixer la même position pour la date */
+  .dashboard-container .glass-effect .relative.bg-white\/5 .flex.flex-col.items-end .flex.items-center.bg-white\/10 {
+    min-width: 80px;
+    justify-content: center;
+    min-height: 1.5rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Style encadré pour les jours restants, similaire au type de table */
+  .dashboard-container .glass-effect .relative.bg-white\/5 .flex.flex-col.items-end .text-xs.mt-1.text-white\/70 {
+    min-width: 90px;
+    text-align: center;
+    margin: 0.25rem 0;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  /* Correction du style pour la section bassin */
+  .dashboard-container .bassin-stats {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .dashboard-container .bassin-stats .flex.flex-col.space-y-2 {
+    margin-bottom: 1rem;
+  }
+  
+  /* Assurer que les tableaux de bassins sont correctement alignés */
+  .dashboard-container .grid.grid-cols-2.gap-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Ajuster l'espacement des éléments de la jauge d'occupation */
+.dashboard-container .glass-effect .relative.bg-white\/5 .mb-3 .flex.justify-between.items-center {
+  margin-bottom: 6px;
+}
+
+/* Médias queries pour très petits écrans */
+@media screen and (max-width: 374px) {
+  .dashboard-container .glass-effect .relative.bg-white\/5 .flex.items-center.justify-between {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .dashboard-container .glass-effect .relative.bg-white\/5 .flex.items-center.justify-between > div:last-child {
+    margin-top: 8px;
+    margin-left: 16px !important;
+  }
+}

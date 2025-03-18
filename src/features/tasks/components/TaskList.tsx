@@ -17,7 +17,9 @@ import {
   Hourglass
 } from 'lucide-react';
 import { TaskForm } from './TaskForm';
+import { TaskDetailModal } from './TaskDetailModal';
 import { exampleTasks } from './TaskBlock';
+import { AnimatePresence, motion } from 'framer-motion';
 import './TaskList.css';
 import './TaskCard.css';
 
@@ -86,9 +88,31 @@ const statusStyles = {
   }
 };
 
+const modalVariants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: 0.2,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: 20,
+    transition: {
+      duration: 0.2,
+    },
+  },
+};
+
 export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [expandedTask, setExpandedTask] = useState<string | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   
   // Utilisation des tâches d'exemple au lieu du store
   // const { tasks } = useStore();
@@ -119,9 +143,7 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
   };
 
   const openTaskDetails = (task: Task) => {
-    if (onTaskSelect) {
-      onTaskSelect(task);
-    }
+    setSelectedTask(task);
   };
 
   // Fonction pour formater une date
@@ -179,7 +201,7 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
                 className="task-card-wrapper"
                 onClick={() => openTaskDetails(task)}
               >
-                <div className="task-card shadow-md">
+                <div className="task-card">
                   {/* En-tête de la carte avec icône de priorité */}
                   <div className={`task-card-header ${priorityStyles[priority].gradientClass}`}>
                     <div className="task-header-content">
@@ -287,6 +309,33 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
           })}
         </div>
       )}
+      
+      {/* Modal de détails de tâche */}
+      <AnimatePresence>
+        {selectedTask && (
+          <motion.div 
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedTask(null)}
+          >
+            <motion.div 
+              className="modal-content"
+              onClick={e => e.stopPropagation()}
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <TaskDetailModal
+                task={selectedTask}
+                onClose={() => setSelectedTask(null)}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       {/* Formulaire d'édition */}
       {editingTask && (

@@ -1,0 +1,57 @@
+/* Optimisations pour le widget météo */
+.weather-widget {
+  transform: scale(.9);
+  transform-origin: top center;
+  margin: 0 auto;
+  max-width: 96%;
+}
+
+/* Optimisations des animations pour éviter les recalculs de layout */
+@media screen and (max-width: 767px) {
+  .weather-widget .grid.grid-cols-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .5rem;
+    max-width: 100%;
+  }
+  
+  .weather-widget .grid.grid-cols-4 > div {
+    padding: .5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: auto;
+    /* Removed width: 100% that was causing layout recalculations */
+    transform: scale(1); /* Use transform instead */
+  }
+  
+  .weather-widget .grid.grid-cols-4 .space-y-2 {
+    margin-top: .25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Removed width: 100% that was causing layout recalculations */
+    transform: scale(1); /* Use transform instead */
+  }
+  
+  .weather-widget .grid.grid-cols-4 .flex.items-center svg {
+    transform: scale(0.75); /* Remplace width/height avec transform */
+    margin-right: .25rem;
+  }
+}
+
+/* Animations optimisées */
+@keyframes weatherFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.weather-widget-fade-in {
+  animation: weatherFadeIn 0.5s ease-in forwards;
+}

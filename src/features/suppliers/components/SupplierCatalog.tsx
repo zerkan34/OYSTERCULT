@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSuppliers } from '../hooks/useSuppliers';
 import { useSupplierProducts } from '../hooks/useSupplierProducts';
 import { ProductForm } from './ProductForm';
-import { ProductCard } from './ProductCard';
 import { CartModal } from './CartModal';
 import { Package2, Search, Filter, AlertCircle, ShoppingCart } from 'lucide-react';
 import type { Supplier, SupplierProduct } from '@/types/supplier';
@@ -54,6 +53,16 @@ export function SupplierCatalog() {
 
   const handleCartClick = () => {
     setIsCartModalOpen(true);
+  };
+
+  const handleCheckout = () => {
+    const formattedCart = cartItems.map(item => ({
+      productId: item.product.id,
+      quantity: item.quantity
+    }));
+    // onCheckout(formattedCart); // This line is commented out because onCheckout is not defined in the provided code
+    setCartItems([]);
+    setIsCartModalOpen(false);
   };
 
   // Catégories disponibles basées sur les produits
@@ -159,12 +168,38 @@ export function SupplierCatalog() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onEdit={() => setEditingProduct(product)}
-                  onAddToCart={addToCart}
-                />
+                <div key={product.id} className="w-full glass-effect rounded-xl overflow-hidden bg-[rgba(0,40,80,0.2)] shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset] hover:shadow-[rgba(0,0,0,0.25)_0px_8px_20px,rgba(0,210,200,0.15)_0px_0px_10px_inset] transition-all duration-300">
+                  <div className="aspect-square relative bg-gradient-to-br from-[rgba(0,128,128,0.1)] to-[rgba(0,60,100,0.1)]">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Package2 className="w-16 h-16 text-[rgba(0,210,200,0.3)] transition-transform duration-300 transform group-hover:scale-110" />
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 space-y-4">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <h3 className="font-semibold text-white break-words w-full sm:w-auto">{product.name}</h3>
+                      <div className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[rgba(0,210,200,0.1)] text-cyan-300 capitalize whitespace-nowrap backdrop-blur-sm border border-cyan-500/20">
+                        {product.category}
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-white/70 line-clamp-3">{product.description}</p>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-medium text-white">{product.price}€ / {product.unit}</span>
+                    </div>
+
+                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
+                      <button
+                        onClick={() => addToCart(product, 1)}
+                        className="flex-1 inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-colors bg-[rgba(0,210,200,0.1)] text-cyan-300 hover:bg-[rgba(0,210,200,0.2)] border border-cyan-500/20"
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Commander
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </>
@@ -184,6 +219,7 @@ export function SupplierCatalog() {
         items={cartItems}
         onUpdateQuantity={updateCartQuantity}
         onRemoveItem={removeFromCart}
+        onCheckout={handleCheckout}
       />
 
       {showAddProduct && (

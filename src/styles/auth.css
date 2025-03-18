@@ -1,0 +1,14 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-family: 'Industry', sans-serif;
+}
+
+.logo span {
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}

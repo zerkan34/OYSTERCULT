@@ -1,0 +1,214 @@
+/**
+ * Corrections de compatibilité pour différents navigateurs
+ * Résout les problèmes signalés dans les avertissements d'accessibilité et de compatibilité
+ */
+
+/* Ajouter la propriété standard 'filter' pour Chrome Android */
+[style*="-webkit-filter"] {
+  filter: var(--filter-value);
+}
+
+/* Préfixes pour filter */
+.filter,
+[class*="filter-"] {
+  -webkit-filter: var(--filter-value, none);
+  filter: var(--filter-value, none);
+}
+
+/* Ajouter 'text-size-adjust' pour les navigateurs modernes */
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Ajouter le préfixe -webkit pour backdrop-filter pour Safari */
+[style*="backdrop-filter"] {
+  -webkit-backdrop-filter: var(--backdrop-filter-value, blur(8px));
+  backdrop-filter: var(--backdrop-filter-value, blur(8px));
+}
+
+.backdrop-blur,
+[class*="backdrop-blur-"] {
+  -webkit-backdrop-filter: blur(var(--blur-amount, 8px));
+  backdrop-filter: blur(var(--blur-amount, 8px));
+}
+
+/* Ajouter le préfixe -webkit pour user-select pour Safari */
+[style*="user-select"] {
+  -webkit-user-select: var(--user-select-value, none);
+  -moz-user-select: var(--user-select-value, none);
+  -ms-user-select: var(--user-select-value, none);
+  user-select: var(--user-select-value, none);
+}
+
+.user-select-none {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.user-select-text {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.user-select-all {
+  -webkit-user-select: all;
+  -moz-user-select: all;
+  -ms-user-select: all;
+  user-select: all;
+}
+
+/* Support pour forced-color-adjust */
+.forced-colors-mode {
+  forced-color-adjust: none;
+  -ms-high-contrast-adjust: none;
+}
+
+/* Styles pour les éléments accessibles - optimisés pour la performance */
+.sr-only {
+  position: absolute;
+  /* Utiliser transform au lieu de width/height pour éviter les recalculs de layout */
+  transform: scale(0);
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Animation optimisée pour utiliser transform et opacity qui ne déclenchent pas de layout */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation pour l'effet d'eau - utilise transform pour optimiser les performances */
+@keyframes waterMove {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Classe utilitaire pour l'animation de l'eau */
+.animate-waterMove {
+  animation: waterMove 8s linear infinite;
+}
+
+/* Animation subtile de pulsation optimisée pour les performances */
+@keyframes pulseSubtle {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.animate-pulse-subtle {
+  animation: pulseSubtle 2s ease-in-out infinite;
+}
+
+/* Styles pour le focus visible - amélioration de l'accessibilité au clavier */
+:focus-visible {
+  outline: 2px solid rgb(var(--color-brand-primary));
+  outline-offset: 2px;
+}
+
+/* Fix pour les faux boutons sans texte accessible */
+button:not([aria-label]):not([title]):empty::after,
+a[role="button"]:not([aria-label]):not([title]):empty::after,
+[role="button"]:not([aria-label]):not([title]):empty::after {
+  content: "Button";
+  display: inline;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Amélioration accessibilité pour les champs de formulaire sans label */
+input:not([aria-label]):not([placeholder]):not([title])::before,
+select:not([aria-label]):not([title])::before,
+textarea:not([aria-label]):not([placeholder]):not([title])::before {
+  content: attr(id);
+  display: inline;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Amélioration accessibilité pour les images sans texte alternatif */
+img:not([alt]),
+svg:not([aria-label]):not([aria-labelledby]) {
+  position: relative;
+}
+
+img:not([alt])::after {
+  content: "Image sans description";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 0, 0, 0.1);
+  color: red;
+  font-size: 10px;
+  text-align: center;
+}
+
+/* Fix pour la compatibilité des variables CSS utilisées dans Chrome */
+:root {
+  --edge-background: #F6F6F6;
+  --edge-black: #101010;
+  --edge-focus-color: #838383;
+  --edge-blue-hover: #0078D4;
+  --edge-blue-pressed: #1081D7;
+  --edge-blue-rest: #0070C6;
+  --edge-blue-selected: #004274;
+  --edge-border-hover: #949494;
+  --edge-border-pressed: #ADADAD;
+  --edge-border-rest: #C5C5C5;
+  --edge-grey-background: #F6F6F6;
+  --edge-grey-selected: #C6C6C6;
+  --edge-light-grey-hover: #F3F3F3;
+  --edge-light-grey-pressed: #F7F7F7;
+  --edge-light-grey-rest: #EFEFEF;
+  --edge-primary-text-color: var(--edge-black);
+  --edge-secondary-text-color: var(--edge-text-grey-rest);
+  --edge-text-blue-hover: #0070C6;
+  --edge-text-blue-rest: #0061AB;
+  --edge-text-blue-pressed: #1081D7;
+  --edge-text-grey-rest: #6F6F6F;
+  --edge-white: #FFFFFF;
+}

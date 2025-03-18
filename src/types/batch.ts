@@ -1,4 +1,4 @@
-export type BatchStatus = 'table1' | 'table2' | 'table3' | 'stockage' | 'expedition';
+export type BatchStatus = 'table1' | 'table2' | 'table3' | 'stockage' | 'expedition' | 'purification';
 
 export interface Batch {
   id: string;
@@ -6,6 +6,8 @@ export interface Batch {
   type: string;
   status: BatchStatus;
   startDate: string;
-  quantity: number;
+  quantity: string;
+  location: string;
+  expiryDate: string;
   notes?: string;
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Filter, Search, BarChart2, Package, AlertTriangle, Droplets, ShoppingCart, Map, X, Thermometer, DollarSign, Upload, Camera, History, Eye, FileText } from 'lucide-react';
+import { Plus, Filter, Search, BarChart2, Package, AlertTriangle, Droplets, ShoppingCart, Map, X, Thermometer, DollarSign, Upload, Camera, History, Eye, FileText, Boxes } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { OysterTableMap, Table } from '../components/OysterTableMap';
 import { PurificationPools } from '../components/PurificationPools';
 import { TrempeView } from '../components/TrempeView';
@@ -12,10 +13,11 @@ import { PurchaseConfiguration } from '@/features/purchases/components/PurchaseC
 import { PurchaseForm } from '@/features/purchases/components/PurchaseForm';
 import { Modal } from '@/components/ui/Modal';
 import { useForm } from 'react-hook-form';
+import { PageTitle } from '@/components/ui/PageTitle';
 
 type TabType = 'tables' | 'pools' | 'trempes' | 'autres' | 'achats' | 'charges';
 
-export function InventoryPage() {
+export const InventoryPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('tables');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
@@ -261,9 +263,24 @@ export function InventoryPage() {
   return (
     <div 
       ref={pageRef} 
-      className="space-y-6"
+      className="p-6 space-y-6"
       {...handlers}
     >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center mb-8"
+      >
+        <div className="relative mr-4">
+          <div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,128,128,0.9)] to-[rgba(0,160,160,0.7)] blur-xl opacity-70 rounded-full" />
+          <div className="relative z-10 p-3 rounded-full bg-gradient-to-br from-[rgba(0,128,128,0.3)] to-[rgba(0,60,100,0.3)] shadow-[rgba(0,0,0,0.3)_0px_5px_15px,rgba(0,210,200,0.15)_0px_0px_10px_inset]">
+            <Boxes size={28} className="text-white" />
+          </div>
+        </div>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">
+          Inventaire
+        </h1>
+      </motion.div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white">{getTitleByTab()}</h1>
         <div className="flex items-center space-x-3">
@@ -394,12 +411,26 @@ export function InventoryPage() {
               Ajouter lieu de stockage
             </button>
           </div>
-          <div className="glass-effect rounded-xl p-6 border border-white/10">
+          <div 
+            className="glass-effect rounded-xl p-6 border border-white/10"
+            style={{
+              background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
+              backdropFilter: "blur(20px)",
+              boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
+              padding: "1.5rem",
+              borderRadius: "0.75rem",
+              border: "1px solid rgba(255, 255, 255, 0.1)"
+            }}
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Frigo 1 */}
               <div 
                 className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
                 onClick={() => setSelectedStorageLocation('Frigo 1')}
+                style={{
+                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
+                  boxShadow: "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px"
+                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
@@ -434,6 +465,10 @@ export function InventoryPage() {
               <div 
                 className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
                 onClick={() => setSelectedStorageLocation('Frigo 2')}
+                style={{
+                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
+                  boxShadow: "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px"
+                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
@@ -468,6 +503,10 @@ export function InventoryPage() {
               <div 
                 className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
                 onClick={() => setSelectedStorageLocation('Congélateur 1')}
+                style={{
+                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
+                  boxShadow: "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px"
+                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
@@ -502,6 +541,10 @@ export function InventoryPage() {
               <div 
                 className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
                 onClick={() => setSelectedStorageLocation('Congélateur 2')}
+                style={{
+                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
+                  boxShadow: "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px"
+                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
@@ -536,6 +579,10 @@ export function InventoryPage() {
               <div 
                 className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
                 onClick={() => setSelectedStorageLocation('Remise')}
+                style={{
+                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
+                  boxShadow: "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px"
+                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
@@ -570,6 +617,10 @@ export function InventoryPage() {
               <div 
                 className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
                 onClick={() => setSelectedStorageLocation('Cave')}
+                style={{
+                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
+                  boxShadow: "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px"
+                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">

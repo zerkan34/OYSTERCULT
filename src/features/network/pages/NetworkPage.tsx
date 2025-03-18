@@ -22,6 +22,7 @@ import { FriendSuppliers } from '../components/FriendSuppliers';
 import { MessageList } from '../components/MessageList';
 import { useStore } from '@/lib/store';
 import { useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type NetworkTab = 'feed' | 'contacts' | 'directory' | 'forum' | 'messages' | 'suppliers';
@@ -62,9 +63,24 @@ export function NetworkPage({ messageView = false, activeTab: initialActiveTab }
   }, [location.pathname, activeTab]);
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center mb-8"
+      >
+        <div className="relative mr-4">
+          <div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,128,128,0.9)] to-[rgba(0,160,160,0.7)] blur-xl opacity-70 rounded-full" />
+          <div className="relative z-10 p-3 rounded-full bg-gradient-to-br from-[rgba(0,128,128,0.3)] to-[rgba(0,60,100,0.3)] shadow-[rgba(0,0,0,0.3)_0px_5px_15px,rgba(0,210,200,0.15)_0px_0px_10px_inset]">
+            <Users size={28} className="text-white" />
+          </div>
+        </div>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">
+          Entre Pro
+        </h1>
+      </motion.div>
+
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Entre Pro</h1>
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setShowAddFriend(true)}
@@ -107,7 +123,7 @@ export function NetworkPage({ messageView = false, activeTab: initialActiveTab }
         >
           <div className="flex items-center">
             <Users size={16} className="mr-2" />
-            Mon Réseau
+            Contacts
           </div>
         </button>
         <button

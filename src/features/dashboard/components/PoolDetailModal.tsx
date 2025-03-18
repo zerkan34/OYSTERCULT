@@ -181,7 +181,7 @@ export function PoolDetailModal({ pool, onClose }: PoolDetailModalProps) {
   return (
     <motion.div
       {...modalAnimation.overlay}
-      className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4"
       style={{ 
         WebkitBackdropFilter: "blur(10px)",
         backdropFilter: "blur(10px)",
@@ -190,7 +190,7 @@ export function PoolDetailModal({ pool, onClose }: PoolDetailModalProps) {
       <motion.div
         ref={modalRef}
         {...modalAnimation.content}
-        className="bg-gradient-to-br from-gray-900/95 to-brand-burgundy/80 rounded-2xl overflow-hidden max-w-3xl w-full max-h-[90vh] overflow-y-auto relative z-10 border border-white/10 shadow-2xl"
+        className="bg-gradient-to-br from-[rgba(10,30,50,0.65)] to-[rgba(20,100,100,0.45)] rounded-2xl overflow-hidden max-w-3xl w-full max-h-[90vh] overflow-y-auto relative z-10 border border-white/10 shadow-[rgba(0,0,0,0.2)_0px_5px_20px_-5px,rgba(0,200,200,0.1)_0px_5px_12px_-5px,rgba(255,255,255,0.07)_0px_-1px_3px_0px_inset,rgba(0,200,200,0.05)_0px_0px_12px_inset,rgba(0,0,0,0.1)_0px_0px_8px_inset]"
       >
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">

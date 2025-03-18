@@ -1,4 +1,5 @@
   import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   BarChart2,
   Receipt,
@@ -20,6 +21,7 @@ import {
 import { ModernChart } from '@/components/ui/ModernChart';
 import { ModernStatCard } from '@/components/ui/ModernStatCard';
 import { InvoiceForm } from '../components/InvoiceForm';
+import { PageTitle } from '@/components/ui/PageTitle';
 import type { InvoiceWithItems } from '@/types/accounting';
 
 const mockRevenueData = [
@@ -74,6 +76,27 @@ const cashflowChartSeries = [
   }
 ];
 
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { 
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { 
+    y: 0, 
+    opacity: 1,
+    transition: { type: "spring", stiffness: 100 }
+  }
+};
+
 export function AccountingPage() {
   const [showStats, setShowStats] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -85,41 +108,94 @@ export function AccountingPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Comptabilité</h1>
-        <div className="flex items-center space-x-3">
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      className="space-y-6 p-6"
+    >
+      <PageTitle 
+        icon={<DollarSign size={28} className="text-white" />}
+        title="Comptabilité"
+      />
+      {/* En-tête avec titre et boutons */}
+      <motion.div 
+        variants={itemVariants}
+        className="md:col-span-3 lg:col-span-4 flex items-center justify-between"
+        style={{
+          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)",
+          padding: "1.5rem",
+          borderRadius: "1rem",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          boxShadow: "rgba(0, 0, 0, 0.3) 0px 10px 25px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset"
+        }}
+      >
+        <h1 className="text-3xl font-bold bg-clip-text text-transparent" 
+          style={{ backgroundImage: "linear-gradient(90deg, #ffffff, #a5f3fc)" }}>
+          Comptabilité
+        </h1>
+        <div className="flex space-x-3">
           <button
             onClick={() => setShowStats(!showStats)}
-            className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+            className="px-4 py-2 rounded-lg text-white text-sm transition-all duration-200"
+            style={{
+              background: "linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.07) 100%)",
+              boxShadow: "rgba(0, 0, 0, 0.2) 0px 3px 6px 0px, rgba(255, 255, 255, 0.1) 0px 1px 2px 0px inset",
+            }}
           >
-            <BarChart2 size={20} className="mr-2" />
+            <BarChart2 size={20} className="mr-2 inline-block" />
             Statistiques
           </button>
           <button
             onClick={() => setShowNewInvoice(true)}
-            className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+            className="px-4 py-2 rounded-lg text-white text-sm transition-all duration-200"
+            style={{
+              background: "linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.07) 100%)",
+              boxShadow: "rgba(0, 0, 0, 0.2) 0px 3px 6px 0px, rgba(255, 255, 255, 0.1) 0px 1px 2px 0px inset",
+            }}
           >
-            <Receipt size={20} className="mr-2" />
+            <Receipt size={20} className="mr-2 inline-block" />
             Nouvelle Facture
           </button>
         </div>
-      </div>
+      </motion.div>
 
+      {/* Graphiques */}
       {showStats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="glass-effect p-6 rounded-lg">
+        <motion.div 
+          variants={itemVariants} 
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
+          <div className="rounded-xl p-6"
+            style={{
+              background: "linear-gradient(135deg, rgba(0, 10, 40, 0.85) 0%, rgba(0, 100, 120, 0.8) 100%)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
+            }}
+          >
             <h3 className="text-lg font-medium text-white mb-6">Revenus et Dépenses</h3>
             <ModernChart series={revenueChartSeries} height={300} />
           </div>
-          <div className="glass-effect p-6 rounded-lg">
+          <div className="rounded-xl p-6"
+            style={{
+              background: "linear-gradient(135deg, rgba(0, 10, 40, 0.85) 0%, rgba(0, 100, 120, 0.8) 100%)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
+            }}
+          >
             <h3 className="text-lg font-medium text-white mb-6">Flux de Trésorerie</h3>
             <ModernChart series={cashflowChartSeries} height={300} />
           </div>
-        </div>
+        </motion.div>
       )}
 
-      <div className="flex items-center space-x-4 mb-6">
+      {/* Barre de recherche et filtres */}
+      <motion.div 
+        variants={itemVariants}
+        className="flex items-center space-x-4 mb-6"
+      >
         <div className="relative flex-1">
           <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" />
           <input
@@ -127,20 +203,40 @@ export function AccountingPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Rechercher des transactions..."
-            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40"
+            className="w-full pl-10 pr-4 py-2 rounded-lg text-white placeholder-white/40"
+            style={{
+              background: "linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              border: "1px solid rgba(255, 255, 255, 0.1)"
+            }}
           />
         </div>
-        <button className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors">
-          <Filter size={20} className="mr-2" />
+        <button className="px-4 py-2 rounded-lg text-white transition-all duration-200"
+          style={{
+            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.07) 100%)",
+            boxShadow: "rgba(0, 0, 0, 0.2) 0px 3px 6px 0px, rgba(255, 255, 255, 0.1) 0px 1px 2px 0px inset",
+          }}
+        >
+          <Filter size={20} className="mr-2 inline-block" />
           Filtres
         </button>
-        <button className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors">
-          <Calendar size={20} className="mr-2" />
+        <button className="px-4 py-2 rounded-lg text-white transition-all duration-200"
+          style={{
+            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.07) 100%)",
+            boxShadow: "rgba(0, 0, 0, 0.2) 0px 3px 6px 0px, rgba(255, 255, 255, 0.1) 0px 1px 2px 0px inset",
+          }}
+        >
+          <Calendar size={20} className="mr-2 inline-block" />
           Période
         </button>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Cartes statistiques */}
+      <motion.div 
+        variants={itemVariants}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+      >
         <ModernStatCard
           icon={<Plus />}
           label="Chiffre d'affaires"
@@ -165,12 +261,22 @@ export function AccountingPage() {
           value="25,800 €"
           trend={{ value: 3, positive: true }}
         />
-      </div>
+      </motion.div>
 
-      <div className="bg-gray-800 rounded-lg p-6">
+      {/* Tableau des transactions */}
+      <motion.div 
+        variants={itemVariants}
+        className="rounded-xl p-6"
+        style={{
+          background: "linear-gradient(135deg, rgba(0, 10, 40, 0.85) 0%, rgba(0, 100, 120, 0.8) 100%)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
+        }}
+      >
         <table className="w-full">
           <thead>
-            <tr className="text-left text-gray-400">
+            <tr className="text-left text-white/60">
               <th className="pb-4">Date</th>
               <th className="pb-4">Description</th>
               <th className="pb-4">Type</th>
@@ -179,43 +285,45 @@ export function AccountingPage() {
             </tr>
           </thead>
           <tbody className="text-white">
-            <tr className="border-t border-gray-700">
+            <tr className="border-t border-white/10">
               <td className="py-4">15/06/2023</td>
               <td>Facture #2023-156</td>
               <td>Vente</td>
-              <td className="text-right text-green-400">+3,500€</td>
-              <td><span className="px-2 py-1 rounded-full bg-green-900 text-green-300 text-sm">Payée</span></td>
+              <td className="text-right text-cyan-400">+3,500€</td>
+              <td>
+                <span className="px-2 py-1 rounded-full text-sm"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(34, 197, 94, 0.1) 100%)",
+                    color: "#4ade80"
+                  }}
+                >
+                  Payée
+                </span>
+              </td>
             </tr>
-            <tr className="border-t border-gray-700">
+            <tr className="border-t border-white/10">
               <td className="py-4">14/06/2023</td>
               <td>Fournitures bureau</td>
               <td>Dépense</td>
               <td className="text-right text-red-400">-250€</td>
-              <td><span className="px-2 py-1 rounded-full bg-blue-900 text-blue-300 text-sm">Traitée</span></td>
-            </tr>
-            <tr className="border-t border-gray-700">
-              <td className="py-4">12/06/2023</td>
-              <td>Facture #2023-155</td>
-              <td>Vente</td>
-              <td className="text-right text-green-400">+2,800€</td>
-              <td><span className="px-2 py-1 rounded-full bg-yellow-900 text-yellow-300 text-sm">En attente</span></td>
+              <td>
+                <span className="px-2 py-1 rounded-full text-sm"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%)",
+                    color: "#60a5fa"
+                  }}
+                >
+                  Traitée
+                </span>
+              </td>
             </tr>
           </tbody>
         </table>
-      </div>
+      </motion.div>
 
-      {/* Modal de création de facture */}
       {showNewInvoice && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-50">
-          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-[rgb(var(--color-card))/95] border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.3)] backdrop-blur-lg rounded-xl overflow-hidden p-8">
-            <InvoiceForm
-              type="sale"
-              onSubmit={handleCreateInvoice}
-              onCancel={() => setShowNewInvoice(false)}
-            />
-          </div>
-        </div>
+        <InvoiceForm onSubmit={handleCreateInvoice} onClose={() => setShowNewInvoice(false)} />
       )}
-    </div>
+    </motion.div>
   );
 }

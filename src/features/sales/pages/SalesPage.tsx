@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Plus, Filter, Search, BarChart2, DollarSign, TrendingUp, Users, Package } from 'lucide-react';
+import { Plus, Filter, Search, BarChart2, DollarSign, TrendingUp, Users, Package, ShoppingCart } from 'lucide-react';
 import { ModernChart } from '@/components/ui/ModernChart';
 import { ModernStatCard } from '@/components/ui/ModernStatCard';
+import { PageTitle } from '@/components/ui/PageTitle';
+import { motion } from 'framer-motion';
 
 const mockSalesData = [
   { month: 'Jan', ventes: 45000, objectif: 50000 },
@@ -32,9 +34,16 @@ export function SalesPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
+      <PageTitle 
+        icon={<ShoppingCart size={28} className="text-white" />}
+        title="Ventes"
+      />
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Ventes</h1>
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setShowStats(!showStats)}
@@ -150,6 +159,6 @@ export function SalesPage() {
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Search, FileText, Eye, Filter, ArrowUpDown, X, Download } from 'lucide-react';
+import { Search, FileText, Eye, Filter, ArrowUpDown, X, Download, Edit2, Save } from 'lucide-react';
+import { AnimatedCard } from '@/components/ui/AnimatedCard';
+import { Input } from '@/components/ui/Input';
 
 type InvoiceType = {
   id: string;
@@ -104,16 +106,26 @@ export function InvoicesAndDeliveryNotes() {
     end: ''
   });
   const [selectedItem, setSelectedItem] = useState<InvoiceType | null>(null);
-  const [showModal, setShowModal] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editedItem, setEditedItem] = useState<InvoiceType | null>(null);
 
   const handleViewDocument = (item: InvoiceType) => {
     setSelectedItem(item);
-    setShowModal(true);
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedItem(null);
+  const handleEdit = (item: InvoiceType) => {
+    setEditedItem({ ...item });
+    setIsEditModalOpen(true);
+  };
+
+  const handleSave = () => {
+    if (editedItem) {
+      const updatedData = MOCK_DATA.map(item => 
+        item.id === editedItem.id ? editedItem : item
+      );
+      setIsEditModalOpen(false);
+      setEditedItem(null);
+    }
   };
 
   const filteredData = MOCK_DATA.filter(item => {
@@ -249,165 +261,169 @@ export function InvoicesAndDeliveryNotes() {
         </button>
       </div>
 
-      <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-white/10">
-            <thead className="bg-white/5">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
-                  <div className="flex items-center space-x-1 cursor-pointer hover:text-white">
-                    <span>Type</span>
-                    <ArrowUpDown size={14} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredData.map((item) => (
+          <AnimatedCard
+            key={item.id}
+            onClick={() => setSelectedItem(item)}
+            className="relative overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 p-4 cursor-pointer hover:shadow-lg transition-all rounded-xl hover:bg-white/10"
+          >
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-white">{item.number}</h3>
+                <p className="text-sm text-white/60">{item.supplier}</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewDocument(item);
+                  }}
+                  className="p-1 hover:bg-white/10 rounded-full text-white/60 hover:text-white/80 transition-colors"
+                >
+                  <Eye className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEdit(item);
+                  }}
+                  className="p-1 hover:bg-white/10 rounded-full text-white/60 hover:text-white/80 transition-colors"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="bg-white/5 p-2 rounded-lg border border-white/10">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-white/60">Date</span>
+                  <span className="text-sm font-medium text-white">
+                    {formatDate(item.date)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-white/5 p-2 rounded-lg border border-white/10">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-white/60">Produits</span>
+                  <span className="text-sm font-medium text-white">{item.products}</span>
+                </div>
+              </div>
+
+              {item.type === 'invoice' && (
+                <div className="bg-white/5 p-2 rounded-lg border border-white/10">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Montant</span>
+                    <span className="text-sm font-medium text-white">{item.amount}</span>
                   </div>
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
-                  <div className="flex items-center space-x-1 cursor-pointer hover:text-white">
-                    <span>Numéro</span>
-                    <ArrowUpDown size={14} />
-                  </div>
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
-                  <div className="flex items-center space-x-1 cursor-pointer hover:text-white">
-                    <span>Date</span>
-                    <ArrowUpDown size={14} />
-                  </div>
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
-                  <div className="flex items-center space-x-1 cursor-pointer hover:text-white">
-                    <span>Fournisseur</span>
-                    <ArrowUpDown size={14} />
-                  </div>
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
-                  <div className="flex items-center space-x-1 cursor-pointer hover:text-white">
-                    <span>Produits</span>
-                    <ArrowUpDown size={14} />
-                  </div>
-                </th>
-                {filterType !== 'delivery_note' && (
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
-                    <div className="flex items-center space-x-1 cursor-pointer hover:text-white">
-                      <span>Montant</span>
-                      <ArrowUpDown size={14} />
-                    </div>
-                  </th>
-                )}
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
-                  Statut
-                </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/10">
-              {filteredData.map((item) => (
-                <tr key={item.id} className="hover:bg-white/5">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <FileText size={16} className="mr-2 text-brand-primary" />
-                      <span className="text-white">{getTypeText(item.type)}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-white">{item.number}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-white">{formatDate(item.date)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-white">{item.supplier}</td>
-                  <td className="px-6 py-4 text-white">{item.products}</td>
-                  {filterType !== 'delivery_note' && item.type === 'invoice' && (
-                    <td className="px-6 py-4 whitespace-nowrap text-white">{item.amount}</td>
-                  )}
-                  {filterType !== 'delivery_note' && item.type === 'delivery_note' && (
-                    <td className="px-6 py-4 whitespace-nowrap text-white">-</td>
-                  )}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusClass(item.status)}`}>
-                      {getStatusText(item.status)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <button 
-                      className="text-brand-primary hover:text-brand-primary/80"
-                      onClick={() => handleViewDocument(item)}
-                      title="Voir le document"
-                    >
-                      <Eye size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {filteredData.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="px-6 py-8 text-center text-white/60">
-                    Aucun document trouvé correspondant aux critères de recherche.
-                  </td>
-                </tr>
+                </div>
               )}
-            </tbody>
-          </table>
-        </div>
+
+              <div className="bg-white/5 p-2 rounded-lg border border-white/10">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-white/60">Statut</span>
+                  <span className={`text-sm font-medium ${getStatusClass(item.status)}`}>
+                    {getStatusText(item.status)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </AnimatedCard>
+        ))}
       </div>
 
-      {/* Modale pour afficher le document */}
-      {showModal && selectedItem && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-gray-900 border border-white/10 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-auto p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-white">
-                {selectedItem.type === 'invoice' ? 'Facture' : 'Bon de livraison'} - {selectedItem.number}
-              </h2>
-              <button 
-                onClick={closeModal}
-                className="p-2 hover:bg-white/10 rounded-full"
+      {isEditModalOpen && editedItem && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900/90 backdrop-blur-xl rounded-xl p-6 max-w-md w-full border border-white/10">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-white">Modifier le document</h2>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="p-2 hover:bg-white/10 rounded-full text-white/60 hover:text-white/80 transition-colors"
               >
-                <X size={24} className="text-white" />
+                <X className="w-4 h-4" />
               </button>
             </div>
-            
-            <div className="grid grid-cols-2 gap-6 mb-6">
+
+            <div className="space-y-4">
               <div>
-                <p className="text-white/60 mb-1">Fournisseur</p>
-                <p className="text-white font-medium">{selectedItem.supplier}</p>
+                <label className="block text-sm font-medium text-white/80 mb-1">
+                  Numéro
+                </label>
+                <Input
+                  value={editedItem.number}
+                  onChange={(e) => setEditedItem({ ...editedItem, number: e.target.value })}
+                  className="bg-white/5 border-white/10 text-white placeholder-white/40"
+                />
               </div>
+
               <div>
-                <p className="text-white/60 mb-1">Date</p>
-                <p className="text-white font-medium">{formatDate(selectedItem.date)}</p>
+                <label className="block text-sm font-medium text-white/80 mb-1">
+                  Fournisseur
+                </label>
+                <Input
+                  value={editedItem.supplier}
+                  onChange={(e) => setEditedItem({ ...editedItem, supplier: e.target.value })}
+                  className="bg-white/5 border-white/10 text-white placeholder-white/40"
+                />
               </div>
+
               <div>
-                <p className="text-white/60 mb-1">Produits</p>
-                <p className="text-white font-medium">{selectedItem.products}</p>
+                <label className="block text-sm font-medium text-white/80 mb-1">
+                  Date
+                </label>
+                <Input
+                  type="date"
+                  value={editedItem.date}
+                  onChange={(e) => setEditedItem({ ...editedItem, date: e.target.value })}
+                  className="bg-white/5 border-white/10 text-white placeholder-white/40"
+                />
               </div>
-              {selectedItem.type === 'invoice' && (
+
+              {editedItem.type === 'invoice' && (
                 <div>
-                  <p className="text-white/60 mb-1">Montant</p>
-                  <p className="text-white font-medium">{selectedItem.amount}</p>
+                  <label className="block text-sm font-medium text-white/80 mb-1">
+                    Montant
+                  </label>
+                  <Input
+                    type="number"
+                    value={editedItem.amount}
+                    onChange={(e) => setEditedItem({ ...editedItem, amount: e.target.value })}
+                    className="bg-white/5 border-white/10 text-white placeholder-white/40"
+                  />
                 </div>
               )}
-              {selectedItem.type === 'delivery_note' && selectedItem.expiryDate && (
-                <div>
-                  <p className="text-white/60 mb-1">Date Limite de Consommation</p>
-                  <p className="text-white font-medium">{formatDate(selectedItem.expiryDate)}</p>
-                </div>
-              )}
+
               <div>
-                <p className="text-white/60 mb-1">Statut</p>
-                <span className={`px-2 py-1 text-xs rounded-full ${getStatusClass(selectedItem.status)}`}>
-                  {getStatusText(selectedItem.status)}
-                </span>
+                <label className="block text-sm font-medium text-white/80 mb-1">
+                  Statut
+                </label>
+                <select
+                  value={editedItem.status}
+                  onChange={(e) => setEditedItem({ ...editedItem, status: e.target.value as InvoiceType['status'] })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                >
+                  <option value="validated">Validé</option>
+                  <option value="pending">En attente</option>
+                  <option value="rejected">Rejeté</option>
+                </select>
               </div>
-            </div>
-            
-            <div className="border border-white/10 rounded-lg p-6 mb-6 bg-white/5">
-              <div className="flex justify-center items-center">
-                <FileText size={64} className="text-brand-primary mb-4" />
-              </div>
-              <p className="text-center text-white/60 mb-4">Aperçu du document</p>
-              <p className="text-center text-white mb-4">
-                {selectedItem.type === 'invoice' ? 'Facture' : 'Bon de livraison'} {selectedItem.number} du fournisseur {selectedItem.supplier}
-              </p>
-              <div className="flex justify-center">
-                <button className="px-4 py-2 bg-brand-blue/20 border border-brand-blue/30 rounded-lg text-white hover:bg-brand-blue/30 transition-colors">
-                  <Download size={16} className="inline-block mr-2" />
-                  Télécharger le document
+
+              <div className="flex justify-end gap-2 mt-6">
+                <button
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 text-sm font-medium text-white/80 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg border border-white/10"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 text-sm font-medium text-white bg-teal-500 hover:bg-teal-600 rounded-lg"
+                >
+                  <Save className="w-4 h-4 inline-block mr-2" />
+                  Enregistrer
                 </button>
               </div>
             </div>

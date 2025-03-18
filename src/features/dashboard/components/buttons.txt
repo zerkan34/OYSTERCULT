@@ -1,0 +1,23 @@
+            <div className="flex items-center space-x-2">
+              <button
+                className="text-white/60 hover:text-white transition-colors px-3 py-1.5 hover:bg-white/10 rounded-md flex items-center"
+                aria-label="Historique"
+              >
+                <History size={16} className="mr-1" />
+                <span className="text-sm">Historique</span>
+              </button>
+              <button
+                className="text-white/60 hover:text-white transition-colors px-3 py-1.5 hover:bg-white/10 rounded-md flex items-center"
+                aria-label="Échantillonnage"
+              >
+                <Flask size={16} className="mr-1" />
+                <span className="text-sm">Échantillonnage</span>
+              </button>
+              <button
+                onClick={onClose}
+                className="text-white/60 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full"
+                aria-label="Fermer"
+              >
+                <X size={24} />
+              </button>
+            </div>

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Package, Search, Filter, Calendar, Clock, AlertCircle, ChevronRight, Shell, Fish, Anchor, Sailboat, Ship, Plus, Camera, Scan, Star, X, Upload, MessageSquare } from 'lucide-react';
+import { Package, Search, Filter, Calendar, Clock, AlertCircle, ChevronRight, Shell, Fish, Anchor, Sailboat, Ship, Plus, Camera, Scan, Star, X, Upload, MessageSquare, ShoppingBag } from 'lucide-react';
 import { ModernCardBase } from '@/components/ui/ModernCardBase';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { OrderDetails } from '../components/OrderDetails';
+import { PageTitle } from '@/components/ui/PageTitle';
+import { motion } from 'framer-motion';
 
 export function PurchasesPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -257,7 +259,15 @@ export function PurchasesPage() {
   ];
 
   return (
-    <div className="container mx-auto p-4 space-y-4">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      className="container mx-auto p-4 space-y-4"
+    >
+      <PageTitle 
+        icon={<ShoppingBag size={28} className="text-white" />}
+        title="Achats"
+      />
       <div className="flex items-center justify-between mb-6">
         <div className="flex-1 flex items-center space-x-4">
           <div className="flex-1">
@@ -487,6 +497,6 @@ export function PurchasesPage() {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

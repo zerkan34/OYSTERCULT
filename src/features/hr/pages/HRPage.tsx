@@ -6,6 +6,8 @@ import { LeaveManagement } from '../components/LeaveManagement';
 import { PerformanceReviews } from '../components/PerformanceReviews';
 import { Schedule } from '../components/Schedule';
 import { useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { PageTitle } from '@/components/ui/PageTitle';
 
 type TabType = 'employees' | 'leave' | 'performance' | 'schedule';
 
@@ -38,9 +40,16 @@ export function HRPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
+      <PageTitle 
+        icon={<Users size={28} className="text-white" />}
+        title="Gestion RH"
+      />
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Gestion des Ressources Humaines</h1>
         {activeTab === 'employees' && (
           <button
             onClick={() => setShowNewEmployeeForm(true)}
@@ -143,6 +152,6 @@ export function HRPage() {
           onClose={() => handleTabChange('employees')}
         />
       )}
-    </div>
+    </motion.div>
   );
 }

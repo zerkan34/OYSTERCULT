@@ -1,0 +1,91 @@
+/* 
+  Correctifs globaux de performance pour les animations
+  Cible tous les keyframes qui pourraient utiliser width/height et les remplace par transform
+*/
+
+/* 
+  Règle pour corriger les animations de largeur
+  Cette règle force toutes les animations qui modifient width à utiliser transform:scaleX à la place
+*/
+@keyframes width-to-transform {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* 
+  Règle pour corriger les animations de hauteur
+  Cette règle force toutes les animations qui modifient height à utiliser transform:scaleY à la place
+*/
+@keyframes height-to-transform {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+/* 
+  Règle pour corriger les animations de width et height combinées
+  Cette règle force toutes les animations qui modifient width et height à utiliser transform:scale à la place
+*/
+@keyframes size-to-transform {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+/* Application de correctifs pour les sélecteurs couramment problématiques */
+
+/* 
+  Pour les éléments qui ont des animations modifiant width/height
+  On les cible avec les classes Tailwind ou attributs appropriés
+*/
+.animate-width,
+[class*="animate-width"],
+[style*="animation"][style*="width"] {
+  width: 100% !important; /* On fixe une width stable */
+  transform-origin: left !important;
+  animation-name: width-to-transform !important;
+}
+
+.animate-height,
+[class*="animate-height"],
+[style*="animation"][style*="height"] {
+  height: 100% !important; /* On fixe une height stable */
+  transform-origin: top !important;
+  animation-name: height-to-transform !important;
+}
+
+.animate-size,
+[class*="animate-size"],
+[style*="animation"][style*="width"][style*="height"] {
+  width: 100% !important;
+  height: 100% !important;
+  transform-origin: center !important;
+  animation-name: size-to-transform !important;
+}
+
+/* 
+  Correctifs spécifiques pour les composants d'inventaire
+  Ces règles ciblent spécifiquement les composants liés à l'inventaire pour éviter les recalculs de layout
+*/
+.stock-item,
+.inventory-card,
+.supplier-item {
+  transform: translateZ(0); /* Force l'accélération matérielle */
+}
+
+/* 
+  Optimisations générales d'animations
+  Utilisation de will-change pour indiquer au navigateur qu'un élément va être animé
+*/
+.animated,
+[class*="animate-"],
+[style*="animation"] {
+  will-change: transform, opacity;
+}
+
+/* 
+  Règle pour les transitions de width/height
+  On utilise transform au lieu de width/height pour les transitions également
+*/
+[style*="transition"][style*="width"],
+[style*="transition"][style*="height"] {
+  transition-property: transform !important;
+}

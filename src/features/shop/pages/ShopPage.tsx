@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ChevronDown, ShoppingCart } from 'lucide-react';
+import { Search, ChevronDown, ShoppingCart, Store } from 'lucide-react';
 import { useCart } from '@/features/suppliers/hooks/useCart';
 import { CartModal } from '@/features/suppliers/components/CartModal';
+import { motion } from 'framer-motion';
+import { PageTitle } from '@/components/ui/PageTitle';
 
 interface Product {
   id: string;
@@ -120,9 +122,6 @@ export function ShopPage() {
       <header className="sticky top-0 z-40 w-full border-b border-[rgb(var(--color-border)_/_var(--color-border-opacity))] bg-[rgb(var(--color-brand-surface))]">
         <div className="max-w-[1400px] mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-[rgb(var(--color-text-primary))]">
-              Boutique
-            </h1>
             <div className="flex items-center gap-4">
               <button 
                 className="p-2 rounded-lg hover:bg-[rgb(var(--color-brand-surface-hover))] transition-colors relative"
@@ -142,6 +141,31 @@ export function ShopPage() {
 
       {/* Contenu principal avec espacement correct */}
       <main className="max-w-[1400px] mx-auto px-6 pt-12 pb-24">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          className="space-y-6"
+        >
+          <PageTitle 
+            icon={<Store size={28} className="text-white" />}
+            title="Boutique"
+          />
+
+          <div className="flex justify-end">
+            <button
+              onClick={() => setIsCartModalOpen(true)}
+              className="p-2 rounded-lg hover:bg-[rgb(var(--color-brand-surface-hover))] transition-colors relative"
+            >
+              <ShoppingCart className="w-5 h-5 text-[rgb(var(--color-text-secondary))]" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[rgb(var(--color-brand-primary))] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                  {cartItems.length}
+                </span>
+              )}
+            </button>
+          </div>
+        </motion.div>
+
         {/* Barre de recherche et filtres */}
         <div className="mb-8 flex flex-col sm:flex-row gap-4">
           {/* Barre de recherche */}

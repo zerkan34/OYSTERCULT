@@ -1,4 +1,5 @@
 import React from 'react';
+import '../pages/StockPage.css';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Package, AlertTriangle, Anchor, LifeBuoy } from 'lucide-react';
 
@@ -54,7 +55,12 @@ export function StockLevels() {
   const getStockLevel = (item: StockItem) => {
     const percentage = (item.currentStock / item.maximumStock) * 100;
     return {
-      name: item.name,
+      id: item.id,
+      product: { name: item.name },
+      currentLevel: item.currentStock,
+      minLevel: item.minimumStock,
+      maxLevel: item.maximumStock,
+      unitType: item.unit,
       value: percentage,
       color: percentage < 30 ? '#ef4444' : percentage < 70 ? '#eab308' : '#22c55e'
     };
@@ -117,92 +123,53 @@ export function StockLevels() {
   };
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-      <h3 className="text-lg font-medium text-white mb-6">Niveaux de Stock</h3>
-      
-      <div className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={stockLevels}
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={80}
-              paddingAngle={5}
-              dataKey="value"
-            >
-              {stockLevels.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip
-              contentStyle={{ background: '#1A1A1A', border: 'none', borderRadius: '0.5rem' }}
-              formatter={(value: number) => `${value.toFixed(1)}%`}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="mt-6 space-y-6">
-        {mockStockItems.map((item) => {
-          const percentage = (item.currentStock / item.maximumStock) * 100;
-          const isLow = item.currentStock < item.minimumStock;
-
-          return (
-            <div key={item.id} className="flex flex-col">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-lg ${
-                    isLow ? 'bg-red-500/20' : 'bg-white/5'
-                  } flex items-center justify-center`}>
-                    {isLow ? (
-                      <AlertTriangle size={20} className="text-red-300" />
-                    ) : item.type === 'perche' ? (
-                      <Anchor size={20} className="text-white/60" />
-                    ) : item.type === 'corde' ? (
-                      <LifeBuoy size={20} className="text-white/60" />
-                    ) : (
-                      <Package size={20} className="text-white/60" />
-                    )}
+    <div className="stock-card p-6">
+      <div className="stock-table-container stock-scrollbar">
+        <table className="stock-table">
+          <thead>
+            <tr>
+              <th>Produit</th>
+              <th>Niveau actuel</th>
+              <th>Niveau minimum</th>
+              <th>Niveau maximum</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {stockLevels.map((level) => (
+              <tr key={level.id}>
+                <td>{level.product.name}</td>
+                <td>
+                  <span className={`${
+                    level.currentLevel < level.minLevel ? 'text-red-500' :
+                    level.currentLevel > level.maxLevel ? 'text-yellow-500' :
+                    'text-green-500'
+                  }`}>
+                    {level.currentLevel} {level.unitType}
+                  </span>
+                </td>
+                <td>{level.minLevel} {level.unitType}</td>
+                <td>{level.maxLevel} {level.unitType}</td>
+                <td>
+                  <div className="flex space-x-2">
+                    <button 
+                      onClick={() => console.log('Modifier')}
+                      className="stock-btn"
+                    >
+                      Modifier
+                    </button>
+                    <button 
+                      onClick={() => console.log('Supprimer')}
+                      className="stock-btn text-red-500 hover:text-red-400"
+                    >
+                      Supprimer
+                    </button>
                   </div>
-                  <div>
-                    <div className="text-white font-medium">{item.name}</div>
-                    <div className="text-sm text-white/60">
-                      {item.currentStock} / {item.maximumStock} {item.unit}
-                    </div>
-                  </div>
-                </div>
-                <div className={`px-3 py-1 rounded-full text-sm ${
-                  percentage < 30
-                    ? 'bg-red-500/20 text-red-300'
-                    : percentage < 70
-                    ? 'bg-yellow-500/20 text-yellow-300'
-                    : 'bg-green-500/20 text-green-300'
-                }`}>
-                  {percentage.toFixed(1)}%
-                </div>
-              </div>
-              
-              {/* Visualisation des carrés */}
-              {renderSquares(item)}
-              
-              {/* Jauge de remplissage */}
-              <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2">
-                <div 
-                  className={`h-full rounded-full ${
-                    percentage < 30
-                      ? 'bg-red-500'
-                      : percentage < 70
-                      ? 'bg-yellow-500'
-                      : 'bg-green-500'
-                  }`}
-                  style={{ width: `${Math.min(percentage, 100)}%` }}
-                />
-              </div>
-            </div>
-          );
-        })}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

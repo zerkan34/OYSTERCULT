@@ -5,14 +5,23 @@ import { SecuritySettings } from '../components/SecuritySettings';
 import { ActivityHistory } from '../components/ActivityHistory';
 import { ExportData } from '../components/ExportData';
 import { FriendCode } from '../components/FriendCode';
+import { motion } from 'framer-motion';
+import { PageTitle } from '@/components/ui/PageTitle';
 
 export function ProfilePage() {
   const [activeTab, setActiveTab] = useState<'info' | 'friend-code' | 'security' | 'activity' | 'export'>('info');
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
+      <PageTitle 
+        icon={<UserCircle size={28} className="text-white" />}
+        title="Mon Espace"
+      />
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Mon Espace</h1>
       </div>
 
       <div className="flex items-center space-x-4 border-b border-white/10">
@@ -88,6 +97,6 @@ export function ProfilePage() {
       {activeTab === 'security' && <SecuritySettings />}
       {activeTab === 'activity' && <ActivityHistory />}
       {activeTab === 'export' && <ExportData />}
-    </div>
+    </motion.div>
   );
 }

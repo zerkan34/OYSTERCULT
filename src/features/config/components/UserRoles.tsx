@@ -1,7 +1,29 @@
 import React, { useState } from 'react';
 import { Shield, Plus, Edit2, Trash2, Mail, Phone, MapPin, Building2, Calendar, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/lib/store';
 import toast from 'react-hot-toast';
+
+interface BaseUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  position: string;
+  department: string;
+  location: string;
+  startDate: string;
+  employeeId: string;
+  emergencyContact: string;
+  role: string;
+  password?: string;
+}
+
+interface User extends BaseUser {
+  id: string;
+}
+
+type UserFormData = BaseUser;
 
 interface Role {
   id: string;
@@ -11,33 +33,8 @@ interface Role {
   users: User[];
 }
 
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  position: string;
-  department: string;
-  location: string;
-  startDate: string;
-  employeeId: string;
-  emergencyContact: string;
-  role: string;
-}
-
-interface UserFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  position: string;
-  department: string;
-  location: string;
-  startDate: string;
-  employeeId: string;
-  emergencyContact: string;
-  role: string;
+interface FormErrors {
+  [key: string]: string;
 }
 
 const initialFormData: UserFormData = {
@@ -102,6 +99,48 @@ function generatePassword() {
   return password;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100
+    }
+  }
+};
+
+const modalVariants = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30
+    }
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.9,
+    transition: {
+      duration: 0.2
+    }
+  }
+};
+
 export function UserRoles() {
   const { addUser, deleteUser, updateUser, users } = useStore();
   const [showNewUser, setShowNewUser] = useState(false);
@@ -109,11 +148,11 @@ export function UserRoles() {
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [formData, setFormData] = useState<UserFormData>(initialFormData);
-  const [formErrors, setFormErrors] = useState<Partial<Record<keyof UserFormData, string>>>({});
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
 
   const handleEditUser = (user: User) => {
     setEditingUser(user);
-    setFormData({
+    const formData: UserFormData = {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
@@ -125,28 +164,68 @@ export function UserRoles() {
       employeeId: user.employeeId,
       emergencyContact: user.emergencyContact,
       role: user.role
-    });
+    };
+    setFormData(formData);
     setShowNewUser(true);
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+    
+    if (!formData.firstName) newErrors.firstName = 'Le prénom est requis';
+    if (!formData.lastName) newErrors.lastName = 'Le nom est requis';
+    if (!formData.email) newErrors.email = 'L\'email est requis';
+    if (!formData.phone) newErrors.phone = 'Le téléphone est requis';
+    if (!formData.position) newErrors.position = 'Le poste est requis';
+    if (!formData.employeeId) newErrors.employeeId = 'L\'ID employé est requis';
+    
+    setFormErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleAddUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    const password = generatePassword();
+    try {
+      const newUser: UserFormData = {
+        ...formData,
+        password
+      };
+      await addUser(newUser);
+      toast.success('Utilisateur ajouté avec succès');
+      setFormData(initialFormData);
+      setShowNewUser(false);
+    } catch (error) {
+      toast.error('Erreur lors de l\'ajout de l\'utilisateur');
+    }
   };
 
   const handleUpdateUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingUser) return;
+    if (!editingUser?.id || !validateForm()) return;
 
-    if (validateForm()) {
-      try {
-        await updateUser(editingUser.id, formData);
-        toast.success('Utilisateur modifié avec succès');
-        setEditingUser(null);
-        setFormData(initialFormData);
-      } catch (error) {
-        toast.error('Erreur lors de la modification de l\'utilisateur');
-      }
+    try {
+      await updateUser(editingUser.id, formData);
+      toast.success('Utilisateur modifié avec succès');
+      setEditingUser(null);
+      setFormData(initialFormData);
+      setShowNewUser(false);
+    } catch (error) {
+      toast.error('Erreur lors de la modification de l\'utilisateur');
     }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
+    const { name, value } = event.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when field is modified
+    if (formErrors[name]) {
+      const newErrors = { ...formErrors };
+      delete newErrors[name];
+      setFormErrors(newErrors);
+    }
   };
 
   const handleCancel = () => {
@@ -154,27 +233,6 @@ export function UserRoles() {
     setEditingUser(null);
     setFormData(initialFormData);
     setFormErrors({});
-  };
-
-  const handleAddUser = async (data: Partial<User>) => {
-    const password = generatePassword();
-    try {
-      addUser({
-        ...data,
-        employeeId: `EMP${Date.now().toString().slice(-4)}`
-      });
-      toast.success('Utilisateur ajouté avec succès');
-      setShowNewUser(false);
-      setFormData(initialFormData);
-    } catch (error) {
-      toast.error('Erreur lors de l\'ajout de l\'utilisateur');
-    }
-  };
-
-  const handleDeleteConfirm = (id: string) => {
-    deleteUser(id);
-    setShowDeleteConfirm(null);
-    toast.success('Utilisateur supprimé avec succès');
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -200,331 +258,420 @@ export function UserRoles() {
     }
     setFormErrors(errors);
     if (Object.keys(errors).length === 0) {
-      handleAddUser(formData);
+      handleAddUser(event);
     }
   };
 
-  const validateForm = () => {
-    const errors: UserFormData = {};
-    if (!formData.firstName) {
-      errors.firstName = 'Le prénom est obligatoire';
-    }
-    if (!formData.lastName) {
-      errors.lastName = 'Le nom est obligatoire';
-    }
-    if (!formData.email) {
-      errors.email = 'L\'email est obligatoire';
-    }
-    if (!formData.phone) {
-      errors.phone = 'Le téléphone est obligatoire';
-    }
-    if (!formData.position) {
-      errors.position = 'Le rôle est obligatoire';
-    }
-    if (!formData.startDate) {
-      errors.startDate = 'La date de début est obligatoire';
-    }
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+  const handleDeleteConfirm = (id: string) => {
+    deleteUser(id);
+    setShowDeleteConfirm(null);
+    toast.success('Utilisateur supprimé avec succès');
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">Rôles & Permissions</h2>
-        <button
+    <motion.div 
+      className="space-y-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <motion.div 
+        variants={itemVariants}
+        className="flex items-center justify-between"
+        style={{
+          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)",
+          padding: "1.5rem",
+          borderRadius: "1rem",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          boxShadow: "rgba(0, 0, 0, 0.3) 0px 10px 25px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset"
+        }}
+      >
+        <div className="flex items-center space-x-3">
+          <div className="relative w-12 h-12 flex items-center justify-center">
+            <div className="absolute inset-0 bg-[#00D1FF]/20 blur-xl rounded-full" />
+            <Shield size={24} className="text-[#00D1FF] relative z-10" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold bg-clip-text text-transparent" 
+              style={{ backgroundImage: "linear-gradient(90deg, #ffffff, #a5f3fc)" }}>
+              Rôles & Permissions
+            </h2>
+            <p className="text-white/60">Gérez les rôles et les permissions des utilisateurs</p>
+          </div>
+        </div>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setShowNewUser(true)}
-          className="flex items-center px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
+          className="px-6 py-3 bg-gradient-to-r from-[#00D1FF] to-[#00D1FF]/80 text-white font-medium rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-[#00D1FF]/20 focus:outline-none focus:ring-2 focus:ring-[#00D1FF]/50"
+          style={{
+            boxShadow: "0 0 20px rgba(0, 209, 255, 0.3)"
+          }}
         >
-          <Plus size={20} className="mr-2" />
+          <Plus size={20} className="inline-block mr-2" />
           Ajouter un utilisateur
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <motion.div 
+        className="grid grid-cols-1 gap-6"
+        variants={containerVariants}
+      >
         {mockRoles.map((role) => (
-          <div
+          <motion.div
             key={role.id}
-            className="bg-white/5 border border-white/10 rounded-lg p-6 group relative overflow-hidden hover:border-brand-primary/20 transition-all duration-300"
+            variants={itemVariants}
+            className="rounded-xl overflow-hidden"
+            style={{
+              background: "linear-gradient(135deg, rgba(0, 10, 40, 0.85) 0%, rgba(0, 100, 120, 0.8) 100%)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
+            }}
           >
-            <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-brand-primary/0 via-brand-primary/20 to-brand-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-            <div className="flex items-start justify-between relative z-10">
+            <div className="p-6">
               <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 rounded-lg bg-brand-primary/20 flex items-center justify-center">
-                  <Shield size={20} className="text-brand-primary" />
+                <div className="w-12 h-12 rounded-xl bg-[#00D1FF]/10 flex items-center justify-center">
+                  <Shield size={24} className="text-[#00D1FF]" />
                 </div>
-                <div>
-                  <h3 className="text-lg font-medium text-white">{role.name}</h3>
-                  <p className="text-sm text-white/60 mt-1">{role.description}</p>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold bg-clip-text text-transparent mb-1"
+                    style={{ backgroundImage: "linear-gradient(90deg, #ffffff, #a5f3fc)" }}>
+                    {role.name}
+                  </h3>
+                  <p className="text-white/60">{role.description}</p>
 
-                  <div className="mt-4 space-y-3">
-                    <h4 className="text-sm font-medium text-white">Utilisateurs</h4>
-                    {users.filter(user => user.role === role.id).map(user => (
-                      <div key={user.id} className="bg-white/5 rounded-lg p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-white font-medium">
-                              {user.firstName} {user.lastName}
+                  <div className="mt-6 space-y-4">
+                    <h4 className="text-lg font-medium text-white/80">Utilisateurs</h4>
+                    <div className="space-y-3">
+                      {users.filter(user => user.role === role.id).map(user => (
+                        <motion.div 
+                          key={user.id} 
+                          className="bg-white/5 rounded-xl p-4 group hover:bg-white/10 transition-all duration-200"
+                          whileHover={{ scale: 1.02 }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="text-white font-medium">
+                                {user.firstName} {user.lastName}
+                              </div>
+                              <div className="text-sm text-white/60 mt-1">
+                                {user.position}
+                              </div>
                             </div>
-                            <div className="text-sm text-white/60 mt-1">
-                              {user.position}
+                            <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <motion.button 
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => handleEditUser(user)}
+                                className="p-2 hover:bg-[#00D1FF]/10 rounded-lg transition-colors"
+                              >
+                                <Edit2 size={16} className="text-[#00D1FF]" />
+                              </motion.button>
+                              <motion.button 
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => setShowDeleteConfirm(user.id)}
+                                className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
+                              >
+                                <Trash2 size={16} className="text-red-400" />
+                              </motion.button>
                             </div>
                           </div>
-                          <div className="flex space-x-2">
-                            <button 
-                              onClick={() => handleEditUser(user)}
-                              className="p-2 hover:bg-white/5 rounded-lg transition-colors"
-                            >
-                              <Edit2 size={16} className="text-white/60" />
-                            </button>
-                            <button 
-                              onClick={() => setShowDeleteConfirm(user.id)}
-                              className="p-2 hover:bg-white/5 rounded-lg transition-colors"
-                            >
-                              <Trash2 size={16} className="text-white/60" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
-      {(showNewUser || editingUser) && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md p-6 rounded-lg w-full max-w-xl">
-            <h2 className="text-xl font-bold text-white mb-6">{editingUser ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur'}</h2>
-            <form className="space-y-6" onSubmit={editingUser ? handleUpdateUser : handleSubmit}>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Prénom
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-2 bg-white/5 border ${
-                      formErrors.firstName ? 'border-red-500' : 'border-white/10'
-                    } rounded-lg text-white`}
-                    required
-                  />
-                  {formErrors.firstName && (
-                    <p className="mt-1 text-sm text-red-500">{formErrors.firstName}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Nom
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-2 bg-white/5 border ${
-                      formErrors.lastName ? 'border-red-500' : 'border-white/10'
-                    } rounded-lg text-white`}
-                    required
-                  />
-                  {formErrors.lastName && (
-                    <p className="mt-1 text-sm text-red-500">{formErrors.lastName}</p>
-                  )}
-                </div>
+      <AnimatePresence>
+        {(showNewUser || editingUser) && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+          >
+            <motion.div 
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="w-full max-w-xl rounded-xl overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 100, 120, 0.9) 100%)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
+              }}
+            >
+              <div className="p-6">
+                <h2 className="text-2xl font-bold bg-clip-text text-transparent mb-6"
+                  style={{ backgroundImage: "linear-gradient(90deg, #ffffff, #a5f3fc)" }}>
+                  {editingUser ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur'}
+                </h2>
+
+                <form className="space-y-6" onSubmit={editingUser ? handleUpdateUser : handleSubmit}>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-white/80 mb-2">
+                        Prénom
+                      </label>
+                      <input
+                        type="text"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 bg-white/5 border ${
+                          formErrors.firstName ? 'border-red-500' : 'border-white/10'
+                        } rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none`}
+                        style={{
+                          backdropFilter: "blur(10px)",
+                          WebkitBackdropFilter: "blur(10px)"
+                        }}
+                        required
+                      />
+                      {formErrors.firstName && (
+                        <p className="mt-2 text-sm text-red-400 flex items-center">
+                          <AlertCircle size={16} className="mr-1" />
+                          {formErrors.firstName}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white/80 mb-2">
+                        Nom
+                      </label>
+                      <input
+                        type="text"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 bg-white/5 border ${
+                          formErrors.lastName ? 'border-red-500' : 'border-white/10'
+                        } rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none`}
+                        style={{
+                          backdropFilter: "blur(10px)",
+                          WebkitBackdropFilter: "blur(10px)"
+                        }}
+                        required
+                      />
+                      {formErrors.lastName && (
+                        <p className="mt-2 text-sm text-red-400 flex items-center">
+                          <AlertCircle size={16} className="mr-1" />
+                          {formErrors.lastName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-white/80 mb-2">
+                        Email
+                      </label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          className={`w-full pl-10 pr-4 py-3 bg-white/5 border ${
+                            formErrors.email ? 'border-red-500' : 'border-white/10'
+                          } rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none`}
+                          style={{
+                            backdropFilter: "blur(10px)",
+                            WebkitBackdropFilter: "blur(10px)"
+                          }}
+                          required
+                        />
+                      </div>
+                      {formErrors.email && (
+                        <p className="mt-2 text-sm text-red-400 flex items-center">
+                          <AlertCircle size={16} className="mr-1" />
+                          {formErrors.email}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white/80 mb-2">
+                        Téléphone
+                      </label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          className={`w-full pl-10 pr-4 py-3 bg-white/5 border ${
+                            formErrors.phone ? 'border-red-500' : 'border-white/10'
+                          } rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none`}
+                          style={{
+                            backdropFilter: "blur(10px)",
+                            WebkitBackdropFilter: "blur(10px)"
+                          }}
+                          required
+                        />
+                      </div>
+                      {formErrors.phone && (
+                        <p className="mt-2 text-sm text-red-400 flex items-center">
+                          <AlertCircle size={16} className="mr-1" />
+                          {formErrors.phone}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-white/80 mb-2">
+                        Rôle
+                      </label>
+                      <div className="relative">
+                        <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
+                        <select
+                          name="position"
+                          value={formData.position}
+                          onChange={handleChange}
+                          className={`w-full pl-10 pr-4 py-3 bg-white/5 border ${
+                            formErrors.position ? 'border-red-500' : 'border-white/10'
+                          } rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none appearance-none`}
+                          style={{
+                            backdropFilter: "blur(10px)",
+                            WebkitBackdropFilter: "blur(10px)"
+                          }}
+                          required
+                        >
+                          <option value="">Sélectionner un rôle</option>
+                          <option value="manageur">Manageur</option>
+                          <option value="operateur">Opérateur</option>
+                          <option value="comptable_full">Comptable Tout accès</option>
+                          <option value="comptable">Comptable</option>
+                        </select>
+                      </div>
+                      {formErrors.position && (
+                        <p className="mt-2 text-sm text-red-400 flex items-center">
+                          <AlertCircle size={16} className="mr-1" />
+                          {formErrors.position}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white/80 mb-2">
+                        Date de début
+                      </label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
+                        <input
+                          type="date"
+                          name="startDate"
+                          value={formData.startDate}
+                          onChange={handleChange}
+                          className={`w-full pl-10 pr-4 py-3 bg-white/5 border ${
+                            formErrors.startDate ? 'border-red-500' : 'border-white/10'
+                          } rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none`}
+                          style={{
+                            backdropFilter: "blur(10px)",
+                            WebkitBackdropFilter: "blur(10px)"
+                          }}
+                          required
+                        />
+                      </div>
+                      {formErrors.startDate && (
+                        <p className="mt-2 text-sm text-red-400 flex items-center">
+                          <AlertCircle size={16} className="mr-1" />
+                          {formErrors.startDate}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end space-x-4 mt-8">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      type="button"
+                      onClick={handleCancel}
+                      className="px-6 py-3 text-white/70 hover:text-white transition-colors rounded-xl"
+                    >
+                      Annuler
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      type="submit"
+                      className="px-6 py-3 bg-gradient-to-r from-[#00D1FF] to-[#00D1FF]/80 text-white font-medium rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-[#00D1FF]/20 focus:outline-none focus:ring-2 focus:ring-[#00D1FF]/50"
+                      style={{
+                        boxShadow: "0 0 20px rgba(0, 209, 255, 0.3)"
+                      }}
+                    >
+                      {editingUser ? 'Mettre à jour' : 'Ajouter'}
+                    </motion.button>
+                  </div>
+                </form>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-2 bg-white/5 border ${
-                      formErrors.email ? 'border-red-500' : 'border-white/10'
-                    } rounded-lg text-white`}
-                    required
-                  />
-                  {formErrors.email && (
-                    <p className="mt-1 text-sm text-red-500">{formErrors.email}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Téléphone
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-2 bg-white/5 border ${
-                      formErrors.phone ? 'border-red-500' : 'border-white/10'
-                    } rounded-lg text-white`}
-                    required
-                  />
-                  {formErrors.phone && (
-                    <p className="mt-1 text-sm text-red-500">{formErrors.phone}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Rôle
-                  </label>
-                  <select
-                    name="position"
-                    value={formData.position}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-2 bg-white/5 border ${
-                      formErrors.position ? 'border-red-500' : 'border-white/10'
-                    } rounded-lg text-white`}
-                    required
-                  >
-                    <option value="">Sélectionner un rôle</option>
-                    <option value="manageur">Manageur</option>
-                    <option value="operateur">Opérateur</option>
-                    <option value="comptable_full">Comptable Tout accès</option>
-                    <option value="comptable">Comptable</option>
-                  </select>
-                  {formErrors.position && (
-                    <p className="mt-1 text-sm text-red-500">{formErrors.position}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Département
-                  </label>
-                  <select 
-                    name="department"
-                    value={formData.department}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-                  >
-                    <option value="production">Production</option>
-                    <option value="maintenance">Maintenance</option>
-                    <option value="quality">Contrôle Qualité</option>
-                    <option value="logistics">Logistique</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Site
-                  </label>
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Date de début
-                  </label>
-                  <input
-                    type="date"
-                    name="startDate"
-                    value={formData.startDate}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-2 bg-white/5 border ${
-                      formErrors.startDate ? 'border-red-500' : 'border-white/10'
-                    } rounded-lg text-white`}
-                    required
-                  />
-                  {formErrors.startDate && (
-                    <p className="mt-1 text-sm text-red-500">{formErrors.startDate}</p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">
-                  Contact d'urgence
-                </label>
-                <input
-                  type="text"
-                  name="emergencyContact"
-                  value={formData.emergencyContact}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-                  placeholder="Nom et numéro de téléphone"
-                />
-              </div>
-
-              <div className="p-4 bg-brand-primary/10 rounded-lg">
-                <div className="flex items-center text-brand-primary mb-2">
-                  <Mail size={20} className="mr-2" />
-                  <span className="font-medium">Email de bienvenue</span>
-                </div>
-                <p className="text-sm text-white/70">
-                  Un email sera automatiquement envoyé à l'utilisateur avec ses identifiants de connexion.
+      <AnimatePresence>
+        {showDeleteConfirm && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+          >
+            <motion.div 
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="w-full max-w-md rounded-xl overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 100, 120, 0.9) 100%)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
+              }}
+            >
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-white mb-4">Confirmer la suppression</h3>
+                <p className="text-white/70 mb-6">
+                  Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.
                 </p>
+                <div className="flex justify-end space-x-4">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowDeleteConfirm(null)}
+                    className="px-4 py-2 text-white/70 hover:text-white transition-colors rounded-xl"
+                  >
+                    Annuler
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => showDeleteConfirm && handleDeleteConfirm(showDeleteConfirm)}
+                    className="px-4 py-2 bg-red-500/80 hover:bg-red-500 text-white rounded-xl transition-colors"
+                  >
+                    Supprimer
+                  </motion.button>
+                </div>
               </div>
-
-              <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="px-4 py-2 text-white/70 hover:text-white transition-colors"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
-                >
-                  {editingUser ? 'Modifier l\'utilisateur' : 'Ajouter l\'utilisateur'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
-            <div className="flex items-center space-x-2 text-red-500 mb-4">
-              <AlertCircle size={24} />
-              <h3 className="text-lg font-medium">Confirmer la suppression</h3>
-            </div>
-            <p className="text-white/60 mb-6">
-              Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.
-            </p>
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={() => setShowDeleteConfirm(null)}
-                className="px-4 py-2 text-white/60 hover:text-white transition-colors"
-              >
-                Annuler
-              </button>
-              <button
-                onClick={() => handleDeleteConfirm(showDeleteConfirm)}
-                className="px-4 py-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20 transition-colors"
-              >
-                Supprimer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

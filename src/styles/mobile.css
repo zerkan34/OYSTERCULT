@@ -1,0 +1,45 @@
+/* Styles mobiles optimisés */
+@media screen and (max-width: 768px) {
+  :root {
+    --sidebar-width: 100%;
+  }
+
+  /* Optimisations de performance mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Ajustements de mise en page */
+  .mobile-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Optimisations tactiles */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Ajustements des effets visuels */
+  .glass-effect {
+    --glass-opacity: 0.95;
+    backdrop-filter: blur(8px);
+  }
+
+  /* Optimisations de performance */
+  .animate-on-mobile {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+}
+
+/* Support des safe areas iOS */
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-area-mobile {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}

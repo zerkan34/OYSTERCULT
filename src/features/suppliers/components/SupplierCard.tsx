@@ -52,22 +52,20 @@ export function SupplierCard({ supplier, onDelete, onViewCatalog }: SupplierCard
 
   return (
     <>
-      <div className="w-full bg-[#1a1c25] rounded-xl shadow-lg overflow-hidden border border-[#2a2d3a] hover:border-[#3f4864] transition-all duration-300 group">
+      <div className="w-full glass-effect rounded-xl p-4 space-y-4 bg-[rgba(0,40,80,0.2)] shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset] hover:shadow-[rgba(0,0,0,0.25)_0px_8px_20px,rgba(0,210,200,0.15)_0px_0px_10px_inset] transition-all duration-300">
         <div className="relative">
           {/* En-tête avec dégradé personnalisé */}
           <div 
             className="h-24 flex items-center justify-center"
-            style={{
-              background: `linear-gradient(135deg, ${colors.from}20 0%, ${colors.to}40 100%)`
-            }}
           >
             {/* Logo/Initiales stylisé */}
             <div 
-              className="w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-bold shadow-md transform group-hover:scale-105 transition-transform duration-300"
+              className="w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-bold shadow-lg transform transition-transform duration-300 relative"
               style={{
-                background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)`,
-                color: 'white',
-                textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                background: `linear-gradient(135deg, ${colors.from}30 0%, ${colors.to}50 100%)`,
+                boxShadow: 'rgba(0,0,0,0.2) 0px 4px 12px, rgba(0,210,200,0.1) 0px 0px 8px inset',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255,255,255,0.1)'
               }}
             >
               {initials}
@@ -84,30 +82,21 @@ export function SupplierCard({ supplier, onDelete, onViewCatalog }: SupplierCard
         </div>
 
         {/* Contenu */}
-        <div className="p-4 flex flex-col">
-          <h3 className="text-lg font-semibold mb-3 text-white">{supplier.name}</h3>
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold text-white">{supplier.name}</h3>
           
-          <div className="text-xs opacity-70 mb-1">
-            {supplier.friend_code && (
-              <div className="inline-flex items-center gap-1 mr-3 mb-2">
-                <Building2 className="w-3 h-3 shrink-0" />
-                <span className="font-mono text-xs">{supplier.friend_code}</span>
-              </div>
-            )}
-          </div>
-          
-          <div className="space-y-2 flex-grow text-[#a0a3b8]">
+          <div className="text-xs text-white/70 space-y-2">
             <div className="flex items-center gap-2">
-              <Mail className="w-3.5 h-3.5 shrink-0 text-[#8b8fa8]" />
-              <span className="text-xs truncate">{supplier.email}</span>
+              <Building2 className="w-3 h-3 shrink-0" />
+              <span>{supplier.address}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Phone className="w-3.5 h-3.5 shrink-0 text-[#8b8fa8]" />
-              <span className="text-xs">{supplier.phone}</span>
+              <Phone className="w-3 h-3 shrink-0" />
+              <span>{supplier.phone}</span>
             </div>
             <div className="flex items-center gap-2">
-              <MapPin className="w-3.5 h-3.5 shrink-0 text-[#8b8fa8]" />
-              <span className="text-xs truncate">{supplier.address}</span>
+              <Mail className="w-3 h-3 shrink-0" />
+              <span>{supplier.email}</span>
             </div>
           </div>
 

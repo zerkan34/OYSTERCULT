@@ -1,0 +1,172 @@
+/**
+ * Corrections d'accessibilité et de compatibilité
+ * Résout les problèmes signalés dans les avertissements du navigateur
+ */
+
+/* === ACCESSIBILITÉ === */
+
+/* Fix pour les boutons sans texte accessible */
+button:not([aria-label]):not([title]):empty::after,
+button:not([aria-label]):not([title])::after,
+a[role="button"]:not([aria-label]):not([title])::after,
+[role="button"]:not([aria-label]):not([title])::after {
+  content: "Bouton";
+  display: inline;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Fix pour les images sans texte alternatif */
+img:not([alt])::after {
+  content: "Image sans description";
+  position: absolute;
+  transform: scale(0); /* Utilisation de transform au lieu de width/height */
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Ajouter un attribut alt par défaut pour les images JS */
+[jsvalues*=".src"]:not([alt]) {
+  position: relative;
+}
+
+[jsvalues*=".src"]:not([alt])::after {
+  content: "Image generée";
+  position: absolute;
+  transform: scale(0); /* Utilisation de transform au lieu de width/height */
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Améliorer l'accessibilité des éléments de formulaire */
+input:not([aria-label]):not([placeholder]):not([title]),
+select:not([aria-label]):not([title]),
+textarea:not([aria-label]):not([placeholder]):not([title]) {
+  position: relative;
+}
+
+input:not([aria-label]):not([placeholder]):not([title])::before,
+select:not([aria-label]):not([title])::before,
+textarea:not([aria-label]):not([placeholder]):not([title])::before {
+  content: attr(id) attr(name);
+  position: absolute;
+  transform: scale(0); /* Utilisation de transform au lieu de width/height */
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* === COMPATIBILITÉ === */
+
+/* Ajouter la propriété standard 'filter' pour Chrome Android */
+[style*="-webkit-filter"] {
+  filter: var(--filter-value, inherit);
+}
+
+.filter,
+[class*="filter-"] {
+  -webkit-filter: var(--filter-value, none);
+  filter: var(--filter-value, none);
+}
+
+/* Ajouter 'text-size-adjust' pour les navigateurs modernes */
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Ajouter le préfixe -webkit pour backdrop-filter pour Safari */
+[style*="backdrop-filter"] {
+  -webkit-backdrop-filter: var(--backdrop-filter-value, blur(8px));
+  backdrop-filter: var(--backdrop-filter-value, blur(8px));
+}
+
+.backdrop-blur,
+[class*="backdrop-blur-"] {
+  -webkit-backdrop-filter: blur(var(--blur-amount, 8px));
+  backdrop-filter: blur(var(--blur-amount, 8px));
+}
+
+/* Préfixes pour user-select */
+[style*="user-select"] {
+  -webkit-user-select: var(--user-select-value, none);
+  -moz-user-select: var(--user-select-value, none);
+  -ms-user-select: var(--user-select-value, none);
+  user-select: var(--user-select-value, none);
+}
+
+.user-select-none {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.user-select-text {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.user-select-all {
+  -webkit-user-select: all;
+  -moz-user-select: all;
+  -ms-user-select: all;
+  user-select: all;
+}
+
+/* Support pour forced-color-adjust */
+.forced-colors-mode {
+  forced-color-adjust: none;
+  -ms-high-contrast-adjust: none;
+}
+
+/* Correction pour les problèmes d'image-set */
+[class*="image-set"],
+[style*="image-set"] {
+  content: "";
+}
+
+/* Animations optimisées pour utiliser transform et opacity */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Styles pour le focus visible - amélioration de l'accessibilité au clavier */
+:focus-visible {
+  outline: 2px solid rgb(var(--color-brand-primary));
+  outline-offset: 2px;
+}

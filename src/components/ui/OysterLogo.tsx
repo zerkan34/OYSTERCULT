@@ -1,51 +1,61 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Settings } from 'lucide-react';
 
 interface OysterLogoProps {
   size?: number;
   className?: string;
-  withText?: boolean;
-  textPosition?: 'right' | 'bottom';
 }
 
-export function OysterLogo({ 
-  size = 32, 
-  className = '', 
-  withText = false,
-  textPosition = 'right'
-}: OysterLogoProps) {
+export function OysterLogo({ size = 32, className = '' }: OysterLogoProps) {
   return (
     <div 
-      className={`flex ${textPosition === 'bottom' ? 'flex-col items-center' : 'items-center'} ${className}`}
-      style={{ gap: size / 4 }}
+      className={`flex items-center ${className}`}
+      style={{
+        transform: 'translate3d(0, 0, 0)',
+        willChange: 'transform',
+        backfaceVisibility: 'hidden'
+      }}
     >
-      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-        {/* Effet de lueur */}
-        <div 
-          className="absolute inset-0 bg-brand-burgundy/20 blur-xl rounded-full"
-          style={{ transform: 'scale(1.2)' }}
-        />
-        
-        {/* Cercle de fond */}
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-burgundy/30 to-brand-burgundy rounded-full" />
-        
-        {/* Icône qui tourne */}
+      <div className="relative">
+        <span 
+          className="text-white font-bold tracking-wider"
+          style={{
+            transform: 'translate3d(0, 0, 0)',
+            willChange: 'transform'
+          }}
+        >O</span>
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          className="relative w-full h-full flex items-center justify-center"
+          className="absolute"
+          style={{ 
+            left: 1,
+            top: '100%',
+            marginTop: -6,
+            fontSize: '8px',
+            lineHeight: 0,
+            willChange: 'transform',
+            backfaceVisibility: 'hidden'
+          }}
+          initial={{ opacity: 0.6 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.8, repeat: Infinity, repeatType: "reverse" }}
         >
-          <Settings className="w-full h-full text-white" />
+          <span className="text-cyan-400 font-mono">≈</span>
         </motion.div>
       </div>
-
-      {withText && (
-        <div className={`font-industry tracking-wider whitespace-nowrap text-center`} style={{ fontSize: size / 2 }}>
-          <span className="text-gradient-cool font-bold">OYSTER</span>
-          <span className="text-white font-bold ml-1">CULT</span>
-        </div>
-      )}
+      <span 
+        className="text-white font-bold tracking-wider"
+        style={{
+          transform: 'translate3d(0, 0, 0)',
+          willChange: 'transform'
+        }}
+      >YSTER</span>
+      <span 
+        className="text-white font-bold tracking-wider ml-[0.3em]"
+        style={{
+          transform: 'translate3d(0, 0, 0)',
+          willChange: 'transform'
+        }}
+      >CULT</span>
     </div>
   );
 }

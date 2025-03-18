@@ -675,14 +675,20 @@ export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, sele
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="glass-effect p-6 rounded-xl flex flex-col items-center justify-center h-full text-center"
+                style={{
+                  background: "rgba(var(--color-brand-dark), 0.3)",
+                  WebkitBackdropFilter: "blur(16px)",
+                  backdropFilter: "blur(16px)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  transition: "border-color 0.2s ease",
+                  willChange: "transform, border-color"
+                }}
               >
                 <div className="bg-white/5 rounded-full p-4 mb-4">
                   <MapIcon className="w-10 h-10 text-brand-burgundy" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Sélectionnez une table</h3>
-                <p className="text-white/60">
-                  Cliquez sur une table pour voir ses détails et gérer son contenu
-                </p>
+                <p className="text-white/60">Cliquez sur une table pour voir ses détails et gérer son contenu</p>
               </motion.div>
             )}
           </AnimatePresence>
