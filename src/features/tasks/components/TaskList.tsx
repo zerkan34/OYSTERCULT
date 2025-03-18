@@ -109,6 +109,32 @@ const modalVariants = {
   },
 };
 
+const getPriorityColor = (priority: string) => {
+  switch (priority) {
+    case 'high':
+      return 'bg-red-500/20 text-red-400';
+    case 'medium':
+      return 'bg-amber-500/20 text-amber-400';
+    case 'low':
+      return 'bg-green-500/20 text-green-400';
+    default:
+      return '';
+  }
+};
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'pending':
+      return 'bg-blue-500/20 text-blue-400';
+    case 'in_progress':
+      return 'bg-amber-500/20 text-amber-400';
+    case 'completed':
+      return 'bg-green-500/20 text-green-400';
+    default:
+      return '';
+  }
+};
+
 export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [expandedTask, setExpandedTask] = useState<string | null>(null);
@@ -171,9 +197,7 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
           </p>
         </div>
       ) : (
-        <div 
-          className="task-grid"
-        >
+        <div className="task-grid">
           {filteredTasks.map(task => {
             const priority = task.priority;
             const status = task.status;

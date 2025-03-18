@@ -1,0 +1,11 @@
+{
+  "name": "Table B2",
+  "type": "table",
+  "status": "disponible",
+  "quantity": 800,
+  "location": {
+    "latitude": 48.8568,
+    "longitude": -3.3524
+  },
+  "description": "Nouvelle table test"
+}

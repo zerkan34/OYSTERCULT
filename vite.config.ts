@@ -9,6 +9,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@styles': path.resolve(__dirname, './src/styles'),
+      '@convex': path.resolve(__dirname, './convex'),
     },
   },
   css: {
@@ -58,7 +59,8 @@ export default defineConfig({
       '@tanstack/react-query',
       '@tanstack/react-table',
       'framer-motion',
-      'lucide-react'
+      'lucide-react',
+      'convex/react'
     ]
   }
 });

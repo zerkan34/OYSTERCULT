@@ -10,6 +10,7 @@ import './TasksPage.responsive.css';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 // Définition du type Task pour la page
 interface Task {
@@ -75,38 +76,6 @@ function StatCard({
   );
 }
 
-// Exemple de données pour les tables d'huîtres
-const exampleTables = [
-  {
-    id: 't1',
-    name: 'Table Nord #128',
-    type: 'Huîtres Fines de Claire',
-    status: 'Active',
-    occupancy: 85, // Pourcentage d'occupation
-    startDate: '15/10/2024',
-    harvestDate: '15/01/2025',
-    mortality: 12, // Pourcentage
-    alert: null,
-    timeProgress: 75, // Pourcentage
-    currentSize: 'N°4',
-    targetSize: 'N°2'
-  },
-  {
-    id: 't2',
-    name: 'Table Sud #45',
-    type: 'Spéciales de Marennes',
-    status: 'Alerte',
-    occupancy: 92,
-    startDate: '01/09/2024',
-    harvestDate: '01/12/2024',
-    mortality: 18,
-    alert: 'Taux de mortalité élevé détecté',
-    timeProgress: 110, // Dépassé
-    currentSize: 'N°3',
-    targetSize: 'N°1'
-  }
-];
-
 // Animation variants pour les modaux
 const modalVariants = {
   hidden: {
@@ -132,6 +101,7 @@ const modalVariants = {
 };
 
 export function TasksPage() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTable, setSelectedTable] = useState<any | null>(null);
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
@@ -139,7 +109,7 @@ export function TasksPage() {
   const isAdmin = session?.user?.role === 'admin';
 
   const handleTableClick = (table: any) => {
-    setSelectedTable(table);
+    navigate(`/tables/${table.id}`);
   };
 
   const handleCloseTableDetails = () => {
@@ -194,116 +164,73 @@ export function TasksPage() {
               </p>
             </div>
           </div>
+        </div>
+      </div>
 
+      <div className="container mx-auto px-4 pt-2">
+        {/* Barre de recherche et filtres */}
+        <div className="flex items-center space-x-4 mb-6">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="Rechercher une tâche..."
+              className="w-full pl-10 pr-4 py-2.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-brand-burgundy/40"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={18} />
+          </div>
           <button
-            onClick={openNewTaskModal}
-            className="new-task-btn"
+            onClick={() => {}}
+            className="px-4 py-2.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors flex items-center space-x-2"
           >
-            <Plus size={20} className="btn-icon" />
-            <span>Nouvelle tâche</span>
-            <CloudLightning className="sparks-effect" size={15} />
+            <Filter size={18} />
+            <span>Filtres</span>
           </button>
         </div>
-      </div>
 
-      {/* Zone de recherche et filtres avec effet néomorphisme */}
-      <div 
-        className="search-filter-container"
-      >
-        <div className="search-container">
-          <div className="search-icon-container">
-            <Search size={18} className="search-icon" />
+        {/* Stats des tâches */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <StatCard
+            title="En attente"
+            value={pendingTasks}
+            icon={<Clock size={22} />}
+            color="yellow"
+          />
+          <StatCard
+            title="En cours"
+            value={inProgressTasks}
+            icon={<Zap size={22} />}
+            color="blue"
+          />
+          <StatCard
+            title="Terminées"
+            value={completedTasks}
+            icon={<CheckCircle2 size={22} />}
+            color="green"
+          />
+          <StatCard
+            title="Haute priorité"
+            value={highPriorityTasks}
+            icon={<AlertCircle size={22} />}
+            color="red"
+          />
+        </div>
+
+        {/* Liste des tâches */}
+        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-white">Liste des tâches</h2>
+            <button
+              onClick={openNewTaskModal}
+              className="px-4 py-2.5 bg-brand-burgundy text-white rounded-lg hover:bg-brand-burgundy/90 transition-colors flex items-center space-x-2"
+            >
+              <Plus size={18} />
+              <span>Nouvelle tâche</span>
+            </button>
           </div>
-          <input
-            type="text"
-            placeholder="Rechercher une tâche..."
-            className="search-input"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          <TaskList searchQuery={searchQuery} />
         </div>
-        
-        <button
-          className="filter-button"
-        >
-          <Filter size={18} className="mr-2" />
-          <span>Filtres</span>
-        </button>
-      </div>
-
-      {/* Dashboard des statistiques */}
-      <div 
-        className="stats-grid"
-      >
-        <StatCard 
-          title="En attente" 
-          value={pendingTasks} 
-          icon={<Clock size={22} />}
-          color="blue"
-        />
-        <StatCard 
-          title="En cours" 
-          value={inProgressTasks} 
-          icon={<Zap size={22} />}
-          color="amber"
-        />
-        <StatCard 
-          title="Terminées" 
-          value={completedTasks} 
-          icon={<CheckCircle2 size={22} />}
-          color="green"
-        />
-        <StatCard 
-          title="Haute priorité" 
-          value={highPriorityTasks} 
-          icon={<AlertCircle size={22} />}
-          color="red"
-        />
-      </div>
-
-      {/* Nouvelle section: Tables d'huîtres associées */}
-      <div className="task-section-divider">
-        <div className="divider-line"></div>
-        <div className="divider-text">Tables associées</div>
-        <div className="divider-line"></div>
-      </div>
-
-      <div className="tables-grid">
-        {exampleTables.map(table => (
-          <StatCard 
-            key={table.id}
-            title={table.name} 
-            value={table.occupancy} 
-            icon={<Shell size={22} />}
-            color={table.alert ? "red" : "blue"}
-            onClick={() => handleTableClick(table)}
-          />
-        ))}
-      </div>
-
-      {/* Séparateur visuel avec dégradé */}
-      <div className="task-section-divider">
-        <div className="divider-line"></div>
-        <div className="divider-text">Liste des tâches</div>
-        <div className="divider-line"></div>
-      </div>
-
-      {/* En-tête de section avec barre colorée, comme demandé */}
-      <div className="task-section-header">
-        <div className="task-section-title-wrapper">
-          <div className="task-section-bar"></div>
-          <h2 className="task-section-title">Conditions des tâches</h2>
-        </div>
-        <div className="task-section-date">
-          Dernière mise à jour: {format(new Date(), 'HH:mm', { locale: fr })}
-        </div>
-      </div>
-
-      {/* Liste des tâches */}
-      <div className="task-list-container">
-        <TaskList 
-          searchQuery={searchQuery} 
-        />
       </div>
 
       {/* Modal pour afficher les détails de la table */}
@@ -335,27 +262,50 @@ export function TasksPage() {
       <AnimatePresence>
         {isNewTaskModalOpen && (
           <motion.div 
-            className="modal-overlay"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-[9999]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeNewTaskModal}
           >
             <motion.div 
-              className="modal-content"
+              className="w-full max-w-2xl mx-4 rounded-2xl overflow-hidden"
               onClick={e => e.stopPropagation()}
               variants={modalVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
+              style={{
+                background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
+                WebkitBackdropFilter: "blur(8px)",
+                backdropFilter: "blur(8px)",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                transition: "all 0.2s ease",
+                willChange: "transform",
+                transform: "translate3d(0,0,0)",
+                borderRadius: "16px"
+              }}
             >
-              <div className="modal-header">
-                <h2 className="modal-title">Nouvelle tâche</h2>
-                <button className="close-modal-btn" onClick={closeNewTaskModal}>
-                  <X size={24} />
-                </button>
+              <style>
+                {`
+                  select {
+                    background-color: rgba(255, 255, 255, 0.03) !important;
+                    backdrop-filter: blur(8px) !important;
+                    -webkit-backdrop-filter: blur(8px) !important;
+                    border: none !important;
+                    outline: none !important;
+                  }
+                  select option {
+                    background-color: rgba(0, 10, 40, 0.95) !important;
+                    color: white !important;
+                    padding: 8px !important;
+                  }
+                `}
+              </style>
+              <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-white/30 to-transparent z-10" />
+              <div className="p-6">
+                <TaskForm onClose={closeNewTaskModal} />
               </div>
-              <TaskForm onClose={closeNewTaskModal} />
             </motion.div>
           </motion.div>
         )}

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation, useRoutes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
+import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { ModernHeader } from '@/components/ui/ModernHeader';
 import EnhancedSidebar from '@/components/ui/EnhancedSidebar';
 import { NotificationsPanel } from '@/components/notifications/NotificationsPanel';
@@ -9,6 +10,7 @@ import { EmergencyCall } from '@/features/network/components/EmergencyCall';
 import { FloatingNotifications } from '@/components/notifications/FloatingNotifications';
 import { useStore } from '@/lib/store';
 import { routes } from './routes';
+import StocksList from './components/StocksList';
 
 // Pages
 import { AuthPage } from '@/features/auth/pages/AuthPage';
@@ -22,6 +24,7 @@ import { NetworkPage } from '@/features/network/pages/NetworkPage';
 import { ConfigPage } from '@/features/config/pages/ConfigPage';
 import { NotificationsPage } from '@/features/notifications/pages/NotificationsPage';
 import { TasksPage } from '@/features/tasks/pages/TasksPage';
+import { TableDetailsPage } from '@/features/tasks/pages/TableDetailsPage';
 import { TraceabilityPage } from '@/features/traceability/pages/TraceabilityPage';
 import { SalesPage } from '@/features/sales/pages/SalesPage';
 import { PurchasesPage } from '@/features/purchases/pages/PurchasesPage';
@@ -42,18 +45,14 @@ import { AnalysesPage } from '@/features/analyses/pages/AnalysesPage';
 import { AnimatePresence } from 'framer-motion';
 
 const queryClient = new QueryClient();
+const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { session } = useStore();
-  
-  if (!session) {
-    return <Navigate to="/auth" replace />;
-  }
-
+  // Temporairement désactivé pour le développement
   return <>{children}</>;
 };
 
@@ -201,8 +200,9 @@ function AppContent() {
                   <Route path="/" element={<Navigate to="/dashboard" />} />
                   <Route path="/auth" element={<AuthPage />} />
                   <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-                  <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
-                  <Route path="/stock" element={<ProtectedRoute><StockPage /></ProtectedRoute>} />
+                  <Route path="/stocks" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
+                  <Route path="/stock/:id" element={<ProtectedRoute><StockPage /></ProtectedRoute>} />
+                  <Route path="/tables/:id" element={<ProtectedRoute><TableDetailsPage /></ProtectedRoute>} />
                   <Route path="/accounting" element={<ProtectedRoute><AccountingPage /></ProtectedRoute>} />
                   <Route path="/invoices" element={<ProtectedRoute><InvoicesPage /></ProtectedRoute>} />
                   <Route path="/hr" element={<ProtectedRoute><HRPage /></ProtectedRoute>} />
@@ -211,6 +211,7 @@ function AppContent() {
                   <Route path="/config" element={<ProtectedRoute><ConfigPage /></ProtectedRoute>} />
                   <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
                   <Route path="/tasks" element={<ProtectedRoute><TasksPage /></ProtectedRoute>} />
+                  <Route path="/tables/:id" element={<ProtectedRoute><TableDetailsPage /></ProtectedRoute>} />
                   <Route path="/traceability" element={<ProtectedRoute><TraceabilityPage /></ProtectedRoute>} />
                   <Route path="/traceability/batches" element={<ProtectedRoute><BatchList /></ProtectedRoute>} />
                   <Route path="/traceability/history" element={<ProtectedRoute><BatchHistory searchQuery="" /></ProtectedRoute>} />
@@ -249,18 +250,20 @@ function AppContent() {
       )}
 
       <FloatingNotifications />
-      <Toaster position="bottom-right" />
     </div>
   );
 }
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <AppContent />
-      </Router>
-    </QueryClientProvider>
+    <ConvexProvider client={convex}>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <AppContent />
+          <Toaster position="bottom-right" />
+        </Router>
+      </QueryClientProvider>
+    </ConvexProvider>
   );
 }
 

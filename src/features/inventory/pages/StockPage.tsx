@@ -6,6 +6,7 @@ import { Plus, Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { useStore } from '@/lib/store';
 import { OtherLocations } from '../components/OtherLocations';
+import { useNavigate } from 'react-router-dom';
 
 interface Stock {
   id: string;
@@ -51,6 +52,11 @@ const mockStocks: Stock[] = [
 export const StockPage: React.FC = () => {
   const [stocks, setStocks] = React.useState<Stock[]>(mockStocks);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const navigate = useNavigate();
+
+  const handleViewDetails = (stockId: string) => {
+    navigate(`/tables/${stockId}`);
+  };
 
   return (
     <motion.div
@@ -108,7 +114,11 @@ export const StockPage: React.FC = () => {
                   <p>Dernière mise à jour: {stock.lastUpdate.toLocaleDateString()}</p>
                 </div>
                 <div className="mt-4 pt-4 border-t border-white/10">
-                  <Button variant="outline" className="w-full px-4 py-2 rounded-lg text-white hover:bg-white/5 transition-all duration-200 ease-out transform hover:-translate-y-px">
+                  <Button 
+                    variant="outline" 
+                    className="w-full px-4 py-2 rounded-lg text-white hover:bg-white/5 transition-all duration-200 ease-out transform hover:-translate-y-px"
+                    onClick={() => handleViewDetails(stock.id)}
+                  >
                     Voir les détails
                   </Button>
                 </div>
