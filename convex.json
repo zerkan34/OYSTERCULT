@@ -1,7 +1,8 @@
 {
   "project": "OysterCult-Dev",
   "team": "nikko",
-  "prodUrl": "",
+  "prodUrl": "https://oysterrocks.vercel.app",
   "functions": "convex/",
-  "authInfo": []
+  "authInfo": [],
+  "origins": ["https://oysterrocks.vercel.app"]
 }

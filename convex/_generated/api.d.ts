@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as emergencies from "../emergencies.js";
 import type * as stocks from "../stocks.js";
+import type * as tasks from "../tasks.js";
 import type * as users from "../users.js";
 
 /**
@@ -28,6 +29,7 @@ import type * as users from "../users.js";
 declare const fullApi: ApiFromModules<{
   emergencies: typeof emergencies;
   stocks: typeof stocks;
+  tasks: typeof tasks;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

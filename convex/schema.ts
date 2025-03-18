@@ -44,4 +44,19 @@ export default defineSchema({
     createdAt: v.number(),
     resolvedAt: v.union(v.number(), v.null())
   }),
+
+  // Table des tâches
+  tasks: defineTable({
+    title: v.string(),
+    description: v.string(),
+    dueDate: v.string(),
+    assignedTo: v.string(),
+    isRecurring: v.boolean(),
+    recurrencePattern: v.optional(v.string()),
+    estimatedHours: v.number(),
+    priority: v.string(),
+    status: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number()
+  }),
 });

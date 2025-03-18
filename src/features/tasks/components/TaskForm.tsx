@@ -10,6 +10,8 @@ import {
   ChevronDown,
   X
 } from 'lucide-react';
+import { useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 
 interface TaskFormData {
   title: string;
@@ -19,6 +21,8 @@ interface TaskFormData {
   isRecurring: boolean;
   recurrencePattern?: string;
   estimatedHours: number;
+  priority: 'high' | 'medium' | 'low';
+  status: 'pending' | 'in_progress' | 'completed';
 }
 
 interface TaskFormProps {
@@ -27,11 +31,24 @@ interface TaskFormProps {
 }
 
 export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
-  const { register, handleSubmit, formState: { errors } } = useForm<TaskFormData>();
+  const createTask = useMutation(api.tasks.createTask);
+  const { register, handleSubmit, formState: { errors } } = useForm<TaskFormData>({
+    defaultValues: {
+      priority: 'medium',
+      status: 'pending'
+    }
+  });
 
-  const onSubmit = (data: TaskFormData) => {
-    console.log(data);
-    onClose();
+  const onSubmit = async (data: TaskFormData) => {
+    try {
+      await createTask({
+        ...data,
+        estimatedHours: Number(data.estimatedHours)
+      });
+      onClose();
+    } catch (error) {
+      console.error('Error creating task:', error);
+    }
   };
 
   return (
@@ -74,6 +91,50 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
               className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-brand-burgundy/40 transition-shadow resize-none"
               placeholder="Décrivez la tâche en détail"
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-white/70 mb-1.5">
+                Priorité
+              </label>
+              <div className="relative">
+                <select
+                  {...register('priority')}
+                  className="w-full appearance-none bg-white/5 backdrop-blur-sm rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-brand-burgundy/40 transition-all border-0"
+                  style={{
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
+                    border: 'none'
+                  }}
+                >
+                  <option value="low" className="bg-[rgba(0,10,40,0.95)] text-white py-2">Basse</option>
+                  <option value="medium" className="bg-[rgba(0,10,40,0.95)] text-white py-2">Moyenne</option>
+                  <option value="high" className="bg-[rgba(0,10,40,0.95)] text-white py-2">Haute</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/40 pointer-events-none" size={16} />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-white/70 mb-1.5">
+                Statut
+              </label>
+              <div className="relative">
+                <select
+                  {...register('status')}
+                  className="w-full appearance-none bg-white/5 backdrop-blur-sm rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-brand-burgundy/40 transition-all border-0"
+                  style={{
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
+                    border: 'none'
+                  }}
+                >
+                  <option value="pending" className="bg-[rgba(0,10,40,0.95)] text-white py-2">En attente</option>
+                  <option value="in_progress" className="bg-[rgba(0,10,40,0.95)] text-white py-2">En cours</option>
+                  <option value="completed" className="bg-[rgba(0,10,40,0.95)] text-white py-2">Terminée</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/40 pointer-events-none" size={16} />
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
