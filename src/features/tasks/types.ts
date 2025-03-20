@@ -9,6 +9,9 @@ export interface Task {
   assignedTo?: string;
   location?: string;
   progress?: number;
+  estimatedHours?: number;
+  actualHours?: number;
+  delay?: number;
   comments?: {
     author: string;
     content: string;
@@ -16,4 +19,9 @@ export interface Task {
     rating: number;
     attachments?: string[];
   }[];
+  performance?: {
+    efficiency: number;  // Pourcentage d'efficacité basé sur le temps estimé vs réel
+    quality: number;     // Pourcentage de qualité (évaluation subjective)
+    timeliness: number;  // Pourcentage de respect des délais
+  };
 }

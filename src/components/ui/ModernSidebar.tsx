@@ -22,10 +22,10 @@ import {
   Mail,
   Lock,
   Menu,
-  MessageCircle
+  MessageCircle,
+  Phone as LucidePhone
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
-import { OysterLogo } from './OysterLogo';
 import { ThemeToggle } from './ThemeToggle';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -306,7 +306,7 @@ export function ModernSidebar({
           background: "linear-gradient(135deg, rgba(0, 10, 40, 0.97) 0%, rgba(0, 90, 90, 0.95) 100%)",
           WebkitBackdropFilter: "blur(20px)",
           backdropFilter: "blur(20px)",
-          boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(255, 255, 255, 0.1) 0px -1px 5px 0px inset, rgba(0, 180, 180, 0.15) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
+          boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(255, 255, 255, 0.1) 0px -1px 5px 0px inset, rgba(0, 180, 180, 0.15) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset, rgba(255, 255, 255, 0.1) 0px 0px 8px",
           borderRight: "none",
           zIndex: 60,
           width: collapsed ? "72px" : "260px",
@@ -322,17 +322,18 @@ export function ModernSidebar({
         <div className="flex flex-col h-full">
           {/* Logo avec effet de lumière */}
           <motion.div 
-            className="p-6 flex items-center justify-between border-b border-white/10 relative overflow-hidden"
+            className="py-6 flex items-center justify-between border-b-2 border-cyan-500/20 relative overflow-hidden"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-brand-burgundy/5 to-transparent opacity-50"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
             <AnimatePresence mode="wait">
               {!collapsed ? (
                 <motion.div 
                   key="expanded-logo"
-                  className="flex items-center justify-between px-4 py-2 relative z-10 w-full"
+                  className="flex items-center justify-between px-6 py-2 relative z-10 w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -340,14 +341,13 @@ export function ModernSidebar({
                 >
                   <div className="flex items-center">
                     <div className="relative z-10">
-                      <OysterLogo />
                     </div>
                   </div>
                 </motion.div>
               ) : (
                 <motion.div 
                   key="collapsed-logo" 
-                  className="flex items-center justify-center px-2 py-2 relative z-10"
+                  className="flex items-center justify-center px-2 py-2 relative z-10 w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -435,7 +435,7 @@ export function ModernSidebar({
                                 ? "linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%)"
                                 : "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
                               boxShadow: isActive
-                                ? "rgba(0, 0, 0, 0.3) 0px 4px 8px 0px, rgba(255, 255, 255, 0.2) 0px 1px 2px 0px inset, rgba(0, 0, 0, 0.5) 0px 2px 4px inset, rgba(255, 255, 255, 0.1) 0px 0px 8px"
+                                ? "rgba(0, 0, 0, 0.3) 0px 4px 8px 0px, rgba(255, 255, 255, 0.2) 0px 1px 2px 0px inset, rgba(0, 180, 180, 0.15) 0px 0px 20px inset, rgba(0, 0, 0, 0.4) 0px 2px 4px inset, rgba(255, 255, 255, 0.1) 0px 0px 8px"
                                 : "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset",
                               border: "none",
                               transform: isActive ? "translateY(-1px)" : "none",
@@ -521,15 +521,7 @@ export function ModernSidebar({
                                       }
                                     `}
                                   >
-                                    <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-2 h-2 rotate-45"
-                                      style={{
-                                        background: categoryStyle.textColor.includes('blue') ? 'rgba(59,130,246,0.3)' : 
-                                                    categoryStyle.textColor.includes('green') ? 'rgba(16,185,129,0.3)' : 
-                                                    categoryStyle.textColor.includes('purple') ? 'rgba(139,92,246,0.3)' : 
-                                                    categoryStyle.textColor.includes('amber') ? 'rgba(245,158,11,0.3)' : 
-                                                    'rgba(6,182,212,0.3)'
-                                      }}
-                                    ></div>
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-transparent opacity-50"></div>
                                     <span className={`text-white font-medium`}>{item.label}</span>
                                   </motion.div>
                                 )}
@@ -562,83 +554,46 @@ export function ModernSidebar({
 
           {/* Footer avec effet de relief */}
           <motion.div 
-            className="p-4 border-t border-white/10 space-y-2 relative"
+            className="p-4 pt-2 border-t border-white/10 relative"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.5 }}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-50"></div>
-            <motion.button 
-              className="
-              flex items-center justify-center px-4 py-2.5 rounded-lg text-sm text-white transition-all duration-200
-              relative group
-            " 
-              tabIndex={0}
-              onClick={onEmergencyClick}
-              style={{
-                background: "linear-gradient(135deg, rgba(180, 38, 72, 0.35) 0%, rgba(180, 38, 72, 0.15) 100%)",
-                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 10px, rgba(255, 255, 255, 0.2) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px",
-                border: "none"
-              }}
-              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <motion.div 
-                className="absolute inset-0 bg-red-500/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                initial={false}
-                transition={{ duration: 0.2 }}
-              />
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-phone w-4 h-4 mr-2 text-red-500 drop-shadow-[0_0_3px_rgba(239,68,68,0.5)]">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-              <AnimatePresence>
-                {!collapsed && (
-                  <motion.span
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    Appel d'urgence
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-              whileTap={{ scale: 0.98 }}
-              onClick={onToggleMessages}
-              className="
-                flex items-center justify-center px-4 py-2.5 rounded-lg text-sm text-white transition-all duration-200
-                relative group
-              "
-              style={{
-                background: "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)",
-                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 10px, rgba(255, 255, 255, 0.2) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px",
-                border: "none"
-              }}
-            >
-              <motion.div 
-                className="absolute inset-0 bg-blue-500/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                initial={false}
-                transition={{ duration: 0.2 }}
-              />
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle w-4 h-4 mr-2 text-blue-400 drop-shadow-[0_0_3px_rgba(59,130,246,0.5)]">
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-              </svg>
-              <AnimatePresence>
-                {!collapsed && (
-                  <motion.span
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    Messages
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.button>
+            <div className="mt-6 px-3">
+              <motion.button
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onEmergencyClick}
+                className="
+                  flex items-center justify-center px-4 py-2.5 bg-red-600 hover:bg-red-700 rounded-lg text-sm text-white transition-all duration-200
+                  relative group animate-pulse
+                "
+                style={{
+                  background: "linear-gradient(135deg, rgba(220, 38, 38, 0.95) 0%, rgba(185, 28, 28, 0.85) 100%)",
+                  boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 10px, rgba(255, 255, 255, 0.2) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px",
+                  border: "none",
+                  transform: "translate3d(0,0,0)"
+                }}
+                aria-label="Appel d'urgence"
+              >
+                <div className="absolute inset-0 bg-red-500/30 rounded-lg animate-[pulse_2s_ease-in-out_infinite]"></div>
+                <LucidePhone className="w-4 h-4 mr-2 relative z-10" />
+                <AnimatePresence>
+                  {!collapsed && (
+                    <motion.span 
+                      className="font-medium relative z-10 whitespace-nowrap"
+                      variants={contentFadeVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="hidden"
+                    >
+                      Appel d'urgence
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+            </div>
             <motion.button
               whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.98 }}
@@ -665,11 +620,12 @@ export function ModernSidebar({
               </svg>
               <AnimatePresence>
                 {!collapsed && (
-                  <motion.span
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.2 }}
+                  <motion.span 
+                    className={`ml-2 relative z-10 ${false ? 'font-medium' : ''} whitespace-nowrap`}
+                    variants={contentFadeVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
                   >
                     Déconnexion
                   </motion.span>

@@ -10,8 +10,6 @@ import {
   DollarSign,
   Bell,
   UserCircle,
-  ChevronLeft,
-  ChevronRight,
   Globe,
   Phone,
   LogOut,
@@ -26,7 +24,6 @@ import {
   Shell
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
-import { OysterLogo } from './OysterLogo';
 import { ThemeToggle } from './ThemeToggle';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -342,7 +339,7 @@ export function EnhancedSidebar({
                 >
                   <div className="flex items-center">
                     <div className="relative z-10">
-                      <OysterLogo />
+                      {/* Logo removed as requested */}
                     </div>
                   </div>
                 </motion.div>
@@ -372,11 +369,33 @@ export function EnhancedSidebar({
               disabled={isAnimating}
               aria-label={collapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
             >
-              {collapsed ? (
-                <ChevronRight className="w-[22px] h-[22px] text-white hover:text-white" />
-              ) : (
-                <ChevronLeft className="w-[22px] h-[22px] text-white hover:text-white" />
-              )}
+              <div className="flex items-center">
+                <div style={{ width: '30px', height: '30px', marginRight: '6px' }}>
+                  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{
+                    filter: 'drop-shadow(0 4px 4px rgba(0,0,0,0.4))',
+                    opacity: 1,
+                    width: '100%',
+                    height: '100%'
+                  }}>
+                    <path d="M15 20 Q25 12, 35 20 T55 20 T75 20 T95 20" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
+                    <path d="M15 40 Q25 32, 35 40 T55 40 T75 40 T95 40" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
+                    <path d="M15 60 Q25 52, 35 60 T55 60 T75 60 T95 60" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
+                    <path d="M15 80 Q25 72, 35 80 T55 80 T75 80 T95 80" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
+                  </svg>
+                </div>
+                
+                {collapsed ? (
+                  <svg width="24" height="22" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+                    <path d="M2 11H22" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+                    <path d="M16 3L22 11L16 19" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                ) : (
+                  <svg width="24" height="22" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+                    <path d="M22 11H2" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+                    <path d="M8 3L2 11L8 19" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </div>
             </motion.button>
           </motion.div>
 
@@ -591,13 +610,13 @@ export function EnhancedSidebar({
             <motion.button
               onClick={onEmergencyClick}
               className={`
-                flex items-center justify-center px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy/90 rounded-lg text-sm text-white transition-all duration-200
+                flex items-center justify-center px-4 py-2.5 bg-red-600 hover:bg-red-700 rounded-lg text-sm text-white transition-all duration-200
                 relative group
               `}
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97, y: 0 }}
               style={{
-                background: "linear-gradient(135deg, rgba(180, 38, 72, 0.35) 0%, rgba(180, 38, 72, 0.15) 100%)",
+                background: "linear-gradient(135deg, rgba(220, 38, 38, 0.95) 0%, rgba(185, 28, 28, 0.85) 100%)",
                 boxShadow: "0 5px 10px rgba(0, 0, 0, 0.35), inset 0 1px 3px rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px",
                 border: "none"
               }}

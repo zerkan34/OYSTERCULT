@@ -75,7 +75,7 @@ export function TableDetailModal({ table, onClose }: TableDetailModalProps) {
         ref={modalRef}
         {...modalAnimation.content}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-3xl bg-brand-dark rounded-2xl shadow-2xl"
+        className="w-full max-w-3xl rounded-2xl shadow-2xl border border-white/10 backdrop-blur-sm"
         style={{
           background: "rgba(var(--color-brand-dark), 0.3)",
           WebkitBackdropFilter: "blur(16px)",
@@ -135,9 +135,7 @@ export function TableDetailModal({ table, onClose }: TableDetailModalProps) {
                       <div key={size} className="flex flex-col items-center">
                         {size === 'N°3' ? (
                           <div className="relative">
-                            <div className="absolute inset-[-8px] rounded-full bg-blue-500/20 animate-ping"></div>
-                            <div className="absolute inset-[-4px] rounded-full bg-blue-500/30"></div>
-                            <div className="w-5 h-5 rounded-full bg-blue-500 mb-2 relative ring-4 ring-blue-500/50 shadow-lg shadow-blue-500/50"></div>
+                            <div className="w-5 h-5 rounded-full bg-blue-500 mb-2 relative ring-4 ring-blue-500/50 shadow-lg shadow-blue-500/50 ring-white animate-pulse"></div>
                           </div>
                         ) : (
                           <div className={`w-5 h-5 rounded-full ${
@@ -197,7 +195,7 @@ export function TableDetailModal({ table, onClose }: TableDetailModalProps) {
                   <ChevronRight size={16} className="text-white/40" />
                   <div className="glass-effect rounded-lg px-3 py-2">
                     <div className="text-white/60">Récolte prévue pour</div>
-                    <div className="text-white font-medium">01/08/2025</div>
+                    <div className="text-white font-medium">{getHarvestDate(table.name)}</div>
                   </div>
                 </div>
               </div>
@@ -358,5 +356,19 @@ function calculateDuration(startDate: string, endDate: string, tableName: string
       return '2 mois et 12 jours';
     default:
       return 'N/A';
+  }
+}
+
+// Fonction pour déterminer la date de récolte prévue selon la table
+function getHarvestDate(tableName: string): string {
+  switch (tableName) {
+    case 'Table A2':
+      return '01/01/2025';
+    case 'Table B1':
+      return '01/01/2025';
+    case 'Table A1':
+      return '15/05/2025';
+    default:
+      return 'Non définie';
   }
 }

@@ -81,7 +81,7 @@
 
 @layer components {
   .glass-effect {
-    @apply bg-white/5 backdrop-blur-sm border border-white/10;
+    @apply backdrop-blur-sm border border-white/10;
   }
 
   .shadow-glass {

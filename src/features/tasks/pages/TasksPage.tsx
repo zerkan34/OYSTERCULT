@@ -180,17 +180,10 @@ export function TasksPage() {
             />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={18} />
           </div>
-          <button
-            onClick={() => {}}
-            className="px-4 py-2.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors flex items-center space-x-2"
-          >
-            <Filter size={18} />
-            <span>Filtres</span>
-          </button>
         </div>
 
         {/* Stats des tâches */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <StatCard
             title="En attente"
             value={pendingTasks}
@@ -208,12 +201,6 @@ export function TasksPage() {
             value={completedTasks}
             icon={<CheckCircle2 size={22} />}
             color="green"
-          />
-          <StatCard
-            title="Haute priorité"
-            value={highPriorityTasks}
-            icon={<AlertCircle size={22} />}
-            color="red"
           />
         </div>
 

@@ -2,60 +2,71 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 interface OysterLogoProps {
-  size?: number;
+  onClick?: () => void;
   className?: string;
 }
 
-export function OysterLogo({ size = 32, className = '' }: OysterLogoProps) {
+export const OysterLogo: React.FC<OysterLogoProps> = ({ onClick, className = '' }) => {
   return (
-    <div 
-      className={`flex items-center ${className}`}
-      style={{
-        transform: 'translate3d(0, 0, 0)',
-        willChange: 'transform',
-        backfaceVisibility: 'hidden'
-      }}
+    <motion.div
+      className={`flex flex-col items-center cursor-pointer ${className}`}
+      onClick={onClick}
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.3 }}
     >
-      <div className="relative">
-        <span 
-          className="text-white font-bold tracking-wider"
+      <div className="flex flex-col items-center relative">
+        <div className="absolute w-full h-full bg-gradient-radial from-blue-500/20 via-blue-400/10 to-transparent blur-[80px] animate-[pulse_4s_ease-in-out_infinite]" />
+        
+        <motion.span
+          className="text-white tracking-wider"
           style={{
-            transform: 'translate3d(0, 0, 0)',
-            willChange: 'transform'
+            fontSize: "2rem",
+            fontFamily: '"TT Modernoir", sans-serif',
+            fontWeight: 400,
+            letterSpacing: "0.04em",
+            lineHeight: 0.9,
+            display: "block",
+            transform: "translate3d(0, 0, 0)",
+            willChange: "transform",
+            textShadow: "rgba(255,255,255,0.3) 0px 0px 20px, rgba(255,255,255,0.1) 0px 0px 40px",
+            WebkitFontSmoothing: "subpixel-antialiased",
+            backfaceVisibility: "hidden",
+            filter: "drop-shadow(0px 0px 30px rgba(255,255,255,0.2))"
           }}
-        >O</span>
-        <motion.div
-          className="absolute"
-          style={{ 
-            left: 1,
-            top: '100%',
-            marginTop: -6,
-            fontSize: '8px',
-            lineHeight: 0,
-            willChange: 'transform',
-            backfaceVisibility: 'hidden'
-          }}
-          initial={{ opacity: 0.6 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.8, repeat: Infinity, repeatType: "reverse" }}
         >
-          <span className="text-cyan-400 font-mono">≈</span>
-        </motion.div>
+          O Y S T E R
+        </motion.span>
+        
+        <motion.span
+          className="text-white tracking-wider"
+          style={{
+            fontSize: "2rem",
+            fontFamily: '"TT Modernoir", sans-serif',
+            fontWeight: 400,
+            letterSpacing: "0.04em",
+            lineHeight: 0.9,
+            display: "block",
+            transform: "translate3d(2.5rem, -0.2rem, 0)",
+            willChange: "transform",
+            textShadow: "rgba(255,255,255,0.3) 0px 0px 20px, rgba(255,255,255,0.1) 0px 0px 40px",
+            WebkitFontSmoothing: "subpixel-antialiased",
+            backfaceVisibility: "hidden",
+            filter: "drop-shadow(0px 0px 30px rgba(255,255,255,0.2))"
+          }}
+        >
+          C&nbsp;&nbsp;U&nbsp;&nbsp;L&nbsp;&nbsp;T
+        </motion.span>
+
+        <div className="relative w-12 h-12 mt-2">
+          <div className="absolute inset-0 blur-md opacity-80 bg-gradient-radial from-white/60 to-transparent" />
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10 w-full h-full">
+            <path d="M15 20 Q25 12, 35 20 T55 20 T75 20 T95 20" stroke="white" strokeWidth="5" strokeLinecap="round" fill="none"/>
+            <path d="M15 40 Q25 32, 35 40 T55 40 T75 40 T95 40" stroke="white" strokeWidth="5" strokeLinecap="round" fill="none"/>
+            <path d="M15 60 Q25 52, 35 60 T55 60 T75 60 T95 60" stroke="white" strokeWidth="5" strokeLinecap="round" fill="none"/>
+            <path d="M15 80 Q25 72, 35 80 T55 80 T75 80 T95 80" stroke="white" strokeWidth="5" strokeLinecap="round" fill="none"/>
+          </svg>
+        </div>
       </div>
-      <span 
-        className="text-white font-bold tracking-wider"
-        style={{
-          transform: 'translate3d(0, 0, 0)',
-          willChange: 'transform'
-        }}
-      >YSTER</span>
-      <span 
-        className="text-white font-bold tracking-wider ml-[0.3em]"
-        style={{
-          transform: 'translate3d(0, 0, 0)',
-          willChange: 'transform'
-        }}
-      >CULT</span>
-    </div>
+    </motion.div>
   );
-}
+};

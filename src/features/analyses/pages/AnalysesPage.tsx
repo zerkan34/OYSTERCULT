@@ -25,7 +25,7 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportMail
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-[#1a2035] rounded-xl p-6 w-full max-w-md relative"
+        className="rounded-xl p-6 w-full max-w-md relative backdrop-blur-sm border border-white/10"
       >
         <button 
           onClick={onClose}

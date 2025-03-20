@@ -1,0 +1,121 @@
+/* TaskFilters.css */
+/* Animations et styles spécifiques pour le composant TaskFilters */
+
+/* Animation de brillance (shimmer) pour les bordures */
+@keyframes shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Style container principal */
+.task-filters-container {
+  transition: all 0.4s ease;
+}
+
+/* Styles pour les puces de filtre */
+.filter-chip {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.filter-chip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.filter-chip:hover::after {
+  opacity: 1;
+}
+
+.active-chip {
+  transform: translateZ(5px);
+}
+
+/* Effet hover sur la section de filtre */
+.filter-section {
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter-section:hover {
+  transform: translateY(-2px);
+}
+
+/* Style pour les inputs date */
+.date-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: rgba(37, 99, 235, 0.5);
+}
+
+/* Compatibilité et optimisation des animations */
+/* Utilisation de transform au lieu de width/height pour de meilleures performances */
+.reset-button {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Fix pour backdrop-filter (préfixe webkit avant backdrop-filter) */
+.task-filters-container, 
+.date-input {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* Animation optimisée pour fadeIn */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation optimisée pour slideIn */
+@keyframes slideIn {
+  from {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Media queries pour la responsivité */
+@media (max-width: 768px) {
+  .filter-section {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .task-filters-container {
+    padding: 1rem;
+  }
+}

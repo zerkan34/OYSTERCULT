@@ -62,39 +62,41 @@ export function MessageList() {
 
   return (
     <div className="flex-1 h-full w-full max-w-full overflow-hidden">
-      {selectedContactId ? (
-        <NetworkChat 
-          contactId={selectedContactId} 
-          onClose={() => setSelectedContactId(null)} 
-        />
-      ) : (
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between p-3 sm:p-4 border-b border-white/10">
-            <h2 className="text-lg sm:text-xl font-semibold text-white">Messagerie</h2>
-            <button 
-              className="p-1.5 sm:p-2 bg-brand-burgundy rounded-full text-white hover:bg-brand-burgundy/80 transition-colors"
-            >
-              <Plus size={18} />
-            </button>
-          </div>
+      <div className="flex flex-col h-full">
+        {/* Header */}
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-white/10">
+          <h2 className="text-lg sm:text-xl font-semibold text-white">Messagerie</h2>
+          <button 
+            className="p-1.5 sm:p-2 bg-brand-burgundy rounded-full text-white hover:bg-brand-burgundy/80 transition-colors"
+          >
+            <Plus size={18} />
+          </button>
+        </div>
 
-          {/* Search */}
-          <div className="p-3 sm:p-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Rechercher une conversation..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-3 py-2 sm:px-4 sm:py-3 pl-9 sm:pl-10 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 text-sm sm:text-base"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={16} />
-            </div>
+        {/* Search */}
+        <div className="p-3 sm:p-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Rechercher une conversation..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-3 py-2 sm:px-4 sm:py-3 pl-9 sm:pl-10 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 text-sm sm:text-base"
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={16} />
           </div>
+        </div>
 
-          {/* Contact list */}
-          <div className="flex-1 overflow-y-auto">
+        {/* Contact list or chat */}
+        {selectedContactId ? (
+          <div className="flex-1 overflow-hidden">
+            <NetworkChat 
+              contactId={selectedContactId} 
+              onClose={() => setSelectedContactId(null)} 
+            />
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto divide-y divide-white/10">
             {filteredContacts.length > 0 ? (
               <div className="space-y-0.5">
                 {filteredContacts.map(contact => (
@@ -102,8 +104,11 @@ export function MessageList() {
                     key={contact.id}
                     onClick={() => setSelectedContactId(contact.id)}
                     className="p-2 sm:p-3 hover:bg-white/5 cursor-pointer transition-colors"
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`Conversation avec ${contact.name}`}
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between pointer-events-none">
                       <div className="flex items-center space-x-2 sm:space-x-3">
                         <div className="relative">
                           {contact.avatar ? (
@@ -126,14 +131,14 @@ export function MessageList() {
                           )}
                         </div>
                       </div>
-                      <div className="text-right pl-2 flex flex-col items-end">
+                      <div className="flex flex-col items-end space-y-1">
                         {contact.lastMessageTime && (
-                          <p className="text-xs text-white/40 mb-1">{contact.lastMessageTime}</p>
+                          <span className="text-xs text-white/40">{contact.lastMessageTime}</span>
                         )}
-                        {contact.unreadCount && (
-                          <div className="bg-brand-burgundy text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                        {contact.unreadCount > 0 && (
+                          <span className="bg-brand-primary text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
                             {contact.unreadCount}
-                          </div>
+                          </span>
                         )}
                       </div>
                     </div>
@@ -147,8 +152,8 @@ export function MessageList() {
               </div>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

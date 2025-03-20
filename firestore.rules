@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Fonctions utilitaires
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function hasRole(role) {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+
+    // Règles pour la collection users
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if hasRole('admin') || request.auth.uid == userId;
+    }
+
+    // Règles pour la collection tasks
+    match /tasks/{taskId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && hasRole('admin');
+      allow update: if isAuthenticated() && (
+        hasRole('admin') || 
+        resource.data.assignedTo == request.auth.uid
+      );
+      allow delete: if hasRole('admin');
+    }
+
+    // Règles pour les commentaires de tâches (si implémenté plus tard)
+    match /tasks/{taskId}/comments/{commentId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && (
+        hasRole('admin') || 
+        resource.data.authorId == request.auth.uid
+      );
+    }
+
+    // Règles pour les logs d'activité (si implémenté plus tard)
+    match /activity_logs/{logId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if hasRole('admin');
+    }
+  }
+}

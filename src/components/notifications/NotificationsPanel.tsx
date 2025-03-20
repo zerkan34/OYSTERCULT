@@ -71,11 +71,17 @@ export function NotificationsPanel({ onClose }: NotificationsPanelProps) {
 
   return (
     <motion.div
-      className="notifications-panel fixed inset-y-0 right-0 w-full max-w-md bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md shadow-2xl z-[9999] margin-top-65"
+      className="notifications-panel fixed inset-y-0 right-0 w-full max-w-md backdrop-blur-md shadow-2xl z-[9999] margin-top-65"
       initial={{ x: '100%', opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: '100%', opacity: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      style={{ 
+        background: "linear-gradient(135deg, rgba(5, 20, 43, 0.92) 0%, rgba(10, 120, 115, 0.88) 100%)",
+        WebkitBackdropFilter: "blur(20px)",
+        backdropFilter: "blur(20px)",
+        boxShadow: "rgba(0, 0, 0, 0.45) -10px 0px 30px -5px, rgba(0, 0, 0, 0.3) -5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset"
+      }}
     >
       <div className="h-full flex flex-col">
         {/* Header */}

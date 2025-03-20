@@ -186,7 +186,6 @@
 @layer components {
   /* Glass effect modernisé */
   .glass-effect {
-    background-color: rgb(var(--color-brand-surface) / var(--glass-opacity));
     border: 1px solid rgb(var(--color-border) / var(--color-border-opacity));
     backdrop-filter: blur(12px);
     box-shadow: var(--shadow-glass);

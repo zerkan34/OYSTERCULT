@@ -252,10 +252,6 @@ export function TaskBlock({ title = "Tâches récentes", tasks, limit = 3, showA
                       <span className={`category-badge ${task.priority === 'high' ? 'bg-red-500/10' : task.priority === 'medium' ? 'bg-amber-500/10' : 'bg-emerald-500/10'}`}>
                         {task.category}
                       </span>
-                      
-                      <span className={`status-badge ${task.status === 'pending' ? 'status-pending' : task.status === 'in_progress' ? 'status-progress' : 'status-completed'}`}>
-                        {task.status === 'pending' ? 'À faire' : task.status === 'in_progress' ? 'En cours' : 'Terminé'}
-                      </span>
                     </div>
                     
                     <h3 className="task-title">{task.title}</h3>
