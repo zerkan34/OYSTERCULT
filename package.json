@@ -12,7 +12,7 @@
     "preview": "vite preview --host",
     "test": "jest",
     "test:watch": "jest --watch",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build && node fix-gh-pages.cjs",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {

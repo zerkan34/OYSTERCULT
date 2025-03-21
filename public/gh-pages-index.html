@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>OysterCult - Redirection</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%);
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+  <script>
+    // Script pour rediriger correctement dans l'environnement GitHub Pages
+    window.onload = function() {
+      // Extraire les paramètres éventuels de l'URL
+      const params = new URLSearchParams(window.location.search);
+      
+      // Redirection vers l'index principal avec le bon hash
+      setTimeout(function() {
+        window.location.href = '/OYSTERCULT/#/auth';
+      }, 1000);
+    };
+  </script>
+</head>
+<body>
+  <div class="loader"></div>
+  <h2>Chargement de OysterCult...</h2>
+  <p>Vous allez être redirigé automatiquement</p>
+</body>
+</html>
