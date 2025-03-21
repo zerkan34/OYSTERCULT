@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation, useRoutes, Outlet } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useNavigate, useLocation, useRoutes, Outlet } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { ConvexProvider, ConvexReactClient } from "convex/react";

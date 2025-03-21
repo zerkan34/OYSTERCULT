@@ -315,7 +315,11 @@ export function ModernSidebar({
         }}
         initial="collapsed"
         animate={
-          collapsed ? "collapsed" : "expanded"
+          showMobileMenu 
+            ? "mobileVisible" 
+            : collapsed 
+              ? "collapsed" 
+              : "expanded"
         }
         variants={sidebarVariants}
       >

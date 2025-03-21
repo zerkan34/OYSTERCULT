@@ -21,7 +21,8 @@ import {
   Lock,
   Menu,
   MessageCircle,
-  Shell
+  Shell,
+  X
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { ThemeToggle } from './ThemeToggle';
@@ -708,6 +709,72 @@ export function EnhancedSidebar({
                 zIndex: 60
               }}
             >
+              {/* Contenu de la sidebar mobile */}
+              <div className="flex flex-col h-full">
+                {/* Logo */}
+                <div className="p-6 flex items-center justify-between border-b border-white/10">
+                  <div className="text-white font-medium">Menu</div>
+                  <button 
+                    onClick={onCloseMobileMenu}
+                    className="p-2 rounded-lg bg-white/10"
+                    aria-label="Fermer le menu"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+                
+                {/* Navigation */}
+                <nav className="flex-1 space-y-2 p-4 overflow-y-auto">
+                  {navItems.map((group, index) => (
+                    <div key={index} className="mb-6">
+                      <p className="text-xs font-medium text-white/70 uppercase tracking-wider px-4 mb-2">
+                        {group.category}
+                      </p>
+                      <div className="space-y-1">
+                        {group.items.map((item) => {
+                          const isActive = location.pathname === item.path;
+                          return (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className={`
+                                flex items-center px-4 py-3 rounded-lg text-sm
+                                ${isActive ? 'bg-white/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}
+                              `}
+                              onClick={onCloseMobileMenu}
+                            >
+                              <div className="mr-3">{item.icon}</div>
+                              <span>{item.label}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </nav>
+                
+                {/* Bouton d'urgence */}
+                <div className="p-4 pt-2 border-t border-white/10">
+                  <button
+                    onClick={() => {
+                      onEmergencyClick();
+                      onCloseMobileMenu();
+                    }}
+                    className="flex items-center justify-center w-full px-4 py-3 bg-red-600 rounded-lg text-white mb-4"
+                  >
+                    <Phone className="w-4 h-4 mr-2" />
+                    <span>Appel d'urgence</span>
+                  </button>
+                  
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center justify-center w-full px-4 py-3 bg-white/10 rounded-lg text-white"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    <span>Déconnexion</span>
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </div>
         </motion.div>
