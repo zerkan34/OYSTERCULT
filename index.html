@@ -2,31 +2,49 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#0f172a" />
+    <link rel="preload" href="/fonts/TT_Modernoir_Trial_Light.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/TT_Modernoir_Trial_Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/TT_Modernoir_Trial_DemiBold.ttf" as="font" type="font/ttf" crossorigin />
+    <style>
+      @font-face {
+        font-family: 'TT Modernoir';
+        src: url('/fonts/TT_Modernoir_Trial_Light.ttf') format('truetype');
+        font-weight: 300;
+        font-style: normal;
+        font-display: block;
+      }
+
+      @font-face {
+        font-family: 'TT Modernoir';
+        src: url('/fonts/TT_Modernoir_Trial_Regular.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+
+      @font-face {
+        font-family: 'TT Modernoir';
+        src: url('/fonts/TT_Modernoir_Trial_DemiBold.ttf') format('truetype');
+        font-weight: 600;
+        font-style: normal;
+        font-display: block;
+      }
+
+      /* Forcer l'application de la police sur les éléments spécifiques */
+      .modernoir-text {
+        font-family: 'TT Modernoir', sans-serif !important;
+      }
+    </style>
     <title>OysterCult - Gestion Ostréicole</title>
-    <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // MIT License
-      // Adapté de https://github.com/rafgraph/spa-github-pages
-      (function(l) {
-        if (l.search[1] === '/' ) {
-          var decoded = l.search.slice(1).split('&').map(function(s) { 
-            return s.replace(/~and~/g, '&')
-          }).join('?');
-          window.history.replaceState(null, null,
-              l.pathname.slice(0, -1) + decoded + l.hash
-          );
-        }
-      }(window.location))
-    </script>
-    <script type="module" crossorigin src="./assets/index-Dj_wTThn.js"></script>
-    <link rel="modulepreload" crossorigin href="./assets/vendor-COko8kPf.js">
-    <link rel="stylesheet" crossorigin href="./assets/index-DiaYF9HW.css">
+    <script type="module" crossorigin src="/assets/index-BQK4gwHc.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor-BmyV8itR.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-CfV2VeIl.css">
   </head>
   <body>
     <div id="root"></div>
