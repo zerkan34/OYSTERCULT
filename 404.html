@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="fr">
   <head>
+  <base href="/OYSTERCULT/" />
+  <base href="/OYSTERCULT/" />
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,24 +21,13 @@
           var baseTag = document.createElement('base');
           baseTag.href = '/OYSTERCULT/';
           document.head.prepend(baseTag);
-          
-          // Redirect to auth if hash is empty
-          if (window.location.hash === '') {
-            window.location.hash = '#/auth';
-          }
         }
       })();
-    
-          // Rediriger vers auth si nécessaire
-          if (window.location.hash === '') {
-            window.location.hash = '#/auth';
-          }
-        })();
-      </script>
+    </script>
     <style>
       @font-face {
         font-family: 'TT Modernoir';
-        src: url('/fonts/TT_Modernoir_Trial_Light.ttf') format('truetype');
+        src: url('/OYSTERCULT/fonts/TT_Modernoir_Trial_Light.ttf') format('truetype');
         font-weight: 300;
         font-style: normal;
         font-display: block;
@@ -44,7 +35,7 @@
 
       @font-face {
         font-family: 'TT Modernoir';
-        src: url('/fonts/TT_Modernoir_Trial_Regular.ttf') format('truetype');
+        src: url('/OYSTERCULT/fonts/TT_Modernoir_Trial_Regular.ttf') format('truetype');
         font-weight: 400;
         font-style: normal;
         font-display: block;
@@ -52,7 +43,7 @@
 
       @font-face {
         font-family: 'TT Modernoir';
-        src: url('/fonts/TT_Modernoir_Trial_DemiBold.ttf') format('truetype');
+        src: url('/OYSTERCULT/fonts/TT_Modernoir_Trial_DemiBold.ttf') format('truetype');
         font-weight: 600;
         font-style: normal;
         font-display: block;
@@ -64,9 +55,11 @@
       }
     </style>
     <title>OysterCult - Gestion Ostréicole</title>
+    <script type="module" crossorigin src="/OYSTERCULT/assets/index-BpZbT-9P.js"></script>
+    <link rel="modulepreload" crossorigin href="/OYSTERCULT/assets/vendor-CNtbHYHs.js">
+    <link rel="stylesheet" crossorigin href="/OYSTERCULT/assets/index-CfV2VeIl.css">
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
