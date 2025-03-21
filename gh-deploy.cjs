@@ -2,20 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-/**
- * Script de déploiement pour GitHub Pages
- * Ce script effectue les étapes suivantes :
- * 1. Construction de l'application
- * 2. Préparation des fichiers pour GitHub Pages
- * 3. Déploiement avec gh-pages
- */
-
-// Chemin vers le dossier de build
+// Chemin vers le dossier dist
 const distDir = path.join(__dirname, 'dist');
 
-// 1. Construire l'application
+// Construction du projet
 console.log('🏗️ Construction de l\'application...');
 try {
+  // Utiliser npm run build pour construire l'application
   execSync('npm run build', { stdio: 'inherit' });
   console.log('✅ Application construite avec succès !');
 } catch (error) {
@@ -23,38 +16,46 @@ try {
   process.exit(1);
 }
 
-// 2. Préparer les fichiers pour GitHub Pages
-console.log('🔧 Préparation des fichiers pour GitHub Pages...');
+// Modification du fichier index.html généré
+console.log('🔧 Adaptation de index.html pour GitHub Pages...');
 try {
-  // 2.1 Remplacer index.html par notre version spéciale
-  fs.copyFileSync(
-    path.join(__dirname, 'dist-index.html'),
-    path.join(distDir, 'index.html')
-  );
-  console.log('✅ index.html remplacé');
+  // Lire le fichier index.html
+  const indexPath = path.join(distDir, 'index.html');
+  let content = fs.readFileSync(indexPath, 'utf8');
   
-  // 2.2 Copier index.html vers 404.html
-  fs.copyFileSync(
-    path.join(distDir, 'index.html'),
-    path.join(distDir, '404.html')
-  );
+  // Modifier les chemins relatifs
+  content = content.replace(/assets\//g, 'assets/');
+  
+  // Ajouter une redirection pour les utilisateurs qui accèdent directement
+  content = content.replace('<head>', `<head>
+  <base href="/OYSTERCULT/" />
+  <script>
+    // Vérifier si nous devons rediriger vers la page d'auth
+    (function() {
+      if (window.location.hash === '') {
+        window.location.hash = '#/auth';
+      }
+    })();
+  </script>`);
+  
+  // Sauvegarder le fichier modifié
+  fs.writeFileSync(indexPath, content);
+  console.log('✅ index.html modifié avec succès !');
+  
+  // Copier index.html vers 404.html
+  fs.copyFileSync(indexPath, path.join(distDir, '404.html'));
   console.log('✅ 404.html créé');
   
-  // 2.3 Créer .nojekyll
-  fs.writeFileSync(
-    path.join(distDir, '.nojekyll'),
-    ''
-  );
+  // Créer le fichier .nojekyll
+  fs.writeFileSync(path.join(distDir, '.nojekyll'), '');
   console.log('✅ .nojekyll créé');
-  
-  console.log('✅ Préparation terminée avec succès !');
 } catch (error) {
-  console.error('❌ Erreur lors de la préparation:', error);
+  console.error('❌ Erreur lors de la modification des fichiers:', error);
   process.exit(1);
 }
 
-// 3. Déployer avec gh-pages
-console.log('🚀 Déploiement vers GitHub Pages...');
+// Déploiement sur GitHub Pages
+console.log('🚀 Déploiement sur GitHub Pages...');
 try {
   execSync('npx gh-pages -d dist', { stdio: 'inherit' });
   console.log('✅ Déploiement terminé avec succès !');
@@ -63,5 +64,6 @@ try {
   process.exit(1);
 }
 
-console.log('🎉 Tout est terminé ! Votre application est maintenant disponible sur GitHub Pages.');
-console.log('📑 URL: https://zerkan34.github.io/OYSTERCULT/');
+console.log('\n🎉 Tout est terminé ! Votre application est maintenant disponible sur:');
+console.log('📝 https://zerkan34.github.io/OYSTERCULT/');
+console.log('🔍 Si vous rencontrez des problèmes, vérifiez la console du navigateur pour des erreurs.');
