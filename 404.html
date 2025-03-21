@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/OYSTERCULT/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -14,21 +14,29 @@
     <!-- Script pour fixer les chemins en production sur GitHub Pages -->
     <script>
       (function() {
-        // Nous sommes en production sur GitHub Pages
-        var baseTag = document.createElement('base');
-        baseTag.href = '/OYSTERCULT/';
-        document.head.prepend(baseTag);
-        
-        // Rediriger vers auth si pas de hash
-        if (window.location.hash === '') {
-          window.location.hash = '#/auth';
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+          // Nous sommes en production
+          var baseTag = document.createElement('base');
+          baseTag.href = '/OYSTERCULT/';
+          document.head.prepend(baseTag);
+          
+          // Redirect to auth if hash is empty
+          if (window.location.hash === '') {
+            window.location.hash = '#/auth';
+          }
         }
       })();
-    </script>
+    
+          // Rediriger vers auth si nécessaire
+          if (window.location.hash === '') {
+            window.location.hash = '#/auth';
+          }
+        })();
+      </script>
     <style>
       @font-face {
         font-family: 'TT Modernoir';
-        src: url('/OYSTERCULT/fonts/TT_Modernoir_Trial_Light.ttf') format('truetype');
+        src: url('/fonts/TT_Modernoir_Trial_Light.ttf') format('truetype');
         font-weight: 300;
         font-style: normal;
         font-display: block;
@@ -36,7 +44,7 @@
 
       @font-face {
         font-family: 'TT Modernoir';
-        src: url('/OYSTERCULT/fonts/TT_Modernoir_Trial_Regular.ttf') format('truetype');
+        src: url('/fonts/TT_Modernoir_Trial_Regular.ttf') format('truetype');
         font-weight: 400;
         font-style: normal;
         font-display: block;
@@ -44,7 +52,7 @@
 
       @font-face {
         font-family: 'TT Modernoir';
-        src: url('/OYSTERCULT/fonts/TT_Modernoir_Trial_DemiBold.ttf') format('truetype');
+        src: url('/fonts/TT_Modernoir_Trial_DemiBold.ttf') format('truetype');
         font-weight: 600;
         font-style: normal;
         font-display: block;
@@ -59,6 +67,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/OYSTERCULT/assets/index-Ct-uaoRZ.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
