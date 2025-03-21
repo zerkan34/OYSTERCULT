@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Oyster Cult</title>
+  <script>
+    // Single Page Apps for GitHub Pages
+    // MIT License
+    // https://github.com/rafgraph/spa-github-pages
+    (function() {
+      // Cette fonction gère la redirection de toutes les URLs vers index.html avec un hash approprié
+      var pathSegmentsToKeep = 1; // Nombre de segments de l'URL à conserver (/OYSTERCULT/)
+
+      var l = window.location;
+      var p = l.pathname.split('/').filter(function(p) { return p; });
+      
+      // Extraire le chemin pertinent
+      if (p.length > 0 && p[0] === 'OYSTERCULT') {
+        p.splice(0, pathSegmentsToKeep);
+      }
+      
+      // Construire l'URL de redirection
+      var redirectUrl = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+                        '/OYSTERCULT/' + 
+                        (p.length > 0 ? '#/' + p.join('/') : '');
+      
+      // Rediriger vers la nouvelle URL
+      window.location.replace(redirectUrl);
+    })();
+  </script>
+</head>
+<body>
+  <h2>Redirection en cours...</h2>
+  <p>Si vous n'êtes pas redirigé automatiquement, <a href="/OYSTERCULT/">cliquez ici</a>.</p>
+</body>
+</html>

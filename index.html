@@ -11,6 +11,17 @@
     <link rel="preload" href="/fonts/TT_Modernoir_Trial_Light.ttf" as="font" type="font/ttf" crossorigin />
     <link rel="preload" href="/fonts/TT_Modernoir_Trial_Regular.ttf" as="font" type="font/ttf" crossorigin />
     <link rel="preload" href="/fonts/TT_Modernoir_Trial_DemiBold.ttf" as="font" type="font/ttf" crossorigin />
+    <!-- Script pour fixer les chemins en production sur GitHub Pages -->
+    <script>
+      (function() {
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+          // Nous sommes en production
+          var baseTag = document.createElement('base');
+          baseTag.href = '/OYSTERCULT/';
+          document.head.prepend(baseTag);
+        }
+      })();
+    </script>
     <style>
       @font-face {
         font-family: 'TT Modernoir';
