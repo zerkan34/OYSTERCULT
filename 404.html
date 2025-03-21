@@ -1,36 +1,73 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Oyster Cult</title>
+<!doctype html>
+<html lang="fr">
+  <head>
+  <base href="/OYSTERCULT/" />
   <script>
-    // Single Page Apps for GitHub Pages
-    // MIT License
-    // https://github.com/rafgraph/spa-github-pages
+    // Vérifier si nous devons rediriger vers la page d'auth
     (function() {
-      // Cette fonction gère la redirection de toutes les URLs vers index.html avec un hash approprié
-      var pathSegmentsToKeep = 1; // Nombre de segments de l'URL à conserver (/OYSTERCULT/)
-
-      var l = window.location;
-      var p = l.pathname.split('/').filter(function(p) { return p; });
-      
-      // Extraire le chemin pertinent
-      if (p.length > 0 && p[0] === 'OYSTERCULT') {
-        p.splice(0, pathSegmentsToKeep);
+      if (window.location.hash === '') {
+        window.location.hash = '#/auth';
       }
-      
-      // Construire l'URL de redirection
-      var redirectUrl = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-                        '/OYSTERCULT/' + 
-                        (p.length > 0 ? '#/' + p.join('/') : '');
-      
-      // Rediriger vers la nouvelle URL
-      window.location.replace(redirectUrl);
     })();
   </script>
-</head>
-<body>
-  <h2>Redirection en cours...</h2>
-  <p>Si vous n'êtes pas redirigé automatiquement, <a href="/OYSTERCULT/">cliquez ici</a>.</p>
-</body>
+  <base href="/OYSTERCULT/" />
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="preload" href="/OYSTERCULT/fonts/TT_Modernoir_Trial_Light.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/OYSTERCULT/fonts/TT_Modernoir_Trial_Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/OYSTERCULT/fonts/TT_Modernoir_Trial_DemiBold.ttf" as="font" type="font/ttf" crossorigin />
+    <!-- Script pour fixer les chemins en production sur GitHub Pages -->
+    <script>
+      (function() {
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+          // Nous sommes en production
+          var baseTag = document.createElement('base');
+          baseTag.href = '/OYSTERCULT/';
+          document.head.prepend(baseTag);
+        }
+      })();
+    </script>
+    <style>
+      @font-face {
+        font-family: 'TT Modernoir';
+        src: url('/OYSTERCULT/fonts/TT_Modernoir_Trial_Light.ttf') format('truetype');
+        font-weight: 300;
+        font-style: normal;
+        font-display: block;
+      }
+
+      @font-face {
+        font-family: 'TT Modernoir';
+        src: url('/OYSTERCULT/fonts/TT_Modernoir_Trial_Regular.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+
+      @font-face {
+        font-family: 'TT Modernoir';
+        src: url('/OYSTERCULT/fonts/TT_Modernoir_Trial_DemiBold.ttf') format('truetype');
+        font-weight: 600;
+        font-style: normal;
+        font-display: block;
+      }
+
+      /* Forcer l'application de la police sur les éléments spécifiques */
+      .modernoir-text {
+        font-family: 'TT Modernoir', sans-serif !important;
+      }
+    </style>
+    <title>OysterCult - Gestion Ostréicole</title>
+    <script type="module" crossorigin src="/OYSTERCULT/assets/index-Ct-uaoRZ.js"></script>
+    <link rel="modulepreload" crossorigin href="/OYSTERCULT/assets/vendor-CNtbHYHs.js">
+    <link rel="stylesheet" crossorigin href="/OYSTERCULT/assets/index-CfV2VeIl.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
