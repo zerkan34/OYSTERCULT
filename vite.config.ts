@@ -39,14 +39,23 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    assetsDir: 'assets',
     sourcemap: false,
     chunkSizeWarningLimit: 1600,
+    manifest: true,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+        manualChunks: {
+          vendor: [
+            'react', 
+            'react-dom', 
+            'react-router-dom',
+            '@tanstack/react-query',
+            '@tanstack/react-table',
+            'framer-motion',
+            'lucide-react',
+            'convex/react'
+          ],
         },
       },
     },

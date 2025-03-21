@@ -6,14 +6,15 @@
   "homepage": "https://zerkan34.github.io/OYSTERCULT",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node build-fix.js",
     "build:ts": "tsc -p tsconfig.build.json && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview --host",
     "test": "jest",
     "test:watch": "jest --watch",
     "predeploy": "npm run build && node fix-gh-pages.cjs",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "deploy:gh": "node gh-deploy.cjs"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.6",

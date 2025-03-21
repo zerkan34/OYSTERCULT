@@ -2,35 +2,58 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Oyster Cult</title>
+  <title>OysterCult - Redirecting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+      padding: 20px;
+    }
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
   <script>
-    // Single Page Apps for GitHub Pages
-    // MIT License
-    // https://github.com/rafgraph/spa-github-pages
     (function() {
-      // Cette fonction gère la redirection de toutes les URLs vers index.html avec un hash approprié
-      var pathSegmentsToKeep = 1; // Nombre de segments de l'URL à conserver (/OYSTERCULT/)
-
+      var segmentCount = 0;
       var l = window.location;
-      var p = l.pathname.split('/').filter(function(p) { return p; });
-      
-      // Extraire le chemin pertinent
-      if (p.length > 0 && p[0] === 'OYSTERCULT') {
-        p.splice(0, pathSegmentsToKeep);
-      }
-      
-      // Construire l'URL de redirection
-      var redirectUrl = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-                        '/OYSTERCULT/' + 
-                        (p.length > 0 ? '#/' + p.join('/') : '');
-      
-      // Rediriger vers la nouvelle URL
-      window.location.replace(redirectUrl);
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        '/OYSTERCULT/?' +
+        (l.pathname ? 'path=' + l.pathname.slice(1) : '') +
+        (l.search ? '&' + l.search.slice(1) : '') +
+        (l.hash ? '#' + l.hash.slice(1) : '#/auth')
+      );
     })();
   </script>
 </head>
 <body>
-  <h2>Redirection en cours...</h2>
-  <p>Si vous n'êtes pas redirigé automatiquement, <a href="/OYSTERCULT/">cliquez ici</a>.</p>
+  <div class="container">
+    <div class="loader"></div>
+    <h1>Redirecting...</h1>
+    <p>If you are not redirected automatically, please click <a href="/OYSTERCULT/#/auth" style="color: #4fd1c5;">here</a>.</p>
+  </div>
 </body>
 </html>
