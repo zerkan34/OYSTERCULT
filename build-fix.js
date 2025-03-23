@@ -18,15 +18,21 @@ function fixPathsInIndexHtml() {
     return;
   }
   
+  // Vérifier la cible de déploiement
+  const deployTarget = process.env.DEPLOY_TARGET || '';
+  const basePath = deployTarget === 'firebase' ? '/' : '/OYSTERCULT/';
+  
   let html = fs.readFileSync(indexHtmlPath, 'utf8');
   
-  // Remplacer les chemins dans les balises <script> et <link>
-  html = html.replace(/src="\/assets\//g, 'src="/OYSTERCULT/assets/');
-  html = html.replace(/href="\/assets\//g, 'href="/OYSTERCULT/assets/');
-  
-  // Ajouter la balise base si elle n'existe pas déjà
-  if (!html.includes('<base href="/OYSTERCULT/')) {
-    html = html.replace('<head>', '<head>\n  <base href="/OYSTERCULT/" />');
+  if (basePath === '/OYSTERCULT/') {
+    // Remplacer les chemins dans les balises <script> et <link> uniquement pour GitHub Pages
+    html = html.replace(/src="\/assets\//g, `src="${basePath}assets/`);
+    html = html.replace(/href="\/assets\//g, `href="${basePath}assets/`);
+    
+    // Ajouter la balise base si elle n'existe pas déjà
+    if (!html.includes(`<base href="${basePath}"`)) {
+      html = html.replace('<head>', `<head>\n  <base href="${basePath}" />`);
+    }
   }
   
   // Écrire le HTML modifié

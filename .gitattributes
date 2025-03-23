@@ -1,0 +1,6 @@
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.svg binary
+*.css text/css
+*.js text/javascript

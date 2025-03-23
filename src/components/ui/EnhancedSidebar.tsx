@@ -602,7 +602,7 @@ export function EnhancedSidebar({
 
           {/* Footer avec effet de relief */}
           <motion.div 
-            className="p-4 border-t border-white/10 space-y-4"
+            className="p-4 border-t border-white/10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.5 }}
@@ -713,7 +713,49 @@ export function EnhancedSidebar({
               <div className="flex flex-col h-full">
                 {/* Logo */}
                 <div className="p-6 flex items-center justify-between border-b border-white/10">
-                  <div className="text-white font-medium">Menu</div>
+                  <div className="text-white flex items-center">
+                    <span 
+                      style={{
+                        fontFamily: '"TT Modernoir", sans-serif',
+                        fontWeight: 200,
+                        letterSpacing: '0.08em',
+                        display: 'block',
+                        color: 'white',
+                        textShadow: '0 2px 10px rgba(0,0,0,0.5), 0 0 40px rgba(255,255,255,0.2), 0 0 80px rgba(255,255,255,0.1)',
+                        filter: 'drop-shadow(0 8px 8px rgba(0,0,0,0.4))',
+                        opacity: 1,
+                        willChange: 'transform',
+                        backfaceVisibility: 'hidden',
+                        transform: 'translateZ(0)',
+                        WebkitFontSmoothing: 'antialiased',
+                        whiteSpace: 'nowrap',
+                        fontSize: '1.5rem'
+                      }}
+                    >
+                      OYSTER
+                    </span>
+                    <span 
+                      style={{
+                        fontFamily: '"TT Modernoir", sans-serif',
+                        fontWeight: 400,
+                        letterSpacing: "0.1em",
+                        display: "block",
+                        color: 'white',
+                        textShadow: '0 2px 10px rgba(0,0,0,0.5), 0 0 40px rgba(255,255,255,0.2), 0 0 80px rgba(255,255,255,0.1)',
+                        filter: 'drop-shadow(0 8px 8px rgba(0,0,0,0.4))',
+                        opacity: 1,
+                        willChange: "transform",
+                        backfaceVisibility: "hidden",
+                        transform: 'translateZ(0)',
+                        WebkitFontSmoothing: 'antialiased',
+                        marginLeft: '0.5rem',
+                        whiteSpace: 'nowrap',
+                        fontSize: '1.5rem'
+                      }}
+                    >
+                      CULT
+                    </span>
+                  </div>
                   <button 
                     onClick={onCloseMobileMenu}
                     className="p-2 rounded-lg bg-white/10"

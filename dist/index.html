@@ -7,10 +7,12 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#0f172a" />
-    <link rel="preload" href="/OYSTERCULT/fonts/TT_Modernoir_Trial_Light.ttf" as="font" type="font/ttf" crossorigin />
-    <link rel="preload" href="/OYSTERCULT/fonts/TT_Modernoir_Trial_Regular.ttf" as="font" type="font/ttf" crossorigin />
-    <link rel="preload" href="/OYSTERCULT/fonts/TT_Modernoir_Trial_DemiBold.ttf" as="font" type="font/ttf" crossorigin />
+    <meta name="description" content="OysterCult - Plateforme de gestion complète pour l'ostréiculture. Suivi des tables, bassins et tâches en temps réel." />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="preload" href="/fonts/TT_Modernoir_Trial_Light.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/TT_Modernoir_Trial_Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/TT_Modernoir_Trial_DemiBold.ttf" as="font" type="font/ttf" crossorigin />
     <!-- Script pour fixer les chemins en production sur GitHub Pages -->
     <script>
       (function() {
@@ -19,20 +21,9 @@
           var baseTag = document.createElement('base');
           baseTag.href = '/OYSTERCULT/';
           document.head.prepend(baseTag);
-          
-          // Redirect to auth if hash is empty
-          if (window.location.hash === '') {
-            window.location.hash = '#/auth';
-          }
         }
       })();
-    
-          // Rediriger vers auth si nécessaire
-          if (window.location.hash === '') {
-            window.location.hash = '#/auth';
-          }
-        })();
-      </script>
+    </script>
     <style>
       @font-face {
         font-family: 'TT Modernoir';
@@ -63,10 +54,17 @@
         font-family: 'TT Modernoir', sans-serif !important;
       }
     </style>
-    <title>OysterCult - Gestion Ostréicole</title>
+    <title>OysterCult</title>
+    <script type="module" crossorigin src="/assets/index-Btwo2nlh.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor-CVhXeiu7.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-vBDMUeoO.css">
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div id="root">
+      <h2>Chargement de OysterCult...</h2>
+      <noscript>
+        <p>Vous devez activer JavaScript pour utiliser cette application.</p>
+      </noscript>
+    </div>
   </body>
 </html>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 // import { useMutation } from '@convex/react'; // Cette importation n'est pas disponible
 import { X, User, Calendar, ClipboardList, Clock, MessageSquare, AlertCircle, Star, RefreshCcw } from 'lucide-react';
+import './TaskForm.css';
 
 // Types
 export interface TaskFormData {
@@ -51,8 +52,8 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
   };
 
   return (
-    <div className="modal-container">
-      <div className="modal-header px-6 py-4 border-b border-white/10 flex items-center justify-between bg-white/10 rounded-2xl backdrop-blur-sm">
+    <div className="modal-container mobile-card">
+      <div className="modal-header">
         <h2 className="text-xl font-semibold text-white bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">Nouvelle tâche</h2>
         <button 
           onClick={onClose}
@@ -63,15 +64,16 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="form-section mobile-fade-in">
         <div className="space-y-6">
           {/* Tabs pour naviger entre les détails et la performance (visible uniquement pour les tâches terminées) */}
           {isShowingPerformanceTab && (
             <div className="flex border-b border-white/10 mb-4">
               <button
                 type="button"
-                className={`pb-2 px-3 text-sm font-medium ${activeTab === 'details' ? 'text-brand-burgundy border-b-2 border-brand-burgundy' : 'text-white/60 hover:text-white/80'}`}
+                className={`tab-button ${activeTab === 'details' ? 'active' : ''}`}
                 onClick={() => setActiveTab('details')}
+                aria-label="Afficher les détails de la tâche"
               >
                 <div className="flex items-center gap-1.5">
                   <ClipboardList size={16} />
@@ -80,8 +82,9 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
               </button>
               <button
                 type="button"
-                className={`pb-2 px-3 text-sm font-medium ${activeTab === 'performance' ? 'text-brand-burgundy border-b-2 border-brand-burgundy' : 'text-white/60 hover:text-white/80'}`}
+                className={`tab-button ${activeTab === 'performance' ? 'active' : ''}`}
                 onClick={() => setActiveTab('performance')}
+                aria-label="Afficher la performance de la tâche"
               >
                 <div className="flex items-center gap-1.5">
                   <ClipboardList size={16} />
@@ -93,42 +96,45 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
 
           {activeTab === 'details' && (
             <>
-              <div>
-                <label className="block text-sm font-medium text-white/70 mb-1.5">Titre de la tâche</label>
-                <input {...register('title', { required: 'Le titre est requis' })} className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-brand-burgundy/40 transition-shadow" placeholder="Entrez le titre de la tâche" />
-                {errors.title && <p className="mt-1 text-xs text-red-400">{errors.title.message}</p>}
+              <div className="form-group">
+                <label className="form-label" htmlFor="title">Titre de la tâche</label>
+                <input {...register('title', { required: 'Le titre est requis' })} id="title" className="form-field" placeholder="Entrez le titre de la tâche" aria-required="true" />
+                {errors.title && <p className="form-field-error">{errors.title.message}</p>}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-white/70 mb-1.5">Description</label>
-                <textarea {...register('description')} className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-brand-burgundy/40 transition-shadow resize-y min-h-[100px]" placeholder="Décrivez la tâche en détail" />
+              <div className="form-group">
+                <label className="form-label" htmlFor="description">Description</label>
+                <textarea {...register('description')} id="description" className="form-field resize-y min-h-[100px]" placeholder="Décrivez la tâche en détail" />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-white/70 mb-1.5">Date</label>
+              <div className="form-grid two-columns grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="form-group">
+                  <label className="form-label" htmlFor="dueDate">Date</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div className="form-field-icon">
                       <Calendar size={16} className="text-white/40" />
                     </div>
                     <input 
                       type="date" 
                       {...register('dueDate', { required: 'La date est requise' })} 
-                      className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-brand-burgundy/40 transition-shadow" 
+                      id="dueDate"
+                      className="form-field pl-10" 
+                      aria-required="true"
                     />
                   </div>
-                  {errors.dueDate && <p className="mt-1 text-xs text-red-400">{errors.dueDate.message}</p>}
+                  {errors.dueDate && <p className="form-field-error">{errors.dueDate.message}</p>}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-white/70 mb-1.5">Assigné à</label>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="assignedTo">Assigné à</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div className="form-field-icon">
                       <User size={16} className="text-white/40" />
                     </div>
                     <select 
                       {...register('assignedTo')} 
-                      className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-brand-burgundy/40 transition-shadow"
+                      id="assignedTo"
+                      className="form-field pl-10 appearance-none"
                     >
                       <option value="">Sélectionner un utilisateur</option>
                       <option value="John Doe">John Doe</option>
@@ -139,11 +145,11 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-white/70 mb-1.5">Heures estimées</label>
+              <div className="form-grid two-columns grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="form-group">
+                  <label className="form-label" htmlFor="estimatedHours">Heures estimées</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div className="form-field-icon">
                       <Clock size={16} className="text-white/40" />
                     </div>
                     <input 
@@ -154,11 +160,13 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
                         min: { value: 0.5, message: 'Minimum 0.5 heure' },
                         max: { value: 100, message: 'Maximum 100 heures' }
                       })} 
-                      className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-brand-burgundy/40 transition-shadow" 
+                      id="estimatedHours"
+                      className="form-field pl-10" 
                       placeholder="Heures"
+                      aria-required="true"
                     />
                   </div>
-                  {errors.estimatedHours && <p className="mt-1 text-xs text-red-400">{errors.estimatedHours.message}</p>}
+                  {errors.estimatedHours && <p className="form-field-error">{errors.estimatedHours.message}</p>}
                 </div>
 
                 <div className="flex items-center space-x-2 pt-7">
@@ -166,22 +174,23 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
                     type="checkbox" 
                     id="isRecurring" 
                     {...register('isRecurring')} 
-                    className="w-4 h-4 rounded border-white/30 bg-white/5 text-brand-burgundy focus:ring-brand-burgundy/40"
+                    className="w-4 h-4 rounded border-white/30 bg-white/5 text-rose-600 focus:ring-rose-600/40"
                   />
                   <label htmlFor="isRecurring" className="text-sm text-white/70">Tâche récurrente</label>
                 </div>
               </div>
 
               {watch('isRecurring') && (
-                <div>
-                  <label className="block text-sm font-medium text-white/70 mb-1.5">Fréquence</label>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="recurringPattern">Fréquence</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div className="form-field-icon">
                       <RefreshCcw size={16} className="text-white/40" />
                     </div>
                     <select 
                       {...register('recurringPattern')} 
-                      className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-brand-burgundy/40 transition-shadow"
+                      id="recurringPattern"
+                      className="form-field pl-10 appearance-none"
                     >
                       <option value="daily">Quotidien</option>
                       <option value="weekly">Hebdomadaire</option>
@@ -208,7 +217,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
                       <span>85%</span>
                     </div>
                     <div className="bg-white/10 h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-brand-burgundy h-full rounded-full" style={{ width: '85%' }}></div>
+                      <div className="bg-gradient-to-r from-rose-600 to-red-800 h-full rounded-full" style={{ width: '85%' }}></div>
                     </div>
                   </div>
                   
@@ -218,13 +227,13 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
                       <span>92%</span>
                     </div>
                     <div className="bg-white/10 h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-brand-burgundy h-full rounded-full" style={{ width: '92%' }}></div>
+                      <div className="bg-gradient-to-r from-rose-600 to-red-800 h-full rounded-full" style={{ width: '92%' }}></div>
                     </div>
                   </div>
                 </div>
                 
                 <div className="mt-4 pt-4 border-t border-white/10">
-                  <div className="flex justify-between items-center">
+                  <div className="rating-container flex justify-between items-center">
                     <span className="text-sm text-white/70">Score automatique</span>
                     <div className="flex">
                       {[1, 2, 3, 4, 5].map((star) => (
@@ -232,7 +241,8 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
                           key={star}
                           type="button"
                           onClick={() => setSelectedRating(star)}
-                          className="focus:outline-none"
+                          className="rating-star-button focus:outline-none"
+                          aria-label={`Noter ${star} étoiles sur 5`}
                         >
                           <Star 
                             size={18}
@@ -248,17 +258,19 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
           )}
         </div>
 
-        <div className="flex justify-end space-x-3 pt-4 border-t border-white/10">
+        <div className="form-actions">
           <button 
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+            className="btn-cancel"
+            aria-label="Annuler la création de tâche"
           >
             Annuler
           </button>
           <button 
             type="submit"
-            className="px-4 py-2 bg-brand-burgundy text-white rounded-lg hover:bg-brand-burgundy/90 transition-colors"
+            className="btn-submit"
+            aria-label="Créer la tâche"
           >
             Créer la tâche
           </button>

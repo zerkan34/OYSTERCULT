@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useNavigate, useLocation, useRoutes, Outlet } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { HashRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { ConvexProvider, ConvexReactClient } from "convex/react";
@@ -44,7 +44,6 @@ import { BatchList } from '@/features/traceability/components/BatchList';
 import { AnalysesPage } from '@/features/analyses/pages/AnalysesPage';
 import { AnimatePresence } from 'framer-motion';
 
-const queryClient = new QueryClient();
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
 
 interface ProtectedRouteProps {
@@ -61,8 +60,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   return <>{children}</>;
 };
 
-// Composant avec accès au router
-function AppContent() {
+function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -81,145 +79,158 @@ function AppContent() {
     }
   }, []);
 
-  // Vérifier si l'utilisateur est authentifié
+  return (
+    <>
+      <ModernHeader
+        onShowMobileMenu={() => setShowMobileMenu(true)}
+        onToggleNotifications={() => setShowNotifications(!showNotifications)}
+        onShowEmergency={() => setShowEmergency(true)}
+        onEmergencyClick={() => setShowEmergency(true)}
+        onToggleMessages={() => navigate('/network/messages')}
+      />
+      <div className="flex min-h-screen h-full">
+        {/* Bouton carré en haut à gauche pour ouvrir la barre latérale */}
+        <button 
+          className="fixed top-6 left-6 z-50 md:hidden flex items-center justify-center w-14 h-14 rounded-lg shadow-lg transition-all duration-200"
+          onClick={() => setShowMobileMenu(true)}
+          aria-label="Ouvrir le menu"
+          style={{
+            background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
+            boxShadow: "rgba(0, 0, 0, 0.45) 0px 10px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(0, 210, 200, 0.25) 0px 0px 15px inset",
+            WebkitTapHighlightColor: "transparent",
+            transform: "translateZ(0)",
+            willChange: "transform"
+          }}
+        >
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{
+            width: '24px',
+            height: '24px',
+            filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.4))'
+          }}>
+            <path d="M15 20 Q25 12, 35 20 T55 20 T75 20 T95 20" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
+            <path d="M15 40 Q25 32, 35 40 T55 40 T75 40 T95 40" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
+            <path d="M15 60 Q25 52, 35 60 T55 60 T75 60 T95 60" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
+            <path d="M15 80 Q25 72, 35 80 T55 80 T75 80 T95 80" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
+          </svg>
+        </button>
+        <EnhancedSidebar 
+          showMobileMenu={showMobileMenu} 
+          onCloseMobileMenu={() => setShowMobileMenu(false)}
+          onEmergencyClick={() => setShowEmergency(true)}
+          onToggleMessages={() => navigate('/network/messages')}
+          onToggleNotifications={() => setShowNotifications(true)}
+        />
+
+        <div 
+          className="
+          flex-1 pt-16 md:pt-16 
+          pb-4 
+          px-4 md:px-6 lg:px-8
+          ml-0 lg:ml-[4.5rem] transition-all duration-300
+          min-h-screen
+        "
+          style={{
+            background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
+            WebkitBackdropFilter: "blur(20px)",
+            backdropFilter: "blur(20px)",
+            willChange: "transform",
+            transform: "translate3d(0,0,0)",
+            position: "fixed",
+            inset: "0",
+            width: "100%",
+            height: "100%",
+            overflow: "auto"
+          }}
+        >
+          <main className="flex-1 p-6 overflow-x-hidden">
+            <div className="max-w-7xl mx-auto">
+              <AnimatePresence mode="wait">
+                <Routes location={location} key={location.pathname}>
+                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/stocks" element={<InventoryPage />} />
+                  <Route path="/stock/:id" element={<StockPage />} />
+                  <Route path="/tables/:id" element={<TableDetailsPage />} />
+                  <Route path="/accounting" element={<AccountingPage />} />
+                  <Route path="/invoices" element={<InvoicesPage />} />
+                  <Route path="/hr" element={<HRPage />} />
+                  <Route path="/network" element={<NetworkPage />} />
+                  <Route path="/network/messages" element={<MessagesPage />} />
+                  <Route path="/config" element={<ConfigPage />} />
+                  <Route path="/notifications" element={<NotificationsPage />} />
+                  <Route path="/tasks" element={<TasksPage />} />
+                  <Route path="/traceability" element={<TraceabilityPage />} />
+                  <Route path="/traceability/storage-locations" element={<StorageLocations />} />
+                  <Route path="/traceability/market-purchases" element={<MarketPurchases />} />
+                  <Route path="/traceability/invoices-delivery-notes" element={<InvoicesAndDeliveryNotes />} />
+                  <Route path="/traceability/batches" element={<BatchList />} />
+                  <Route path="/traceability/batch-history" element={<BatchHistory searchQuery="" />} />
+                  <Route path="/traceability/purification-pools" element={<PurificationPools />} />
+                  <Route path="/sales" element={<SalesPage />} />
+                  <Route path="/purchases" element={<PurchasesPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/shop" element={<ShopPage />} />
+                  <Route path="/suppliers" element={<SuppliersPage />} />
+                  <Route path="/suppliers/catalog" element={<SupplierCatalogPage />} />
+                  <Route path="/suppliers/orders" element={<OrdersPage />} />
+                  <Route path="/vault" element={<DigitalVaultPage />} />
+                  <Route path="/analyses" element={<AnalysesPage />} />
+                </Routes>
+              </AnimatePresence>
+            </div>
+          </main>
+        </div>
+      </div>
+
+      {showNotifications && (
+        <NotificationsPanel
+          onClose={() => setShowNotifications(false)}
+        />
+      )}
+
+      {showEmergency && (
+        <EmergencyCall
+          isOpen={showEmergency}
+          onClose={() => setShowEmergency(false)}
+        />
+      )}
+
+      <FloatingNotifications />
+    </>
+  );
+}
+
+function AppContent() {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   
-  // Forcer la redirection à /auth si non authentifié
-  useEffect(() => {
-    if (!isAuthenticated && !location.pathname.includes('/auth')) {
-      navigate('/auth', { replace: true });
-    }
-  }, [isAuthenticated, location.pathname, navigate]);
-
-  // Si nous sommes déjà sur la page d'authentification ou en cours de redirection, afficher directement AuthPage
-  if (location.pathname === '/auth' || (!isAuthenticated && location.pathname !== '/auth')) {
-    return (
-      <div className="min-h-screen w-screen h-screen fixed inset-0 overflow-auto">
+  return (
+    <div className="min-h-screen w-screen h-screen fixed inset-0 overflow-auto">
+      {isAuthenticated ? (
+        <MainLayout />
+      ) : (
         <Routes>
           <Route path="/auth" element={<AuthPage />} />
           <Route path="*" element={<Navigate to="/auth" replace />} />
         </Routes>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen w-screen h-screen fixed inset-0 overflow-auto">
-      {isAuthenticated && (
-        <>
-          <ModernHeader
-            onShowMobileMenu={() => setShowMobileMenu(true)}
-            onToggleNotifications={() => setShowNotifications(!showNotifications)}
-            onShowEmergency={() => setShowEmergency(true)}
-            onEmergencyClick={() => setShowEmergency(true)}
-            onToggleMessages={() => navigate('/network/messages')}
-          />
-          <div className="flex min-h-screen h-full">
-            <EnhancedSidebar 
-              showMobileMenu={showMobileMenu} 
-              onCloseMobileMenu={() => setShowMobileMenu(false)}
-              onEmergencyClick={() => setShowEmergency(true)}
-              onToggleMessages={() => navigate('/network/messages')}
-              onToggleNotifications={() => setShowNotifications(true)}
-            />
-
-            <div 
-              className="
-              flex-1 pt-16 md:pt-16 
-              pb-4 
-              px-4 md:px-6 lg:px-8
-              ml-0 lg:ml-[4.5rem] transition-all duration-300
-              min-h-screen
-            "
-              style={{
-                background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
-                WebkitBackdropFilter: "blur(20px)",
-                backdropFilter: "blur(20px)",
-                willChange: "transform",
-                transform: "translate3d(0,0,0)",
-                position: "fixed",
-                inset: "0",
-                width: "100%",
-                height: "100%",
-                overflow: "auto"
-              }}
-            >
-              <main className="flex-1 p-6 overflow-x-hidden">
-                <div className="max-w-7xl mx-auto">
-                  <AnimatePresence mode="wait">
-                    <Routes location={location} key={location.pathname}>
-                      <Route path="/" element={
-                        isAuthenticated 
-                          ? <Navigate to="/dashboard" replace />
-                          : <Navigate to="/auth" replace />
-                      } />
-                      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-                      <Route path="/stocks" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
-                      <Route path="/stock/:id" element={<ProtectedRoute><StockPage /></ProtectedRoute>} />
-                      <Route path="/tables/:id" element={<ProtectedRoute><TableDetailsPage /></ProtectedRoute>} />
-                      <Route path="/accounting" element={<ProtectedRoute><AccountingPage /></ProtectedRoute>} />
-                      <Route path="/invoices" element={<ProtectedRoute><InvoicesPage /></ProtectedRoute>} />
-                      <Route path="/hr" element={<ProtectedRoute><HRPage /></ProtectedRoute>} />
-                      <Route path="/network" element={<ProtectedRoute><NetworkPage /></ProtectedRoute>} />
-                      <Route path="/network/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
-                      <Route path="/config" element={<ProtectedRoute><ConfigPage /></ProtectedRoute>} />
-                      <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
-                      <Route path="/tasks" element={<ProtectedRoute><TasksPage /></ProtectedRoute>} />
-                      <Route path="/tables/:id" element={<ProtectedRoute><TableDetailsPage /></ProtectedRoute>} />
-                      <Route path="/traceability" element={<ProtectedRoute><TraceabilityPage /></ProtectedRoute>} />
-                      <Route path="/traceability/batches" element={<ProtectedRoute><BatchList /></ProtectedRoute>} />
-                      <Route path="/traceability/history" element={<ProtectedRoute><BatchHistory searchQuery="" /></ProtectedRoute>} />
-                      <Route path="/traceability/storage" element={<ProtectedRoute><StorageLocations /></ProtectedRoute>} />
-                      <Route path="/traceability/purchases" element={<ProtectedRoute><MarketPurchases /></ProtectedRoute>} />
-                      <Route path="/traceability/documents" element={<ProtectedRoute><InvoicesAndDeliveryNotes /></ProtectedRoute>} />
-                      <Route path="/traceability/pools" element={<ProtectedRoute><PurificationPools /></ProtectedRoute>} />
-                      <Route path="/sales" element={<ProtectedRoute><SalesPage /></ProtectedRoute>} />
-                      <Route path="/purchases" element={<ProtectedRoute><PurchasesPage /></ProtectedRoute>} />
-                      <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-                      <Route path="/shop" element={<ProtectedRoute><ShopPage /></ProtectedRoute>} />
-                      <Route path="/suppliers" element={<ProtectedRoute><SuppliersPage /></ProtectedRoute>} />
-                      <Route path="/suppliers/catalog" element={<ProtectedRoute><SupplierCatalogPage /></ProtectedRoute>} />
-                      <Route path="/suppliers/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
-                      <Route path="/digitalvault" element={<ProtectedRoute><DigitalVaultPage /></ProtectedRoute>} />
-                      <Route path="/analyses" element={<ProtectedRoute><AnalysesPage /></ProtectedRoute>} />
-                      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                    </Routes>
-                  </AnimatePresence>
-                </div>
-              </main>
-            </div>
-          </div>
-
-          <AnimatePresence>
-            {showNotifications && (
-              <NotificationsPanel onClose={() => setShowNotifications(false)} />
-            )}
-          </AnimatePresence>
-
-          {showEmergency && (
-            <EmergencyCall 
-              isOpen={showEmergency}
-              onClose={() => setShowEmergency(false)} 
-            />
-          )}
-
-          <FloatingNotifications />
-        </>
       )}
     </div>
   );
 }
 
 function App() {
+  const queryClient = new QueryClient();
+  const deployTarget = import.meta.env.VITE_DEPLOY_TARGET || '';
+  
+  // Détection si l'utilisateur est sur Github Pages ou Firebase Hosting
+  const baseUrl = deployTarget === 'firebase' ? '' : '/OYSTERCULT';
+
   return (
     <ConvexProvider client={convex}>
       <QueryClientProvider client={queryClient}>
-        <Router>
-          <Routes>
-            <Route path="/*" element={<AppContent />} />
-          </Routes>
-          <Toaster position="bottom-right" />
+        <Router basename={baseUrl}>
+          <AppContent />
         </Router>
+        <Toaster position="bottom-right" />
       </QueryClientProvider>
     </ConvexProvider>
   );

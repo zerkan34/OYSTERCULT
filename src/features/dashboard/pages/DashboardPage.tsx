@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Package, ThermometerSun, Droplets, LineChart, Calendar, AlertTriangle, Clock, Shell, Waves } from 'lucide-react';
 import { ModernStatCard } from '@/components/ui/ModernStatCard';
@@ -10,6 +10,8 @@ import { OysterOccupationStats } from '../components/OysterOccupationStats';
 import { OysterTable, Pool, WaterQuality, PoolHealth } from '../types';
 import { PageTitle } from '@/components/ui/PageTitle';
 import { OysterTableCard } from '../components/OysterTableCard';
+import { MobileDashboard } from '../components/MobileDashboard';
+import './DashboardMobile.css';
 
 // Fonction pour calculer le nombre de jours restants
 const getDaysRemaining = (harvestDate: string) => {
@@ -191,6 +193,47 @@ export function DashboardPage() {
   const [hoveredPool, setHoveredPool] = useState<string | null>(null);
   const [selectedTable, setSelectedTable] = useState<OysterTable | null>(null);
   const [selectedPool, setSelectedPool] = useState<PoolHealth | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Détecter si l'appareil est mobile
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
+
+  // Effet pour ajouter/supprimer une classe CSS sur le body
+  useEffect(() => {
+    if (isMobile) {
+      document.body.classList.add('has-fixed-nav');
+    } else {
+      document.body.classList.remove('has-fixed-nav');
+    }
+    
+    return () => {
+      document.body.classList.remove('has-fixed-nav');
+    };
+  }, [isMobile]);
+
+  // Rendu conditionnel basé sur la taille de l'écran
+  if (isMobile) {
+    return (
+      <div className="dashboard-page">
+        <MobileDashboard 
+          tableOccupancyData={tableOccupancyData}
+          poolData={poolData}
+          poolDisplayData={poolDisplayData}
+        />
+      </div>
+    );
+  }
 
   return (
     <motion.div

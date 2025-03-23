@@ -4,15 +4,17 @@ import { motion } from 'framer-motion';
 interface OysterLogoProps {
   onClick?: () => void;
   className?: string;
+  size?: number;
 }
 
-export const OysterLogo: React.FC<OysterLogoProps> = ({ onClick, className = '' }) => {
+export const OysterLogo: React.FC<OysterLogoProps> = ({ onClick, className = '', size = 32 }) => {
   return (
     <motion.div
       className={`flex flex-col items-center cursor-pointer ${className}`}
       onClick={onClick}
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.3 }}
+      style={{ width: size, height: size }}
     >
       <div className="flex flex-col items-center relative">
         <div className="absolute w-full h-full bg-gradient-radial from-blue-500/20 via-blue-400/10 to-transparent blur-[80px] animate-[pulse_4s_ease-in-out_infinite]" />

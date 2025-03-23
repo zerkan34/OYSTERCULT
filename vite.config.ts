@@ -2,9 +2,17 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
+// Déterminer la base en fonction de l'environnement de déploiement
+const getBase = () => {
+  if (process.env.DEPLOY_TARGET === 'firebase') {
+    return '/';
+  }
+  return '/OYSTERCULT/';
+};
+
 export default defineConfig({
   plugins: [react()],
-  base: '/OYSTERCULT/',
+  base: getBase(),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -45,6 +53,10 @@ export default defineConfig({
     manifest: true,
     rollupOptions: {
       output: {
+        // Implémentation du cache busting au niveau de Vite
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
         manualChunks: {
           vendor: [
             'react', 

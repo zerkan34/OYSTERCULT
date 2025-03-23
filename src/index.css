@@ -3,6 +3,7 @@
 @import './styles/mobile.css';
 @import './styles/effects.css';
 @import './styles/accessibility.css';
+@import './styles/text-handling.css';
 
 @font-face {
   font-family: 'Industry Inc Base';
@@ -84,6 +85,24 @@
   --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.2);
   --glass-opacity: 0.85;
   --mesh-opacity: 0.05;
+}
+
+/* Reset global pour garantir la largeur totale et éviter tous décalages */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+#root, #app {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* Styles de base */
@@ -180,6 +199,15 @@
     --destructive: rgb(185, 28, 28);
     --ring: rgb(37, 99, 235);
   }
+}
+
+/* Styles responsives généraux pour toutes les tailles d'écran */
+.container, .content-container {
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
 }
 
 /* Thèmes */
@@ -631,5 +659,31 @@
   /* Assurer que les éléments interactifs sont suffisamment espacés */
   .button-group > * {
     margin: 5px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Résolution spécifique de la problématique d'overflow sur mobile */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Container avec scroll interne pour les statistiques */
+  .stats-container {
+    height: 70vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 60px; /* Espace pour la barre fixe */
+  }
+  
+  /* Barre de navigation fixe en bas */
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    z-index: 1000;
+    border-top: 1px solid var(--border);
   }
 }

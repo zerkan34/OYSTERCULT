@@ -4,6 +4,130 @@
     --sidebar-width: 100%;
   }
 
+  /* Réinitialisation complète pour mobile */
+  html, body, #root {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Correction pour forcer la pleine largeur des éléments */
+  .mobile-full-width,
+  .mobile-dashboard,
+  .mobile-dashboard-content,
+  .weather-widget-container,
+  .weather-widget,
+  .mobile-weather-main,
+  .weather-forecast-container {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+    left: 0 !important;
+    right: 0 !important;
+    position: relative !important;
+  }
+
+  /* Correction pour éliminer tout décalage */
+  .container,
+  .content-container,
+  .mobile-nav-container,
+  .weather-widget-container > * {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: translateX(0) !important;
+    position: relative !important;
+  }
+
+  /* Styles pour la barre de navigation fixe */
+  .bottom-bar,
+  .mobile-bottom-nav,
+  .mobile-quick-nav {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    z-index: 9999 !important;
+    background: rgba(15, 23, 42, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+  }
+
+  /* Correction obligatoire pour contenu du widget météo */
+  .weather-widget-container,
+  .weather-widget {
+    padding: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  /* Forcer tout padding interne à être inclus dans la largeur */
+  * {
+    box-sizing: border-box !important;
+  }
+
+  /* Correction pour empêcher les éléments de dépasser */
+  .overflow-hidden {
+    overflow: hidden !important;
+  }
+
+  /* Réinitialisation des marges pour les grilles */
+  .grid {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Correction pour les cartes météo */
+  .mobile-full-width-card,
+  .mobile-compact-weather-card,
+  .mobile-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Styles pour les éléments enfants du widget météo */
+  .mobile-weather-header,
+  .mobile-weather-details,
+  .mobile-weather-status,
+  .weather-forecast-container > h3,
+  .weather-forecast {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Correction spécifique pour conteneur racine */
+  body > div#root {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    position: relative !important;
+  }
+
   /* Optimisations de performance mobile */
   * {
     -webkit-tap-highlight-color: transparent;
@@ -31,6 +155,27 @@
   .animate-on-mobile {
     will-change: transform;
     transform: translateZ(0);
+  }
+
+  /* Styles pour les conteneurs avec scrolling */
+  .stats-container {
+    height: 70vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    width: 100% !important;
+    padding-bottom: 60px; /* Espace pour la barre fixe */
+    box-sizing: border-box !important;
+  }
+
+  /* Styles pour la barre de navigation fixe */
+  .bottom-bar, .mobile-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    z-index: 1000;
   }
 }
 

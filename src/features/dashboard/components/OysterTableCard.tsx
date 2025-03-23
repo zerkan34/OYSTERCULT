@@ -21,10 +21,11 @@ interface OysterTable {
 
 interface OysterTableCardProps {
   table: OysterTable;
-  isHovered: boolean;
-  onHoverStart: () => void;
-  onHoverEnd: () => void;
-  onClick: () => void;
+  isHovered?: boolean;
+  onHoverStart?: () => void;
+  onHoverEnd?: () => void;
+  onClick?: () => void;
+  compact?: boolean; // Prop pour affichage compact sur mobile
 }
 
 function getDaysRemaining(dateString: string): number {
@@ -37,12 +38,61 @@ function getDaysRemaining(dateString: string): number {
 
 export const OysterTableCard: React.FC<OysterTableCardProps> = ({
   table,
-  isHovered,
-  onHoverStart,
-  onHoverEnd,
-  onClick
+  isHovered = false,
+  onHoverStart = () => {},
+  onHoverEnd = () => {},
+  onClick = () => {},
+  compact = false
 }) => {
   const hasAlert = table.alert || (table.timeProgress > 100);
+  
+  // Si mode compact, on retourne une version simplifiée pour mobile
+  if (compact) {
+    return (
+      <div 
+        className="relative rounded-lg p-3 overflow-hidden bg-[rgba(0,40,80,0.2)] shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset] cursor-pointer"
+        onClick={onClick}
+        aria-label={`Table ${table.name}, taux d'occupation ${table.value}%`}
+      >
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.5)]" style={{ backgroundColor: table.value === 100 ? '#22c55e' : '#eab308' }}></div>
+            <div className="text-white font-medium text-sm">{table.name}</div>
+          </div>
+          <div className="text-right">
+            <div className="text-base font-semibold text-white">{table.value}%</div>
+          </div>
+        </div>
+
+        {/* Version compacte de la grille */}
+        <div className="grid grid-cols-10 gap-1 w-full bg-[#22c55e]/10 h-5 mb-2">
+          {[...Array(10)].map((_, i) => (
+            <div 
+              key={i} 
+              className="h-full rounded-sm border border-white/10 bg-[#22c55e]"
+              style={{ 
+                opacity: i < Math.floor((table.value / 100) * 10) ? 1 : 0.1
+              }}
+              aria-hidden="true"
+            ></div>
+          ))}
+        </div>
+
+        {/* Infos compactes */}
+        <div className="flex justify-between items-center">
+          <div className="text-xs text-white/70">
+            {table.type}
+          </div>
+          {hasAlert && (
+            <div className="text-amber-400 flex items-center">
+              <AlertCircle size={12} className="mr-1" />
+              <span className="text-xs">Attention</span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
   
   return (
     <motion.div 
@@ -199,16 +249,24 @@ export const OysterTableCard: React.FC<OysterTableCardProps> = ({
         </div>
 
         <div className="flex items-center justify-between text-sm mt-3">
-          {table.harvest && (
-            <div className="flex items-center text-white/70">
-              <Calendar className="w-4 h-4 mr-1 text-cyan-400" />
-              <span>Récolte: {table.harvest}</span>
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center">
+              <Shell size={14} className="text-cyan-400 mr-1" />
+              <span className="text-xs text-white/70">{table.type}</span>
             </div>
-          )}
-          {table.mortality > 0 && table.value > 0 && (
-            <div className="flex items-center text-yellow-400">
-              <AlertTriangle className="w-4 h-4 mr-1" />
-              {table.mortality}% mortalité
+            {table.startDate && (
+              <div className="flex items-center">
+                <Calendar size={14} className="text-cyan-400 mr-1" />
+                <span className="text-xs text-white/70">{table.startDate}</span>
+              </div>
+            )}
+          </div>
+          
+          {/* Alerte */}
+          {hasAlert && (
+            <div className="text-amber-400 flex items-center">
+              <AlertCircle size={16} className="mr-1" />
+              <span className="text-xs">Attention</span>
             </div>
           )}
         </div>

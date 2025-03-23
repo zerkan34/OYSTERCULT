@@ -1,0 +1,128 @@
+/**
+ * Règles optimisées pour la gestion du texte sur mobile
+ * Pour prévenir les problèmes de wrap et améliorer la lisibilité
+ */
+
+/* Règles générales pour le texte sur tous les éléments */
+* {
+  /* Assure que les mots trop longs sont cassés pour s'adapter à la largeur du conteneur si nécessaire */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Règles spécifiques pour le texte dans les éléments de contenu */
+p, h1, h2, h3, h4, h5, h6, span, div, li, td, th, button, a {
+  /* Empêche le texte de déborder horizontalement */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Gestion des éléments de titre qui peuvent être longs */
+h1, h2, h3 {
+  /* Utiliser une stratégie plus agressive pour les titres */
+  word-break: break-word;
+  max-width: 100%;
+}
+
+/* Gestion des textes dans les composants d'interface */
+.card-title,
+.modal-title,
+.task-title,
+.nav-label,
+.button-text,
+.stat-label,
+.stat-value {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  
+  /* Multiples lignes avec ellipsis si nécessaire - avec propriété standard */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* nombre de lignes souhaitées */
+  line-clamp: 2; /* propriété standard */
+  -webkit-box-orient: vertical;
+  max-width: 100%;
+}
+
+/* Gestion spécifique des éléments à une seule ligne */
+.single-line-text,
+.breadcrumb-item,
+.menu-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Classe pour les widgets météo et contenu structuré qui ne doit pas être wrappé */
+.no-wrap-content,
+.weather-widget,
+.stat-widget,
+.dashboard-card,
+.metric-display {
+  white-space: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+/* Media queries pour les appareils mobiles */
+@media screen and (max-width: 768px) {
+  .long-text-container {
+    /* Sur mobile, réduire encore les possibilités de débordement */
+    word-break: break-word;
+    hyphens: auto;
+    font-size: 95%; /* Légèrement réduire la taille */
+  }
+  
+  /* Ajuster la taille des titres importants */
+  h1 {
+    font-size: 1.75rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Très petits écrans - RÈGLES MOINS AGRESSIVES */
+@media screen and (max-width: 480px) {
+  /* Ajustements pour les très petits écrans */
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.3rem;
+  }
+  
+  h3 {
+    font-size: 1.15rem;
+  }
+  
+  /* Classe utilitaire pour forcer le wrap sur les éléments problématiques - utilisée seulement au besoin */
+  .force-wrap {
+    white-space: normal !important;
+    word-break: break-word !important; /* Moins agressif que break-all */
+    max-width: 100% !important;
+    overflow-wrap: break-word !important;
+  }
+}
+
+/* Styles spécifiques pour le header du site */
+.header-title {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  max-width: none !important;
+}
+
+/* Ajustements spécifiques pour les petits écrans */
+@media screen and (max-width: 640px) {
+  .header-title {
+    font-size: 1.75rem !important;
+    letter-spacing: 0.05em !important;
+  }
+}

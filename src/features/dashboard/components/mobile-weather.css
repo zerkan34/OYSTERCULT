@@ -1,0 +1,500 @@
+/* Styles pour le nouveau widget météo mobile - inspiré d'applications modernes */
+
+/* Variables de base */
+:root {
+  --weather-primary: #22d3ee;
+  --weather-secondary: #0ea5e9;
+  --weather-accent: #eab308;
+  --weather-bg: rgba(15, 23, 42, 0.3);
+  --weather-card-bg: rgba(15, 23, 42, 0.5);
+  --weather-card-border: rgba(255, 255, 255, 0.1);
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+}
+
+/* Container principal */
+.mobile-weather-container {
+  width: 100vw;
+  margin: 0;
+  padding: 16px;
+  padding-top: calc(16px + var(--safe-area-inset-top));
+  padding-bottom: calc(16px + var(--safe-area-inset-bottom));
+  padding-left: calc(16px + var(--safe-area-inset-left));
+  padding-right: calc(16px + var(--safe-area-inset-right));
+  box-sizing: border-box;
+  color: white;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background-color: transparent;
+}
+
+/* Header du widget */
+.weather-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.weather-location-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+  background: linear-gradient(to right, #ffffff, var(--weather-primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+}
+
+.weather-update-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Section météo actuelle */
+.current-weather {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 8px;
+  width: 100%;
+  border-radius: 16px;
+  padding: 16px;
+  background-color: var(--weather-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.1) inset;
+  border: 1px solid var(--weather-card-border);
+}
+
+.primary-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.temp-display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.current-temp {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.feels-like {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.weather-icon-large {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.3));
+}
+
+.weather-condition-text {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: white;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Indicateurs météo actuels */
+.current-indicators {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.indicator-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 12px;
+  padding: 12px 4px;
+  background-color: var(--weather-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--weather-card-border);
+  min-height: 90px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.indicator-icon {
+  color: var(--weather-primary);
+  margin-bottom: 4px;
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.2));
+}
+
+.indicator-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2px;
+}
+
+.indicator-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+}
+
+.indicator-detail {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 2px;
+}
+
+.tide-indicator {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tide-times {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.625rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.tide-times div {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Section prévisions horaires */
+.hourly-forecast {
+  width: 100%;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: white;
+}
+
+.forecast-scroll-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 8px 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  width: 100%;
+}
+
+.forecast-scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.forecast-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  min-width: 60px;
+  border-radius: 12px;
+  padding: 12px 8px;
+  background-color: var(--weather-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--weather-card-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.forecast-time {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+}
+
+.forecast-temp {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.forecast-wind-indicator {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 4px;
+}
+
+.forecast-waves {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Section prévisions quotidiennes */
+.daily-forecast {
+  width: 100%;
+}
+
+.daily-forecast-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.daily-forecast-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto 1fr;
+  align-items: center;
+  padding: 12px;
+  border-radius: 12px;
+  background-color: var(--weather-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--weather-card-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.daily-forecast-day {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+}
+
+.daily-forecast-icon {
+  display: flex;
+  justify-content: center;
+}
+
+.daily-forecast-precip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.daily-forecast-temp {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.high-temp {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+}
+
+.low-temp {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Section lever/coucher du soleil */
+.sun-times {
+  width: 100%;
+}
+
+.sun-time-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-radius: 16px;
+  background-color: var(--weather-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--weather-card-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sunrise, .sunset {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.sun-time-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.sun-time-value {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+}
+
+.sun-path {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.sun-path-line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, #f59e0b, #f97316);
+  position: relative;
+  border-radius: 1px;
+}
+
+.sun-path-line::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background-color: #fcd34d;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px rgba(252, 211, 77, 0.6);
+}
+
+/* Section détails vent */
+.wind-detail-section {
+  width: 100%;
+}
+
+.wind-detail-container {
+  display: flex;
+  padding: 16px;
+  border-radius: 16px;
+  background-color: var(--weather-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--weather-card-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wind-compass {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wind-compass-base {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.wind-direction-indicator {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.5s ease;
+}
+
+.wind-stats {
+  flex: 1;
+  padding-left: 16px;
+}
+
+.wind-stat-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+}
+
+.wind-stat-row span:first-child {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.wind-stat-row span:last-child {
+  font-weight: 500;
+  color: white;
+}
+
+/* Optimisations pour l'accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  .wind-direction-indicator {
+    transition: none;
+  }
+}
+
+/* Zone tactile minimale pour les éléments interactifs */
+.forecast-card,
+.daily-forecast-row,
+.sun-time-container,
+.wind-detail-container,
+.current-indicators > div {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Support pour le mode sombre natif */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --weather-bg: rgba(15, 23, 42, 0.4);
+    --weather-card-bg: rgba(15, 23, 42, 0.6);
+  }
+}
+
+/* Support spécifique pour iOS */
+@supports (-webkit-touch-callout: none) {
+  .mobile-weather-container {
+    /* Éviter les bugs de positionnement sur iOS */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  .forecast-scroll-container {
+    /* Fix pour le défilement elastique sur iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Classes d'accessibilité */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

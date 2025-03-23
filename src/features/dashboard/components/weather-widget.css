@@ -1,28 +1,50 @@
-/* Styles optimisés pour le widget météo */
+/* Styles pour le widget météo avec thème sombre glassmorphic */
+
 .weather-widget {
-  position: relative;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  overflow: hidden;
-  background: linear-gradient(to bottom right, rgba(10,30,50,0.65), rgba(20,100,100,0.45));
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background-color: rgba(15, 23, 42, 0.3);
+  border-radius: 12px;
+  padding: 20px;
   box-shadow: 
-    rgba(0,0,0,0.2) 0px 5px 20px -5px,
-    rgba(0,200,200,0.1) 0px 5px 12px -5px,
-    rgba(255,255,255,0.07) 0px -1px 3px 0px inset,
-    rgba(0,200,200,0.05) 0px 0px 12px inset,
-    rgba(0,0,0,0.1) 0px 0px 8px inset;
+    rgba(0, 0, 0, 0.2) 0px 10px 20px -5px,
+    rgba(0, 150, 255, 0.1) 0px 8px 16px -8px,
+    rgba(255, 255, 255, 0.07) 0px -1px 2px 0px inset,
+    rgba(0, 65, 255, 0.05) 0px 0px 8px inset,
+    rgba(0, 0, 0, 0.05) 0px 0px 1px inset;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  height: auto; 
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto; /* Ajout de cette ligne pour centrer le widget */
+}
+
+/* Version desktop - largeur réduite */
+@media (min-width: 769px) {
+  .weather-widget {
+    width: 80%;
+    max-width: 800px;
+  }
+  
+  .weather-widget-container {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .weather-forecast {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
   gap: 0.5rem;
 }
 
 .forecast-item {
   text-align: center;
+  min-width: 70px;
 }
 
 .forecast-time {
@@ -66,4 +88,187 @@
 .weather-icon {
   color: #22d3ee;
   filter: drop-shadow(0 0 8px rgba(34,211,238,0.4));
+}
+
+/* Optimisations pour mobile */
+@media (max-width: 768px) {
+  /* Container principal en position relative */
+  .weather-widget-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    z-index: 1; /* S'assurer qu'il est sous la barre de navigation */
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Widget en pleine largeur */
+  .weather-widget {
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    border-radius: 12px;
+    margin: 0; 
+    padding: 15px;
+    height: auto;
+    min-height: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+  
+  /* Cartes météo plus compactes sur mobile */
+  .mobile-compact-weather-card {
+    margin-bottom: 1rem;
+    padding: 0.75rem !important;
+    width: 100% !important;
+    box-sizing: border-box;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Carte en pleine largeur sur mobile */
+  .mobile-full-width-card {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* Support pour les appareils iOS */
+  @supports (-webkit-touch-callout: none) {
+    /* Ajustements pour iPhone */
+    .weather-widget-container,
+    .weather-widget {
+      position: relative;
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+      min-height: auto;
+      margin: 0;
+      padding: 15px;
+      border-radius: 12px;
+      z-index: 1;
+      box-sizing: border-box;
+    }
+  }
+  
+  /* Prévisions météo horizontales avec défilement */
+  .weather-forecast-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .weather-forecast {
+    padding-bottom: 0.5rem;
+    /* Empêcher les éléments de se détacher */
+    position: relative;
+    z-index: 1;
+    width: max-content;
+    min-width: 100%;
+  }
+  
+  /* En-tête météo mobile */
+  .mobile-weather-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    width: 100%;
+  }
+  
+  .mobile-current-temp {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  
+  /* Détails météo mobile */
+  .mobile-weather-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    width: 100%;
+  }
+  
+  .mobile-weather-detail-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+  }
+  
+  .mobile-weather-detail-icon {
+    color: #22d3ee;
+    margin-bottom: 0.25rem;
+    filter: drop-shadow(0 0 8px rgba(34,211,238,0.4));
+  }
+  
+  .mobile-weather-detail-label {
+    font-size: 0.75rem;
+    color: #ffffff;
+    opacity: 0.6;
+    margin-bottom: 0.125rem;
+  }
+  
+  .mobile-weather-detail-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+  
+  .mobile-weather-status {
+    text-align: center;
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #ffffff;
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* S'assurer que la version mobile du widget météo prend toute la largeur */
+  .mobile-weather-main {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+  
+  /* Correction spécifique des grilles pour éviter le décalage */
+  .grid {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    display: grid;
+  }
+  
+  .grid-cols-1 {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Correction pour la classe mobile-full-width */
+  .mobile-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Support pour le mode sombre natif */
+@media (prefers-color-scheme: dark) {
+  .weather-widget {
+    background-color: rgba(15, 23, 42, 0.5);
+  }
 }

@@ -1,0 +1,244 @@
+/**
+ * Styles for TaskComments component
+ * Includes responsive design for mobile devices
+ */
+
+/* Import du style mobile commun */
+@import url('../../../features/dashboard/pages/DashboardMobile.css');
+
+/* Container principal */
+.task-comments-container {
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* En-tête des commentaires */
+.comments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.comments-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+}
+
+.comments-icon {
+  color: rgb(220, 38, 38);
+}
+
+/* Liste des commentaires */
+.comments-list {
+  max-height: 350px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Item de commentaire */
+.comment-item {
+  display: flex;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+
+.comment-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Avatar du commentaire */
+.comment-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(220, 38, 38);
+  background-image: linear-gradient(135deg, rgb(220, 38, 38), rgb(153, 27, 27));
+  flex-shrink: 0;
+}
+
+/* Contenu du commentaire */
+.comment-content {
+  margin-left: 0.75rem;
+  flex: 1;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.comment-author {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: white;
+}
+
+.comment-time {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.comment-text {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+}
+
+/* Pièces jointes */
+.comment-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Zone d'entrée de commentaire */
+.comment-input-container {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-top: 1rem;
+}
+
+.comment-input {
+  width: 100%;
+  min-height: 5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 0.75rem;
+  color: white;
+  font-size: 0.9rem;
+  resize: vertical;
+  margin-bottom: 0.75rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.comment-input:focus {
+  border-color: rgba(220, 38, 38, 0.5);
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.25);
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.attachment-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.attachment-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.attachment-count {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-left: 0.5rem;
+}
+
+.send-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgb(220, 38, 38), rgb(153, 27, 27));
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.send-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Animations */
+.mobile-fade-in {
+  animation: mobile-fade-in 0.5s ease forwards;
+}
+
+@keyframes mobile-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Styles spécifiques pour mobile */
+@media (max-width: 768px) {
+  .task-comments-container {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .comments-list {
+    max-height: 250px;
+  }
+  
+  .comment-item {
+    padding: 0.5rem;
+  }
+  
+  .comment-input {
+    min-height: 4rem;
+  }
+  
+  .send-button, 
+  .attachment-button {
+    min-height: 44px; /* Taille tactile minimale */
+  }
+}

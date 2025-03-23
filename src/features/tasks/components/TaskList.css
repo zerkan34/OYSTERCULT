@@ -12,6 +12,36 @@
   gap: 1.5rem;
 }
 
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+  .task-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .task-card {
+    width: 100%;
+  }
+  
+  .task-card-header,
+  .task-card-body {
+    padding: 0.75rem;
+  }
+  
+  .task-title {
+    font-size: 1rem;
+  }
+  
+  .action-btn {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .task-metadata {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* État vide */
 .empty-task-state {
   display: flex;
