@@ -1,41 +1,42 @@
 {
-  "_browser-BC27TqO7.js": {
-    "file": "assets/browser-BC27TqO7.js",
+  "_browser-DVaySFN2.js": {
+    "file": "assets/browser-DVaySFN2.js",
     "name": "browser",
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-CKuxA68x.js"
+      "_vendor-DfBIFBDt.js"
     ]
   },
-  "_vendor-CKuxA68x.js": {
-    "file": "assets/vendor-CKuxA68x.js",
+  "_vendor-DfBIFBDt.js": {
+    "file": "assets/vendor-DfBIFBDt.js",
     "name": "vendor"
   },
   "index.html": {
-    "file": "assets/index-DQerAJMn.js",
+    "file": "assets/index-CymUGffC.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
     "imports": [
-      "_vendor-CKuxA68x.js"
+      "_vendor-DfBIFBDt.js"
     ],
     "dynamicImports": [
+      "node_modules/html2canvas/dist/html2canvas.esm.js",
       "node_modules/dompurify/dist/purify.es.js",
       "node_modules/canvg/lib/index.es.js",
-      "_browser-BC27TqO7.js",
+      "_browser-DVaySFN2.js",
       "node_modules/qr-scanner/qr-scanner-worker.min.js"
     ],
     "css": [
-      "assets/index-BhB5YNYf.css"
+      "assets/index-Vrw7ZI59.css"
     ]
   },
   "node_modules/canvg/lib/index.es.js": {
-    "file": "assets/index.es-C7T1Kgoh.js",
+    "file": "assets/index.es-DR5joq6c.js",
     "name": "index.es",
     "src": "node_modules/canvg/lib/index.es.js",
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-CKuxA68x.js",
+      "_vendor-DfBIFBDt.js",
       "index.html"
     ]
   },
@@ -43,6 +44,12 @@
     "file": "assets/purify.es-C_uT9hQ1.js",
     "name": "purify.es",
     "src": "node_modules/dompurify/dist/purify.es.js",
+    "isDynamicEntry": true
+  },
+  "node_modules/html2canvas/dist/html2canvas.esm.js": {
+    "file": "assets/html2canvas.esm-CBrSDip1.js",
+    "name": "html2canvas.esm",
+    "src": "node_modules/html2canvas/dist/html2canvas.esm.js",
     "isDynamicEntry": true
   },
   "node_modules/qr-scanner/qr-scanner-worker.min.js": {
