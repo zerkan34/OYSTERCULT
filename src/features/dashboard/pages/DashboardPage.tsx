@@ -251,7 +251,7 @@ export function DashboardPage() {
       {/* Widget météo en format paysage au-dessus de la grille */}
       <motion.div 
         variants={slideInVariants}
-        className="mb-6 w-full"
+        className={`mb-6 w-full ${glassCardStyles.container} ${glassCardStyles.hoverEffect}`}
       >
         <WeatherWidget />
       </motion.div>

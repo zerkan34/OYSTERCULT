@@ -41,7 +41,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
           borderBottomLeftRadius: "16px",
           borderBottomRightRadius: "16px",
           boxShadow: "rgba(0, 0, 0, 0.45) 0px 10px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(255, 255, 255, 0.1) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
-          height: "92px"
+          height: "97px"
         }}
       >
         <div className="flex items-center h-full">
@@ -54,6 +54,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
             "
             onClick={onShowMobileMenu}
             style={{ transform: 'translate3d(0,0,0)' }}
+            aria-label="Ouvrir le menu"
           >
             <div className="absolute inset-0 bg-white/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
             
@@ -266,7 +267,53 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
         </motion.div>
 
         <div className="flex items-center">
-          {/* Espace vide pour maintenir l'équilibre visuel */}
+          {/* Boutons de notifications et messagerie */}
+          <div className="flex items-center space-x-4">
+            <button 
+              className="
+                inline-flex items-center justify-center font-medium rounded-lg transition-all
+                text-white hover:text-white hover:bg-white/20
+                p-3 relative group
+                will-change-transform
+                shadow-[0_0_15px_rgba(255,255,255,0.3)]
+                border border-white/30 bg-white/10
+              "
+              onClick={onToggleMessages}
+              aria-label="Afficher les messages"
+              style={{ transform: 'translate3d(0,0,0)' }}
+            >
+              <div className="absolute inset-0 bg-white/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-messages-square">
+                <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z"></path>
+                <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"></path>
+              </svg>
+            </button>
+
+            <button 
+              className="
+                inline-flex items-center justify-center font-medium rounded-lg transition-all
+                text-white hover:text-white hover:bg-white/20
+                p-3 relative group
+                will-change-transform
+                shadow-[0_0_15px_rgba(255,255,255,0.3)]
+                border border-white/30 bg-white/10
+              "
+              onClick={onToggleNotifications}
+              aria-label="Afficher les notifications"
+              style={{ transform: 'translate3d(0,0,0)' }}
+            >
+              <div className="absolute inset-0 bg-white/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-bell">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+              </svg>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500 text-xs font-bold text-white shadow-[0_0_10px_rgba(0,210,255,0.5)]">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>

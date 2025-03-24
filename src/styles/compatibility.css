@@ -16,13 +16,14 @@
 }
 
 /* Ajouter 'text-size-adjust' pour les navigateurs modernes */
-html {
+html,
+:host {
   -webkit-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
 
-/* Ajouter le préfixe -webkit pour backdrop-filter pour Safari */
+/* Ordre correct pour backdrop-filter */
 [style*="backdrop-filter"] {
   -webkit-backdrop-filter: var(--backdrop-filter-value, blur(8px));
   backdrop-filter: var(--backdrop-filter-value, blur(8px));
@@ -34,7 +35,13 @@ html {
   backdrop-filter: blur(var(--blur-amount, 8px));
 }
 
-/* Ajouter le préfixe -webkit pour user-select pour Safari */
+/* Ordre correct pour transform */
+[style*="transform"] {
+  -webkit-transform: var(--transform-value);
+  transform: var(--transform-value);
+}
+
+/* Ordre correct pour user-select */
 [style*="user-select"] {
   -webkit-user-select: var(--user-select-value, none);
   -moz-user-select: var(--user-select-value, none);
@@ -67,6 +74,33 @@ html {
 .forced-colors-mode {
   forced-color-adjust: none;
   -ms-high-contrast-adjust: none;
+}
+
+/* Support pour scrollbar (avec fallbacks pour Safari) */
+.custom-scrollbar {
+  /* Styles standard pour Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  
+  /* Fallback pour Safari */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+  }
+}
+
+/* Fix pour min-height: auto (incompatible avec Firefox 22+) */
+.min-h-auto {
+  min-height: 0; /* Utiliser 0 au lieu de auto pour Firefox */
 }
 
 /* Styles pour les éléments accessibles - optimisés pour la performance */
@@ -127,6 +161,16 @@ html {
   animation: pulseSubtle 2s ease-in-out infinite;
 }
 
+/* Support pour prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Styles pour le focus visible - amélioration de l'accessibilité au clavier */
 :focus-visible {
   outline: 2px solid rgb(var(--color-brand-primary));
@@ -179,36 +223,42 @@ img:not([alt])::after {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 0, 0, 0.1);
-  color: red;
-  font-size: 10px;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 0, 0, 0.2);
+  color: #fff;
   text-align: center;
+  padding: 10px;
+  font-size: 12px;
 }
 
-/* Fix pour la compatibilité des variables CSS utilisées dans Chrome */
+/* Media queries pour détecter le support du hover */
+@media (hover: hover) {
+  .hover\:scale-105:hover {
+    transform: scale(1.05);
+  }
+}
+
+/* Optimisation pour les écrans tactiles */
+@media (hover: none) {
+  .active\:scale-105:active {
+    transform: scale(1.05);
+  }
+}
+
+/* Variables pour les gestionnaires de navigateurs spécifiques */
 :root {
   --edge-background: #F6F6F6;
   --edge-black: #101010;
   --edge-focus-color: #838383;
   --edge-blue-hover: #0078D4;
-  --edge-blue-pressed: #1081D7;
-  --edge-blue-rest: #0070C6;
-  --edge-blue-selected: #004274;
-  --edge-border-hover: #949494;
-  --edge-border-pressed: #ADADAD;
-  --edge-border-rest: #C5C5C5;
-  --edge-grey-background: #F6F6F6;
-  --edge-grey-selected: #C6C6C6;
-  --edge-light-grey-hover: #F3F3F3;
-  --edge-light-grey-pressed: #F7F7F7;
-  --edge-light-grey-rest: #EFEFEF;
-  --edge-primary-text-color: var(--edge-black);
-  --edge-secondary-text-color: var(--edge-text-grey-rest);
-  --edge-text-blue-hover: #0070C6;
-  --edge-text-blue-rest: #0061AB;
-  --edge-text-blue-pressed: #1081D7;
-  --edge-text-grey-rest: #6F6F6F;
-  --edge-white: #FFFFFF;
+  
+  /* Variables pour les safe areas iOS */
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  
+  /* Optimisation largeur pour les écrans tactiles */
+  touch-action: manipulation;
 }

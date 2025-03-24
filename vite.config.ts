@@ -33,7 +33,8 @@ export default defineConfig({
     open: true,
     headers: {
       'Cache-Control': 'no-store',
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'X-Content-Type-Options': 'nosniff'
     }
   },
   preview: {
@@ -42,7 +43,8 @@ export default defineConfig({
     open: true,
     headers: {
       'Cache-Control': 'no-store',
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'X-Content-Type-Options': 'nosniff'
     }
   },
   build: {
@@ -53,7 +55,6 @@ export default defineConfig({
     manifest: true,
     rollupOptions: {
       output: {
-        // Implémentation du cache busting au niveau de Vite
         entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]',

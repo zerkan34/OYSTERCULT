@@ -88,7 +88,7 @@ export function AuthPage() {
                       backfaceVisibility: 'hidden'
                     }}
                   >
-                    <div className="flex items-center" style={{ transform: 'translate3d(2.9rem, 0, 0)', willChange: 'transform', backfaceVisibility: 'hidden' }}>
+                    <div className="flex items-center" style={{ transform: 'translate3d(calc(2.9rem + 10px), 0, 0)', willChange: 'transform', backfaceVisibility: 'hidden' }}>
                       <div className="flex flex-col items-center text-white relative">
                         <div className="absolute" style={{ top: '-6rem', left: '-6rem', width: '12rem', height: '12rem' }}>
                           <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -124,7 +124,7 @@ export function AuthPage() {
                           letterSpacing: '0.1em',
                           lineHeight: '0.8',
                           display: 'block',
-                          transform: 'translate3d(-1.7rem, 0rem, -30cm)',
+                          transform: 'translate3d(-1.7rem, -4rem, -30cm)',
                           willChange: 'transform',
                           backfaceVisibility: 'hidden'
                         }}

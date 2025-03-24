@@ -127,8 +127,92 @@ export const useStore = create<Store>()(
       session: null,
       sidebarCollapsed: false,
       tasks: [],
-      notifications: [],
-      unreadCount: 0,
+      notifications: [
+        {
+          id: '1',
+          type: 'success',
+          title: 'Tâche complétée',
+          message: 'La maintenance du système de filtration a été effectuée avec succès.',
+          timestamp: new Date(new Date().getTime() - 35 * 60000).toISOString(),
+          read: false,
+          important: true,
+          category: 'task',
+          metadata: {
+            taskId: 'task-123'
+          }
+        },
+        {
+          id: '2',
+          type: 'info',
+          title: 'Employé arrivé',
+          message: 'Michel Dupont est arrivé sur le site de production à 8:15.',
+          timestamp: new Date(new Date().getTime() - 120 * 60000).toISOString(),
+          read: false,
+          important: false,
+          category: 'hr'
+        },
+        {
+          id: '3',
+          type: 'warning',
+          title: 'Tâche en cours',
+          message: 'Le nettoyage des bassins est en cours depuis plus de 3 heures.',
+          timestamp: new Date(new Date().getTime() - 180 * 60000).toISOString(),
+          read: false,
+          important: true,
+          category: 'task'
+        },
+        {
+          id: '4',
+          type: 'alert',
+          title: 'Attention requise',
+          message: 'Niveau d\'oxygène bas dans le bassin 3. Vérification requise.',
+          timestamp: new Date(new Date().getTime() - 15 * 60000).toISOString(),
+          read: false,
+          important: true,
+          category: 'quality'
+        },
+        {
+          id: '5',
+          type: 'success',
+          title: 'Livraison reçue',
+          message: 'La livraison de nourriture spéciale a été reçue et enregistrée.',
+          timestamp: new Date(new Date().getTime() - 240 * 60000).toISOString(),
+          read: true,
+          important: false,
+          category: 'inventory'
+        },
+        {
+          id: '6',
+          type: 'info',
+          title: 'Équipe de contrôle arrivée',
+          message: 'L\'équipe de contrôle qualité est arrivée pour l\'inspection mensuelle.',
+          timestamp: new Date(new Date().getTime() - 90 * 60000).toISOString(),
+          read: false,
+          important: false,
+          category: 'hr'
+        },
+        {
+          id: '7',
+          type: 'success',
+          title: 'Mise à jour système',
+          message: 'La mise à jour du système de surveillance a été installée avec succès.',
+          timestamp: new Date(new Date().getTime() - 320 * 60000).toISOString(),
+          read: true,
+          important: false,
+          category: 'system'
+        },
+        {
+          id: '8',
+          type: 'warning',
+          title: 'Tâche en retard',
+          message: 'Le rapport hebdomadaire de production n\'a pas encore été soumis.',
+          timestamp: new Date(new Date().getTime() - 420 * 60000).toISOString(),
+          read: false,
+          important: true,
+          category: 'task'
+        }
+      ],
+      unreadCount: 6,
       theme: 'dark',
       batches: [{
         id: '1',

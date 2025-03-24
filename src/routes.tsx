@@ -28,6 +28,7 @@ import { ShopPage } from './features/shop/pages/ShopPage';
 import { SuppliersPage } from './features/suppliers/pages/SuppliersPage';
 import { SupplierCatalogPage } from './features/suppliers/pages/SupplierCatalogPage';
 import { OrdersPage } from './features/suppliers/pages/OrdersPage';
+import SurveillancePage from './features/surveillance/pages/SurveillancePage';
 
 export const routes = [
   {
@@ -145,6 +146,10 @@ export const routes = [
   {
     path: '/analyses',
     element: <AnalysesPage />
+  },
+  {
+    path: '/surveillance',
+    element: <SurveillancePage />
   },
   {
     path: '*',

@@ -1,0 +1,195 @@
+/**
+ * OYSTER CULT - Corrections de compatibilité universelles
+ * Ce fichier corrige les problèmes de compatibilité CSS pour tous les navigateurs
+ * en utilisant des sélecteurs de haute spécificité.
+ */
+
+/* 
+ * Correction text-size-adjust 
+ * Note: Firefox et Safari ne supportent pas text-size-adjust standard,
+ * mais supportent leurs préfixes spécifiques
+ */
+html,
+:host {
+  -webkit-text-size-adjust: 100% !important;
+  -moz-text-size-adjust: 100% !important;
+  -ms-text-size-adjust: 100% !important;
+  /* Pour Chrome 54+, Chrome Android 54+, Edge 79+ */
+  text-size-adjust: 100% !important;
+}
+
+/* Correction min-height: auto pour Firefox */
+[style*="min-height: auto"] {
+  min-height: 0 !important; /* Compatible avec Firefox 22+ */
+}
+
+.min-h-auto {
+  min-height: 0 !important; /* Compatible avec Firefox 22+ */
+}
+
+/* Correction de l'ordre des préfixes vendeurs pour backdrop-filter */
+[style*="backdrop-filter"],
+.backdrop-blur,
+[class*="backdrop"] {
+  -webkit-backdrop-filter: var(--backdrop-filter-value, blur(8px)) !important;
+  backdrop-filter: var(--backdrop-filter-value, blur(8px)) !important;
+}
+
+/* Correction de l'ordre des préfixes vendeurs pour transform */
+[style*="transform"],
+.transform,
+[class*="transform"] {
+  -webkit-transform: var(--transform-value, none) !important;
+  transform: var(--transform-value, none) !important;
+}
+
+/* Correction de l'ordre des préfixes vendeurs pour user-select */
+[style*="user-select"],
+.user-select-none,
+.user-select-text,
+.user-select-all,
+[class*="user-select"] {
+  -webkit-user-select: var(--user-select-value, none) !important;
+  -moz-user-select: var(--user-select-value, none) !important;
+  -ms-user-select: var(--user-select-value, none) !important;
+  user-select: var(--user-select-value, none) !important;
+}
+
+/* Meilleur support pour scrollbar avec fallbacks universels pour Safari */
+.custom-scrollbar,
+[class*="scrollbar"],
+.overflow-auto,
+.overflow-y-auto,
+.overflow-x-auto,
+.overflow-scroll,
+.overflow-y-scroll,
+.overflow-x-scroll {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(180, 180, 180, 0.3) transparent;
+}
+
+/* Fallback webkit pour scrollbar */
+.custom-scrollbar::-webkit-scrollbar,
+[class*="scrollbar"]::-webkit-scrollbar,
+.overflow-auto::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar,
+.overflow-scroll::-webkit-scrollbar,
+.overflow-y-scroll::-webkit-scrollbar,
+.overflow-x-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track,
+[class*="scrollbar"]::-webkit-scrollbar-track,
+.overflow-auto::-webkit-scrollbar-track,
+.overflow-y-auto::-webkit-scrollbar-track,
+.overflow-x-auto::-webkit-scrollbar-track,
+.overflow-scroll::-webkit-scrollbar-track,
+.overflow-y-scroll::-webkit-scrollbar-track,
+.overflow-x-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb,
+[class*="scrollbar"]::-webkit-scrollbar-thumb,
+.overflow-auto::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb,
+.overflow-scroll::-webkit-scrollbar-thumb,
+.overflow-y-scroll::-webkit-scrollbar-thumb,
+.overflow-x-scroll::-webkit-scrollbar-thumb {
+  background: rgba(180, 180, 180, 0.3);
+  border-radius: 4px;
+}
+
+/* Optimisations de performance pour les animations - éviter height/width */
+@keyframes fadeInOptimized {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInOptimized {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Remplacement des animations qui utilisent height/width */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Support pour les préférences de mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Support pour les zones tactiles */
+@media (hover: none) {
+  button,
+  [role="button"],
+  a,
+  input[type="submit"],
+  input[type="button"],
+  input[type="checkbox"],
+  input[type="radio"],
+  select,
+  .interactive {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    padding: 8px !important;
+  }
+}
+
+/* Support pour les safe areas iOS */
+.safe-area-padding {
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px) !important;
+}
+
+.safe-area-padding-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+}
+
+/* Optimisation tactile */
+body {
+  touch-action: manipulation;
+}

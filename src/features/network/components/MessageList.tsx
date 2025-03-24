@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { Search, MessageSquare, Plus, X } from 'lucide-react';
 import { NetworkChat } from './NetworkChat';
 
+interface MessageListProps {
+  onSelectContact?: (id: string) => void;
+}
+
 interface Contact {
   id: string;
   name: string;
@@ -52,7 +56,7 @@ const mockContacts: Contact[] = [
   }
 ];
 
-export function MessageList() {
+export function MessageList({ onSelectContact }: MessageListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
 
@@ -102,7 +106,12 @@ export function MessageList() {
                 {filteredContacts.map(contact => (
                   <div
                     key={contact.id}
-                    onClick={() => setSelectedContactId(contact.id)}
+                    onClick={() => {
+                      setSelectedContactId(contact.id);
+                      if (onSelectContact) {
+                        onSelectContact(contact.id);
+                      } 
+                    }}
                     className="p-2 sm:p-3 hover:bg-white/5 cursor-pointer transition-colors"
                     tabIndex={0}
                     role="button"

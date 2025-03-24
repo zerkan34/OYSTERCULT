@@ -42,7 +42,11 @@ import { BatchHistory } from '@/features/traceability/components/BatchHistory';
 import { PurificationPools } from '@/features/traceability/components/PurificationPools';
 import { BatchList } from '@/features/traceability/components/BatchList';
 import { AnalysesPage } from '@/features/analyses/pages/AnalysesPage';
+import SurveillanceSimplePage from '@/features/surveillance/pages/SurveillanceSimplePage';
+import SurveillancePage from '@/features/surveillance/pages/SurveillancePage';
 import { AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
+import { MessageList } from '@/features/network/components/MessageList';
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
 
@@ -79,6 +83,20 @@ function MainLayout() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!location.pathname.includes('/network/messages')) {
+      previousPageRef.current = location.pathname;
+    }
+  }, [location.pathname]);
+
+  const handleMessagesToggle = () => {
+    if (location.pathname.includes('/network/messages')) {
+      navigate(previousPageRef.current || '/dashboard');
+    } else {
+      navigate('/network/messages');
+    }
+  };
+
   return (
     <>
       <ModernHeader
@@ -86,7 +104,7 @@ function MainLayout() {
         onToggleNotifications={() => setShowNotifications(!showNotifications)}
         onShowEmergency={() => setShowEmergency(true)}
         onEmergencyClick={() => setShowEmergency(true)}
-        onToggleMessages={() => navigate('/network/messages')}
+        onToggleMessages={handleMessagesToggle}
       />
       <div className="flex min-h-screen h-full">
         {/* Bouton carré en haut à gauche pour ouvrir la barre latérale */}
@@ -117,7 +135,7 @@ function MainLayout() {
           showMobileMenu={showMobileMenu} 
           onCloseMobileMenu={() => setShowMobileMenu(false)}
           onEmergencyClick={() => setShowEmergency(true)}
-          onToggleMessages={() => navigate('/network/messages')}
+          onToggleMessages={handleMessagesToggle}
           onToggleNotifications={() => setShowNotifications(true)}
         />
 
@@ -174,6 +192,8 @@ function MainLayout() {
                   <Route path="/suppliers/catalog" element={<SupplierCatalogPage />} />
                   <Route path="/suppliers/orders" element={<OrdersPage />} />
                   <Route path="/vault" element={<DigitalVaultPage />} />
+                  <Route path="/surveillance" element={<SurveillancePage />} />
+                  <Route path="/surveillance/simple" element={<SurveillanceSimplePage />} />
                   <Route path="/analyses" element={<AnalysesPage />} />
                 </Routes>
               </AnimatePresence>
@@ -182,18 +202,17 @@ function MainLayout() {
         </div>
       </div>
 
-      {showNotifications && (
-        <NotificationsPanel
-          onClose={() => setShowNotifications(false)}
-        />
-      )}
-
-      {showEmergency && (
-        <EmergencyCall
-          isOpen={showEmergency}
-          onClose={() => setShowEmergency(false)}
-        />
-      )}
+      <AnimatePresence>
+        {showNotifications && (
+          <NotificationsPanel onClose={() => setShowNotifications(false)} />
+        )}
+        {showEmergency && (
+          <EmergencyCall
+            isOpen={showEmergency}
+            onClose={() => setShowEmergency(false)}
+          />
+        )}
+      </AnimatePresence>
 
       <FloatingNotifications />
     </>
@@ -202,17 +221,22 @@ function MainLayout() {
 
 function AppContent() {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const location = useLocation();
+  
+  // Permettre l'accès direct à la page de surveillance simple sans authentification
+  const isDirectSurveillanceAccess = location.pathname === '/surveillance/simple';
   
   return (
     <div className="min-h-screen w-screen h-screen fixed inset-0 overflow-auto">
-      {isAuthenticated ? (
-        <MainLayout />
-      ) : (
-        <Routes>
-          <Route path="/auth" element={<AuthPage />} />
+      <Routes>
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/surveillance/simple" element={<MainLayout />} />
+        {isAuthenticated ? (
+          <Route path="*" element={<MainLayout />} />
+        ) : (
           <Route path="*" element={<Navigate to="/auth" replace />} />
-        </Routes>
-      )}
+        )}
+      </Routes>
     </div>
   );
 }

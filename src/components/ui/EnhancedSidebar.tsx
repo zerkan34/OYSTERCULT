@@ -22,7 +22,8 @@ import {
   Menu,
   MessageCircle,
   Shell,
-  X
+  X,
+  Camera
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { ThemeToggle } from './ThemeToggle';
@@ -89,6 +90,10 @@ const categories = {
   "Paramètres": {
     color: "from-cyan-500/30 to-cyan-600/10",
     textColor: "text-cyan-300"
+  },
+  "Surveillance": {
+    color: "from-red-500/30 to-red-600/10",
+    textColor: "text-red-300"
   }
 };
 
@@ -191,6 +196,17 @@ const navItems = [
         path: '/profile', 
         label: 'Mon Espace', 
         icon: <UserCircle size={22} />
+      }
+    ]
+  },
+  {
+    category: "Surveillance",
+    items: [
+      { 
+        path: '/surveillance', 
+        label: 'Surveillance', 
+        icon: <Camera size={22} />,
+        ariaLabel: "Accéder à la surveillance vidéo"
       }
     ]
   }
@@ -630,31 +646,9 @@ export function EnhancedSidebar({
             {!collapsed && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  {onToggleMessages && (
-                    <motion.button 
-                      onClick={onToggleMessages}
-                      className="p-2.5 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      aria-label="Messages"
-                    >
-                      <MessageCircle className="w-5 h-5 text-white" />
-                    </motion.button>
-                  )}
-                  
-                  {onToggleNotifications && (
-                    <motion.button 
-                      onClick={onToggleNotifications}
-                      className="p-2.5 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      aria-label="Notifications"
-                    >
-                      <Bell className="w-5 h-5 text-white" />
-                    </motion.button>
-                  )}
+                  {/* Boutons de messagerie et notifications supprimés */}
                 </div>
-                
+
                 <motion.button 
                   onClick={handleLogout}
                   className="p-2.5 rounded-lg bg-white/10 hover:bg-white/15 transition-colors text-white/80 hover:text-white"

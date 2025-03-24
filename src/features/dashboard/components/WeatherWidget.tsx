@@ -10,7 +10,8 @@ import {
   ArrowUp, 
   ArrowDown,
   Sun,
-  CloudRain
+  CloudRain,
+  Calendar
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import './weather-widget.css';
@@ -35,6 +36,14 @@ interface WeatherData {
     windDirection: number;
     waveHeight: number;
   }>;
+  dailyForecast: Array<{
+    day: string;
+    condition: 'sunny' | 'cloudy' | 'rainy' | 'partly-cloudy';
+    tempMin: number;
+    tempMax: number;
+    windSpeed: number;
+    windDirection: number;
+  }>;
 }
 
 const mockWeather: WeatherData = {
@@ -55,6 +64,12 @@ const mockWeather: WeatherData = {
     { time: '15:00', temp: 19, windSpeed: 18, windDirection: 320, waveHeight: 0.9 },
     { time: '18:00', temp: 17, windSpeed: 20, windDirection: 310, waveHeight: 1.0 },
     { time: '21:00', temp: 16, windSpeed: 16, windDirection: 305, waveHeight: 0.9 }
+  ],
+  dailyForecast: [
+    { day: 'Demain', condition: 'sunny', tempMin: 16, tempMax: 21, windSpeed: 12, windDirection: 45 },
+    { day: 'Mercredi', condition: 'partly-cloudy', tempMin: 15, tempMax: 19, windSpeed: 14, windDirection: 90 },
+    { day: 'Jeudi', condition: 'rainy', tempMin: 14, tempMax: 17, windSpeed: 18, windDirection: 135 },
+    { day: 'Vendredi', condition: 'cloudy', tempMin: 15, tempMax: 20, windSpeed: 10, windDirection: 225 }
   ]
 };
 
@@ -157,8 +172,8 @@ const WeatherCard = ({
 
 export function WeatherWidget() {
   return (
-    <div className="weather-widget-container w-full mobile-full-width" style={{ width: '100vw', margin: '0 auto', padding: 0, left: 0, right: 0, maxWidth: '100vw', position: 'relative', boxSizing: 'border-box' }}>
-      <div className="weather-widget w-full flex flex-col mobile-full-width" style={{ width: '100%', maxWidth: '100%', margin: 0, padding: '15px', boxSizing: 'border-box' }}>
+    <div className="weather-widget-container w-full" style={{ width: '100%', margin: 0, padding: 0, position: 'relative', boxSizing: 'border-box' }}>
+      <div className="weather-widget w-full flex flex-col glass-effect rounded-xl p-5" style={{ width: '100%', maxWidth: '100%', margin: 0, boxSizing: 'border-box' }}>
         {/* En-tête avec titre et icône */}
         <div className="flex items-center justify-between mb-4 w-full">
           <div className="flex items-center">
@@ -172,162 +187,147 @@ export function WeatherWidget() {
           </div>
         </div>
 
-        {/* Desktop layout - restauration de la version originale */}
-        <div className="hidden md:block w-full mb-6">
-          <div className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 border border-white/10 rounded-lg overflow-hidden">
-            <div className="grid grid-cols-2 gap-6 p-6">
-              {/* Conditions actuelles */}
-              <div className="space-y-6">
-                <div className="bg-white/5 rounded-lg p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="relative">
-                      <Sun className="w-8 h-8 text-yellow-400" />
-                      <Cloud className="w-5 h-5 text-white/60 absolute -bottom-1 -right-1" />
-                    </div>
-                    <div>
-                      <div className="text-xl font-bold text-white">{mockWeather.temperature}°C</div>
-                      <div className="text-white/60 text-sm">Partiellement nuageux</div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 mt-3">
-                    <div>
-                      <div className="text-sm text-white/60">Humidité</div>
-                      <div className="text-lg font-medium text-white">{mockWeather.humidity}%</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-white/60">Visibilité</div>
-                      <div className="text-lg font-medium text-white">{mockWeather.visibility} km</div>
-                    </div>
-                  </div>
+        {/* Desktop layout avec 4 widgets alignés */}
+        <div className="hidden md:grid md:grid-cols-4 md:gap-4 md:mb-6">
+          <WeatherCard
+            title="Température"
+            icon={<ThermometerSun size={20} />}
+            className="h-full shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30"
+          >
+            <div className="flex items-center">
+              <div className="text-3xl font-bold text-white">{mockWeather.temperature}°</div>
+              <div className="text-white/60 ml-2">C</div>
+            </div>
+            <div className="text-white/60 mt-1">Ressenti 19°C</div>
+            <div className="flex items-center mt-3">
+              <Droplets size={16} className="text-cyan-400 mr-2" />
+              <span className="text-white/80">Humidité {mockWeather.humidity}%</span>
+            </div>
+          </WeatherCard>
+          
+          <WeatherCard
+            title="Vent"
+            icon={<Wind size={20} />}
+            className="h-full shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30"
+          >
+            <div className="flex items-center mb-1">
+              <div className="text-2xl font-bold text-white">{mockWeather.windSpeed}</div>
+              <div className="text-white/60 ml-1">km/h</div>
+            </div>
+            <div className="flex items-center mb-3">
+              <Navigation 
+                size={16} 
+                className="text-cyan-400 mr-2"
+                style={{ transform: `rotate(${mockWeather.windDirection}deg)` }}
+              />
+              <span className="text-white/80">{getWindDirection(mockWeather.windDirection)}</span>
+            </div>
+            <div className="text-sm text-white/60">
+              Rafales jusqu'à {mockWeather.windGust} km/h
+            </div>
+          </WeatherCard>
+          
+          <WeatherCard
+            title="Mer"
+            icon={<Waves size={20} />}
+            className="h-full shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30"
+          >
+            <div className="flex items-center mb-1">
+              <div className="text-2xl font-bold text-white">{mockWeather.waveHeight}</div>
+              <div className="text-white/60 ml-1">mètres</div>
+            </div>
+            <div className="flex items-center mb-3">
+              <Compass className="text-cyan-400 mr-2" size={16} />
+              <span className="text-white/80">{getWindDirection(mockWeather.waveDirection)}</span>
+            </div>
+            <div className="text-sm text-white/60">
+              Température de l'eau: 16°C
+            </div>
+          </WeatherCard>
+          
+          <WeatherCard
+            title="Marées"
+            icon={<Compass size={20} />}
+            className="h-full shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <ArrowUp size={16} className="text-cyan-400 mr-2" />
+                  <span className="text-white/80">Marée haute</span>
                 </div>
-
-                {/* Conditions du vent */}
-                <div className="bg-white/5 rounded-lg p-4">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <Wind className="text-brand-burgundy" size={20} />
-                    <h3 className="text-white font-medium">Vent</h3>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="text-sm text-white/60">Vitesse</div>
-                      <div className="text-lg font-medium text-white">{mockWeather.windSpeed} km/h</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-white/60">Direction</div>
-                      <div className="flex items-center">
-                        <Navigation
-                          className="text-brand-burgundy mr-2"
-                          size={16}
-                          style={{ transform: `rotate(${mockWeather.windDirection}deg)` }}
-                        />
-                        <span className="text-lg font-medium text-white">
-                          {getWindDirection(mockWeather.windDirection)}
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-white/60">Rafales</div>
-                      <div className="text-lg font-medium text-white">{mockWeather.windGust} km/h</div>
-                    </div>
-                  </div>
-                </div>
+                <div className="text-white font-medium">{mockWeather.nextHighTide}</div>
               </div>
-
-              {/* Mer et marées */}
-              <div className="space-y-6">
-                {/* État de la mer */}
-                <div className="bg-white/5 rounded-lg p-4">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <Waves className="text-brand-burgundy" size={20} />
-                    <h3 className="text-white font-medium">État de la mer</h3>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="text-sm text-white/60">Hauteur</div>
-                      <div className="text-lg font-medium text-white">{mockWeather.waveHeight}m</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-white/60">Direction</div>
-                      <div className="flex items-center">
-                        <Navigation
-                          className="text-brand-burgundy mr-2"
-                          size={16}
-                          style={{ transform: `rotate(${mockWeather.waveDirection}deg)` }}
-                        />
-                        <span className="text-lg font-medium text-white">
-                          {getWindDirection(mockWeather.waveDirection)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <ArrowDown size={16} className="text-cyan-400 mr-2" />
+                  <span className="text-white/80">Marée basse</span>
                 </div>
-
-                {/* Marées */}
-                <div className="bg-white/5 rounded-lg p-4">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <Waves className="text-brand-burgundy" size={20} />
-                    <h3 className="text-white font-medium">Marées</h3>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="text-sm text-white/60">Niveau actuel</div>
-                      <div className="text-lg font-medium text-white">{mockWeather.tideLevel}m</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-white/60">Coefficient</div>
-                      <div className="text-lg font-medium text-white">95</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-white/60">Prochaine PM</div>
-                      <div className="flex items-center">
-                        <ArrowUp className="w-4 h-4 text-brand-burgundy mr-1" />
-                        <span className="text-lg font-medium text-white">{mockWeather.nextHighTide}</span>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-white/60">Prochaine BM</div>
-                      <div className="flex items-center">
-                        <ArrowDown className="w-4 h-4 text-brand-burgundy mr-1" />
-                        <span className="text-lg font-medium text-white">{mockWeather.nextLowTide}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <div className="text-white font-medium">{mockWeather.nextLowTide}</div>
               </div>
             </div>
+          </WeatherCard>
+        </div>
 
-            {/* Prévisions horaires en bas */}
-            <div className="border-t border-white/10 p-6">
-              <h3 className="text-white font-medium mb-4">Prévisions horaires</h3>
-              <div className="grid grid-cols-4 gap-4">
-                {mockWeather.forecast.map((forecast, index) => (
-                  <div key={index} className="bg-white/5 rounded-lg p-3">
-                    <div className="text-sm text-white/60 mb-2">{forecast.time}</div>
-                    <div className="text-lg font-medium text-white mb-2">{forecast.temp}°C</div>
-                    <div className="space-y-2 text-sm text-white/60">
-                      <div className="flex items-center">
-                        <Navigation
-                          className="w-4 h-4 text-brand-burgundy mr-1"
-                          style={{ transform: `rotate(${forecast.windDirection}deg)` }}
-                        />
-                        <span>{forecast.windSpeed} km/h</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Waves className="w-4 h-4 text-brand-burgundy mr-1" />
-                        <span>{forecast.waveHeight}m</span>
-                      </div>
-                    </div>
+        {/* Prévisions horaires en bas */}
+        <div className="border-t border-white/10 p-6">
+          <h3 className="text-white font-medium mb-4">Prévisions horaires</h3>
+          <div className="grid grid-cols-4 gap-4">
+            {mockWeather.forecast.map((forecast, index) => (
+              <div key={index} className="bg-white/5 rounded-lg p-3 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
+                <div className="text-sm text-white/60 mb-2">{forecast.time}</div>
+                <div className="text-lg font-medium text-white mb-2">{forecast.temp}°C</div>
+                <div className="space-y-2 text-sm text-white/60">
+                  <div className="flex items-center">
+                    <Navigation
+                      className="w-4 h-4 text-brand-burgundy mr-1"
+                      style={{ transform: `rotate(${forecast.windDirection}deg)` }}
+                    />
+                    <span>{forecast.windSpeed} km/h</span>
                   </div>
-                ))}
+                  <div className="flex items-center">
+                    <Waves className="w-4 h-4 text-brand-burgundy mr-1" />
+                    <span>{forecast.waveHeight}m</span>
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Mobile layout - conservée telle quelle */}
-        <div className="md:hidden flex flex-col space-y-4 w-full mobile-full-width" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', margin: 0, padding: 0 }}>
+        {/* Prévisions jours à venir */}
+        <div className="border-t border-white/10 p-6">
+          <h3 className="text-white font-medium mb-4">Prévisions des prochains jours</h3>
+          <div className="grid grid-cols-4 gap-4">
+            {mockWeather.dailyForecast.map((forecast, index) => (
+              <div key={index} className="bg-white/5 rounded-lg p-3 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
+                <div className="text-sm text-white/60 mb-2">{forecast.day}</div>
+                <div className="flex justify-center mb-2">
+                  <WeatherIcon condition={forecast.condition} />
+                </div>
+                <div className="text-center text-lg font-medium text-white mb-2">
+                  <span className="text-brand-burgundy">{forecast.tempMin}°</span> / <span>{forecast.tempMax}°</span>
+                </div>
+                <div className="text-sm text-white/60 text-center">
+                  <div className="flex items-center justify-center">
+                    <Wind className="w-4 h-4 text-brand-burgundy mr-1" />
+                    <span>{forecast.windSpeed} km/h</span>
+                    <Navigation 
+                      className="w-4 h-4 text-brand-burgundy ml-2"
+                      style={{ transform: `rotate(${forecast.windDirection || 0}deg)` }} 
+                    />
+                    <span className="ml-1">{getWindDirection(forecast.windDirection || 0)}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile layout */}
+        <div className="md:hidden flex flex-col space-y-4 w-full" style={{ width: '100%', maxWidth: '100%', margin: 0, padding: 0, boxSizing: 'border-box' }}>
           {/* Résumé météo mobile */}
-          <div className="mobile-weather-main w-full mobile-full-width" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', margin: 0 }}>
+          <div className="mobile-weather-main w-full glass-effect rounded-xl p-3" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', margin: 0 }}>
             <div className="mobile-weather-header w-full">
               <div className="mobile-current-temp">{mockWeather.temperature}°C</div>
               <WeatherIcon condition={mockWeather.conditions} />
@@ -355,141 +355,72 @@ export function WeatherWidget() {
               mockWeather.conditions === 'rainy' ? 'Pluvieux' : 'Partiellement nuageux'}
             </div>
           </div>
-
-          {/* Prévisions météo mobile - défilable horizontalement */}
-          <div className="weather-forecast-container w-full mobile-full-width" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', margin: 0 }}>
-            <h3 className="text-white/80 text-sm font-medium mb-2">Prévisions 24h</h3>
-            <div className="weather-forecast">
-              {mockWeather.forecast.map((item, index) => (
-                <div key={index} className="forecast-item touch-target">
-                  <div className="forecast-time">{item.time}</div>
-                  <div className="forecast-temp">{item.temp}°</div>
-                  <div className="forecast-wind">
-                    <span aria-hidden="true">
-                      <Navigation 
-                        size={14} 
-                        style={{ transform: `rotate(${item.windDirection}deg)` }} 
-                      />
-                    </span>
-                    <span className="forecast-wind-speed">{item.windSpeed}</span>
+          
+          {/* Widgets météo mobile */}
+          <div className="w-full grid grid-cols-2 gap-3" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', margin: 0 }}>
+            {/* Card 1: Marées */}
+            <div className="mobile-weather-card shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
+              <div className="mobile-weather-card-header">
+                <span aria-hidden="true"><Waves size={20} className="mobile-weather-card-icon" /></span>
+                <div className="mobile-weather-card-title">Marées</div>
+              </div>
+              <div className="mobile-weather-card-content">
+                <div className="mobile-weather-card-row">
+                  <span aria-hidden="true"><ArrowUp size={16} className="text-brand-burgundy" /></span>
+                  <div className="mobile-weather-card-label">Haute</div>
+                  <div className="mobile-weather-card-value">{mockWeather.nextHighTide}</div>
+                </div>
+                <div className="mobile-weather-card-row">
+                  <span aria-hidden="true"><ArrowDown size={16} className="text-brand-burgundy" /></span>
+                  <div className="mobile-weather-card-label">Basse</div>
+                  <div className="mobile-weather-card-value">{mockWeather.nextLowTide}</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Card 2: Vent */}
+            <div className="mobile-weather-card shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
+              <div className="mobile-weather-card-header">
+                <span aria-hidden="true"><Wind size={20} className="mobile-weather-card-icon" /></span>
+                <div className="mobile-weather-card-title">Vent</div>
+              </div>
+              <div className="mobile-weather-card-content">
+                <div className="mobile-weather-card-row">
+                  <span aria-hidden="true"><Navigation size={16} className="text-brand-burgundy" style={{ transform: `rotate(${mockWeather.windDirection}deg)` }} /></span>
+                  <div className="mobile-weather-card-label">Direction</div>
+                  <div className="mobile-weather-card-value">{getWindDirection(mockWeather.windDirection)}</div>
+                </div>
+                <div className="mobile-weather-card-row">
+                  <span aria-hidden="true"><Wind size={16} className="text-brand-burgundy" /></span>
+                  <div className="mobile-weather-card-label">Rafales</div>
+                  <div className="mobile-weather-card-value">{mockWeather.windGust} km/h</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Mobile forecast */}
+          <div className="mobile-forecast-section w-full shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
+            <div className="mobile-forecast-header">
+              <span aria-hidden="true"><Calendar size={20} className="mobile-forecast-icon" /></span>
+              <div className="mobile-forecast-title">Prévisions</div>
+            </div>
+            <div className="mobile-forecast-content">
+              {mockWeather.forecast.map((forecast, index) => (
+                <div key={index} className="mobile-forecast-item">
+                  <div className="mobile-forecast-time">{forecast.time}</div>
+                  <div className="mobile-forecast-temp">{forecast.temp}°</div>
+                  <div className="mobile-forecast-wind">
+                    <Navigation size={14} className="mobile-forecast-wind-icon" style={{ transform: `rotate(${forecast.windDirection}deg)` }} />
+                    <span>{forecast.windSpeed}</span>
                   </div>
-                  <div className="forecast-wave">{item.waveHeight}m</div>
+                  <div className="mobile-forecast-waves">
+                    <Waves size={14} className="mobile-forecast-waves-icon" />
+                    <span>{forecast.waveHeight}m</span>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Cartes d'informations horizontales pour mobile */}
-          <div className="grid grid-cols-1 gap-3 w-full mobile-full-width" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', margin: 0, padding: 0 }}>
-            <WeatherCard 
-              title="Détails du vent" 
-              icon={<Wind size={18} />}
-              className="mobile-full-width-card mobile-compact-weather-card"
-            >
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <div className="text-white/60 text-xs">Direction</div>
-                  <div className="flex items-center mt-1">
-                    <Navigation size={16} style={{ transform: `rotate(${mockWeather.windDirection}deg)` }} />
-                    <span className="ml-1">{getWindDirection(mockWeather.windDirection)}</span>
-                  </div>
-                </div>
-                <div>
-                  <div className="text-white/60 text-xs">Vitesse</div>
-                  <div className="flex items-center mt-1">
-                    <span>{mockWeather.windSpeed} km/h</span>
-                  </div>
-                </div>
-                <div>
-                  <div className="text-white/60 text-xs">Rafales</div>
-                  <div className="flex items-center mt-1">
-                    <span>{mockWeather.windGust} km/h</span>
-                  </div>
-                </div>
-              </div>
-            </WeatherCard>
-
-            <WeatherCard 
-              title="Conditions maritimes" 
-              icon={<Waves size={18} />}
-              className="mobile-full-width-card mobile-compact-weather-card"
-            >
-              <div className="grid grid-cols-2 gap-1">
-                <div>
-                  <div className="text-sm text-white/60 whitespace-nowrap">Hauteur vagues</div>
-                  <div className="text-base font-medium text-white whitespace-nowrap">{mockWeather.waveHeight} m</div>
-                </div>
-                <div>
-                  <div className="text-sm text-white/60 whitespace-nowrap">Direction</div>
-                  <div className="flex items-center">
-                    <span aria-label={`Direction des vagues: Nord-Est`}>
-                      <Navigation 
-                        className="text-cyan-400 mr-2" 
-                        size={18}
-                        style={{ transform: `rotate(${mockWeather.waveDirection}deg)` }}
-                        aria-hidden="true"
-                      />
-                    </span>
-                    <span className="text-base font-medium text-white whitespace-nowrap">Nord-Est</span>
-                  </div>
-                </div>
-              </div>
-            </WeatherCard>
-
-            <WeatherCard
-              icon={<span aria-hidden="true"><Compass size={18} /></span>}
-              title="Marées"
-              className="mobile-full-width-card mobile-compact-weather-card"
-            >
-              <div className="grid grid-cols-2 gap-1">
-                <div>
-                  <div className="text-sm text-white/60 whitespace-nowrap">Niveau actuel</div>
-                  <div className="text-base font-medium text-white whitespace-nowrap">{mockWeather.tideLevel} m</div>
-                </div>
-                <div>
-                  <div className="flex items-center text-sm text-white/60 whitespace-nowrap">
-                    <span aria-label="Marée montante">
-                      <ArrowUp className="w-3 h-3 mr-1 text-cyan-400" aria-hidden="true" />
-                    </span>
-                    Prochaine marée haute
-                  </div>
-                  <div className="text-base font-medium text-white whitespace-nowrap">{mockWeather.nextHighTide}</div>
-                </div>
-                <div className="col-span-2 mt-1">
-                  <div className="flex items-center text-sm text-white/60 whitespace-nowrap">
-                    <span aria-label="Marée descendante">
-                      <ArrowDown className="w-3 h-3 mr-1 text-cyan-400" aria-hidden="true" />
-                    </span>
-                    Prochaine marée basse
-                  </div>
-                  <div className="text-base font-medium text-white whitespace-nowrap">{mockWeather.nextLowTide}</div>
-                </div>
-              </div>
-            </WeatherCard>
-
-            <WeatherCard
-              icon={<span aria-hidden="true"><Droplets size={18} /></span>}
-              title="Conditions générales"
-              className="mobile-full-width-card mobile-compact-weather-card"
-            >
-              <div className="grid grid-cols-2 gap-1">
-                <div>
-                  <div className="text-sm text-white/60 whitespace-nowrap">Humidité</div>
-                  <div className="text-base font-medium text-white whitespace-nowrap">{mockWeather.humidity}%</div>
-                </div>
-                <div>
-                  <div className="text-sm text-white/60 whitespace-nowrap">Visibilité</div>
-                  <div className="text-base font-medium text-white whitespace-nowrap">{mockWeather.visibility} km</div>
-                </div>
-                <div className="col-span-2 mt-1">
-                  <div className="text-sm text-white/60 whitespace-nowrap">Qualité de l'eau</div>
-                  <div className="text-base font-medium text-white flex items-center whitespace-nowrap">
-                    <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2" aria-hidden="true"></span>
-                    Excellente
-                  </div>
-                </div>
-              </div>
-            </WeatherCard>
           </div>
         </div>
       </div>
