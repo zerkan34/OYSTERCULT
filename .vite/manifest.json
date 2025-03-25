@@ -1,42 +1,42 @@
 {
-  "_browser-BgPLRIEh.js": {
-    "file": "assets/browser-BgPLRIEh.js",
+  "_browser-op7_APue.js": {
+    "file": "assets/browser-op7_APue.js",
     "name": "browser",
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-BhYmJZoo.js"
+      "_vendor-CO68dHOL.js"
     ]
   },
-  "_vendor-BhYmJZoo.js": {
-    "file": "assets/vendor-BhYmJZoo.js",
+  "_vendor-CO68dHOL.js": {
+    "file": "assets/vendor-CO68dHOL.js",
     "name": "vendor"
   },
   "index.html": {
-    "file": "assets/index-CvuLeSWW.js",
+    "file": "assets/index-CUDD9HIq.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
     "imports": [
-      "_vendor-BhYmJZoo.js"
+      "_vendor-CO68dHOL.js"
     ],
     "dynamicImports": [
       "node_modules/html2canvas/dist/html2canvas.esm.js",
       "node_modules/dompurify/dist/purify.es.js",
       "node_modules/canvg/lib/index.es.js",
-      "_browser-BgPLRIEh.js",
+      "_browser-op7_APue.js",
       "node_modules/qr-scanner/qr-scanner-worker.min.js"
     ],
     "css": [
-      "assets/index-BKm73Jb8.css"
+      "assets/index-D_qyRCTo.css"
     ]
   },
   "node_modules/canvg/lib/index.es.js": {
-    "file": "assets/index.es-B8W-Sa1E.js",
+    "file": "assets/index.es-98QeItra.js",
     "name": "index.es",
     "src": "node_modules/canvg/lib/index.es.js",
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-BhYmJZoo.js",
+      "_vendor-CO68dHOL.js",
       "index.html"
     ]
   },
