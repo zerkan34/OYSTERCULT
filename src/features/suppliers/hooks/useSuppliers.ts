@@ -209,7 +209,7 @@ export interface CreateSupplierDTO {
 export function useSuppliers() {
   const queryClient = useQueryClient();
 
-  const { data: suppliers = mockSuppliers } = useQuery({
+  const { data: suppliers = mockSuppliers, isLoading } = useQuery({
     queryKey: ['suppliers'],
     queryFn: async () => {
       // Pour le moment, on utilise les données mockées
@@ -238,6 +238,24 @@ export function useSuppliers() {
     }
   });
 
+  const updateSupplier = useMutation({
+    mutationFn: async (data: { id: string; deleted?: boolean }) => {
+      // Pour le moment, on simule la mise à jour (suppression)
+      const index = mockSuppliers.findIndex(s => s.id === data.id);
+      if (index !== -1 && data.deleted !== undefined) {
+        mockSuppliers[index] = { 
+          ...mockSuppliers[index], 
+          deleted: data.deleted,
+          updated_at: new Date().toISOString()
+        };
+      }
+      return mockSuppliers[index];
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['suppliers'] });
+    }
+  });
+
   const getSupplierProducts = async (supplierId: string): Promise<Product[]> => {
     // Pour le moment, on retourne les données mockées
     return mockProducts[supplierId as keyof typeof mockProducts] || [];
@@ -245,7 +263,9 @@ export function useSuppliers() {
 
   return {
     suppliers,
+    isLoading,
     createSupplier,
+    updateSupplier,
     getSupplierProducts
   };
 }

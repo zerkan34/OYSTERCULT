@@ -189,9 +189,9 @@ function MainLayout() {
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/shop" element={<ShopPage />} />
                   <Route path="/suppliers" element={<SuppliersPage />} />
-                  <Route path="/suppliers/catalog" element={<SupplierCatalogPage />} />
+                  <Route path="/digital-vault" element={<DigitalVaultPage />} />
+                  <Route path="/supplier/:id" element={<SupplierCatalogPage />} />
                   <Route path="/suppliers/orders" element={<OrdersPage />} />
-                  <Route path="/vault" element={<DigitalVaultPage />} />
                   <Route path="/surveillance" element={<SurveillancePage />} />
                   <Route path="/surveillance/simple" element={<SurveillanceSimplePage />} />
                   <Route path="/analyses" element={<AnalysesPage />} />

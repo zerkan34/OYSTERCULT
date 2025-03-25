@@ -23,7 +23,7 @@ import { MessageList } from '../components/MessageList';
 import { useStore } from '@/lib/store';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 
 type NetworkTab = 'feed' | 'contacts' | 'directory' | 'forum' | 'messages' | 'suppliers';
 
@@ -70,117 +70,111 @@ export function NetworkPage({ messageView = false, activeTab: initialActiveTab }
         className="flex items-center mb-8"
       >
         <div className="relative mr-4">
-          <div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,128,128,0.9)] to-[rgba(0,160,160,0.7)] blur-xl opacity-70 rounded-full" />
-          <div className="relative z-10 p-3 rounded-full bg-gradient-to-br from-[rgba(0,128,128,0.3)] to-[rgba(0,60,100,0.3)] shadow-[rgba(0,0,0,0.3)_0px_5px_15px,rgba(0,210,200,0.15)_0px_0px_10px_inset]">
-            <Users size={28} className="text-white" />
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur-lg" />
+          <div className="relative z-10 p-3 rounded-full bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] border border-white/10">
+            <Users size={28} className="text-cyan-400" />
           </div>
         </div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
           Entre Pro
         </h1>
       </motion.div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setShowAddFriend(true)}
-            className="relative flex items-center px-4 py-2 bg-brand-primary/20 rounded-lg text-brand-primary hover:bg-brand-primary/30 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
           >
-            <UserPlus size={20} className="mr-2" />
+            <UserPlus size={20} />
             Ajouter un contact
           </button>
           <button
             onClick={() => setShowNewPost(true)}
-            className="flex items-center px-4 py-2 bg-brand-primary/20 rounded-lg text-brand-primary hover:bg-brand-primary/30 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
           >
-            <Plus size={20} className="mr-2" />
+            <Plus size={20} />
             Nouvelle publication
           </button>
         </div>
       </div>
 
-      <div className="flex items-center space-x-4 border-b border-white/10">
+      <div className="flex items-center space-x-4 border-b border-white/10 mb-6">
         <button
           onClick={() => setActiveTab('feed')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 ${
             activeTab === 'feed'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
+          aria-current={activeTab === 'feed' ? 'page' : undefined}
         >
-          <div className="flex items-center">
-            <Rss size={16} className="mr-2" />
-            Fil d'actualités
-          </div>
+          <Rss size={16} />
+          Fil d'actualités
         </button>
         <button
           onClick={() => setActiveTab('contacts')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 ${
             activeTab === 'contacts'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
+          aria-current={activeTab === 'contacts' ? 'page' : undefined}
         >
-          <div className="flex items-center">
-            <Users size={16} className="mr-2" />
-            Contacts
-          </div>
+          <Users size={16} />
+          Contacts
         </button>
         <button
           onClick={() => setActiveTab('directory')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 ${
             activeTab === 'directory'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
+          aria-current={activeTab === 'directory' ? 'page' : undefined}
         >
-          <div className="flex items-center">
-            <Globe size={16} className="mr-2" />
-            Annuaire Prestataires
-          </div>
+          <Globe size={16} />
+          Annuaire Prestataires
         </button>
         <button
           onClick={() => setActiveTab('forum')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 ${
             activeTab === 'forum'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
+          aria-current={activeTab === 'forum' ? 'page' : undefined}
         >
-          <div className="flex items-center">
-            <MessageSquare size={16} className="mr-2" />
-            Forum
-          </div>
+          <MessageSquare size={16} />
+          Forum
         </button>
         <button
           onClick={() => setActiveTab('messages')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 ${
             activeTab === 'messages'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
+          aria-current={activeTab === 'messages' ? 'page' : undefined}
         >
-          <div className="flex items-center">
-            <MessageCircle size={16} className="mr-2" />
-            Messagerie
-          </div>
+          <MessageCircle size={16} />
+          Messagerie
         </button>
         <button
           onClick={() => setActiveTab('suppliers')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 ${
             activeTab === 'suppliers'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
+          aria-current={activeTab === 'suppliers' ? 'page' : undefined}
         >
-          <div className="flex items-center">
-            <Users size={16} className="mr-2" />
-            Fournisseurs Amis
-          </div>
+          <Users size={16} />
+          Fournisseurs Amis
         </button>
       </div>
 
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4 mb-6">
         <div className="flex-1 relative">
           <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" />
           <input
@@ -188,51 +182,54 @@ export function NetworkPage({ messageView = false, activeTab: initialActiveTab }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Rechercher..."
-            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40"
+            className="w-full px-4 py-3 pl-10 bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px] border border-white/10 hover:border-cyan-400/30 transition-all text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+            aria-label="Rechercher"
           />
         </div>
-        <button className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors">
-          <Filter size={20} className="mr-2" />
+        <button className="flex items-center gap-2 px-4 py-3 bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px] border border-white/10 hover:border-cyan-400/30 text-white hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] transition-all duration-300 transform hover:-translate-y-1 min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40">
+          <Filter size={18} />
           Filtres
         </button>
-        <button className="relative p-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors">
-          <Bell size={20} className="text-amber-500 drop-shadow-[0_0_3px_rgba(245,158,11,0.5)]" />
+        <button className="relative p-3 bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px] border border-white/10 hover:border-cyan-400/30 text-white hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] transition-all duration-300 transform hover:-translate-y-1 min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40">
+          <Bell size={18} className="text-cyan-400" />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center text-xs font-bold">
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-cyan-500 rounded-full flex items-center justify-center text-xs font-bold shadow-[0_0_10px_rgba(0,210,200,0.5)]">
               {unreadCount}
             </span>
           )}
         </button>
       </div>
 
-      {activeTab === 'feed' && <NetworkFeed />}
-      {activeTab === 'contacts' && (
-        <NetworkContacts 
-          searchQuery={searchQuery}
-          onSelectContact={(contactId) => {
-            setSelectedContactId(contactId);
-            setActiveTab('feed');
-          }}
-        />
-      )}
-      {activeTab === 'directory' && (
-        <ProDirectory 
-          searchQuery={searchQuery} 
-          selectedSkill={selectedSkill}
-        />
-      )}
-      {activeTab === 'forum' && (
-        <Forum searchQuery={searchQuery} />
-      )}
-      {activeTab === 'messages' && (
-        <MessageList />
-      )}
-      {activeTab === 'suppliers' && (
-        <FriendSuppliers />
-      )}
+      <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+        {activeTab === 'feed' && <NetworkFeed />}
+        {activeTab === 'contacts' && (
+          <NetworkContacts 
+            searchQuery={searchQuery}
+            onSelectContact={(contactId) => {
+              setSelectedContactId(contactId);
+              setActiveTab('feed');
+            }}
+          />
+        )}
+        {activeTab === 'directory' && (
+          <ProDirectory 
+            searchQuery={searchQuery} 
+            selectedSkill={selectedSkill}
+          />
+        )}
+        {activeTab === 'forum' && (
+          <Forum searchQuery={searchQuery} />
+        )}
+        {activeTab === 'messages' && (
+          <MessageList />
+        )}
+        {activeTab === 'suppliers' && (
+          <FriendSuppliers />
+        )}
+      </div>
 
       {showNewPost && (
-        <NewPostModal onClose={() => setShowNewPost(false)} />
+        <NewPostModal onClose={() => setShowNewPost(false)} type="forum" />
       )}
 
       {showAddFriend && (

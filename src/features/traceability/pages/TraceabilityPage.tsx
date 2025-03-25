@@ -4,8 +4,10 @@ import { Modal } from '../../../components/Modal';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { motion } from 'framer-motion';
-import 'jspdf-autotable';
 import { BrowserQRCodeReader } from '@zxing/browser';
+
+// Ajout du style pour l'animation de fade-in
+import './traceability.css';
 
 // Types
 interface Lot {
@@ -137,6 +139,7 @@ const mockBassins: Bassin[] = [
     stats: [
       { label: 'Température', value: '12.3°C' },
       { label: 'Oxygène', value: '7.8 mg/L' },
+      { label: 'Produit', value: 'Huîtres N°2' },
     ],
   },
   {
@@ -152,6 +155,7 @@ const mockBassins: Bassin[] = [
     stats: [
       { label: 'Température', value: '11.9°C' },
       { label: 'Oxygène', value: '6.5 mg/L' },
+      { label: 'Produit', value: 'Moules de mer' },
     ],
   },
   {
@@ -167,6 +171,7 @@ const mockBassins: Bassin[] = [
     stats: [
       { label: 'Température', value: '12.1°C' },
       { label: 'Oxygène', value: '7.2 mg/L' },
+      { label: 'Produit', value: 'Huîtres N°3' },
     ],
   },
 ];
@@ -363,6 +368,7 @@ export function TraceabilityPage() {
   const [selectedBL, setSelectedBL] = useState<any>(null);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({});
   const [qrResult, setQrResult] = useState<string>('');
+  const [expandedStorages, setExpandedStorages] = useState<string[]>([]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [codeReader, setCodeReader] = useState<BrowserQRCodeReader | null>(null);
@@ -905,7 +911,7 @@ export function TraceabilityPage() {
               <p className="text-white">{selectedBL.date}</p>
             </div>
             <div>
-              <p className="text-sm text-cyan-400">Client</p>
+              <p className="text-sm text-cyan-400 mb-1">Client</p>
               <p className="text-white">{selectedBL.client}</p>
             </div>
           </div>
@@ -1107,15 +1113,15 @@ export function TraceabilityPage() {
 
   const TabList = ({ tabs, activeTab, onChange, className }: { tabs: any[], activeTab: string, onChange: (id: string) => void, className?: string }) => {
     return (
-      <div className={`flex ${className}`} role="tablist">
+      <div className={`flex gap-4 ${className}`} role="tablist">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => onChange(tab.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all whitespace-nowrap min-w-[44px] min-h-[44px] ${
               activeTab === tab.id
-                ? 'bg-cyan-500/20 text-cyan-400 focus:ring-2 focus:ring-cyan-500/40'
-                : 'text-white/60 hover:text-white hover:bg-white/5 focus:ring-2 focus:ring-white/30'
+                ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] focus:ring-2 focus:ring-cyan-500/40 transform hover:-translate-y-1 hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300'
+                : 'text-white/60 hover:text-white hover:bg-white/5 shadow-[0_4px_8px_rgba(0,0,0,0.2)] hover:shadow-[0_5px_12px_rgba(0,0,0,0.3)] focus:ring-2 focus:ring-white/30 transform hover:-translate-y-1 transition-all duration-300'
             }`}
             role="tab"
             aria-selected={activeTab === tab.id}
@@ -1160,12 +1166,6 @@ export function TraceabilityPage() {
       count: 36
     },
     {
-      id: 'coffre_fort',
-      label: 'Coffre fort numérique',
-      icon: <Lock size={20} />,
-      count: 12
-    },
-    {
       id: 'historique',
       label: 'Historique',
       icon: <History size={20} />
@@ -1177,37 +1177,42 @@ export function TraceabilityPage() {
     console.log('Visualisation du document:', documentId);
   };
 
+  const toggleStorageExpand = (storageId: string) => {
+    setExpandedStorages(prev => 
+      prev.includes(storageId) 
+        ? prev.filter(id => id !== storageId) 
+        : [...prev, storageId]
+    );
+  };
+
   return (
-    <div className="flex-1 pt-16 md:pt-16 pb-4 px-4 md:px-6 lg:px-8 ml-0 lg:ml-[4.5rem] transition-all duration-300"
-      style={{
-        backgroundImage: `linear-gradient(to bottom right, rgba(0, 128, 166, 0.95), rgba(0, 166, 155, 0.95)), url("/imgs/bg-waves.svg")`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}
-    >
-      <div className="mb-6 relative">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-          <h1 className="text-2xl font-bold text-white">Traçabilité</h1>
+    <div className="container mx-auto px-4 py-10 max-w-7xl">
+      <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <h1 className="text-3xl font-bold text-gradient-to-r from-cyan-400 to-blue-500 flex items-center gap-2">
+            <Shell size={28} className="text-cyan-400" aria-hidden="true" />
+            Traçabilité
+          </h1>
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setShowFilterModal(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-              aria-label="Filtrer les résultats"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
+              aria-label="Filtrer les lots"
             >
               <Filter className="w-4 h-4" />
               <span className="hidden sm:inline">Filtrer</span>
             </button>
-            <button 
+            <button
               onClick={() => setShowQRModal(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
               aria-label="Scanner un QR code"
             >
               <QrCode className="w-4 h-4" />
               <span className="hidden sm:inline">Scanner</span>
             </button>
-            <button 
+            <button
               onClick={() => setShowExportModal(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
               aria-label="Exporter les données"
             >
               <Download className="w-4 h-4" />
@@ -1216,7 +1221,7 @@ export function TraceabilityPage() {
           </div>
         </div>
         
-        <div className="relative mb-6">
+        <div className="relative mb-6 mt-4">
           <TabList 
             tabs={tabs} 
             activeTab={activeTab} 
@@ -1229,124 +1234,264 @@ export function TraceabilityPage() {
       <div id="traceability-content" className="space-y-6">
         {activeTab === 'lots' && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mockLots.map((lot) => (
-                <div 
-                  key={lot.id} 
-                  className="p-4 rounded-lg border border-cyan-500/20 bg-cyan-500/5 backdrop-blur-lg backdrop-filter hover:bg-cyan-500/10 transition-colors"
-                >
-                  <div className="flex flex-col justify-between h-full">
-                    <div>
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-8">
+                <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                  <Package size={20} className="text-cyan-400" aria-hidden="true" />
+                  Lots de production
+                </h2>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setShowQRModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
+                    aria-label="Ajouter un lot"
+                  >
+                    <Plus className="w-4 h-4" aria-hidden="true" />
+                    <span className="hidden sm:inline">Ajouter</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+                {mockLots.map((lot) => (
+                  <div 
+                    key={lot.id} 
+                    className="p-4 rounded-lg border border-cyan-500/20 bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:bg-cyan-500/10 transition-colors"
+                  >
+                    <div className="flex flex-col h-full">
                       <div className="flex justify-between items-start mb-3">
-                        <h3 className="font-medium text-white">{lot.name}</h3>
-                        <button
-                          onClick={() => handleEdit(lot)}
-                          className="text-cyan-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 rounded min-w-[44px] min-h-[44px] p-2"
-                          aria-label={`Modifier ${lot.name}`}
-                        >
-                          <Edit2 className="w-4 h-4" aria-hidden="true" />
-                        </button>
-                      </div>
-                      <p className="text-sm text-white/60 mb-3">Emplacement: {lot.location}</p>
-                    </div>
-                    <div className="mt-2 space-y-3">
-                      <div className="bg-cyan-500/10 rounded-lg p-3">
-                        <div className="flex justify-between">
-                          <p className="text-sm text-cyan-400">Stock</p>
-                          <div className="flex items-center gap-1">
-                            <span className={`w-2 h-2 rounded-full ${lot.status === 'Optimal' ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
-                            <p className="text-xs text-white/70">{lot.status}</p>
-                          </div>
+                        <div>
+                          <h3 className="font-medium text-white">{lot.name}</h3>
+                          <p className="text-sm text-white/60 mt-1">Emplacement: {lot.location}</p>
                         </div>
-                        <p className="text-white">{lot.stock.quantity} {lot.stock.unit}</p>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleEdit(lot)}
+                            className="text-cyan-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 rounded min-w-[44px] min-h-[44px] p-2 flex items-center justify-center"
+                            aria-label={`Modifier ${lot.name}`}
+                          >
+                            <Edit2 className="w-4 h-4" aria-hidden="true" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="text-sm text-white/70">
-                        <div className="flex justify-between mb-1">
-                          <p>Date de création</p>
-                          <p>{lot.date}</p>
+                      
+                      <div className="mt-2 space-y-2">
+                        <div className="bg-cyan-500/10 rounded-lg p-3">
+                          <div className="flex justify-between">
+                            <p className="text-sm text-cyan-400">Stock</p>
+                            <div className="flex items-center gap-1">
+                              <span className={`w-2 h-2 rounded-full ${lot.status === 'Optimal' ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+                              <p className="text-xs text-white/70">{lot.status}</p>
+                            </div>
+                          </div>
+                          <p className="text-white">{lot.stock.quantity} {lot.stock.unit}</p>
+                        </div>
+                        <div className="text-sm text-white/70">
+                          <div className="flex justify-between mb-1">
+                            <p>Date de création</p>
+                            <p>{lot.date}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </>
         )}
         
         {activeTab === 'bassins' && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mockBassins.map((bassin) => (
-                <div 
-                  key={bassin.id} 
-                  className="p-4 rounded-lg border border-cyan-500/20 bg-cyan-500/5 backdrop-blur-lg backdrop-filter hover:bg-cyan-500/10 transition-colors"
-                >
-                  <div className="flex flex-col justify-between h-full">
-                    <div>
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-8">
+                <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                  <Waves size={20} className="text-cyan-400" aria-hidden="true" />
+                  Occupation des bassins
+                </h2>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setShowQRModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
+                    aria-label="Ajouter un bassin"
+                  >
+                    <Plus className="w-4 h-4" aria-hidden="true" />
+                    <span className="hidden sm:inline">Ajouter</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+                {mockBassins.map((bassin) => (
+                  <div 
+                    key={bassin.id} 
+                    className="p-4 rounded-lg border border-cyan-500/20 bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:bg-cyan-500/10 transition-colors"
+                  >
+                    <div className="flex flex-col h-full">
                       <div className="flex justify-between items-start mb-3">
-                        <h3 className="font-medium text-white">{bassin.name}</h3>
-                        <button
-                          onClick={() => handleEdit(bassin)}
-                          className="text-cyan-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 rounded min-w-[44px] min-h-[44px] p-2"
-                          aria-label={`Modifier ${bassin.name}`}
-                        >
-                          <Edit2 className="w-4 h-4" aria-hidden="true" />
-                        </button>
-                      </div>
-                      <p className="text-sm text-white/60 mb-3">Emplacement: {bassin.location}</p>
-                    </div>
-                    <div className="mt-4 space-y-3">
-                      <div className="mb-2">
-                        <p className="text-sm text-cyan-400 mb-1">Occupation</p>
-                        <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-cyan-500/50 rounded-full" 
-                            style={{ width: bassin.occupation }} 
-                            role="progressbar" 
-                            aria-valuenow={parseInt(bassin.occupation)} 
-                            aria-valuemin={0} 
-                            aria-valuemax={100}
-                            aria-label={`Occupation du bassin: ${bassin.occupation}`}
-                          ></div>
+                        <div>
+                          <h3 className="font-medium text-white">{bassin.name}</h3>
+                          <p className="text-sm text-white/60 mt-1">Emplacement: {bassin.location}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleEdit(bassin)}
+                            className="text-cyan-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 rounded min-w-[44px] min-h-[44px] p-2 flex items-center justify-center"
+                            aria-label={`Modifier ${bassin.name}`}
+                          >
+                            <Edit2 className="w-4 h-4" aria-hidden="true" />
+                          </button>
                         </div>
                       </div>
-                      <div className="bg-cyan-500/10 rounded-lg p-3">
-                        <div className="flex justify-between">
-                          <p className="text-sm text-cyan-400">Stock</p>
-                          <div className="flex items-center gap-1">
-                            <span className={`w-2 h-2 rounded-full ${bassin.status === 'Optimal' ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
-                            <p className="text-xs text-white/70">{bassin.status}</p>
-                          </div>
-                        </div>
-                        <p className="text-white">{bassin.stock.quantity} {bassin.stock.unit}</p>
-                      </div>
-                      {bassin.stats.map((stat, index) => (
-                        <div key={index} className="bg-cyan-500/10 rounded-lg p-3">
+                      
+                      <div className="mt-2 space-y-2">
+                        <div className="bg-cyan-500/10 rounded-lg p-3">
                           <div className="flex justify-between">
-                            <p className="text-sm text-cyan-400">{stat.label}</p>
+                            <p className="text-sm text-cyan-400">Stock</p>
+                            <div className="flex items-center gap-1">
+                              <span className={`w-2 h-2 rounded-full ${bassin.status === 'Optimal' ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+                              <p className="text-xs text-white/70">{bassin.status}</p>
+                            </div>
                           </div>
-                          <p className="text-white">{stat.value}</p>
+                          <p className="text-white">{bassin.stock.quantity} {bassin.stock.unit}</p>
+                          <p className="text-sm text-white/70 mt-1">
+                            {bassin.stats.find(stat => stat.label === 'Produit')?.value || 'Non spécifié'}
+                          </p>
                         </div>
-                      ))}
-                      <div className="text-sm text-white/70">
-                        <div className="flex justify-between mb-1">
-                          <p>Statut</p>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            bassin.status === 'Optimal' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'
-                          }`}>
-                            {bassin.status}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <p>Prochaine maintenance</p>
-                          <p>{bassin.nextMaintenance}</p>
+                        <div className="text-sm text-white/70">
+                          <div className="flex justify-between mb-1">
+                            <p>Statut</p>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              bassin.status === 'Optimal' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'
+                            }`}>
+                              {bassin.status}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <p>Prochaine maintenance</p>
+                            <p>{bassin.nextMaintenance}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+        
+        {activeTab === 'bl' && (
+          <>
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-8">
+                <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                  <Truck size={20} className="text-cyan-400" aria-hidden="true" />
+                  Bons de livraison
+                </h2>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setShowQRModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
+                    aria-label="Ajouter un bon de livraison"
+                  >
+                    <Plus className="w-4 h-4" aria-hidden="true" />
+                    <span className="hidden sm:inline">Ajouter</span>
+                  </button>
                 </div>
-              ))}
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+                {mockBLs.map((bl) => (
+                  <div 
+                    key={bl.id} 
+                    className="p-4 rounded-lg border border-cyan-500/20 bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:bg-cyan-500/10 transition-colors cursor-pointer"
+                    onClick={() => handleViewBL(bl)}
+                  >
+                    <div className="flex flex-col md:flex-row justify-between md:items-center gap-2 md:gap-4">
+                      <div>
+                        <h3 className="font-medium text-white">{bl.reference}</h3>
+                        <p className="text-sm text-white/60">Client: {bl.client}</p>
+                      </div>
+                      <div>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          bl.status === 'Livré' ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'
+                        }`}>
+                          {bl.status}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <p className="text-sm text-cyan-400">Produits</p>
+                      <ul className="mt-1 space-y-1">
+                        {bl.products.map((product, index) => (
+                          <li key={index} className="text-sm text-white flex justify-between">
+                            <span>{product.name}</span>
+                            <span>{product.quantity}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="mt-3 flex justify-between text-sm">
+                      <span className="text-white/60">Date: {bl.date}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewBL(bl);
+                        }}
+                        className="text-cyan-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 rounded min-w-[44px] min-h-[44px] p-2 flex items-center justify-center"
+                        aria-label={`Voir les détails du bon de livraison ${bl.reference}`}
+                      >
+                        <Eye className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+        
+        {activeTab === 'historique' && (
+          <>
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-8">
+                <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                  <History size={20} className="text-cyan-400" aria-hidden="true" />
+                  Historique des activités
+                </h2>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setShowExportModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
+                    aria-label="Exporter l'historique"
+                  >
+                    <Download className="w-4 h-4" aria-hidden="true" />
+                    <span className="hidden sm:inline">Exporter</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div className="space-y-4 mt-6">
+                {mockHistory.map((event) => (
+                  <div 
+                    key={event.id} 
+                    className="p-4 rounded-lg border border-cyan-500/20 bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:bg-cyan-500/10 transition-colors"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="w-2 h-2 rounded-full bg-cyan-400 mt-2"></div>
+                      <div className="flex-1">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start">
+                          <h3 className="font-medium text-white mb-1">{event.action}</h3>
+                          <span className="text-sm text-white/60">{event.date}</span>
+                        </div>
+                        <p className="text-sm text-white/60 mb-2">Par: {event.user}</p>
+                        <p className="text-sm text-white">{event.details}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </>
         )}
@@ -1354,7 +1499,7 @@ export function TraceabilityPage() {
         {activeTab === 'autre_emplacement' && (
           <>
             <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-8">
                 <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                   <MapPin size={20} className="text-cyan-400" aria-hidden="true" />
                   Emplacements de stockage
@@ -1362,7 +1507,7 @@ export function TraceabilityPage() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setShowQRModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
                     aria-label="Ajouter un emplacement de stockage"
                   >
                     <Plus className="w-4 h-4" aria-hidden="true" />
@@ -1371,7 +1516,7 @@ export function TraceabilityPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
                 {mockStorage.map((storage) => {
                   // Déterminer le type d'emplacement
                   const storageType = storage.stats.find(stat => stat.label === 'Type')?.value || 'Stockage';
@@ -1386,10 +1531,10 @@ export function TraceabilityPage() {
                   // Déterminer la couleur de la barre d'occupation
                   let occupationColorClass = 'bg-emerald-500';
                   let occupationTextClass = 'text-emerald-400';
-                  if (occupationValue > 80) {
+                  if (occupationValue < 20) {
                     occupationColorClass = 'bg-red-500';
                     occupationTextClass = 'text-red-400';
-                  } else if (occupationValue > 60) {
+                  } else if (occupationValue < 40) {
                     occupationColorClass = 'bg-amber-500';
                     occupationTextClass = 'text-amber-400';
                   }
@@ -1405,7 +1550,7 @@ export function TraceabilityPage() {
                   return (
                     <div 
                       key={storage.id} 
-                      className="p-4 rounded-lg border border-white/10 hover:border-cyan-400/30 bg-gradient-to-br from-[rgba(10,30,50,0.65)] to-[rgba(20,100,100,0.45)] backdrop-filter backdrop-blur-[20px] shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] transition-all duration-300"
+                      className="p-4 rounded-lg border border-cyan-500/20 bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:bg-cyan-500/10 transition-colors"
                       aria-label={`Emplacement de stockage ${storage.name}, ${storageType}, occupation ${occupationStat}`}
                     >
                       <div className="flex flex-col h-full">
@@ -1471,339 +1616,118 @@ export function TraceabilityPage() {
                           {storage.stats
                             .filter(stat => ['Température', 'Humidité'].includes(stat.label))
                             .map((stat, index) => (
-                              <div key={index} className="bg-cyan-500/10 rounded-lg p-2 text-center">
+                              <div key={index} className="bg-cyan-500/10 rounded-lg p-2">
                                 <p className="text-xs text-cyan-400">{stat.label}</p>
                                 <p className="text-white font-medium">{stat.value}</p>
                               </div>
                             ))}
                         </div>
                         
-                        {/* Produits */}
-                        <div className="mt-4">
-                          <button 
-                            className="w-full text-left px-3 py-2 bg-cyan-500/10 rounded-lg flex justify-between items-center text-white hover:bg-cyan-500/20 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
-                            onClick={() => {
-                              // Logique pour afficher les produits dans un modal ou déplier
-                            }}
-                            aria-label={`Voir les ${storage.products.length} produits dans ${storage.name}`}
-                            aria-expanded="false"
-                          >
-                            <span className="text-sm">
-                              <Package className="w-4 h-4 inline mr-1.5" aria-hidden="true" />
-                              Produits ({storage.products.length})
-                            </span>
-                            <ChevronDown className="w-4 h-4 text-cyan-400" aria-hidden="true" />
-                          </button>
+                        {/* Statut */}
+                        <div className="mt-4 flex justify-between items-center">
+                          <span className="text-sm text-white/60">Statut</span>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}`}>
+                            {storage.status}
+                          </span>
                         </div>
                         
-                        <div className="mt-auto pt-4 text-xs text-white/60 flex justify-between items-center">
-                          <span>
-                            <Calendar className="w-3.5 h-3.5 inline mr-1" aria-hidden="true" />
-                            {storage.date}
-                          </span>
-                          <span className="inline-flex items-center gap-1">
-                            <FileText className="w-3.5 h-3.5" aria-hidden="true" />
-                            Details
-                          </span>
+                        {/* Produits - Bouton pour développer/réduire */}
+                        {storage.products && storage.products.length > 0 && (
+                          <div className="mt-4">
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleStorageExpand(storage.id);
+                              }}
+                              className="w-full flex justify-between items-center py-2 px-3 rounded-lg bg-cyan-500/10 text-white hover:bg-cyan-500/20 transition-colors min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                              aria-expanded={expandedStorages.includes(storage.id)}
+                              aria-controls={`products-${storage.id}`}
+                            >
+                              <span className="flex items-center text-sm font-medium">
+                                <Package className="w-4 h-4 mr-2" aria-hidden="true" />
+                                Produits ({storage.products.length})
+                              </span>
+                              <ChevronDown 
+                                className={`w-4 h-4 transition-transform duration-300 ${expandedStorages.includes(storage.id) ? 'rotate-180' : ''}`}
+                                aria-hidden="true" 
+                              />
+                            </button>
+                            
+                            {/* Liste des produits */}
+                            {expandedStorages.includes(storage.id) && (
+                              <div 
+                                id={`products-${storage.id}`}
+                                className="mt-2 space-y-2 p-3 bg-cyan-500/5 rounded-lg border border-cyan-500/10 animate-fadeIn"
+                              >
+                                <h4 className="text-sm font-medium text-cyan-400 mb-2">Produits stockés</h4>
+                                <table className="w-full text-sm">
+                                  <thead>
+                                    <tr className="text-left text-white/60">
+                                      <th className="pb-2 font-medium">Produit</th>
+                                      <th className="pb-2 font-medium">Quantité</th>
+                                      <th className="pb-2 font-medium">DLC</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {storage.products.map((product, idx) => {
+                                      // Vérifier si la DLC est proche ou dépassée
+                                      const isDLC = product.dlc !== 'N/A';
+                                      let dlcStatus = '';
+                                      
+                                      if (isDLC) {
+                                        const today = new Date();
+                                        const dlcDate = new Date(product.dlc.split('/').reverse().join('-'));
+                                        const diffTime = dlcDate.getTime() - today.getTime();
+                                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                        
+                                        if (diffDays < 0) {
+                                          dlcStatus = 'text-red-400 font-medium';
+                                        } else if (diffDays <= 7) {
+                                          dlcStatus = 'text-amber-400 font-medium';
+                                        }
+                                      }
+                                      
+                                      return (
+                                        <tr key={idx} className="border-t border-white/10">
+                                          <td className="py-2 text-white">{product.name}</td>
+                                          <td className="py-2 text-white">{product.quantity}</td>
+                                          <td className="py-2">
+                                            <span className={product.dlc === 'N/A' ? 'text-white/60' : `text-white ${dlcStatus}`}>
+                                              {product.dlc}
+                                              {dlcStatus === 'text-red-400 font-medium' && (
+                                                <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-red-500/20">
+                                                  Dépassée
+                                                </span>
+                                              )}
+                                              {dlcStatus === 'text-amber-400 font-medium' && (
+                                                <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-amber-500/20">
+                                                  Bientôt
+                                                </span>
+                                              )}
+                                            </span>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Métadonnées */}
+                        <div className="mt-auto pt-4">
+                          <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-white/60">
+                            <span className="w-20">Date:</span>
+                            <span className="text-white/80">{storage.date}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
-            </div>
-          </>
-        )}
-        
-        {activeTab === 'bl' && (
-          <>
-            <div className="space-y-4">
-              {mockBLs.map((bl) => (
-                <div 
-                  key={bl.id} 
-                  className="p-4 rounded-lg border border-cyan-500/20 bg-cyan-500/5 backdrop-blur-lg backdrop-filter hover:bg-cyan-500/10 transition-colors cursor-pointer"
-                  onClick={() => handleViewBL(bl)}
-                >
-                  <div className="flex flex-col md:flex-row justify-between md:items-center gap-2 md:gap-4">
-                    <div>
-                      <h3 className="font-medium text-white">{bl.reference}</h3>
-                      <p className="text-sm text-white/60">Client: {bl.client}</p>
-                    </div>
-                    <div>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        bl.status === 'Livré' ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'
-                      }`}>
-                        {bl.status}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <p className="text-sm text-cyan-400">Produits</p>
-                    <ul className="mt-1 space-y-1">
-                      {bl.products.map((product, index) => (
-                        <li key={index} className="text-sm text-white flex justify-between">
-                          <span>{product.name}</span>
-                          <span>{product.quantity}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="mt-3 flex justify-between text-sm">
-                    <span className="text-white/60">Date: {bl.date}</span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleViewBL(bl);
-                      }}
-                      className="text-cyan-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 rounded min-w-[44px] min-h-[44px] p-2"
-                      aria-label={`Voir les détails du bon de livraison ${bl.reference}`}
-                    >
-                      <Eye className="w-4 h-4" aria-hidden="true" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-        
-        {activeTab === 'historique' && (
-          <>
-            <div className="space-y-4">
-              {mockHistory.map((event) => (
-                <div 
-                  key={event.id} 
-                  className="p-4 rounded-lg border border-cyan-500/20 bg-cyan-500/5 backdrop-blur-lg backdrop-filter hover:bg-cyan-500/10 transition-colors"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-2 h-2 rounded-full bg-cyan-400 mt-2"></div>
-                    <div className="flex-1">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start">
-                        <h3 className="font-medium text-white mb-1">{event.action}</h3>
-                        <span className="text-sm text-white/60">{event.date}</span>
-                      </div>
-                      <p className="text-sm text-white/60 mb-2">Par: {event.user}</p>
-                      <p className="text-sm text-white">{event.details}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-        
-        {activeTab === 'coffre_fort' && (
-          <>
-            <div className="p-4 mb-6 rounded-lg border border-white/10 hover:border-cyan-400/30 bg-gradient-to-br from-[rgba(10,30,50,0.65)] to-[rgba(20,100,100,0.45)] backdrop-filter backdrop-blur-[20px] shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] transition-all duration-300">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div className="flex items-center">
-                  <span aria-hidden="true"><Lock size={20} className="text-cyan-400 mr-2" /></span>
-                  <h2 className="text-lg font-medium bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent whitespace-nowrap">
-                    Coffre fort numérique
-                  </h2>
-                </div>
-                <div className="hidden md:block text-white/60">Stockage sécurisé des documents importants</div>
-                <div className="flex items-center gap-3">
-                  <motion.button 
-                    onClick={() => setShowQRModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                    aria-label="Ajouter un document au coffre fort"
-                    whileHover={{ y: -3, transition: { duration: 0.2 } }}
-                  >
-                    <Plus className="w-4 h-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Ajouter un document</span>
-                  </motion.button>
-                </div>
-              </div>
-              <div className="md:hidden mt-2 text-white/60">Stockage sécurisé des documents importants</div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Document 1 */}
-              <motion.div 
-                className="bg-gradient-to-br from-[rgba(10,30,50,0.65)] to-[rgba(20,100,100,0.45)] backdrop-filter backdrop-blur-[20px] rounded-lg p-4 border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] transition-all duration-300"
-                whileHover={{ 
-                  y: -4,
-                  boxShadow: '0 8px 20px rgba(0,0,0,0.25), 0 0 10px rgba(0,210,200,0.15) inset',
-                  transition: { duration: 0.2 }
-                }}
-              >
-                <div className="flex flex-col h-full">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="text-cyan-400">
-                        <FileText size={20} aria-hidden="true" />
-                      </div>
-                      <h3 className="bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent font-medium">Certification Bio</h3>
-                    </div>
-                    <div className="flex gap-1">
-                      <motion.button
-                        className="text-cyan-400 hover:text-white bg-white/5 rounded-lg border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                        aria-label="Télécharger Certification Bio"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Download className="w-4 h-4" aria-hidden="true" />
-                      </motion.button>
-                      <motion.button
-                        onClick={() => handleViewDocument('doc-certification-bio')}
-                        className="text-cyan-400 hover:text-white bg-white/5 rounded-lg border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                        aria-label="Voir Certification Bio"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Eye className="w-4 h-4" aria-hidden="true" />
-                      </motion.button>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-2 space-y-2">
-                    <div className="flex items-center text-sm text-white/60">
-                      <span className="w-20">Type:</span>
-                      <span className="text-white/80">PDF</span>
-                    </div>
-                    <div className="flex items-center text-sm text-white/60">
-                      <span className="w-20">Taille:</span>
-                      <span className="text-white/80">2.4 MB</span>
-                    </div>
-                    <div className="flex items-center text-sm text-white/60">
-                      <span className="w-20">Date:</span>
-                      <span className="text-white/80">12/03/2023</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-auto pt-4 flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-                    <span className="text-xs bg-gradient-to-r from-emerald-400 to-emerald-300 bg-clip-text text-transparent">
-                      Certification annuelle
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Document 2 */}
-              <motion.div 
-                className="bg-gradient-to-br from-[rgba(10,30,50,0.65)] to-[rgba(20,100,100,0.45)] backdrop-filter backdrop-blur-[20px] rounded-lg p-4 border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] transition-all duration-300"
-                whileHover={{ 
-                  y: -4,
-                  boxShadow: '0 8px 20px rgba(0,0,0,0.25), 0 0 10px rgba(0,210,200,0.15) inset',
-                  transition: { duration: 0.2 }
-                }}
-              >
-                <div className="flex flex-col h-full">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="text-cyan-400">
-                        <FileText size={20} aria-hidden="true" />
-                      </div>
-                      <h3 className="bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent font-medium">Rapport sanitaire 2023</h3>
-                    </div>
-                    <div className="flex gap-1">
-                      <motion.button
-                        className="text-cyan-400 hover:text-white bg-white/5 rounded-lg border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                        aria-label="Télécharger Rapport sanitaire 2023"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Download className="w-4 h-4" aria-hidden="true" />
-                      </motion.button>
-                      <motion.button
-                        onClick={() => handleViewDocument('doc-rapport-sanitaire')}
-                        className="text-cyan-400 hover:text-white bg-white/5 rounded-lg border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                        aria-label="Voir Rapport sanitaire 2023"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Eye className="w-4 h-4" aria-hidden="true" />
-                      </motion.button>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-2 space-y-2">
-                    <div className="flex items-center text-sm text-white/60">
-                      <span className="w-20">Type:</span>
-                      <span className="text-white/80">PDF</span>
-                    </div>
-                    <div className="flex items-center text-sm text-white/60">
-                      <span className="w-20">Taille:</span>
-                      <span className="text-white/80">5.1 MB</span>
-                    </div>
-                    <div className="flex items-center text-sm text-white/60">
-                      <span className="w-20">Date:</span>
-                      <span className="text-white/80">05/06/2023</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-auto pt-4 flex items-center gap-2">
-                    <Droplets className="w-4 h-4 text-cyan-400" aria-hidden="true" />
-                    <span className="text-xs bg-gradient-to-r from-cyan-400 to-cyan-300 bg-clip-text text-transparent">
-                      Rapport trimestriel
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Document 3 */}
-              <motion.div 
-                className="bg-gradient-to-br from-[rgba(10,30,50,0.65)] to-[rgba(20,100,100,0.45)] backdrop-filter backdrop-blur-[20px] rounded-lg p-4 border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] transition-all duration-300"
-                whileHover={{ 
-                  y: -4,
-                  boxShadow: '0 8px 20px rgba(0,0,0,0.25), 0 0 10px rgba(0,210,200,0.15) inset',
-                  transition: { duration: 0.2 }
-                }}
-              >
-                <div className="flex flex-col h-full">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="text-cyan-400">
-                        <FileText size={20} aria-hidden="true" />
-                      </div>
-                      <h3 className="bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent font-medium">Procédure HACCP</h3>
-                    </div>
-                    <div className="flex gap-1">
-                      <motion.button
-                        className="text-cyan-400 hover:text-white bg-white/5 rounded-lg border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                        aria-label="Télécharger Procédure HACCP"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Download className="w-4 h-4" aria-hidden="true" />
-                      </motion.button>
-                      <motion.button
-                        onClick={() => handleViewDocument('doc-procedure-haccp')}
-                        className="text-cyan-400 hover:text-white bg-white/5 rounded-lg border border-white/10 hover:border-cyan-400/30 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                        aria-label="Voir Procédure HACCP"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Eye className="w-4 h-4" aria-hidden="true" />
-                      </motion.button>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-2 space-y-2">
-                    <div className="flex items-center text-sm text-white/60">
-                      <span className="w-20">Type:</span>
-                      <span className="text-white/80">DOCX</span>
-                    </div>
-                    <div className="flex items-center text-sm text-white/60">
-                      <span className="w-20">Taille:</span>
-                      <span className="text-white/80">1.8 MB</span>
-                    </div>
-                    <div className="flex items-center text-sm text-white/60">
-                      <span className="w-20">Date:</span>
-                      <span className="text-white/80">18/04/2023</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-auto pt-4 flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-amber-400" aria-hidden="true" />
-                    <span className="text-xs bg-gradient-to-r from-amber-400 to-amber-300 bg-clip-text text-transparent">
-                      Procédure obligatoire
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
             </div>
           </>
         )}

@@ -4,7 +4,8 @@ import {
   Home,
   Package,
   Network,
-  FileText
+  FileText,
+  Lock
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -32,6 +33,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     { path: '/orders', icon: Package, label: 'Commandes' },
     { category: "ADMINISTRATION", path: '/analytics', icon: Package, label: 'Analyses' },
     { path: '/company', icon: Package, label: 'Entreprise' },
+    { path: '/digital-vault', icon: Lock, label: 'Coffre fort numérique' },
     { category: "PARAMETRES", path: '/settings', icon: Package, label: 'Configuration' },
   ];
 

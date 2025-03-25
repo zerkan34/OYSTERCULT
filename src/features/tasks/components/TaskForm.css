@@ -17,6 +17,83 @@
   position: relative;
 }
 
+/* Force les styles sur les éléments de formulaire */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+select,
+textarea {
+  background: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3)) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+}
+
+/* Ciblage spécifique du champ de titre */
+#title {
+  background: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3)) !important;
+  background-color: transparent !important;
+  -webkit-background-color: transparent !important;
+  -moz-background-color: transparent !important;
+  background-image: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3)) !important;
+  -webkit-background-image: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3)) !important;
+  -moz-background-image: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3)) !important;
+}
+
+/* Style spécifique pour les options des menus déroulants */
+select option {
+  background-color: rgb(15, 23, 42) !important;
+  color: white !important;
+}
+
+/* Support pour tous les navigateurs */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  select {
+    background-color: rgb(15, 23, 42) !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+  }
+  
+  select::-ms-expand {
+    display: none;
+  }
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+select:focus,
+textarea:focus {
+  border-color: rgba(34, 211, 238, 0.3) !important; /* cyan-400 avec opacité */
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(8, 145, 178, 0.2) !important; /* cyan-600 avec opacité */
+}
+
+/* Support des navigateurs WebKit pour l'apparence des éléments de formulaire */
+input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.5;
+}
+
+input[type="date"] {
+  color-scheme: dark;
+}
+
 /* En-tête du formulaire */
 .modal-header {
   display: flex;
@@ -76,7 +153,7 @@
 .form-select,
 .form-textarea {
   width: 100%;
-  background: rgba(0, 0, 0, 0.2);
+  background: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3)) !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   padding: 0.75rem;
@@ -84,13 +161,16 @@
   font-size: 0.9rem;
   outline: none;
   transition: border-color 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
-  border-color: rgba(220, 38, 38, 0.5);
-  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.25);
+  border-color: rgba(34, 211, 238, 0.5);
+  box-shadow: 0 0 0 2px rgba(8, 145, 178, 0.25);
 }
 
 .form-textarea {
@@ -273,4 +353,9 @@
     align-items: center;
     justify-content: center;
   }
+}
+
+/* Ajustement du texte pour les labels plus petits */
+label[for="isRecurring"] span {
+  font-size: 0.875rem !important;
 }

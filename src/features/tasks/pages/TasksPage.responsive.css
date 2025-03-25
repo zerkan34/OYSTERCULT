@@ -437,6 +437,27 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
+/* Styles pour la scrollbar personnalisée dans le modal */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 210, 255, 0.2);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 210, 255, 0.3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .custom-scrollbar {
+    scroll-behavior: auto;
+  }
+}
+
 /* Styles pour les tablettes */
 @media (max-width: 1024px) {
   .stats-grid {

@@ -173,7 +173,9 @@ const navItems = [
       { 
         path: '/accounting', 
         label: 'Comptabilité', 
-        icon: <Calculator size={22} />
+        icon: <Calculator size={22} />,
+        badge: "2 tâches",
+        color: "rgb(160, 38, 72)" // Burgundy
       },
       { 
         path: '/hr', 
@@ -181,6 +183,17 @@ const navItems = [
         icon: <Users size={22} />,
         badge: "2 tâches",
         color: "rgb(160, 38, 72)" // Burgundy
+      },
+      { 
+        path: '/digital-vault', 
+        label: 'Coffre fort numérique', 
+        icon: <Lock size={22} />,
+        color: "rgb(56, 189, 248)" // Bleu
+      },
+      { 
+        path: '/profile', 
+        label: 'Mon Espace', 
+        icon: <UserCircle size={22} />
       }
     ]
   },
@@ -191,11 +204,6 @@ const navItems = [
         path: '/config', 
         label: 'Configuration', 
         icon: <Settings size={22} />
-      },
-      { 
-        path: '/profile', 
-        label: 'Mon Espace', 
-        icon: <UserCircle size={22} />
       }
     ]
   },
@@ -634,8 +642,9 @@ export function EnhancedSidebar({
               whileTap={{ scale: 0.97, y: 0 }}
               style={{
                 background: "linear-gradient(135deg, rgba(220, 38, 38, 0.95) 0%, rgba(185, 28, 28, 0.85) 100%)",
-                boxShadow: "0 5px 10px rgba(0, 0, 0, 0.35), inset 0 1px 3px rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px",
-                border: "none"
+                boxShadow: "0 5px 10px rgba(0, 0, 0, 0.35), inset 0 1px 3px rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px, rgba(0, 210, 200, 0.25) 0px 0px 20px inset",
+                border: "none",
+                transform: "translateZ(0)"
               }}
             >
               <Phone className="w-4 h-4 mr-2" />
