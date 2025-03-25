@@ -27,7 +27,7 @@ export function AuthPage() {
 
   const handleDemoAccess = () => {
     localStorage.setItem('isAuthenticated', 'true');
-    navigate('/dashboard');
+    navigate('/dashboard', { replace: true });
   };
 
   return (

@@ -99,8 +99,75 @@ html,
 }
 
 /* Fix pour min-height: auto (incompatible avec Firefox 22+) */
+[style*="min-height: auto"] {
+  min-height: 0;
+}
+
 .min-h-auto {
-  min-height: 0; /* Utiliser 0 au lieu de auto pour Firefox */
+  min-height: 0;
+}
+
+/* Ordre correct pour appearance */
+[style*="appearance"] {
+  -moz-appearance: var(--appearance-value, none);
+  -webkit-appearance: var(--appearance-value, none);
+  appearance: var(--appearance-value, none);
+}
+
+.appearance-none {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Ordre correct pour background-color */
+[style*="background-color"] {
+  -moz-background-color: var(--bg-color-value);
+  background-color: var(--bg-color-value);
+}
+
+/* Ordre correct pour background-image */
+[style*="background-image"] {
+  -moz-background-image: var(--bg-image-value);
+  background-image: var(--bg-image-value);
+}
+
+/* Ordre correct pour box-shadow */
+[style*="box-shadow"] {
+  -moz-box-shadow: var(--box-shadow-value);
+  box-shadow: var(--box-shadow-value);
+}
+
+/* Optimisation de performance dans les animations */
+@keyframes optimized-animation {
+  0%, 100% { 
+    /* Utiliser transform au lieu de height/width */
+    transform: scale(1); 
+  }
+  50% { 
+    transform: scale(1.2); 
+  }
+}
+
+/* Classe utilitaire pour remplacer les changements de height/width par transform dans les animations */
+.animate-scale {
+  animation: optimized-animation 2s infinite;
+}
+
+/* Appliquer des classes génériques pour les autres types de problèmes de compatibilité */
+.cross-browser-compatible {
+  /* Safari 14+ */
+  -webkit-mask-image: linear-gradient(#000, #000);
+  mask-image: linear-gradient(#000, #000);
+  
+  /* Firefox */
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Chrome, Safari */
+  -webkit-font-smoothing: antialiased;
+  
+  /* Tous les navigateurs modernes */
+  font-smooth: always;
 }
 
 /* Styles pour les éléments accessibles - optimisés pour la performance */
@@ -209,6 +276,20 @@ textarea:not([aria-label]):not([placeholder]):not([title])::before {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+textarea:not([aria-label]):not([placeholder]):not([title])::before {
+  content: attr(id);
+  display: inline;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Amélioration accessibilité pour les images sans texte alternatif */

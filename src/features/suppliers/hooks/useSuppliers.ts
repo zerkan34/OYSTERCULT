@@ -195,6 +195,7 @@ export interface Product {
   available: boolean;
   stock: number;
   minOrder: number;
+  min_order_quantity?: number;
   created_at: string;
   updated_at: string;
 }

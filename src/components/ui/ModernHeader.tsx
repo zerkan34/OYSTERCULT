@@ -11,6 +11,7 @@ interface ModernHeaderProps {
   onShowEmergency: () => void;
   onEmergencyClick: () => void;
   onToggleMessages: () => void;
+  unreadMessagesCount?: number;
 }
 
 export const ModernHeader: React.FC<ModernHeaderProps> = ({
@@ -19,6 +20,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
   onShowEmergency,
   onEmergencyClick,
   onToggleMessages,
+  unreadMessagesCount = 0,
 }) => {
   const { unreadCount } = useStore();
   const navigate = useNavigate();
@@ -287,6 +289,11 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
                 <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z"></path>
                 <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"></path>
               </svg>
+              {unreadMessagesCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 text-xs font-bold text-white shadow-[0_0_15px_rgba(0,210,255,0.5),0_0_5px_rgba(0,0,0,0.3)_inset] min-w-[20px] min-h-[20px]" aria-label={`${unreadMessagesCount} messages non lus`}>
+                  {unreadMessagesCount}
+                </span>
+              )}
             </button>
 
             <button 

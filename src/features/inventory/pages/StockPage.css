@@ -1,0 +1,133 @@
+/* Animations pour la page de stocks */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Support pour tous les navigateurs avec les préfixes vendeurs */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* Pour Internet Explorer et Edge */
+  scrollbar-width: none; /* Pour Firefox */
+  -webkit-overflow-scrolling: touch; /* Pour iOS */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Pour Chrome, Safari et Opera */
+}
+
+/* Effet de verre - exactement comme sur la page Traçabilité */
+.glass, 
+[class*="backdrop-filter"], 
+[class*="backdrop-blur"] {
+  background: rgba(15, 23, 42, 0.3);
+  background-image: linear-gradient(to bottom right, rgba(15, 23, 42, 0.3), rgba(20, 100, 100, 0.3));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    rgba(0, 0, 0, 0.2) 0px 10px 20px -5px,
+    rgba(0, 150, 255, 0.1) 0px 8px 16px -8px,
+    rgba(255, 255, 255, 0.07) 0px -1px 2px 0px inset,
+    rgba(0, 65, 255, 0.05) 0px 0px 8px inset,
+    rgba(0, 0, 0, 0.05) 0px 0px 1px inset;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* Support pour préférences de mouvement réduites */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-fadeIn {
+    animation: none;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Styles spécifiques pour les onglets de la page Stock - avec haute spécificité */
+#stock-page-tabs .stockpage-tab {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.3s !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  white-space: nowrap !important;
+}
+
+#stock-page-tabs .stockpage-tab-active {
+  background-color: rgba(6, 182, 212, 0.2) !important;
+  color: rgb(34, 211, 238) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25), 0 0 15px rgba(0, 210, 200, 0.2) !important;
+}
+
+#stock-page-tabs .stockpage-tab-active:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 210, 200, 0.25) !important;
+}
+
+#stock-page-tabs .stockpage-tab-inactive {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+#stock-page-tabs .stockpage-tab-inactive:hover {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  transform: translateY(-4px) !important;
+}
+
+/* Assurez-vous que le focus est bien visible pour l'accessibilité */
+#stock-page-tabs .stockpage-tab:focus {
+  outline: none !important;
+}
+
+#stock-page-tabs .stockpage-tab-active:focus {
+  outline: 2px solid rgba(6, 182, 212, 0.4) !important;
+  outline-offset: 2px !important;
+}
+
+#stock-page-tabs .stockpage-tab-inactive:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.3) !important;
+  outline-offset: 2px !important;
+}
+
+/* Classes utilitaires pour l'accessibilité */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Support pour iOS safe areas */
+.container {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+/* Optimisation des formulaires mobiles */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important; /* Évite le zoom automatique sur iOS */
+  }
+}

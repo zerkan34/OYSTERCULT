@@ -1,0 +1,148 @@
+/**
+ * FICHIER DE COMPATIBILITÉ ET DE VENDOR PREFIXES
+ * Ce fichier assure la compatibilité cross-browser en utilisant le bon ordre des préfixes vendeurs
+ */
+
+/* text-size-adjust compatibility */
+html, 
+:host {
+  text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Font smoothing compatibility */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-smooth: always;
+}
+
+/* Fix min-height: auto issue in Firefox */
+*[style*="min-height: auto"] {
+  min-height: 0;
+}
+
+.min-h-auto {
+  min-height: 0;
+}
+
+/* CSS Vendor prefix ordering + support */
+
+/* Appearance */
+[style*="appearance:"], 
+.appearance-none, 
+select, 
+input[type="checkbox"], 
+input[type="radio"] {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Backdrop filter */
+[style*="backdrop-filter:"],
+.backdrop-blur,
+[class*="backdrop-blur-"],
+.glass-effect {
+  -webkit-backdrop-filter: var(--backdrop-filter-value, blur(8px));
+  backdrop-filter: var(--backdrop-filter-value, blur(8px));
+}
+
+/* Background color with proper order */
+[style*="background-color:"] {
+  -moz-background-color: var(--bg-color-value);
+  background-color: var(--bg-color-value);
+}
+
+/* Background image with proper order */
+[style*="background-image:"] {
+  -moz-background-image: var(--bg-image-value);
+  background-image: var(--bg-image-value);
+}
+
+/* Box shadow with proper order */
+[style*="box-shadow:"],
+.shadow-sm,
+.shadow,
+.shadow-md,
+.shadow-lg,
+.shadow-xl,
+.shadow-2xl {
+  -moz-box-shadow: var(--box-shadow-value);
+  box-shadow: var(--box-shadow-value);
+}
+
+/* Transform with proper order */
+[style*="transform:"],
+.scale-,
+.rotate-,
+.translate-,
+.skew-,
+.transform {
+  -webkit-transform: var(--transform-value);
+  transform: var(--transform-value);
+}
+
+/* User select with proper order */
+[style*="user-select:"],
+.select-none,
+.user-select-none {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.select-text,
+.user-select-text {
+  -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.select-all,
+.user-select-all {
+  -moz-user-select: all;
+  -webkit-user-select: all;
+  -ms-user-select: all;
+  user-select: all;
+}
+
+/* Scrollbar support for multiple browsers */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Webkit scrollbar fallbacks for Safari */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+/* Forced color mode with fallbacks */
+.forced-colors-mode {
+  forced-color-adjust: none;
+  -ms-high-contrast-adjust: none;
+}
+
+/* Animation performance optimizations */
+@keyframes optimized-transform {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Apply to all animation elements to ensure they use transform instead of width/height */
+.animate-safe {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}

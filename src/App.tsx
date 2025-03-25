@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { ConvexProvider, ConvexReactClient } from "convex/react";
@@ -11,6 +11,7 @@ import { FloatingNotifications } from '@/components/notifications/FloatingNotifi
 import { useStore } from '@/lib/store';
 import { routes } from './routes';
 import StocksList from './components/StocksList';
+import { useMessages } from '@/features/network/hooks/useMessages';
 
 // Pages
 import { AuthPage } from '@/features/auth/pages/AuthPage';
@@ -72,6 +73,7 @@ function MainLayout() {
   const [showEmergency, setShowEmergency] = useState(false);
   const previousPageRef = useRef<string | null>(null);
   const [isIOS, setIsIOS] = useState(false);
+  const { totalUnreadCount, markAsRead } = useMessages();
   
   useEffect(() => {
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
@@ -105,6 +107,7 @@ function MainLayout() {
         onShowEmergency={() => setShowEmergency(true)}
         onEmergencyClick={() => setShowEmergency(true)}
         onToggleMessages={handleMessagesToggle}
+        unreadMessagesCount={totalUnreadCount}
       />
       <div className="flex min-h-screen h-full">
         {/* Bouton carré en haut à gauche pour ouvrir la barre latérale */}
@@ -141,12 +144,12 @@ function MainLayout() {
 
         <div 
           className="
-          flex-1 pt-16 md:pt-16 
-          pb-4 
-          px-4 md:px-6 lg:px-8
-          ml-0 lg:ml-[4.5rem] transition-all duration-300
-          min-h-screen
-        "
+            flex-1 pt-16 md:pt-16 
+            pb-4 
+            px-4 md:px-6 lg:px-8
+            ml-0 lg:ml-[4.5rem] transition-all duration-300
+            min-h-screen
+          "
           style={{
             background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
             WebkitBackdropFilter: "blur(20px)",
@@ -162,41 +165,7 @@ function MainLayout() {
         >
           <main className={`flex-1 p-6 overflow-x-hidden ${location.pathname.endsWith('/dashboard') ? 'h-full' : ''}`}>
             <div className="max-w-7xl mx-auto h-full">
-              <AnimatePresence mode="wait">
-                <Routes location={location} key={location.pathname}>
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                  <Route path="/dashboard" element={<DashboardPage />} />
-                  <Route path="/stocks" element={<InventoryPage />} />
-                  <Route path="/stock/:id" element={<StockPage />} />
-                  <Route path="/tables/:id" element={<TableDetailsPage />} />
-                  <Route path="/accounting" element={<AccountingPage />} />
-                  <Route path="/invoices" element={<InvoicesPage />} />
-                  <Route path="/hr" element={<HRPage />} />
-                  <Route path="/network" element={<NetworkPage />} />
-                  <Route path="/network/messages" element={<MessagesPage />} />
-                  <Route path="/config" element={<ConfigPage />} />
-                  <Route path="/notifications" element={<NotificationsPage />} />
-                  <Route path="/tasks" element={<TasksPage />} />
-                  <Route path="/traceability" element={<TraceabilityPage />} />
-                  <Route path="/traceability/storage-locations" element={<StorageLocations />} />
-                  <Route path="/traceability/market-purchases" element={<MarketPurchases />} />
-                  <Route path="/traceability/invoices-delivery-notes" element={<InvoicesAndDeliveryNotes />} />
-                  <Route path="/traceability/batches" element={<BatchList />} />
-                  <Route path="/traceability/batch-history" element={<BatchHistory searchQuery="" />} />
-                  <Route path="/traceability/purification-pools" element={<PurificationPools />} />
-                  <Route path="/sales" element={<SalesPage />} />
-                  <Route path="/purchases" element={<PurchasesPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/shop" element={<ShopPage />} />
-                  <Route path="/suppliers" element={<SuppliersPage />} />
-                  <Route path="/digital-vault" element={<DigitalVaultPage />} />
-                  <Route path="/supplier/:id" element={<SupplierCatalogPage />} />
-                  <Route path="/suppliers/orders" element={<OrdersPage />} />
-                  <Route path="/surveillance" element={<SurveillancePage />} />
-                  <Route path="/surveillance/simple" element={<SurveillanceSimplePage />} />
-                  <Route path="/analyses" element={<AnalysesPage />} />
-                </Routes>
-              </AnimatePresence>
+              <Outlet />
             </div>
           </main>
         </div>
@@ -231,9 +200,41 @@ function AppContent() {
     <div className="min-h-screen w-screen h-screen fixed inset-0 overflow-auto">
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
-        <Route path="/surveillance/simple" element={<MainLayout />} />
+        <Route path="/surveillance/simple" element={<SurveillanceSimplePage />} />
         {isAuthenticated ? (
-          <Route path="*" element={<MainLayout />} />
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/stocks" element={<InventoryPage />} />
+            <Route path="/stock/:id" element={<StockPage />} />
+            <Route path="/tables/:id" element={<TableDetailsPage />} />
+            <Route path="/accounting" element={<AccountingPage />} />
+            <Route path="/invoices" element={<InvoicesPage />} />
+            <Route path="/hr" element={<HRPage />} />
+            <Route path="/network" element={<NetworkPage />} />
+            <Route path="/network/messages" element={<MessagesPage />} />
+            <Route path="/config" element={<ConfigPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/traceability" element={<TraceabilityPage />} />
+            <Route path="/traceability/storage-locations" element={<StorageLocations />} />
+            <Route path="/traceability/market-purchases" element={<MarketPurchases />} />
+            <Route path="/traceability/invoices-delivery-notes" element={<InvoicesAndDeliveryNotes />} />
+            <Route path="/traceability/batches" element={<BatchList />} />
+            <Route path="/traceability/batch-history" element={<BatchHistory searchQuery="" />} />
+            <Route path="/traceability/purification-pools" element={<PurificationPools />} />
+            <Route path="/sales" element={<SalesPage />} />
+            <Route path="/purchases" element={<PurchasesPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/suppliers" element={<SuppliersPage />} />
+            <Route path="/digital-vault" element={<DigitalVaultPage />} />
+            <Route path="/supplier/:id" element={<SupplierCatalogPage />} />
+            <Route path="/suppliers/orders" element={<OrdersPage />} />
+            <Route path="/surveillance" element={<SurveillancePage />} />
+            <Route path="/analyses" element={<AnalysesPage />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Route>
         ) : (
           <Route path="*" element={<Navigate to="/auth" replace />} />
         )}

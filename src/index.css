@@ -1,8 +1,10 @@
 @import url('https://fonts.cdnfonts.com/css/sf-pro-display');
 @import url('https://fonts.cdnfonts.com/css/sf-mono');
+@import './styles/vendor-prefixes.css';
 @import './styles/mobile.css';
 @import './styles/effects.css';
 @import './styles/accessibility.css';
+@import './styles/compatibility.css';
 @import './styles/text-handling.css';
 
 @font-face {
