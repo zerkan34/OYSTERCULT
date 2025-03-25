@@ -118,27 +118,6 @@ export function ShopPage() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-brand-bg))]">
-      {/* Header avec effet de flou */}
-      <header className="sticky top-0 z-40 w-full border-b border-[rgb(var(--color-border)_/_var(--color-border-opacity))] bg-[rgb(var(--color-brand-surface))]">
-        <div className="max-w-[1400px] mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button 
-                className="p-2 rounded-lg hover:bg-[rgb(var(--color-brand-surface-hover))] transition-colors relative"
-                onClick={() => setIsCartModalOpen()}
-              >
-                <ShoppingCart className="w-5 h-5 text-[rgb(var(--color-text-secondary))]" />
-                {cartItems.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[rgb(var(--color-brand-primary))] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                    {cartItems.length}
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Contenu principal avec espacement correct */}
       <main className="max-w-[1400px] mx-auto px-6 pt-12 pb-24">
         <motion.div

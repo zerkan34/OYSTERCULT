@@ -752,7 +752,7 @@ export function EnhancedSidebar({
                   </div>
                   <button 
                     onClick={onCloseMobileMenu}
-                    className="p-2 rounded-lg bg-white/10"
+                    className="p-2 rounded-lg bg-white/10 flex items-center justify-center"
                     aria-label="Fermer le menu"
                   >
                     <X size={18} />

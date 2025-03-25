@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Bell, Search, Settings, Menu } from 'lucide-react';
 import { OysterLogo } from './OysterLogo';
+import { useLocation } from 'react-router-dom';
 
 interface ModernLayoutProps {
   children: React.ReactNode;
@@ -12,6 +13,8 @@ interface ModernLayoutProps {
 }
 
 export function ModernLayout({ children, title, showSearch, onSearch, actions }: ModernLayoutProps) {
+  const location = useLocation();
+
   return (
     <div className="min-h-screen bg-[#0A0A0F] text-white">
       {/* Header avec effet glassmorphism */}
@@ -65,9 +68,9 @@ export function ModernLayout({ children, title, showSearch, onSearch, actions }:
       </header>
 
       {/* Contenu principal avec dégradé subtil */}
-      <main className="relative">
+      <main className={`relative flex-1 ${location.pathname.endsWith('/dashboard') ? 'h-full' : ''}`}>
         <div className="absolute inset-0 bg-gradient-to-br from-[#E5A55D]/5 via-[#1A1A24]/5 to-transparent" aria-hidden="true" />
-        <div className="relative max-w-7xl mx-auto px-4 py-8 mobile-responsive-container">
+        <div className="relative h-full max-w-7xl mx-auto px-4 py-8 mobile-responsive-container">
           {children}
         </div>
       </main>

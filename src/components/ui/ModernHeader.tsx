@@ -85,8 +85,8 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
         </div>
 
         <motion.div
-          className="absolute left-1/2 cursor-pointer hidden sm:block"
-          style={{ transform: 'translate3d(-50%, 2px, 0)' }}
+          className="cursor-pointer hidden sm:block"
+          style={{ textAlign: 'center' }}
           onClick={handleLogoClick}
           initial={false}
         >

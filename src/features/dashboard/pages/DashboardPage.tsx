@@ -11,7 +11,6 @@ import { OysterTable, Pool, WaterQuality, PoolHealth } from '../types';
 import { PageTitle } from '@/components/ui/PageTitle';
 import { OysterTableCard } from '../components/OysterTableCard';
 import { MobileDashboard } from '../components/MobileDashboard';
-import './DashboardMobile.css';
 
 // Fonction pour calculer le nombre de jours restants
 const getDaysRemaining = (harvestDate: string) => {

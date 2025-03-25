@@ -89,8 +89,8 @@ export function AuthPage() {
                     }}
                   >
                     <div className="flex items-center" style={{ transform: 'translate3d(calc(2.9rem + 10px), 0, 0)', willChange: 'transform', backfaceVisibility: 'hidden' }}>
-                      <div className="flex flex-col items-center text-white relative">
-                        <div className="absolute" style={{ top: '-6rem', left: '-6rem', width: '12rem', height: '12rem' }}>
+                      <div className="flex flex-col items-center text-white relative" style={{ marginRight: '50px' }}>
+                        <div className="absolute" style={{ top: '-6rem', left: '-1rem', width: '12rem', height: '12rem' }}>
                           <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M15 20 Q25 14, 35 20 T55 20 T75 20 T95 20" stroke="white" strokeWidth="5.5" strokeLinecap="round" fill="none"/>
                             <path d="M15 40 Q25 34, 35 40 T55 40 T75 40 T95 40" stroke="white" strokeWidth="5.5" strokeLinecap="round" fill="none"/>
@@ -117,7 +117,7 @@ export function AuthPage() {
                         </svg>
                       </div>
                       <span 
-                        className="text-[10.5rem] md:text-[12.5rem] text-white"
+                        className="text-[10rem] md:text-[12rem] text-white"
                         style={{ 
                           fontFamily: "'TT Modernoir', sans-serif",
                           fontWeight: 400,

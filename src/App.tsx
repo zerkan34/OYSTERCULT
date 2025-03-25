@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { ConvexProvider, ConvexReactClient } from "convex/react";
@@ -160,8 +160,8 @@ function MainLayout() {
             overflow: "auto"
           }}
         >
-          <main className="flex-1 p-6 overflow-x-hidden">
-            <div className="max-w-7xl mx-auto">
+          <main className={`flex-1 p-6 overflow-x-hidden ${location.pathname.endsWith('/dashboard') ? 'h-full' : ''}`}>
+            <div className="max-w-7xl mx-auto h-full">
               <AnimatePresence mode="wait">
                 <Routes location={location} key={location.pathname}>
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -220,12 +220,13 @@ function MainLayout() {
 }
 
 function AppContent() {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   const location = useLocation();
+  const navigate = useNavigate();
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   
   // Permettre l'accès direct à la page de surveillance simple sans authentification
   const isDirectSurveillanceAccess = location.pathname === '/surveillance/simple';
-  
+
   return (
     <div className="min-h-screen w-screen h-screen fixed inset-0 overflow-auto">
       <Routes>

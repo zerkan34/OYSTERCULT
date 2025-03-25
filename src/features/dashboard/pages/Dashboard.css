@@ -1,0 +1,8 @@
+.dashboard-main {
+  max-height: 100vh;
+  overflow-y: auto;
+  padding-bottom: 2rem;
+  /* Ajuster pour le header fixe */
+  height: calc(100vh - 97px);
+  margin-top: 97px;
+}
