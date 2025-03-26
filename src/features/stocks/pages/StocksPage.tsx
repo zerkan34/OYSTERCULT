@@ -81,59 +81,33 @@ export function StocksPage() {
       </div>
 
       {/* Stocks Grid */}
-      <div className="grid gap-4">
-        {filteredStocks.map((stock) => (
-          <div
+      <div className="relative h-full grid grid-cols-2 grid-rows-10 gap-1 p-8 transform rotate-0">
+        {filteredStocks.map((stock, index) => (
+          <button
             key={stock._id}
-            className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] border border-white/10 hover:border-white/20 transition-all duration-300"
+            onClick={() => {
+              setSelectedStock(stock);
+              setIsViewModalOpen(true);
+            }}
+            className="relative rounded-md transition-all duration-300 group bg-brand-burgundy shadow-neon"
+            style={{ opacity: 0.6, transform: `scale(${0.95 + (index * 0.005)})` }}
           >
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="font-bold text-white text-xl mb-2">{stock.name}</h3>
-                <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-white/70">
-                  <div>Type: {stock.type}</div>
-                  <div>Status: {stock.status}</div>
-                  <div>Quantité: {stock.quantity}</div>
-                  <div>
-                    Position: {stock.location.latitude.toFixed(6)},
-                    {stock.location.longitude.toFixed(6)}
-                  </div>
-                </div>
+            <div className="absolute inset-0 rounded-md border-2 border-white shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+              <div className="absolute inset-0 overflow-hidden">
+                <div 
+                  className="absolute top-0 right-0 bottom-0 bg-[#22c55e]" 
+                  style={{ width: `${(stock.quantity / 100) * 100}%` }}
+                ></div>
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setSelectedStock(stock);
-                    setIsViewModalOpen(true);
-                  }}
-                  className="p-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                  aria-label="Voir les détails"
-                >
-                  <Eye size={20} className="text-white/60" />
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedStock(stock);
-                    setIsEditModalOpen(true);
-                  }}
-                  className="p-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                  aria-label="Modifier"
-                >
-                  <Edit2 size={20} className="text-white/60" />
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedStock(stock);
-                    setIsDeleteModalOpen(true);
-                  }}
-                  className="p-2 rounded-lg bg-white/5 border border-white/10 hover:border-red-400/30 min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-red-500/40 transition-all duration-300"
-                  aria-label="Supprimer"
-                >
-                  <Trash2 size={20} className="text-red-400" />
-                </button>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-xs text-white font-bold relative z-10">{index + 1}</span>
               </div>
             </div>
-          </div>
+            <div className="absolute bottom-1 right-1 text-[8px] text-white/60">{stock.type}</div>
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded-md transition-opacity">
+              <Edit2 className="text-white" size={16} />
+            </div>
+          </button>
         ))}
       </div>
 
@@ -436,9 +410,26 @@ export function StocksPage() {
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+                  className="relative rounded-md transition-all duration-300 group bg-brand-burgundy shadow-neon" style={{ opacity: 0.6 }}
                 >
-                  Supprimer
+                  <div className="absolute inset-0 rounded-md border-2 border-white shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+                    <div className="absolute inset-0 overflow-hidden">
+                      <div className="absolute top-0 right-0 bottom-0 bg-[#22c55e]" style={{ width: '76%' }}></div>
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xs text-white font-bold relative z-10">1</span>
+                    </div>
+                  </div>
+                  <div className="absolute bottom-1 right-1 text-[8px] text-white/60"></div>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded-md transition-opacity">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-square-pen text-white">
+                      <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path>
+                    </svg>
+                  </div>
+                  <div className="relative z-10 flex items-center justify-center w-full h-full">
+                    Supprimer
+                  </div>
                 </button>
               </div>
             </div>

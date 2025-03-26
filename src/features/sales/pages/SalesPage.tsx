@@ -1,347 +1,276 @@
 import React, { useState } from 'react';
-import { Plus, Filter, Search, BarChart2, DollarSign, TrendingUp, Users, Package, ShoppingCart, Calendar, CreditCard } from 'lucide-react';
+import {
+  ShoppingCart, Search, Filter, Plus, ChevronDown,
+  TrendingUp, Users, ShoppingBag, Package, X,
+  ArrowUpRight, ArrowDownRight
+} from 'lucide-react';
 import { ModernChart } from '@/components/ui/ModernChart';
-import { ModernStatCard } from '@/components/ui/ModernStatCard';
-import { motion } from 'framer-motion';
-
-// Import du fichier CSS pour les animations et styles
-import './sales.css';
+import { SaleForm } from '../components';
 
 const mockSalesData = [
-  { month: 'Jan', ventes: 45000, objectif: 50000 },
-  { month: 'Fév', ventes: 52000, objectif: 50000 },
-  { month: 'Mar', ventes: 48000, objectif: 50000 },
-  { month: 'Avr', ventes: 51000, objectif: 50000 },
-  { month: 'Mai', ventes: 58000, objectif: 50000 },
-  { month: 'Juin', ventes: 53000, objectif: 50000 }
+  { month: 'Jan', sales: 42000, orders: 156 },
+  { month: 'Fév', sales: 48000, orders: 172 },
+  { month: 'Mar', sales: 45000, orders: 168 },
+  { month: 'Avr', sales: 52000, orders: 189 },
+  { month: 'Mai', sales: 49000, orders: 175 },
+  { month: 'Juin', sales: 55000, orders: 198 }
 ];
 
-const mockProductSales = [
-  { name: 'Huîtres Plates', value: 40 },
-  { name: 'Huîtres Creuses', value: 45 },
-  { name: 'Huîtres Spéciales', value: 15 }
-];
+const formatChartData = (data: any[], key: string) => ({
+  data: data.map(item => ({
+    name: item.month,
+    value: item[key]
+  }))
+});
 
-// Données pour les graphiques
 const salesChartSeries = [
-  {
+  { 
     name: 'Ventes',
     color: '#22d3ee',
-    data: mockSalesData.map(item => ({
-      name: item.month,
-      value: item.ventes
-    }))
-  },
-  {
-    name: 'Objectif',
-    color: '#60a5fa',
-    data: mockSalesData.map(item => ({
-      name: item.month,
-      value: item.objectif
-    }))
+    ...formatChartData(mockSalesData, 'sales')
   }
 ];
 
-const productSalesChartSeries = [
-  {
-    name: 'Produits',
+const ordersChartSeries = [
+  { 
+    name: 'Commandes',
     color: '#22d3ee',
-    data: mockProductSales.map(item => ({
-      name: item.name,
-      value: item.value
-    }))
+    ...formatChartData(mockSalesData, 'orders')
   }
 ];
 
 export function SalesPage() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [showNewSale, setShowNewSale] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedPeriod, setSelectedPeriod] = useState('month');
 
-  const tabs = [
-    { id: 'dashboard', label: 'Tableau de bord', icon: <BarChart2 size={20} aria-hidden="true" /> },
-    { id: 'sales', label: 'Ventes', icon: <ShoppingCart size={20} aria-hidden="true" /> },
-    { id: 'invoices', label: 'Factures', icon: <CreditCard size={20} aria-hidden="true" /> },
-    { id: 'history', label: 'Historique', icon: <Calendar size={20} aria-hidden="true" /> },
-  ];
-
-  const handleTabChange = (tabId: string) => {
-    setActiveTab(tabId);
+  const handleCreateSale = (data: any) => {
+    console.log('Creating sale:', data);
+    setShowNewSale(false);
   };
 
   return (
-    <div className="w-full p-6 min-h-screen animate-fadeIn">
-      {/* En-tête avec dégradé */}
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-          Gestion des Ventes
-        </h1>
-        <p className="text-white/70 mt-2">
-          Suivez vos ventes et analysez les performances commerciales.
-        </p>
-      </header>
-
-      {/* Barre d'actions */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div className="relative flex items-center">
-          <Search className="absolute left-3 text-white/50" size={18} aria-hidden="true" />
-          <input 
-            type="text" 
-            placeholder="Rechercher une vente..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 pr-4 py-2 w-full sm:w-auto min-w-[280px] rounded-lg bg-white/5 border border-white/10 focus:border-cyan-400/30 text-white shadow-[0_4px_10px_rgba(0,0,0,0.25)] focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
-            aria-label="Rechercher une vente"
-          />
-          <Filter className="absolute right-3 text-white/50" size={18} aria-hidden="true" />
+    <div className="space-y-8 p-6 max-w-7xl mx-auto">
+      {/* En-tête */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-cyan-500/20">
+            <ShoppingCart size={32} className="text-cyan-400" aria-hidden="true" />
+          </div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            Ventes
+          </h1>
         </div>
-        
-        <button 
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
-          aria-label="Ajouter une nouvelle vente"
-        >
-          <Plus size={18} aria-hidden="true" />
-          <span>Nouvelle Vente</span>
-        </button>
+        <div className="flex gap-4">
+          <button
+            onClick={() => setShowNewSale(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
+          >
+            <Plus size={20} aria-hidden="true" />
+            Nouvelle Vente
+          </button>
+        </div>
       </div>
 
-      {/* Navigation par onglets */}
-      <div className="mb-6">
-        <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2" role="tablist">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
-                activeTab === tab.id 
-                ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]' 
-                : 'text-white/60 hover:text-white hover:bg-white/5'
-              }`}
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              aria-controls={`panel-${tab.id}`}
-              id={`tab-${tab.id}`}
-            >
-              {tab.icon}
-              <span>{tab.label}</span>
+      {/* KPIs */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-cyan-500/20">
+              <TrendingUp size={24} className="text-cyan-400" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-white/70">Ventes totales</p>
+              <p className="text-2xl font-semibold text-white">55,000 €</p>
+              <p className="text-sm text-emerald-400">+12% ce mois</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-cyan-500/20">
+              <Users size={24} className="text-cyan-400" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-white/70">Nouveaux clients</p>
+              <p className="text-2xl font-semibold text-white">24</p>
+              <p className="text-sm text-emerald-400">+8% ce mois</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-cyan-500/20">
+              <ShoppingBag size={24} className="text-cyan-400" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-white/70">Commandes</p>
+              <p className="text-2xl font-semibold text-white">198</p>
+              <p className="text-sm text-emerald-400">+15% ce mois</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-cyan-500/20">
+              <Package size={24} className="text-cyan-400" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-white/70">Produits vendus</p>
+              <p className="text-2xl font-semibold text-white">856</p>
+              <p className="text-sm text-emerald-400">+5% ce mois</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Graphiques */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold text-white">Évolution des ventes</h3>
+            <div className="flex gap-2">
+              <button 
+                className="text-white/60 hover:text-white px-3 py-1 rounded-md hover:bg-white/5 transition-colors min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                aria-label="Voir les données mensuelles"
+              >
+                M
+              </button>
+              <button 
+                className="text-cyan-400 bg-cyan-500/20 px-3 py-1 rounded-md min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                aria-label="Voir les données trimestrielles"
+                aria-current="true"
+              >
+                T
+              </button>
+              <button 
+                className="text-white/60 hover:text-white px-3 py-1 rounded-md hover:bg-white/5 transition-colors min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                aria-label="Voir les données annuelles"
+              >
+                A
+              </button>
+            </div>
+          </div>
+          <ModernChart series={salesChartSeries} height={300} />
+        </div>
+        <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold text-white">Nombre de commandes</h3>
+            <div className="flex gap-2">
+              <button 
+                className="text-white/60 hover:text-white px-3 py-1 rounded-md hover:bg-white/5 transition-colors min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                aria-label="Voir les données mensuelles"
+              >
+                M
+              </button>
+              <button 
+                className="text-cyan-400 bg-cyan-500/20 px-3 py-1 rounded-md min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                aria-label="Voir les données trimestrielles"
+                aria-current="true"
+              >
+                T
+              </button>
+              <button 
+                className="text-white/60 hover:text-white px-3 py-1 rounded-md hover:bg-white/5 transition-colors min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                aria-label="Voir les données annuelles"
+              >
+                A
+              </button>
+            </div>
+          </div>
+          <ModernChart series={ordersChartSeries} height={300} />
+        </div>
+      </div>
+
+      {/* Liste des ventes */}
+      <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-semibold text-white">Dernières ventes</h3>
+          <div className="flex gap-4">
+            <div className="relative">
+              <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" aria-hidden="true" />
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 w-64 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-colors"
+              />
+            </div>
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1">
+              <Filter size={20} aria-hidden="true" />
+              Filtres
             </button>
-          ))}
+          </div>
         </div>
+        <table className="w-full">
+          <thead>
+            <tr className="text-left text-white/60">
+              <th className="pb-4">Date</th>
+              <th className="pb-4">Client</th>
+              <th className="pb-4">Produits</th>
+              <th className="pb-4 text-right">Montant</th>
+              <th className="pb-4">Statut</th>
+            </tr>
+          </thead>
+          <tbody className="text-white">
+            <tr className="border-t border-white/10">
+              <td className="py-4">26/03/2025</td>
+              <td>Martin Dubois</td>
+              <td>Huîtres Spéciales N°2 (3 dz)</td>
+              <td className="text-right text-cyan-400">89.70 €</td>
+              <td>
+                <span className="px-2 py-1 rounded-full text-sm"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(34, 197, 94, 0.1) 100%)",
+                    color: "#4ade80"
+                  }}
+                >
+                  Livrée
+                </span>
+              </td>
+            </tr>
+            <tr className="border-t border-white/10">
+              <td className="py-4">26/03/2025</td>
+              <td>Sophie Martin</td>
+              <td>Huîtres Fines N°3 (4 dz)</td>
+              <td className="text-right text-cyan-400">95.60 €</td>
+              <td>
+                <span className="px-2 py-1 rounded-full text-sm"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%)",
+                    color: "#60a5fa"
+                  }}
+                >
+                  En cours
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      {/* Contenu principal */}
-      <div
-        role="tabpanel" 
-        id={`panel-${activeTab}`}
-        aria-labelledby={`tab-${activeTab}`}
-      >
-        {activeTab === 'dashboard' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="glass p-4 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-white/70 text-sm">Chiffre d'affaires</h3>
-                    <p className="text-2xl font-bold text-white mt-1">307,500€</p>
-                  </div>
-                  <div className="p-3 bg-cyan-500/20 rounded-lg">
-                    <DollarSign size={24} className="text-cyan-400" aria-hidden="true" />
-                  </div>
-                </div>
-                <div className="mt-4 flex items-center">
-                  <div className="text-green-400 text-sm font-medium flex items-center">
-                    <TrendingUp size={16} className="mr-1" aria-hidden="true" />
-                    +12.5%
-                  </div>
-                  <span className="text-white/50 text-sm ml-2">vs mois dernier</span>
-                </div>
-              </div>
-
-              <div className="glass p-4 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-white/70 text-sm">Commandes</h3>
-                    <p className="text-2xl font-bold text-white mt-1">156</p>
-                  </div>
-                  <div className="p-3 bg-purple-500/20 rounded-lg">
-                    <Package size={24} className="text-purple-400" aria-hidden="true" />
-                  </div>
-                </div>
-                <div className="mt-4 flex items-center">
-                  <div className="text-green-400 text-sm font-medium flex items-center">
-                    <TrendingUp size={16} className="mr-1" aria-hidden="true" />
-                    +5.2%
-                  </div>
-                  <span className="text-white/50 text-sm ml-2">vs mois dernier</span>
-                </div>
-              </div>
-
-              <div className="glass p-4 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-white/70 text-sm">Panier moyen</h3>
-                    <p className="text-2xl font-bold text-white mt-1">1,972€</p>
-                  </div>
-                  <div className="p-3 bg-blue-500/20 rounded-lg">
-                    <ShoppingCart size={24} className="text-blue-400" aria-hidden="true" />
-                  </div>
-                </div>
-                <div className="mt-4 flex items-center">
-                  <div className="text-green-400 text-sm font-medium flex items-center">
-                    <TrendingUp size={16} className="mr-1" aria-hidden="true" />
-                    +8.3%
-                  </div>
-                  <span className="text-white/50 text-sm ml-2">vs mois dernier</span>
-                </div>
-              </div>
-
-              <div className="glass p-4 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-white/70 text-sm">Clients actifs</h3>
-                    <p className="text-2xl font-bold text-white mt-1">89</p>
-                  </div>
-                  <div className="p-3 bg-green-500/20 rounded-lg">
-                    <Users size={24} className="text-green-400" aria-hidden="true" />
-                  </div>
-                </div>
-                <div className="mt-4 flex items-center">
-                  <div className="text-green-400 text-sm font-medium flex items-center">
-                    <TrendingUp size={16} className="mr-1" aria-hidden="true" />
-                    +3.7%
-                  </div>
-                  <span className="text-white/50 text-sm ml-2">vs mois dernier</span>
-                </div>
-              </div>
+      {/* Modal nouvelle vente */}
+      {showNewSale && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.95)] p-6 rounded-lg shadow-2xl max-w-2xl w-full mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white">Nouvelle Vente</h2>
+              <button 
+                onClick={() => setShowNewSale(false)}
+                className="text-white/60 hover:text-white"
+                aria-label="Fermer"
+              >
+                <X size={24} />
+              </button>
             </div>
-
-            {/* Graphiques */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="glass p-6 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300">
-                <h3 className="text-xl font-semibold text-white mb-4">Évolution des ventes</h3>
-                <ModernChart
-                  series={salesChartSeries}
-                  height={320}
-                  showGrid={true}
-                  showLegend={true}
-                />
-              </div>
-
-              <div className="glass p-6 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300">
-                <h3 className="text-xl font-semibold text-white mb-4">Répartition des ventes</h3>
-                <ModernChart
-                  series={productSalesChartSeries}
-                  height={320}
-                  showGrid={true}
-                  showLegend={true}
-                />
-              </div>
-            </div>
+            <SaleForm 
+              onSubmit={handleCreateSale}
+              onCancel={() => setShowNewSale(false)}
+            />
           </div>
-        )}
-
-        {activeTab === 'sales' && (
-          <div className="glass p-6 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300">
-            <h2 className="text-xl font-semibold text-white mb-6">Historique des ventes</h2>
-            <div className="divide-y divide-white/10">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="py-4 hover:bg-white/5 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
-                        <Package size={20} className="text-cyan-400" aria-hidden="true" />
-                      </div>
-                      <div>
-                        <h4 className="text-lg font-medium text-white">Commande #00{i}</h4>
-                        <p className="text-sm text-white/60 mt-1">Restaurant La Marée</p>
-                        <div className="mt-2 flex items-center space-x-4 text-sm text-white/60">
-                          <span>15/02/2025</span>
-                          <span>•</span>
-                          <span>1,500€</span>
-                          <span>•</span>
-                          <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">
-                            Payée
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <button 
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_2px_5px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_10px_rgba(0,0,0,0.3)] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                      aria-label="Voir les détails de la commande"
-                    >
-                      Détails
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'invoices' && (
-          <div className="glass p-6 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300">
-            <h2 className="text-xl font-semibold text-white mb-6">Factures</h2>
-            <p className="text-white/70">Consultez et générez les factures pour vos clients.</p>
-            <div className="mt-4 divide-y divide-white/10">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="py-4 hover:bg-white/5 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                        <CreditCard size={20} className="text-blue-400" aria-hidden="true" />
-                      </div>
-                      <div>
-                        <h4 className="text-lg font-medium text-white">Facture #00{i}</h4>
-                        <p className="text-sm text-white/60 mt-1">Restaurant La Marée</p>
-                        <div className="mt-2 flex items-center space-x-4 text-sm text-white/60">
-                          <span>15/02/2025</span>
-                          <span>•</span>
-                          <span>1,500€</span>
-                          <span>•</span>
-                          <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">
-                            Payée
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <button 
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_2px_5px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_10px_rgba(0,0,0,0.3)] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                      aria-label="Télécharger la facture"
-                    >
-                      Télécharger
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'history' && (
-          <div className="glass p-6 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300">
-            <h2 className="text-xl font-semibold text-white mb-6">Historique des opérations</h2>
-            <p className="text-white/70">Consultez l'historique de toutes les opérations de vente.</p>
-            <div className="mt-4 divide-y divide-white/10">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="py-4 hover:bg-white/5 transition-colors">
-                  <div className="flex items-start space-x-4">
-                    <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                      <Calendar size={20} className="text-purple-400" aria-hidden="true" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-medium text-white">Opération #{i}</h4>
-                      <p className="text-sm text-white/60 mt-1">Marie Dupont</p>
-                      <div className="mt-2 text-sm text-white/60">
-                        <span>15/02/2025 à 14:30</span>
-                        <p className="mt-1">Création d'une nouvelle vente pour Restaurant La Marée</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,28 +1,23 @@
   import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  BarChart2,
-  Receipt,
-  CreditCard,
-  FileText,
-  DollarSign,
-  Users,
-  Calendar,
-  Filter,
-  ChevronDown,
-  ChevronRight,
-  Plus,
-  Search,
-  Download,
-  ArrowUp,
-  ArrowDown,
-  Wallet
+  BarChart2, Receipt, CreditCard, FileText, DollarSign,
+  Users, Calendar, Filter, ChevronDown, ChevronRight,
+  Plus, Search, Download, ArrowUp, ArrowDown, Wallet,
+  TrendingUp, Banknote, CircleDollarSign, PiggyBank, X
 } from 'lucide-react';
-import { ModernChart } from '@/components/ui/ModernChart';
-import { ModernStatCard } from '@/components/ui/ModernStatCard';
-import { InvoiceForm } from '../components/InvoiceForm';
-import { PageTitle } from '@/components/ui/PageTitle';
-import type { InvoiceWithItems } from '@/types/accounting';
+import {
+  ModernChart
+} from '@/components/ui/ModernChart';
+import {
+  PageTitle
+} from '@/components/ui/PageTitle';
+import {
+  InvoiceForm
+} from '../components/InvoiceForm';
+import type {
+  InvoiceWithItems
+} from '@/types/accounting';
 
 const mockRevenueData = [
   { month: 'Jan', revenue: 45000, expenses: 32000 },
@@ -42,7 +37,6 @@ const mockCashFlow = [
   { month: 'Juin', inflow: 63000, outflow: 44000 }
 ];
 
-// Formater les données pour ModernChart
 const formatChartData = (data: any[], key: string) => ({
   data: data.map(item => ({
     name: item.month,
@@ -53,12 +47,12 @@ const formatChartData = (data: any[], key: string) => ({
 const revenueChartSeries = [
   { 
     name: 'Revenus',
-    color: '#00D1FF',
+    color: '#22d3ee',
     ...formatChartData(mockRevenueData, 'revenue')
   },
   { 
     name: 'Dépenses',
-    color: '#FF3366',
+    color: '#fb7185',
     ...formatChartData(mockRevenueData, 'expenses')
   }
 ];
@@ -66,41 +60,21 @@ const revenueChartSeries = [
 const cashflowChartSeries = [
   { 
     name: 'Entrées',
-    color: '#00D1FF',
+    color: '#22d3ee',
     ...formatChartData(mockCashFlow, 'inflow')
   },
   { 
     name: 'Sorties',
-    color: '#FF3366',
+    color: '#fb7185',
     ...formatChartData(mockCashFlow, 'outflow')
   }
 ];
-
-// Animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { 
-    opacity: 1,
-    transition: { 
-      staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { 
-    y: 0, 
-    opacity: 1,
-    transition: { type: "spring", stiffness: 100 }
-  }
-};
 
 export function AccountingPage() {
   const [showStats, setShowStats] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showNewInvoice, setShowNewInvoice] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState('month');
 
   const handleCreateInvoice = (data: InvoiceWithItems) => {
     console.log('Creating invoice:', data);
@@ -108,172 +82,136 @@ export function AccountingPage() {
   };
 
   return (
-    <motion.div 
-      initial="hidden"
-      animate="visible"
-      className="space-y-6 p-6"
-    >
-      <PageTitle 
-        icon={<DollarSign size={28} className="text-white" />}
-        title="Comptabilité"
-      />
-      {/* En-tête avec titre et boutons */}
-      <motion.div 
-        variants={itemVariants}
-        className="md:col-span-3 lg:col-span-4 flex items-center justify-between"
-        style={{
-          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)",
-          padding: "1.5rem",
-          borderRadius: "1rem",
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
-          boxShadow: "rgba(0, 0, 0, 0.3) 0px 10px 25px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset"
-        }}
-      >
-        <h1 className="text-3xl font-bold bg-clip-text text-transparent" 
-          style={{ backgroundImage: "linear-gradient(90deg, #ffffff, #a5f3fc)" }}>
-          Comptabilité
-        </h1>
-        <div className="flex space-x-3">
-          <button
-            onClick={() => setShowStats(!showStats)}
-            className="px-4 py-2 rounded-lg text-white text-sm transition-all duration-200"
-            style={{
-              background: "linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.07) 100%)",
-              boxShadow: "rgba(0, 0, 0, 0.2) 0px 3px 6px 0px, rgba(255, 255, 255, 0.1) 0px 1px 2px 0px inset",
-            }}
-          >
-            <BarChart2 size={20} className="mr-2 inline-block" />
-            Statistiques
-          </button>
+    <div className="space-y-8 p-6 max-w-7xl mx-auto">
+      {/* En-tête */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-cyan-500/20">
+            <CircleDollarSign size={32} className="text-cyan-400" aria-hidden="true" />
+          </div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            Comptabilité
+          </h1>
+        </div>
+        <div className="flex gap-4">
           <button
             onClick={() => setShowNewInvoice(true)}
-            className="px-4 py-2 rounded-lg text-white text-sm transition-all duration-200"
-            style={{
-              background: "linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.07) 100%)",
-              boxShadow: "rgba(0, 0, 0, 0.2) 0px 3px 6px 0px, rgba(255, 255, 255, 0.1) 0px 1px 2px 0px inset",
-            }}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
           >
-            <Receipt size={20} className="mr-2 inline-block" />
+            <Plus size={20} aria-hidden="true" />
             Nouvelle Facture
           </button>
+          <button
+            onClick={() => setShowStats(!showStats)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
+          >
+            <BarChart2 size={20} aria-hidden="true" />
+            Statistiques
+          </button>
         </div>
-      </motion.div>
+      </div>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-cyan-500/20">
+              <TrendingUp size={24} className="text-cyan-400" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-white/70">Chiffre d'affaires</p>
+              <p className="text-2xl font-semibold text-white">58,000 €</p>
+              <p className="text-sm text-emerald-400">+12% ce mois</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-cyan-500/20">
+              <Banknote size={24} className="text-cyan-400" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-white/70">Bénéfice net</p>
+              <p className="text-2xl font-semibold text-white">12,500 €</p>
+              <p className="text-sm text-emerald-400">+8% ce mois</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-cyan-500/20">
+              <CircleDollarSign size={24} className="text-cyan-400" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-white/70">Dépenses</p>
+              <p className="text-2xl font-semibold text-white">45,500 €</p>
+              <p className="text-sm text-rose-400">+5% ce mois</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-cyan-500/20">
+              <PiggyBank size={24} className="text-cyan-400" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-white/70">Trésorerie</p>
+              <p className="text-2xl font-semibold text-white">25,800 €</p>
+              <p className="text-sm text-emerald-400">+3% ce mois</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Graphiques */}
       {showStats && (
-        <motion.div 
-          variants={itemVariants} 
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          <div className="rounded-xl p-6"
-            style={{
-              background: "linear-gradient(135deg, rgba(0, 10, 40, 0.85) 0%, rgba(0, 100, 120, 0.8) 100%)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
-            }}
-          >
-            <h3 className="text-lg font-medium text-white mb-6">Revenus et Dépenses</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-white">Revenus et Dépenses</h3>
+              <div className="flex gap-2">
+                <button className="text-white/60 hover:text-white px-3 py-1 rounded-md hover:bg-white/5 transition-colors">M</button>
+                <button className="text-cyan-400 bg-cyan-500/20 px-3 py-1 rounded-md">T</button>
+                <button className="text-white/60 hover:text-white px-3 py-1 rounded-md hover:bg-white/5 transition-colors">A</button>
+              </div>
+            </div>
             <ModernChart series={revenueChartSeries} height={300} />
           </div>
-          <div className="rounded-xl p-6"
-            style={{
-              background: "linear-gradient(135deg, rgba(0, 10, 40, 0.85) 0%, rgba(0, 100, 120, 0.8) 100%)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
-            }}
-          >
-            <h3 className="text-lg font-medium text-white mb-6">Flux de Trésorerie</h3>
+          <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-white">Flux de Trésorerie</h3>
+              <div className="flex gap-2">
+                <button className="text-white/60 hover:text-white px-3 py-1 rounded-md hover:bg-white/5 transition-colors">M</button>
+                <button className="text-cyan-400 bg-cyan-500/20 px-3 py-1 rounded-md">T</button>
+                <button className="text-white/60 hover:text-white px-3 py-1 rounded-md hover:bg-white/5 transition-colors">A</button>
+              </div>
+            </div>
             <ModernChart series={cashflowChartSeries} height={300} />
           </div>
-        </motion.div>
+        </div>
       )}
 
-      {/* Barre de recherche et filtres */}
-      <motion.div 
-        variants={itemVariants}
-        className="flex items-center space-x-4 mb-6"
-      >
-        <div className="relative flex-1">
-          <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher des transactions..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg text-white placeholder-white/40"
-            style={{
-              background: "linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)",
-              backdropFilter: "blur(10px)",
-              WebkitBackdropFilter: "blur(10px)",
-              border: "1px solid rgba(255, 255, 255, 0.1)"
-            }}
-          />
-        </div>
-        <button className="px-4 py-2 rounded-lg text-white transition-all duration-200"
-          style={{
-            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.07) 100%)",
-            boxShadow: "rgba(0, 0, 0, 0.2) 0px 3px 6px 0px, rgba(255, 255, 255, 0.1) 0px 1px 2px 0px inset",
-          }}
-        >
-          <Filter size={20} className="mr-2 inline-block" />
-          Filtres
-        </button>
-        <button className="px-4 py-2 rounded-lg text-white transition-all duration-200"
-          style={{
-            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.07) 100%)",
-            boxShadow: "rgba(0, 0, 0, 0.2) 0px 3px 6px 0px, rgba(255, 255, 255, 0.1) 0px 1px 2px 0px inset",
-          }}
-        >
-          <Calendar size={20} className="mr-2 inline-block" />
-          Période
-        </button>
-      </motion.div>
-
-      {/* Cartes statistiques */}
-      <motion.div 
-        variants={itemVariants}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
-        <ModernStatCard
-          icon={<Plus />}
-          label="Chiffre d'affaires"
-          value="58,000 €"
-          trend={{ value: 12, positive: true }}
-        />
-        <ModernStatCard
-          icon={<ArrowUp />}
-          label="Bénéfice net"
-          value="12,500 €"
-          trend={{ value: 8, positive: true }}
-        />
-        <ModernStatCard
-          icon={<ArrowDown />}
-          label="Dépenses"
-          value="45,500 €"
-          trend={{ value: 5, positive: false }}
-        />
-        <ModernStatCard
-          icon={<Wallet />}
-          label="Trésorerie"
-          value="25,800 €"
-          trend={{ value: 3, positive: true }}
-        />
-      </motion.div>
-
       {/* Tableau des transactions */}
-      <motion.div 
-        variants={itemVariants}
-        className="rounded-xl p-6"
-        style={{
-          background: "linear-gradient(135deg, rgba(0, 10, 40, 0.85) 0%, rgba(0, 100, 120, 0.8) 100%)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
-        }}
-      >
+      <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-semibold text-white">Transactions récentes</h3>
+          <div className="flex gap-4">
+            <div className="relative">
+              <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" aria-hidden="true" />
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                className="pl-10 pr-4 py-2 w-64 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-colors"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1">
+              <Filter size={20} aria-hidden="true" />
+              Filtres
+            </button>
+          </div>
+        </div>
         <table className="w-full">
           <thead>
             <tr className="text-left text-white/60">
@@ -319,11 +257,29 @@ export function AccountingPage() {
             </tr>
           </tbody>
         </table>
-      </motion.div>
+      </div>
 
       {showNewInvoice && (
-        <InvoiceForm onSubmit={handleCreateInvoice} onClose={() => setShowNewInvoice(false)} />
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.95)] p-6 rounded-lg shadow-2xl max-w-2xl w-full mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white">Nouvelle Facture</h2>
+              <button 
+                onClick={() => setShowNewInvoice(false)}
+                className="text-white/60 hover:text-white"
+                aria-label="Fermer"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <InvoiceForm 
+              type="sale"
+              onSubmit={handleCreateInvoice}
+              onCancel={() => setShowNewInvoice(false)}
+            />
+          </div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 }

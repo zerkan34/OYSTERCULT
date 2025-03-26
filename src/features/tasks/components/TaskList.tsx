@@ -7,6 +7,7 @@ import {
   Filter, 
   Search, 
   ChevronDown, 
+  ChevronUp,
   MoreVertical, 
   Edit, 
   Trash2, 
@@ -242,7 +243,7 @@ const localExampleTasks: Task[] = [
 
 export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [expandedTask, setExpandedTask] = useState<string | null>(null);
+  const [expandedTasks, setExpandedTasks] = useState<string[]>([]);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [commentModalOpen, setCommentModalOpen] = useState(false);
   const [delayModalOpen, setDelayModalOpen] = useState(false);
@@ -322,7 +323,16 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
   };
 
   const toggleTaskExpansion = (taskId: string) => {
-    setExpandedTask(expandedTask === taskId ? null : taskId);
+    setExpandedTasks(prevExpandedTasks => {
+      // Si la tâche est déjà développée, la retirer du tableau
+      if (prevExpandedTasks.includes(taskId)) {
+        return prevExpandedTasks.filter(id => id !== taskId);
+      } 
+      // Sinon, l'ajouter au tableau
+      else {
+        return [...prevExpandedTasks, taskId];
+      }
+    });
   };
 
   const handleEditClick = (task: Task) => {
@@ -407,7 +417,7 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
           {filteredTasks.map(task => {
             const priority = task.priority;
             const status = task.status;
-            const isExpanded = expandedTask === task.id;
+            const isExpanded = expandedTasks.includes(task.id);
             
             // Mappage des statuts pour les icônes et styles
             const statusIcon = 
@@ -485,12 +495,17 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
                           }}
                           aria-label={isExpanded ? "Réduire" : "Développer"}
                         >
-                          <ChevronDown 
-                            className={`transition-transform duration-200 ${
-                              isExpanded ? 'transform rotate-180' : ''
-                            }`} 
-                            size={16} 
-                          />
+                          {isExpanded ? (
+                            <ChevronUp 
+                              className="transition-transform duration-200" 
+                              size={16} 
+                            />
+                          ) : (
+                            <ChevronDown 
+                              className="transition-transform duration-200" 
+                              size={16} 
+                            />
+                          )}
                         </button>
                       </div>
                     </div>
