@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Settings, 
@@ -65,8 +65,6 @@ interface EnhancedSidebarProps {
   showMobileMenu: boolean;
   onCloseMobileMenu: () => void;
   onEmergencyClick: () => void;
-  onToggleMessages?: () => void;
-  onToggleNotifications?: () => void;
 }
 
 // Catégories avec leurs couleurs spécifiques
@@ -223,9 +221,7 @@ const navItems = [
 export function EnhancedSidebar({ 
   showMobileMenu, 
   onCloseMobileMenu,
-  onEmergencyClick,
-  onToggleMessages,
-  onToggleNotifications
+  onEmergencyClick
 }: EnhancedSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -234,6 +230,39 @@ export function EnhancedSidebar({
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [isFirstRender, setIsFirstRender] = useState(true);
+
+  // Marquer la fin du premier rendu
+  useEffect(() => {
+    // Attendre que le composant soit monté et rendu
+    const timer = setTimeout(() => {
+      setIsFirstRender(false);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Détecter les changements de taille d'écran
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth < 1024;
+      setIsMobile(newIsMobile);
+      
+      // Si on passe du mode mobile au mode desktop, réinitialiser l'état collapsed
+      if (isMobile && !newIsMobile) {
+        setCollapsed(false);
+        setIsAnimating(false);
+        // Fermer le menu mobile si ouvert
+        if (showMobileMenu) {
+          onCloseMobileMenu();
+        }
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobile, showMobileMenu, onCloseMobileMenu]);
 
   const handleLogout = () => {
     setSession(null);
@@ -250,15 +279,45 @@ export function EnhancedSidebar({
 
   // Animation variants for menu items - optimized for performance
   const menuItemVariants = {
-    hidden: { opacity: 0, x: -20 },
+    hidden: { opacity: 0, x: -20, overflow: "hidden", whiteSpace: "nowrap" },
     visible: (i: number) => ({
       opacity: 1,
       x: 0,
+      overflow: "visible",
+      whiteSpace: "nowrap",
       transition: {
         delay: i * 0.03 + 0.1,
-        duration: 0.3
+        duration: 0.3,
+        type: "spring",
+        stiffness: 300,
+        damping: 25
       }
     })
+  };
+
+  // Animation variants for category titles
+  const categoryVariants = {
+    hidden: { opacity: 0, x: -20, overflow: "hidden", whiteSpace: "nowrap" },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      overflow: "visible",
+      whiteSpace: "nowrap",
+      transition: { 
+        opacity: { duration: 0.3 },
+        x: { duration: 0.2, type: "spring", stiffness: 300 }
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      x: -20,
+      overflow: "hidden",
+      whiteSpace: "nowrap",
+      transition: { 
+        opacity: { duration: 0.2 },
+        x: { duration: 0.2 }
+      }
+    }
   };
 
   // Animation variants for sidebar - using transform instead of width/height
@@ -272,7 +331,7 @@ export function EnhancedSidebar({
       }
     },
     collapsed: { 
-      width: "72px",
+      width: "90px", // Augmenter la largeur pour que les icônes soient entièrement visibles
       transition: { 
         type: "spring", 
         stiffness: 300, 
@@ -322,18 +381,16 @@ export function EnhancedSidebar({
         onClick={onCloseMobileMenu}
       />
 
-      <motion.div
+      <motion.div 
         className={`
-          hidden lg:block fixed inset-y-0 left-0 z-[60] overflow-x-hidden
+          fixed inset-y-0 left-0 z-50 overflow-x-hidden
           transition-all duration-300 ease-in-out rounded-tr-3xl rounded-br-3xl
+          ${isMobile ? 'hidden lg:block' : ''}
         `}
-        initial="collapsed"
-        animate={
-          window.innerWidth >= 1024 
-            ? (collapsed ? "collapsed" : "expanded") 
-            : (showMobileMenu ? "mobileVisible" : "mobileHidden")
-        }
+        initial={isFirstRender ? false : true}
+        animate={collapsed ? "collapsed" : "expanded"}
         variants={sidebarVariants}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
         style={{ 
           background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
           WebkitBackdropFilter: "blur(20px)",
@@ -371,7 +428,7 @@ export function EnhancedSidebar({
               ) : (
                 <motion.div 
                   key="collapsed-logo" 
-                  className="flex items-center justify-center px-2 py-2 relative z-10"
+                  className="flex items-center justify-center w-full py-2 relative z-10"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -380,48 +437,35 @@ export function EnhancedSidebar({
                 </motion.div>
               )}
             </AnimatePresence>
-            <motion.button
-              onClick={toggleSidebar}
-              className={`
-                rounded-lg hidden lg:flex items-center justify-center transition-all duration-300 relative z-10
-                ${collapsed ? 
-                  "p-2.5 bg-white/15 hover:bg-white/25 border border-white/20" : 
-                  "p-2.5 bg-white/15 hover:bg-white/25 border border-white/20"
-                }
-              `}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              disabled={isAnimating}
-              aria-label={collapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
-            >
-              <div className="flex items-center">
-                <div style={{ width: '30px', height: '30px', marginRight: '6px' }}>
-                  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{
-                    filter: 'drop-shadow(0 4px 4px rgba(0,0,0,0.4))',
-                    opacity: 1,
-                    width: '100%',
-                    height: '100%'
-                  }}>
-                    <path d="M15 20 Q25 12, 35 20 T55 20 T75 20 T95 20" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                    <path d="M15 40 Q25 32, 35 40 T55 40 T75 40 T95 40" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                    <path d="M15 60 Q25 52, 35 60 T55 60 T75 60 T95 60" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                    <path d="M15 80 Q25 72, 35 80 T55 80 T75 80 T95 80" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                  </svg>
+            <div className={`flex justify-center ${collapsed ? 'w-full' : ''}`}>
+              <motion.button
+                onClick={toggleSidebar}
+                className={`
+                  rounded-lg hidden lg:flex items-center justify-center transition-all duration-300 relative z-10
+                  ${collapsed ? 
+                    "p-2.5 bg-white/15 hover:bg-white/25 border border-white/20" : 
+                    "p-2.5 bg-white/15 hover:bg-white/25 border border-white/20"
+                  }
+                `}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                disabled={isAnimating || isMobile}
+                aria-label={collapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
+                style={{ display: isMobile ? 'none' : '' }}
+              >
+                <div className="flex items-center">
+                  {collapsed ? (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+                      <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  ) : (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+                      <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
                 </div>
-                
-                {collapsed ? (
-                  <svg width="24" height="22" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-                    <path d="M2 11H22" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-                    <path d="M16 3L22 11L16 19" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                ) : (
-                  <svg width="24" height="22" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-                    <path d="M22 11H2" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-                    <path d="M8 3L2 11L8 19" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                )}
-              </div>
-            </motion.button>
+              </motion.button>
+            </div>
           </motion.div>
 
           {/* Navigation avec catégories colorées */}
@@ -441,15 +485,15 @@ export function EnhancedSidebar({
                   <AnimatePresence>
                     {!collapsed && (
                       <motion.div 
-                        className={`px-4 mb-3 relative rounded-lg`}
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
+                        className={`px-4 mb-3 relative rounded-lg overflow-hidden`}
+                        initial={isFirstRender ? { opacity: 1, x: 0 } : "hidden"}
+                        animate="visible"
+                        exit="exit"
+                        variants={categoryVariants}
                         whileHover={{ scale: 1.02 }}
                       >
                         <div className={`absolute inset-0 bg-gradient-to-r ${categoryStyle.color} opacity-0 rounded-lg ${hoveredCategory === group.category ? 'opacity-30' : ''} transition-opacity duration-300`} />
-                        <p className={`text-xs font-medium ${categoryStyle.textColor} uppercase tracking-wider relative z-10`}>
+                        <p className={`text-xs font-medium ${categoryStyle.textColor} uppercase tracking-wider relative z-10 whitespace-nowrap`}>
                           {group.category}
                         </p>
                       </motion.div>
@@ -470,7 +514,7 @@ export function EnhancedSidebar({
                           key={item.path}
                           custom={itemIndex}
                           variants={menuItemVariants}
-                          initial="hidden"
+                          initial={isFirstRender ? { opacity: 1, x: 0 } : "hidden"}
                           animate="visible"
                           whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
                           onMouseEnter={() => setHoveredItem(item.path)}
@@ -479,7 +523,7 @@ export function EnhancedSidebar({
                           <Link
                             to={item.path}
                             className={`
-                              relative flex items-center px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm
+                              relative flex items-center ${collapsed ? 'justify-center' : ''} px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm
                               transition-all duration-200 ease-in-out overflow-hidden
                               ${isActive
                                 ? `bg-white/10 text-white shadow-[0_0_12px_rgba(255,255,255,0.1)]`
@@ -501,25 +545,25 @@ export function EnhancedSidebar({
                               className={`
                                 relative z-10 transition-all duration-200
                                 flex items-center justify-center w-7 h-7 rounded-full
-                                ${item.highlight ? 'bg-[#0d9488] bg-opacity-20' : ''}
-                                ${!isActive && hoveredItem === item.path ? 'shadow-[0_0_5px_rgba(255,255,255,0.4)] filter brightness-110' : ''}
-                                transform hover:scale-110
+                                ${collapsed ? 'mx-auto' : 'mr-3'}
+                                ${isActive 
+                                  ? 'bg-white/15 text-white' 
+                                  : 'text-white/70 group-hover:text-white'
+                                }
                               `}
-                              style={{ color: item.color || '' }}
+                              style={{
+                                boxShadow: isActive 
+                                  ? "rgba(0, 0, 0, 0.3) 0px 2px 4px 0px, rgba(255, 255, 255, 0.2) 0px 1px 2px 0px inset" 
+                                  : "none"
+                              }}
                             >
-                              {isActive ? (
-                                <motion.div
-                                  animate="pulse"
-                                  variants={createColorPulse(itemColor + '80')}
-                                  className="flex items-center justify-center"
-                                >
-                                  {item.icon}
-                                </motion.div>
-                              ) : (
-                                <div className={hoveredItem === item.path ? "animate-pulse" : ""}>
-                                  {item.icon}
-                                </div>
-                              )}
+                              {item.icon && React.cloneElement(item.icon, {
+                                className: `${collapsed ? 'w-5 h-5' : 'w-4 h-4'}`,
+                                style: {
+                                  color: isActive ? itemColor : '',
+                                  filter: isActive ? 'drop-shadow(0 0 2px rgba(255,255,255,0.3))' : ''
+                                }
+                              })}
                             </div>
                             <AnimatePresence>
                               {!collapsed && (
@@ -557,11 +601,6 @@ export function EnhancedSidebar({
                                     initial={{ opacity: 0, x: 10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: 10 }}
-                                    transition={{ 
-                                      type: "spring",
-                                      stiffness: 350,
-                                      damping: 25
-                                    }}
                                     className={`
                                       absolute left-14 px-4 py-2 rounded-lg z-50
                                       text-sm font-medium whitespace-nowrap
@@ -631,57 +670,58 @@ export function EnhancedSidebar({
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.5 }}
           >
-            {/* Bouton d'urgence */}
-            <motion.button
-              onClick={onEmergencyClick}
-              className={`
-                flex items-center justify-center px-4 py-2.5 bg-red-600 hover:bg-red-700 rounded-lg text-sm text-white transition-all duration-200
-                relative group
-              `}
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.97, y: 0 }}
-              style={{
-                background: "linear-gradient(135deg, rgba(220, 38, 38, 0.95) 0%, rgba(185, 28, 28, 0.85) 100%)",
-                boxShadow: "0 5px 10px rgba(0, 0, 0, 0.35), inset 0 1px 3px rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px, rgba(0, 210, 200, 0.25) 0px 0px 20px inset",
-                border: "none",
-                transform: "translateZ(0)"
-              }}
-            >
-              <Phone className="w-4 h-4 mr-2" />
-              {!collapsed && <span>Appel d'urgence</span>}
-            </motion.button>
-
-            {/* Actions flottantes (visible uniquement en mode déplié) */}
-            {!collapsed && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  {/* Boutons de messagerie et notifications supprimés */}
+            {/* Boutons d'action */}
+            <div className="flex flex-col space-y-3">
+              {/* Bouton d'urgence */}
+              <motion.button
+                onClick={onEmergencyClick}
+                className={`
+                  flex items-center ${collapsed ? 'justify-center' : ''} px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm
+                  transition-all duration-200 ease-in-out overflow-hidden
+                  relative group w-full
+                `}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                  background: "linear-gradient(135deg, rgba(220, 38, 38, 0.95) 0%, rgba(185, 28, 28, 0.85) 100%)",
+                  boxShadow: "0 5px 10px rgba(0, 0, 0, 0.35), inset 0 1px 3px rgba(255, 255, 255, 0.2)",
+                }}
+                aria-label="Appel d'urgence"
+              >
+                <div className={`
+                  relative z-10 transition-all duration-200
+                  flex items-center justify-center w-7 h-7 rounded-full
+                  ${collapsed ? 'mx-auto' : 'mr-3'}
+                  bg-white/15 text-white
+                `}>
+                  <Phone className="w-4 h-4" />
                 </div>
+                {!collapsed && <span className="font-medium">Appel d'urgence</span>}
+              </motion.button>
 
-                <motion.button 
-                  onClick={handleLogout}
-                  className="p-2.5 rounded-lg bg-white/10 hover:bg-white/15 transition-colors text-white/80 hover:text-white"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  aria-label="Se déconnecter"
-                >
-                  <LogOut className="w-5 h-5" />
-                </motion.button>
-              </div>
-            )}
-            
-            {/* Bouton de déconnexion (visible uniquement en mode replié) */}
-            {collapsed && (
+              {/* Bouton de déconnexion */}
               <motion.button 
                 onClick={handleLogout}
-                className="w-full flex items-center justify-center p-2.5 rounded-lg bg-white/10 hover:bg-white/15 transition-colors text-white/80 hover:text-white"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
+                className={`
+                  flex items-center ${collapsed ? 'justify-center' : ''} px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm
+                  transition-all duration-200 ease-in-out overflow-hidden
+                  bg-white/10 hover:bg-white/15 text-white/80 hover:text-white w-full
+                `}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 aria-label="Se déconnecter"
               >
-                <LogOut className="w-5 h-5" />
+                <div className={`
+                  relative z-10 transition-all duration-200
+                  flex items-center justify-center w-7 h-7 rounded-full
+                  ${collapsed ? 'mx-auto' : 'mr-3'}
+                  text-white/70 group-hover:text-white
+                `}>
+                  <LogOut className="w-4 h-4" />
+                </div>
+                {!collapsed && <span className="font-medium">Déconnexion</span>}
               </motion.button>
-            )}
+            </div>
           </motion.div>
         </div>
       </motion.div>
@@ -760,11 +800,10 @@ export function EnhancedSidebar({
                     </span>
                   </div>
                   <button 
-                    onClick={onCloseMobileMenu}
-                    className="p-2 rounded-lg bg-white/10 flex items-center justify-center"
-                    aria-label="Fermer le menu"
+                    onClick={onCloseMobileMenu} 
+                    className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white flex items-center justify-center"
                   >
-                    <X size={18} />
+                    <X className="w-6 h-6" />
                   </button>
                 </div>
                 
@@ -788,7 +827,9 @@ export function EnhancedSidebar({
                               `}
                               onClick={onCloseMobileMenu}
                             >
-                              <div className="mr-3">{item.icon}</div>
+                              {item.icon && React.cloneElement(item.icon, {
+                                className: 'w-5 h-5 mr-3'
+                              })}
                               <span>{item.label}</span>
                             </Link>
                           );
@@ -799,13 +840,13 @@ export function EnhancedSidebar({
                 </nav>
                 
                 {/* Bouton d'urgence */}
-                <div className="p-4 pt-2 border-t border-white/10">
+                <div className="p-4 pt-2 border-t border-white/10 space-y-3">
                   <button
                     onClick={() => {
                       onEmergencyClick();
                       onCloseMobileMenu();
                     }}
-                    className="flex items-center justify-center w-full px-4 py-3 bg-red-600 rounded-lg text-white mb-4"
+                    className="flex items-center justify-center w-full px-4 py-3 bg-red-600 rounded-lg text-white"
                   >
                     <Phone className="w-4 h-4 mr-2" />
                     <span>Appel d'urgence</span>

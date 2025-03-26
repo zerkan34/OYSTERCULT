@@ -4,10 +4,7 @@ import path from 'path';
 
 // Déterminer la base en fonction de l'environnement de déploiement
 const getBase = () => {
-  if (process.env.DEPLOY_TARGET === 'firebase') {
-    return '/';
-  }
-  return '/OYSTERCULT/';
+  return '/';
 };
 
 export default defineConfig({

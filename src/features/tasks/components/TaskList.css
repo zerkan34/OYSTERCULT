@@ -10,6 +10,14 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 1.5rem;
+  grid-auto-rows: min-content; /* Permet aux lignes de s'adapter à la hauteur de leur contenu */
+  align-items: start; /* Aligne les éléments en haut de leur cellule */
+}
+
+/* Règle pour empêcher l'alignement automatique des hauteurs dans la grille */
+.task-grid > * {
+  align-self: flex-start;
+  height: auto !important;
 }
 
 /* Responsive design for mobile */
@@ -85,19 +93,22 @@
 
 /* Wrapper de carte de tâche */
 .task-card-wrapper {
-  height: 100%;
+  height: auto; /* Remplace height: 100% pour éviter l'étirement automatique */
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start; /* Force l'élément à ne pas s'étirer verticalement */
 }
 
 /* Carte de tâche */
 .task-card {
-  height: 100%;
+  height: auto; /* Remplace height: 100% pour éviter l'étirement automatique */
   display: flex;
   flex-direction: column;
   background: linear-gradient(145deg, rgba(37, 99, 235, 0.08) 0%, rgba(13, 148, 136, 0.08) 100%);
   border-radius: 1rem;
   overflow: hidden;
   position: relative;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, height 0.3s ease; /* Ajouter transition pour la hauteur */
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -188,6 +199,12 @@
   padding: 1rem;
   position: relative;
   cursor: pointer;
+  height: auto;
+  transition: height 0.3s ease;
+}
+
+.task-card-body.expanded {
+  height: auto;
 }
 
 .task-title {
@@ -599,4 +616,35 @@
   .task-action-btn {
     min-height: 44px;  /* Augmente la taille des cibles tactiles pour mobile */
   }
+}
+
+/* Contenu développé */
+.expanded-content {
+  display: block; /* Toujours afficher mais avec hauteur 0 */
+  margin-top: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 0;
+  overflow: hidden;
+  max-height: 0;
+  transition: all 0.3s ease-out;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.expanded-content.expanded {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  max-height: 1000px; /* Hauteur maximale suffisamment grande */
+  opacity: 1;
+  visibility: visible;
+  transition: all 0.5s ease-in;
+}
+
+/* Styles pour la flèche de développement */
+.arrow-up {
+  --transform-value: rotate(180deg) !important;
+}
+
+.transform.rotate-180 {
+  transform: rotate(180deg) !important;
 }
