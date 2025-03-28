@@ -1,1554 +1,607 @@
-import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useClickOutside } from '@/lib/hooks';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Table, TableCell, HistoryEntry } from '../types';
 import { 
   Clock, 
-  Shell, 
-  Thermometer, 
-  Droplets, 
-  X, 
-  Check, 
-  SquarePen, 
-  Calendar, 
-  ChevronRight, 
-  FileSpreadsheet,
-  Upload,
-  Download,
-  AlertCircle,
-  Plus,
-  Info,
-  Edit,
-  Scale,
-  Hash,
-  Tag
+  Calendar,
+  ThermometerSun,
+  Droplets,
+  ArrowLeft,
+  ArrowRight,
+  History,
+  AlertTriangle,
+  MapPin,
+  ClipboardCheck
 } from 'lucide-react';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import * as XLSX from 'xlsx';
-
-interface TableCell {
-  id: string;
-  type: string;
-  ropeCount: number;
-  size: string;
-  filled: boolean;
-  fillOrder?: number;
-  harvestedRopes?: number;
-  status?: string;
-  lastUpdate?: string;
-}
-
-interface Table {
-  id: string;
-  name: string;
-  cells: TableCell[];
-  status: string;
-  lastUpdate: string;
-  temperature?: number;
-  salinity?: number;
-  tableNumber?: string;
-  currentBatch?: {
-    size: string;
-    quantity: number;
-    estimatedHarvestDate?: string;
-  };
-  lastCheck?: string;
-  nextCheck?: string;
-  mortalityRate?: number;
-  naissainSource?: string;
-  naissainBatchNumber?: string;
-}
 
 interface TableDetailProps {
   table: Table;
   onClose: () => void;
-  onTableUpdate?: (tableId: string, updates: Partial<Table>) => void;
+  onTableUpdate: (table: Table) => void;
 }
 
 interface CellModalProps {
   cell: TableCell;
   onClose: () => void;
-  onUpdate: (data: Partial<TableCell>) => void;
-  setShowNaissainModal?: (show: boolean) => void;
+  onSave: (updatedCell: TableCell) => void;
 }
 
-function CellModal({ cell, onClose, onUpdate, setShowNaissainModal }: CellModalProps) {
-  const modalRef = useClickOutside(onClose);
-  const [type, setType] = useState(cell.type || '');
-  const [ropeCount, setRopeCount] = useState(cell.ropeCount || 0);
-  const [size, setSize] = useState(cell.size || '');
-  const [harvestedRopes, setHarvestedRopes] = useState(0);
-  const [isEditing, setIsEditing] = useState(!cell.filled);
+interface HarvestModalProps {
+  cell: TableCell;
+  onClose: () => void;
+  onSave: (updatedCell: TableCell) => void;
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    let data;
-    
-    if (isEditing) {
-      // Mode édition - mettre à jour les propriétés existantes
-      data = {
-        type,
-        ropeCount,
-        size,
-        filled: true
-      };
-    } else if (cell.filled) {
-      // Mode récolte
-      data = {
-        harvestedRopes,
-        batchNumber: `LOT-${new Date().getTime()}`
-      };
-    } else {
-      // Mode nouvelle production
-      data = {
-        type,
-        ropeCount,
-        size,
-        filled: true
-      };
-    }
-    
-    onUpdate(data);
+const CellModal: React.FC<CellModalProps> = ({ cell, onClose, onSave }) => {
+  const generateBatchNumber = () => {
+    const date = new Date();
+    const year = date.getFullYear().toString().slice(-2);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `${year}${month}-${random}`;
+  };
+
+  const [ropeCount, setRopeCount] = useState<number>(cell.ropeCount || 0);
+  const [spatName, setSpatName] = useState(cell.spat?.name || '');
+  const [batchNumber, setBatchNumber] = useState(cell.spat?.batchNumber || generateBatchNumber());
+
+  const handleSave = () => {
+    onSave({
+      ...cell,
+      filled: true,
+      ropeCount,
+      spat: {
+        name: spatName,
+        batchNumber,
+        dateAdded: new Date().toISOString(),
+      },
+    });
     onClose();
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center"
-    >
-      <motion.div
-        ref={modalRef}
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md"
+        className="bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.95)] p-6 rounded-lg w-96 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px] border border-white/10"
       >
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-white">
-            {cell.filled && !isEditing ? 'Récolte' : cell.filled && isEditing ? 'Modifier le bassin' : 'Nouvelle production'}
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-white/60 hover:text-white transition-colors"
-          >
-            <X size={24} />
-          </button>
-        </div>
-
-        {cell.filled && !isEditing && (
-          <div className="flex justify-end mb-4">
-            <button
-              type="button"
-              onClick={() => setIsEditing(true)}
-              className="flex items-center text-brand-tertiary hover:text-brand-tertiary/80 transition-colors"
-            >
-              <Edit size={16} className="mr-1" />
-              Modifier les propriétés
-            </button>
+        <h3 className="text-2xl font-semibold mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+          Ajouter des cordes
+        </h3>
+        <div className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium mb-2 text-white/70">Nombre de cordes</label>
+            <input
+              type="number"
+              value={ropeCount}
+              onChange={(e) => setRopeCount(Number(e.target.value))}
+              className="w-full bg-black/20 rounded-lg p-3 border border-white/10 focus:border-cyan-500/30 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
+              min="0"
+            />
           </div>
-        )}
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {!cell.filled || isEditing ? (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-white mb-2">
-                  Type de production
-                </label>
-                <div className="flex justify-between items-center mb-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (setShowNaissainModal) {
-                        setShowNaissainModal(true);
-                      } else {
-                        console.warn("setShowNaissainModal is not defined");
-                      }
-                    }}
-                    className="px-4 py-2 bg-brand-tertiary rounded-lg text-white hover:bg-brand-tertiary/90 transition-colors"
-                  >
-                    Naissain
-                  </button>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { value: 'triplo', label: 'Triploïde', color: 'bg-brand-burgundy' },
-                    { value: 'diplo', label: 'Diploïde', color: 'bg-brand-primary' },
-                    { value: 'naturelle', label: 'Naturelle', color: 'bg-brand-tertiary' }
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => setType(option.value)}
-                      className={`p-3 rounded-lg flex flex-col items-center justify-center transition-all ${
-                        type === option.value 
-                          ? `${option.color} shadow-neon` 
-                          : 'bg-white/5 hover:bg-white/10'
-                      }`}
-                    >
-                      <div className={`w-4 h-4 rounded-sm ${option.color} mb-2`} />
-                      <span className="text-sm text-white">{option.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-white mb-2">
-                  Nombre de cordes par perche
-                </label>
-                <div className="relative">
-                  <div className="flex items-center justify-between bg-white/5 rounded-lg p-4">
-                    <button
-                      type="button"
-                      onClick={() => setRopeCount(Math.max(0, ropeCount - 1))}
-                      className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-lg text-white hover:bg-white/20 transition-colors"
-                    >
-                      -
-                    </button>
-                    <span className="text-2xl font-bold text-white">{ropeCount}</span>
-                    <button
-                      type="button"
-                      onClick={() => setRopeCount(ropeCount + 1)}
-                      className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-lg text-white hover:bg-white/20 transition-colors"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-white mb-2">
-                  Taille des huîtres
-                </label>
-                <div className="grid grid-cols-5 gap-2">
-                  {['T5', 'T10', 'T15', 'T20', 'T30'].map((num) => (
-                    <button
-                      key={num}
-                      type="button"
-                      onClick={() => setSize(num)}
-                      className={`p-3 rounded-lg flex items-center justify-center transition-all ${
-                        size === num
-                          ? 'bg-brand-burgundy shadow-neon'
-                          : 'bg-white/5 hover:bg-white/10'
-                      }`}
-                    >
-                      <span className="text-white font-medium">{num}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-white mb-2">
-                  Nombre de cordes récoltées
-                </label>
-                <div className="relative">
-                  <div className="flex items-center justify-between bg-white/5 rounded-lg p-4">
-                    <button
-                      type="button"
-                      onClick={() => setHarvestedRopes(Math.max(0, harvestedRopes - 1))}
-                      className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-lg text-white hover:bg-white/20 transition-colors"
-                    >
-                      -
-                    </button>
-                    <span className="text-2xl font-bold text-white">{harvestedRopes}</span>
-                    <button
-                      type="button"
-                      onClick={() => setHarvestedRopes(Math.min(cell.ropeCount, harvestedRopes + 1))}
-                      className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-lg text-white hover:bg-white/20 transition-colors"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <div className="mt-2 text-sm text-white/60 text-center">
-                    sur {cell.ropeCount} cordes au total
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 bg-brand-burgundy/20 rounded-lg">
-                <div className="flex items-center text-brand-burgundy mb-2">
-                  <Tag size={20} className="mr-2" />
-                  <span className="font-medium">Numéro de lot</span>
-                </div>
-                <div className="text-white font-mono">
-                  LOT-{new Date().getTime()}
-                </div>
-              </div>
-            </>
-          )}
-
-          <div className="flex justify-end space-x-4">
+          <div>
+            <label className="block text-sm font-medium mb-2 text-white/70">Naissain</label>
+            <input
+              type="text"
+              value={spatName}
+              onChange={(e) => setSpatName(e.target.value)}
+              className="w-full bg-black/20 rounded-lg p-3 border border-white/10 focus:border-cyan-500/30 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
+              placeholder="Nom du naissain"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2 text-white/70">Numéro de lot</label>
+            <div className="relative">
+              <input
+                type="text"
+                value={batchNumber}
+                onChange={(e) => setBatchNumber(e.target.value)}
+                className="w-full bg-black/20 rounded-lg p-3 border border-white/10 focus:border-cyan-500/30 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
+                placeholder="Auto-généré"
+              />
+              <button
+                onClick={() => setBatchNumber(generateBatchNumber())}
+                className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs bg-cyan-500/20 text-cyan-400 rounded hover:bg-cyan-500/30 transition-colors"
+              >
+                Générer
+              </button>
+            </div>
+          </div>
+          <div className="flex justify-end space-x-3 pt-2">
             <button
-              type="button"
               onClick={onClose}
-              className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+              className="px-4 py-2.5 bg-white/5 rounded-lg hover:bg-white/10 border border-white/10 transition-colors"
             >
               Annuler
             </button>
             <button
-              type="submit"
-              className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
+              onClick={handleSave}
+              className="px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg hover:from-cyan-400 hover:to-blue-400 transition-colors font-medium"
             >
-              {cell.filled && !isEditing ? 'Valider la récolte' : cell.filled && isEditing ? 'Enregistrer les modifications' : 'Ajouter la production'}
+              Enregistrer
             </button>
           </div>
-        </form>
+        </div>
       </motion.div>
-    </motion.div>
+    </div>
   );
-}
+};
 
-interface TableDetailProps {
-  table: Table;
-  onClose: () => void;
-  onTableUpdate?: (tableId: string, updates: Partial<Table>) => void;
-}
+const HarvestModal: React.FC<HarvestModalProps> = ({ cell, onClose, onSave }) => {
+  const [ropesToHarvest, setRopesToHarvest] = useState<number>(1);
 
-export function TableDetail({ table, onClose, onTableUpdate }: TableDetailProps) {
-  const handleModalClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Empêche la propagation du clic
-  };
-
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  const [selectedCell, setSelectedCell] = useState<TableCell | null>(null);
-  const [showLegend, setShowLegend] = useState(true);
-
-  // États pour le modal de remplissage de colonne
-  const [showFillColumnModal, setShowFillColumnModal] = useState(false);
-  const [selectedColumn, setSelectedColumn] = useState<{side: 'left' | 'right'}>({ side: 'left' });
-  const [fillOrderNumber, setFillOrderNumber] = useState<number | ''>('');
-  const [fillDate, setFillDate] = useState('');
-
-  // États pour l'édition du nom de la table
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [editedTableNumber, setEditedTableNumber] = useState(table.tableNumber);
-
-  // États pour la modale d'échantillonnage
-  const [showSamplingModal, setShowSamplingModal] = useState(false);
-  const [samplingMortalityRate, setSamplingMortalityRate] = useState<number | ''>('');
-  const [iAMortalityPrediction, setIAMortalityPrediction] = useState<number | null>(null);
-  const [samplingDate, setSamplingDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-
-  // États pour le modal de naissain
-  const [showNaissainModal, setShowNaissainModal] = useState(false);
-  const [naissainSource, setNaissainSource] = useState('');
-
-  // États pour le modal d'historique
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [historyDate, setHistoryDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-
-  // Nouveaux états pour l'importation de données
-  const [showImportModal, setShowImportModal] = useState(false);
-  const [importData, setImportData] = useState<any[]>([]);
-  const [importPreview, setImportPreview] = useState<any[]>([]);
-  const [importError, setImportError] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleCellUpdate = (cellId: string, data: Partial<TableCell>) => {
-    console.log('Updating cell:', cellId, data);
-    
-    // Trouver l'index de la cellule à mettre à jour
-    const cellIndex = table.cells.findIndex((c: TableCell) => c.id === cellId);
-    if (cellIndex === -1) return;
-
-    // Créer une copie des cellules pour la mise à jour
-    const updatedCells = [...table.cells];
-    updatedCells[cellIndex] = { ...updatedCells[cellIndex], ...data };
-
-    // Mettre à jour la table avec les nouvelles cellules
-    if (onTableUpdate) {
-      onTableUpdate(table.id, { cells: updatedCells });
-    }
-  };
-
-  // Fonction pour ouvrir le modal de remplissage de colonne
-  const openFillColumnModal = (side: 'left' | 'right') => {
-    setSelectedColumn({ side });
-    setShowFillColumnModal(true);
-  };
-
-  // Fonction pour gérer le remplissage de colonne
-  const handleFillColumn = () => {
-    // Simuler le remplissage de la colonne (l'implémentation réelle dépendra de la structure des données)
-    console.log(`Remplissage de la colonne ${selectedColumn.side} avec ordre de remplissage ${fillOrderNumber} à la date ${fillDate}`);
-    
-    // Fermer le modal après le remplissage
-    setShowFillColumnModal(false);
-    // Réinitialiser les champs
-    setFillOrderNumber('');
-    setFillDate('');
-  };
-
-  // Fonction pour mettre à jour le nom de la table
-  const handleTableNumberUpdate = () => {
-    if (onTableUpdate && editedTableNumber.trim() !== '') {
-      onTableUpdate(table.id, { tableNumber: editedTableNumber.trim() });
-    }
-    setIsEditingName(false);
-  };
-
-  // Fonction pour annuler l'édition du nom de la table
-  const cancelEditing = () => {
-    setEditedTableNumber(table.tableNumber);
-    setIsEditingName(false);
-  };
-
-  // Fonction pour gérer l'échantillonnage
-  const handleSampling = () => {
-    // Calculer une prédiction IA simulée basée sur le taux de mortalité actuel
-    // (dans une vraie implémentation, ce serait basé sur un modèle d'IA)
-    if (typeof samplingMortalityRate === 'number') {
-      // Simulation simple: prédiction est le taux actuel +/- 20%
-      const variationFactor = 0.2;
-      const randomVariation = (Math.random() * 2 - 1) * variationFactor;
-      const prediction = samplingMortalityRate * (1 + randomVariation);
-      setIAMortalityPrediction(Number(prediction.toFixed(1)));
-    }
-
-    // Enregistrer l'échantillonnage
-    console.log(`Échantillonnage enregistré avec un taux de mortalité de ${samplingMortalityRate}% à la date ${samplingDate}`);
-    
-    // Fermer la modale
-    setShowSamplingModal(false);
-  };
-
-  // Fonction pour ouvrir la modale d'échantillonnage
-  const openSamplingModal = () => {
-    // Réinitialiser les valeurs
-    setSamplingMortalityRate('');
-    setIAMortalityPrediction(null);
-    setSamplingDate(format(new Date(), 'yyyy-MM-dd'));
-    setShowSamplingModal(true);
-  };
-
-  // Fonction pour gérer l'enregistrement du naissain
-  const handleNaissainSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simuler l'enregistrement du naissain
-    const naissainData = {
-      source: naissainSource,
-      date: format(new Date(), 'yyyy-MM-dd'),
-      batchNumber: `NAIS-${new Date().getTime()}`
-    };
-    console.log('Naissain enregistré:', naissainData);
-    
-    // Mettre à jour la table avec l'information du naissain si nécessaire
-    if (onTableUpdate) {
-      onTableUpdate(table.id, { 
-        naissainSource: naissainData.source,
-        naissainBatchNumber: naissainData.batchNumber
-      });
-    }
-    
-    // Fermer la modale
-    setShowNaissainModal(false);
-    // Réinitialiser le champ
-    setNaissainSource('');
-  };
-
-  // Fonction pour rechercher dans l'historique
-  const handleHistorySearch = () => {
-    console.log(`Recherche dans l'historique pour la date: ${historyDate}`);
-    // Dans une vraie implémentation, cette fonction ferait une requête à l'API
-    // pour obtenir les données historiques de la table à la date spécifiée
-    
-    // Pour l'instant, nous utilisons des données fictives qui sont déjà affichées
-  };
-
-  // Fonction pour gérer l'importation de fichiers Excel
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setImportError('');
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = e.target?.result;
-        const workbook = XLSX.read(data, { type: 'binary' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        
-        if (jsonData.length === 0) {
-          setImportError('Le fichier ne contient pas de données valides.');
-          return;
-        }
-
-        setImportData(jsonData);
-        setImportPreview(jsonData.slice(0, 5)); // Afficher les 5 premières lignes comme aperçu
-      } catch (error) {
-        console.error('Erreur lors de la lecture du fichier Excel:', error);
-        setImportError('Une erreur est survenue lors de la lecture du fichier. Vérifiez que le format est correct.');
-      }
-    };
-
-    reader.onerror = () => {
-      setImportError('Une erreur est survenue lors de la lecture du fichier.');
-    };
-
-    reader.readAsBinaryString(file);
-  };
-
-  // Fonction pour appliquer les données importées
-  const handleImportData = () => {
-    if (importData.length === 0) {
-      setImportError('Aucune donnée à importer.');
-      return;
-    }
-
-    console.log('Importation des données:', importData);
-    // Ici, vous implémenterez la logique pour appliquer les données importées aux tables/carrés
-    
-    // Exemple: mettre à jour la table avec les données importées
-    if (onTableUpdate) {
-      // Adapter cette partie selon la structure des données importées
-      const updates: any = {
-        lastUpdated: new Date().toISOString(),
-        // Ajouter d'autres champs en fonction de la structure des données importées
-      };
-      
-      onTableUpdate(table.id, updates);
-    }
-    
-    setShowImportModal(false);
-    setImportData([]);
-    setImportPreview([]);
+  const handleSave = () => {
+    const remainingRopes = (cell.ropeCount || 0) - ropesToHarvest;
+    onSave({
+      ...cell,
+      filled: remainingRopes > 0,
+      ropeCount: remainingRopes > 0 ? remainingRopes : 0,
+      spat: remainingRopes > 0 ? cell.spat : undefined,
+    });
+    onClose();
   };
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-      onClick={handleBackdropClick}
-    >
-      <motion.div
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md p-6 rounded-lg w-full max-w-2xl"
-        onClick={handleModalClick}
+        className="bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.95)] p-6 rounded-lg w-96 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px] border border-white/10"
       >
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-white">{table?.name || 'Détails de la table'}</h3>
-          <button
-            onClick={onClose}
-            className="text-white/60 hover:text-white transition-colors"
-          >
-            <X size={24} />
-          </button>
-        </div>
-
-        <div className="space-y-6">
-          {/* Informations principales */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="glass-effect rounded-lg p-4">
-              <div className="flex items-center text-white/80 mb-2">
-                <Thermometer size={20} className="mr-2 text-brand-burgundy" />
-                Température
-              </div>
-              <div className="text-2xl font-bold text-white">
-                {table.temperature ? `${table.temperature}°C` : "Non disponible"}
-              </div>
+        <h3 className="text-2xl font-semibold mb-6 bg-gradient-to-r from-[#22c55e] to-[#16a34a] bg-clip-text text-transparent">
+          Récolter des cordes
+        </h3>
+        <div className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium mb-2 text-white/70">Nombre de cordes à récolter</label>
+            <input
+              type="number"
+              value={ropesToHarvest}
+              onChange={(e) => setRopesToHarvest(Math.min(Number(e.target.value), cell.ropeCount || 0))}
+              className="w-full bg-black/20 rounded-lg p-3 border border-white/10 focus:border-[#22c55e]/30 focus:ring-2 focus:ring-[#22c55e]/20 transition-all duration-200"
+              min="1"
+              max={cell.ropeCount}
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="text-sm text-white/70">
+              <span className="font-medium">Numéro de lot :</span>{' '}
+              <span className="text-white">{cell.spat?.batchNumber}</span>
             </div>
-
-            <div className="glass-effect rounded-lg p-4">
-              <div className="flex items-center text-white/80 mb-2">
-                <Droplets size={20} className="mr-2 text-brand-primary" />
-                Salinité
-              </div>
-              <div className="text-2xl font-bold text-white">
-                {table.salinity}g/L
-              </div>
+            <div className="text-sm text-white/70">
+              <span className="font-medium">Naissain :</span>{' '}
+              <span className="text-white">{cell.spat?.name}</span>
             </div>
-
-            <div className="glass-effect rounded-lg p-4">
-              <div className="flex items-center text-white/80 mb-2">
-                <AlertCircle size={20} className="mr-2 text-brand-tertiary" />
-                Mortalité
-              </div>
-              <div className="text-2xl font-bold text-white">
-                {table.mortalityRate}%
-              </div>
+            <div className="text-sm text-white/70">
+              <span className="font-medium">Cordes restantes après récolte :</span>{' '}
+              <span className="text-white">{(cell.ropeCount || 0) - ropesToHarvest}</span>
             </div>
           </div>
-
-          {/* Détails du lot */}
-          {table?.currentBatch && (
-            <div className="glass-effect rounded-lg p-4">
-              <div className="flex items-center text-white/80 mb-4">
-                <Shell size={20} className="mr-2 text-brand-burgundy" />
-                Lot en cours
-              </div>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-white/60">Calibre</span>
-                  <span className="text-white font-medium">N°{table.currentBatch.size}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-white/60">Quantité</span>
-                  <span className="text-white font-medium">{table.currentBatch.quantity} unités</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-white/60">Date de récolte estimée</span>
-                  <span className="text-white font-medium">
-                    {format(new Date(table.currentBatch.estimatedHarvestDate), 'PP', { locale: fr })}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Échantillonnage */}
-          <div className="glass-effect rounded-lg p-4">
-            <div className="flex items-center text-white/80 mb-4">
-              <Calendar size={20} className="mr-2 text-brand-tertiary" />
-              Échantillonnage
-            </div>
-            <div className="space-y-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-white/60">Dernier échantillonnage</span>
-                <span className="text-white">
-                  {format(new Date(table.lastCheck), 'PP', { locale: fr })}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-white/60">Prochain échantillonnage</span>
-                <span className="text-white">
-                  {format(new Date(table.nextCheck), 'PP', { locale: fr })}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-end space-x-4 pt-4">
-            <button 
-              className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
-              onClick={() => setShowHistoryModal(true)}
-            >
-              Historique
-            </button>
-            <button 
-              className="px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
-              onClick={() => openFillColumnModal('left')}
-            >
-              Remplir colonne gauche
-            </button>
-            <button 
-              className="px-4 py-2 bg-brand-tertiary rounded-lg text-white hover:bg-brand-tertiary/90 transition-colors"
-              onClick={() => openFillColumnModal('right')}
-            >
-              Remplir colonne droite
-            </button>
-            <button 
-              className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
-              onClick={openSamplingModal}
-            >
-              Échantillonnage
-            </button>
-            <button 
-              className="px-4 py-2 text-white/70 hover:text-white transition-colors"
-              onClick={onClose}
-            >
-              Fermer
-            </button>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Légende des types d'huîtres */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -20 }}
-        className="w-80 glass-effect rounded-lg p-4 self-start mt-8"
-      >
-        <div className="flex items-center justify-between mb-3">
-          <h4 className="text-white font-medium flex items-center">
-            <Info size={16} className="mr-2 text-brand-burgundy" />
-            Types d'huîtres
-          </h4>
-          <button
-            onClick={() => setShowLegend(!showLegend)}
-            className="text-white/60 hover:text-white transition-colors"
-          >
-            {showLegend ? 'Réduire' : 'Voir'}
-          </button>
-        </div>
-        
-        <AnimatePresence>
-          {showLegend && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="space-y-3 overflow-hidden"
-            >
-              {[
-                { 
-                  type: 'triplo', 
-                  label: 'Triploïdes', 
-                  color: 'bg-brand-burgundy',
-                  description: 'Huîtres stériles à croissance rapide'
-                },
-                { 
-                  type: 'diplo', 
-                  label: 'Diploïdes', 
-                  color: 'bg-brand-primary',
-                  description: 'Huîtres naturelles améliorées'
-                },
-                { 
-                  type: 'naturelle', 
-                  label: 'Naturelles', 
-                  color: 'bg-brand-tertiary',
-                  description: 'Huîtres sauvages traditionnelles'
-                }
-              ].map((type) => (
-                <div key={type.type} className="flex items-center space-x-3">
-                  <div className={`w-6 h-6 rounded-lg ${type.color} shadow-neon border-2 border-white/80 shadow-[0_0_15px_rgba(255,255,255,0.6)] flex-shrink-0`} />
-                  <div>
-                    <div className="text-white font-medium">{type.label}</div>
-                    <div className="text-sm text-white/60">{type.description}</div>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
-      {/* Vue principale de la table en portrait */}
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        className="relative w-[400px] h-[800px] bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 rounded-lg overflow-hidden border border-white/10"
-      >
-        <div className="relative h-full grid grid-cols-2 grid-rows-10 gap-1 p-8 transform rotate-0">
-          {table.cells.map((cell: TableCell, index: number) => (
-            <motion.button
-              key={cell.id}
-              onClick={() => setSelectedCell(cell)}
-              className={`relative rounded-md transition-all duration-300 group ${
-                cell.filled
-                  ? `${
-                      cell.type === 'triplo' ? 'bg-brand-burgundy shadow-neon' :
-                      cell.type === 'diplo' ? 'bg-brand-primary shadow-neon' :
-                      'bg-brand-tertiary shadow-neon'
-                    }`
-                  : 'bg-white/5 hover:bg-white/10'
-              }`}
-              variants={{
-                initial: { opacity: 0.6, scale: 0.95 },
-                animate: (custom: number) => ({
-                  opacity: [0.6, 1, 0.6],
-                  scale: [0.95, 1, 0.95],
-                  transition: {
-                    duration: 3,
-                    repeat: Infinity,
-                    delay: custom * 0.1,
-                    ease: "easeInOut"
-                  }
-                })
-              }}
-              initial="initial"
-              animate="animate"
-              custom={index}
-            >
-              {/* Overlay avec contour blanc et ombre */}
-              <div className="absolute inset-0 rounded-md border-2 border-white shadow-[0_0_8px_rgba(255,255,255,0.8)]">
-                {/* Affichage du numéro uniquement pour les cellules remplies */}
-                {cell.filled && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xs text-white font-bold">{cell.fillOrder || index + 1}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Informations de la cellule (seulement si remplie) */}
-              {cell.filled && (
-                <div className="absolute bottom-1 right-1 text-[8px] text-white/60">
-                  {cell.ropeCount}
-                </div>
-              )}
-              
-              {/* Icône d'édition qui apparaît au survol */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded-md transition-opacity">
-                <Edit size={16} className="text-white" />
-              </div>
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Panneau latéral d'informations */}
-      <motion.div
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        className="w-96 bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 h-full border-l border-white/10 overflow-y-auto custom-scrollbar"
-      >
-        <div className="p-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-white">{table.name}</h2>
-              {isEditingName ? (
-                <div className="flex items-center mt-1 space-x-2">
-                  <input
-                    type="text"
-                    value={editedTableNumber}
-                    onChange={(e) => setEditedTableNumber(e.target.value)}
-                    className="w-full p-2 bg-white/10 border border-white/20 rounded-lg text-white"
-                    autoFocus
-                  />
-                  <button
-                    onClick={handleTableNumberUpdate}
-                    className="p-2 bg-brand-primary/20 hover:bg-brand-primary/40 rounded-lg transition-colors"
-                    title="Valider"
-                  >
-                    <Check size={18} className="text-white" />
-                  </button>
-                  <button
-                    onClick={cancelEditing}
-                    className="p-2 bg-red-500/20 hover:bg-red-500/40 rounded-lg transition-colors"
-                    title="Annuler"
-                  >
-                    <X size={18} className="text-white" />
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center">
-                  <p className="text-white/60">{table.tableNumber}</p>
-                  <button
-                    onClick={() => setIsEditingName(true)}
-                    className="ml-2 p-1 hover:bg-white/10 rounded-lg transition-colors"
-                    title="Modifier le numéro de table"
-                  >
-                    <Edit size={14} className="text-white/60" />
-                  </button>
-                </div>
-              )}
-            </div>
+          <div className="flex justify-end gap-3">
             <button
               onClick={onClose}
-              className="p-2 hover:bg-white/5 rounded-lg transition-colors"
+              className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-white/70"
             >
-              <X size={24} className="text-white/60" />
+              Annuler
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 rounded-lg bg-[#22c55e]/20 text-[#22c55e] hover:bg-[#22c55e]/30 transition-colors"
+            >
+              Récolter
             </button>
           </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/5 rounded-lg p-4">
-              <div className="flex items-center text-white/80 mb-2">
-                <Thermometer size={20} className="mr-2 text-brand-burgundy" />
-                Température
-              </div>
-              <div className="text-2xl font-bold text-white">
-                {table.temperature}°C
-              </div>
-            </div>
+export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTableUpdate }) => {
+  const [selectedCell, setSelectedCell] = useState<TableCell | null>(null);
+  const [showCellModal, setShowCellModal] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showSamplingModal, setShowSamplingModal] = useState(false);
+  const [showHarvestModal, setShowHarvestModal] = useState(false);
 
-            <div className="bg-white/5 rounded-lg p-4">
-              <div className="flex items-center text-white/80 mb-2">
-                <Droplets size={20} className="mr-2 text-brand-primary" />
-                Salinité
-              </div>
-              <div className="text-2xl font-bold text-white">
-                {table.salinity}g/L
-              </div>
+  // Initialiser les cellules avec les cellules 9 et 17 remplies
+  React.useEffect(() => {
+    if (table.id === '1' && onTableUpdate) {  // Table A-12 et onTableUpdate existe
+      const newCells = [...table.cells];
+      if (newCells[8]) newCells[8] = { ...newCells[8], filled: true };  // Cellule 9
+      if (newCells[16]) newCells[16] = { ...newCells[16], filled: true };  // Cellule 17
+      
+      onTableUpdate({
+        ...table,
+        cells: newCells
+      });
+    }
+  }, [table.id, onTableUpdate]);  // Ajouter les dépendances
+
+  const handleCellUpdate = (updatedCell: TableCell) => {
+    const newCells = [...table.cells];
+    const index = newCells.findIndex((c) => c.id === updatedCell.id);
+    if (index !== -1) {
+      newCells[index] = updatedCell;
+
+      const historyEntry: HistoryEntry = {
+        date: new Date().toISOString(),
+        action: 'Mise à jour cellule',
+        spat: updatedCell.spat,
+        details: `Cellule ${index + 1} mise à jour avec ${updatedCell.ropeCount} cordes`,
+      };
+
+      onTableUpdate({
+        ...table,
+        cells: newCells,
+        history: [...table.history, historyEntry],
+      });
+    }
+    setShowCellModal(false);
+  };
+
+  const handleHarvest = (updatedCell: TableCell) => {
+    const newCells = [...table.cells];
+    const index = newCells.findIndex((c) => c.id === updatedCell.id);
+    if (index !== -1) {
+      newCells[index] = updatedCell;
+
+      const historyEntry: HistoryEntry = {
+        date: new Date().toISOString(),
+        action: 'Récolte de cordes',
+        spat: updatedCell.spat,
+        details: `Cellule ${index + 1} récoltée`,
+      };
+
+      onTableUpdate({
+        ...table,
+        cells: newCells,
+        history: [...table.history, historyEntry],
+      });
+    }
+    setShowHarvestModal(false);
+  };
+
+  const fillColumn = (startIndex: number) => {
+    const newCells = [...table.cells];
+    for (let i = startIndex; i < startIndex + 10; i++) {
+      if (!newCells[i].filled) {
+        newCells[i] = {
+          ...newCells[i],
+          filled: true,
+          ropeCount: 10,
+          spat: {
+            name: "Naissain standard",
+            dateAdded: new Date().toISOString(),
+          },
+        };
+      }
+    }
+    onTableUpdate({
+      ...table,
+      cells: newCells,
+      history: [
+        ...table.history,
+        {
+          date: new Date().toISOString(),
+          action: 'Remplissage colonne',
+          details: `Colonne ${startIndex === 0 ? 'gauche' : 'droite'} remplie`,
+        },
+      ],
+    });
+  };
+
+  const handleSampling = () => {
+    const newHistory = [
+      ...table.history,
+      {
+        date: new Date().toISOString(),
+        action: 'Échantillonnage',
+        details: 'Contrôle de croissance effectué',
+      },
+    ];
+
+    onTableUpdate({
+      ...table,
+      sampling: {
+        ...table.sampling,
+        lastCheckDate: new Date().toISOString(),
+        nextCheckDate: new Date(
+          Date.now() + 7 * 24 * 60 * 60 * 1000
+        ).toISOString(), // +7 jours
+        mortalityRate: Math.round(Math.random() * 5), // 0-5%
+        currentSize: (Math.round(70 + Math.random() * 30)).toString() // 70-100mm
+      },
+      history: newHistory,
+    });
+
+    setShowSamplingModal(false);
+  };
+
+  const handleCellClick = (cell: TableCell) => {
+    setSelectedCell(cell);
+    if (cell.filled) {
+      setShowHarvestModal(true);
+    } else {
+      setShowCellModal(true);
+    }
+  };
+
+  const getCellStyle = (cell: TableCell) => {
+    if (typeof cell.filled === 'number') {
+      return {
+        background: `linear-gradient(to left, rgba(34, 197, 94, 0.2) ${cell.filled * 100}%, transparent ${cell.filled * 100}%)`,
+        borderColor: 'rgba(34, 197, 94, 0.3)'
+      };
+    } else if (cell.filled) {
+      return {
+        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+        borderColor: 'rgba(34, 197, 94, 0.3)'
+      };
+    }
+    return {};
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-40"
+    >
+      <div className="bg-gray-900/95 backdrop-blur-sm p-8 rounded-xl w-[1000px] max-h-[90vh] overflow-y-auto border border-white/10">
+        <div className="flex justify-between items-start mb-8">
+          <div>
+            <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-cyan-400 to-cyan-200 bg-clip-text text-transparent">
+              Table {table.name}
+            </h2>
+            <div className="flex items-center space-x-3 text-gray-400">
+              <span className="text-lg">Table n° {table.tableNumber}</span>
+              <span className="text-gray-500">•</span>
+              <span className="text-lg">{table.oysterType}</span>
             </div>
           </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
 
-          <div className="bg-white/5 rounded-lg p-4">
-            <div className="flex items-center text-white/80 mb-4">
-              <Clock size={20} className="mr-2 text-brand-tertiary" />
-              Échantillonnage
-            </div>
+        <div className="grid grid-cols-2 gap-8 mb-8">
+          <div className="bg-gray-800/50 p-6 rounded-lg border border-white/5">
+            <h3 className="text-xl font-semibold mb-6 text-cyan-300">
+              Informations générales
+            </h3>
             <div className="space-y-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-white/60">Dernier échantillonnage</span>
-                <span className="text-white">
-                  {format(new Date(table.lastCheck), 'PP', { locale: fr })}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-white/60">Prochain échantillonnage</span>
-                <span className="text-white">
-                  {format(new Date(table.nextCheck), 'PP', { locale: fr })}
-                </span>
-              </div>
-              <div className="pt-2 border-t border-white/10">
-                <div className="flex justify-between items-center">
-                  <span className="text-white/60">Taux de mortalité estimé</span>
-                  <span className={`text-lg font-medium ${
-                    table.mortalityRate > 3
-                      ? 'text-red-400'
-                      : table.mortalityRate > 2
-                      ? 'text-yellow-400'
-                      : 'text-green-400'
-                  }`}>
-                    {table.mortalityRate}%
-                  </span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <ThermometerSun size={20} className="text-cyan-400" />
+                  <span className="text-gray-300">Température</span>
                 </div>
+                <span className="text-white font-medium">{table.temperature}°C</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Droplets size={20} className="text-cyan-400" />
+                  <span className="text-gray-300">Salinité</span>
+                </div>
+                <span className="text-white font-medium">{table.salinity}g/L</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Clock size={20} className="text-cyan-400" />
+                  <span className="text-gray-300">Dernière mise à jour</span>
+                </div>
+                <span className="text-white font-medium">
+                  {new Date(table.lastUpdate).toLocaleDateString()}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <MapPin size={20} className="text-cyan-400" />
+                  <span className="text-gray-300">Provenance naissain</span>
+                </div>
+                <span className="text-white font-medium">Marennes-Oléron</span>
               </div>
             </div>
           </div>
 
-          {table.currentBatch && (
-            <div className="bg-white/5 rounded-lg p-4">
-              <div className="flex items-center text-white/80 mb-4">
-                <Shell size={20} className="mr-2 text-brand-burgundy" />
-                Lot en cours
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-white/60">Calibre</span>
-                  <span className="text-white font-medium">
-                    N°{table.currentBatch.size}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-white/60">Quantité</span>
-                  <span className="text-white font-medium">
-                    {table.currentBatch.quantity} unités
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-white/60">Récolte prévue</span>
-                  <span className="text-white font-medium">
-                    {table.currentBatch?.estimatedHarvestDate 
-                      ? format(new Date(table.currentBatch.estimatedHarvestDate), 'PP', { locale: fr })
-                      : 'Non définie'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Bouton d'importation de données */}
-          <div className="bg-white/5 rounded-lg p-4 mt-6">
-            <div className="flex items-center text-white/80 mb-4">
-              <FileSpreadsheet size={20} className="mr-2 text-brand-tertiary" />
-              Importation de données
-            </div>
-            <div className="space-y-2">
-              <p className="text-white/60 text-sm mb-4">
-                Importez vos données existantes pour remplir rapidement les tables et suivre leur production.
-              </p>
-              <a href="#" className="text-brand-tertiary text-sm hover:underline flex items-center">
-                <Download size={16} className="mr-1" />
-                Télécharger un modèle de fichier
-              </a>
-              <p className="text-white/60 text-sm mb-4">
-                Importez vos données existantes pour remplir rapidement les tables et suivre leur production.
-              </p>
+          <div className="bg-gray-800/50 p-6 rounded-lg border border-white/5">
+            <h3 className="text-xl font-semibold mb-6 text-cyan-300">Actions</h3>
+            <div className="space-y-4">
               <button
-                onClick={() => setShowImportModal(true)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-brand-tertiary/80 rounded-lg text-white hover:bg-brand-tertiary transition-colors"
+                onClick={() => fillColumn(0)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg border border-white/5 transition-colors"
               >
-                <Upload size={18} />
-                Importer des données
+                <span className="flex items-center space-x-2">
+                  <ArrowLeft className="text-cyan-400" size={20} />
+                  <span className="text-gray-300">Remplir colonne gauche</span>
+                </span>
+              </button>
+              <button
+                onClick={() => fillColumn(10)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg border border-white/5 transition-colors"
+              >
+                <span className="flex items-center space-x-2">
+                  <ArrowRight className="text-cyan-400" size={20} />
+                  <span className="text-gray-300">Remplir colonne droite</span>
+                </span>
+              </button>
+              <button
+                onClick={() => setShowHistory(true)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg border border-white/5 transition-colors"
+              >
+                <span className="flex items-center space-x-2">
+                  <History className="text-cyan-400" size={20} />
+                  <span className="text-gray-300">Voir l'historique</span>
+                </span>
+              </button>
+              <button
+                onClick={() => setShowSamplingModal(true)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg border border-white/5 transition-colors"
+              >
+                <span className="flex items-center space-x-2">
+                  <ClipboardCheck className="text-cyan-400" size={20} />
+                  <span className="text-gray-300">Échantillonnage</span>
+                </span>
               </button>
             </div>
           </div>
         </div>
-      </motion.div>
 
-      {/* Modal de gestion des cellules */}
-      <AnimatePresence>
-        {selectedCell && (
+        <div className="grid grid-cols-10 gap-1">
+          {table.cells.map((cell, index) => (
+            <div
+              key={cell.id}
+              onClick={() => handleCellClick(cell)}
+              className={`h-8 rounded-sm border border-white/10 hover:border-[#22c55e]/30 cursor-pointer transition-all duration-200 relative overflow-hidden`}
+              style={getCellStyle(cell)}
+            >
+              {cell.filled && cell.ropeCount && (
+                <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-[#22c55e]">
+                  {cell.ropeCount}
+                </div>
+              )}
+              <div className="absolute bottom-1 right-1 text-[10px] text-white/40">
+                {index + 1}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {showCellModal && selectedCell && (
           <CellModal
             cell={selectedCell}
-            onClose={() => setSelectedCell(null)}
-            onUpdate={(data) => handleCellUpdate(selectedCell.id, data)}
-            setShowNaissainModal={setShowNaissainModal}
+            onClose={() => setShowCellModal(false)}
+            onSave={handleCellUpdate}
           />
         )}
-      </AnimatePresence>
 
-      {/* Modal de remplissage de colonne */}
-      <AnimatePresence>
-        {showFillColumnModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center"
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white">
-                  Remplissage de la colonne {selectedColumn.side}
+        {showHarvestModal && selectedCell && (
+          <HarvestModal
+            cell={selectedCell}
+            onClose={() => setShowHarvestModal(false)}
+            onSave={handleHarvest}
+          />
+        )}
+
+        {showHistory && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-gray-900/95 backdrop-blur-sm p-8 rounded-xl w-[600px] border border-white/10">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-cyan-200 bg-clip-text text-transparent">
+                  Historique
                 </h3>
                 <button
-                  onClick={() => setShowFillColumnModal(false)}
-                  className="text-white/60 hover:text-white transition-colors"
+                  onClick={() => setShowHistory(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
                 >
-                  <X size={24} />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
                 </button>
               </div>
-
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                handleFillColumn();
-              }} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Ordre de remplissage
-                  </label>
-                  <input
-                    type="number"
-                    value={fillOrderNumber}
-                    onChange={(e) => setFillOrderNumber(e.target.valueAsNumber)}
-                    className="w-full p-4 bg-white/5 rounded-lg text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Date de remplissage
-                  </label>
-                  <input
-                    type="date"
-                    value={fillDate}
-                    onChange={(e) => setFillDate(e.target.value)}
-                    className="w-full p-4 bg-white/5 rounded-lg text-white"
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowFillColumnModal(false)}
-                    className="px-4 py-2 text-white/70 hover:text-white transition-colors"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
-                  >
-                    Remplir la colonne
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </motion.div>
+              <div className="space-y-4">
+                {table.history.map((entry, i) => (
+                  <div key={i} className="p-4 bg-gray-800/50 rounded-lg border border-white/5">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-cyan-400 font-medium">
+                        {new Date(entry.date).toLocaleDateString()}
+                      </span>
+                      <span className="text-gray-400 text-sm">
+                        {entry.action}
+                      </span>
+                    </div>
+                    <p className="text-gray-300">{entry.details}</p>
+                    {entry.spat && (
+                      <div className="mt-2 text-sm text-gray-400">
+                        Naissain : {entry.spat.name}
+                        {entry.spat.batchNumber && ` (Lot ${entry.spat.batchNumber})`}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
-
-      {/* Modal d'échantillonnage */}
-      <AnimatePresence>
         {showSamplingModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center"
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-gray-900/95 backdrop-blur-sm p-8 rounded-xl w-[600px] border border-white/10">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-cyan-200 bg-clip-text text-transparent">
                   Échantillonnage
                 </h3>
                 <button
                   onClick={() => setShowSamplingModal(false)}
-                  className="text-white/60 hover:text-white transition-colors"
+                  className="text-gray-400 hover:text-white transition-colors"
                 >
-                  <X size={24} />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
                 </button>
               </div>
-
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                handleSampling();
-              }} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Taux évalué de mortalité
-                  </label>
-                  <input
-                    type="number"
-                    value={samplingMortalityRate}
-                    onChange={(e) => setSamplingMortalityRate(e.target.valueAsNumber)}
-                    className="w-full p-4 bg-white/5 rounded-lg text-white"
-                    placeholder="Ex: 3.7%"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Taux potentiel de mortalité (IA)
-                  </label>
-                  <input
-                    type="number"
-                    value={iAMortalityPrediction}
-                    onChange={(e) => setIAMortalityPrediction(e.target.valueAsNumber)}
-                    className="w-full p-4 bg-white/5 rounded-lg text-white"
-                    placeholder="Prédiction IA calculée automatiquement"
-                    disabled
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Date d'échantillonnage
-                  </label>
-                  <input
-                    type="date"
-                    value={samplingDate}
-                    onChange={(e) => setSamplingDate(e.target.value)}
-                    className="w-full p-4 bg-white/5 rounded-lg text-white"
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowSamplingModal(false)}
-                    className="px-4 py-2 text-white/70 hover:text-white transition-colors"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
-                  >
-                    Enregistrer l'échantillonnage
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Modal de naissain */}
-      <AnimatePresence>
-        {showNaissainModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center"
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-md"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white">
-                  Gestion du Naissain
-                </h3>
-                <button
-                  onClick={() => setShowNaissainModal(false)}
-                  className="text-white/60 hover:text-white transition-colors"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-
-              <form onSubmit={handleNaissainSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Source du naissain (écloserie)
-                  </label>
-                  <input
-                    type="text"
-                    value={naissainSource}
-                    onChange={(e) => setNaissainSource(e.target.value)}
-                    className="w-full p-4 bg-white/5 rounded-lg text-white"
-                    placeholder="Ex: Écloserie Atlantique"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Numéro de lot fournisseur
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full p-4 bg-white/5 rounded-lg text-white"
-                    placeholder="Ex: ATLANT-2025-0012"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Date de réception
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full p-4 bg-white/5 rounded-lg text-white"
-                    defaultValue={format(new Date(), 'yyyy-MM-dd')}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Quantité reçue
-                  </label>
-                  <input
-                    type="number"
-                    className="w-full p-4 bg-white/5 rounded-lg text-white"
-                    placeholder="Ex: 10000"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Notes sur la qualité
-                  </label>
-                  <textarea
-                    className="w-full p-4 bg-white/5 rounded-lg text-white h-24 resize-none"
-                    placeholder="Observations sur la qualité du naissain à la réception..."
-                  />
-                </div>
-
-                <div className="bg-brand-burgundy/20 p-4 rounded-lg">
-                  <div className="flex items-center text-brand-burgundy mb-2">
-                    <Info size={20} className="mr-2" />
-                    <span className="font-medium">Numéro de traçabilité</span>
-                  </div>
-                  <div className="text-white font-mono">
-                    NAIS-{new Date().getTime()}
-                  </div>
-                  <p className="text-xs text-white/60 mt-2">
-                    Ce numéro sera utilisé pour la traçabilité et permettra de suivre la performance de ce lot de naissain.
-                  </p>
-                </div>
-
-                <div className="flex justify-end space-x-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowNaissainModal(false)}
-                    className="px-4 py-2 text-white/70 hover:text-white transition-colors"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
-                  >
-                    Enregistrer le naissain
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Modal d'historique */}
-      <AnimatePresence>
-        {showHistoryModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center"
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-2xl"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white">
-                  Historique de la table {table?.name}
-                </h3>
-                <button
-                  onClick={() => setShowHistoryModal(false)}
-                  className="text-white/60 hover:text-white transition-colors"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-lg font-medium text-white">Rechercher par date</h4>
-                  <div className="flex space-x-2">
-                    <input
-                      type="date"
-                      value={historyDate}
-                      onChange={(e) => setHistoryDate(e.target.value)}
-                      className="p-2 bg-white/5 rounded-lg text-white"
-                    />
-                    <button
-                      onClick={handleHistorySearch}
-                      className="px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
-                    >
-                      Rechercher
-                    </button>
-                  </div>
-                </div>
-
-                {/* Affichage des informations historiques */}
-                <div className="bg-white/5 p-4 rounded-lg">
-                  <h4 className="text-white font-medium mb-4">Données pour le {format(new Date(historyDate), 'dd MMMM yyyy', { locale: fr })}</h4>
-                  
-                  {/* Métriques */}
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="glass-effect rounded-lg p-4">
-                      <div className="flex items-center text-white/80 mb-2">
-                        <Thermometer size={20} className="mr-2 text-brand-burgundy" />
-                        Température
-                      </div>
-                      <div className="text-2xl font-bold text-white">12.5°C</div>
-                    </div>
-
-                    <div className="glass-effect rounded-lg p-4">
-                      <div className="flex items-center text-white/80 mb-2">
-                        <Droplets size={20} className="mr-2 text-brand-primary" />
-                        Salinité
-                      </div>
-                      <div className="text-2xl font-bold text-white">35g/L</div>
-                    </div>
-
-                    <div className="glass-effect rounded-lg p-4">
-                      <div className="flex items-center text-white/80 mb-2">
-                        <AlertCircle size={20} className="mr-2 text-brand-tertiary" />
-                        Mortalité
-                      </div>
-                      <div className="text-2xl font-bold text-white">2.5%</div>
-                    </div>
-                  </div>
-
-                  {/* Informations sur le lot */}
-                  <div className="glass-effect rounded-lg p-4">
-                    <div className="flex items-center text-white/80 mb-4">
-                      <Shell size={20} className="mr-2 text-brand-burgundy" />
-                      Lot en cours
-                    </div>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-white/60">Calibre</span>
-                        <span className="text-white font-medium">N°3</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-white/60">Quantité</span>
-                        <span className="text-white font-medium">5000 unités</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-white/60">Date de récolte estimée</span>
-                        <span className="text-white font-medium">15 juin 2025</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-white/60">Source du naissain</span>
-                        <span className="text-white font-medium">Écloserie Atlantique</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Échantillonnage */}
-                  <div className="glass-effect rounded-lg p-4 mt-4">
-                    <div className="flex items-center text-white/80 mb-4">
-                      <Calendar size={20} className="mr-2 text-brand-tertiary" />
-                      Échantillonnage
-                    </div>
-                    <div className="space-y-4">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-white/60">Dernier échantillonnage</span>
-                        <span className="text-white">19 févr. 2025</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-white/60">Prochain échantillonnage</span>
-                        <span className="text-white">26 févr. 2025</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-end space-x-4">
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-brand-tertiary rounded-lg text-white hover:bg-brand-tertiary/90 transition-colors"
-                  >
-                    Exporter les données
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowHistoryModal(false)}
-                    className="px-4 py-2 text-white/70 hover:text-white transition-colors"
-                  >
-                    Fermer
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Modal d'importation */}
-      <AnimatePresence>
-        {showImportModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center"
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                  <FileSpreadsheet size={24} className="mr-3 text-brand-tertiary" />
-                  <h3 className="text-xl font-bold text-white">
-                    Importer des données
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setShowImportModal(false)}
-                  className="text-white/60 hover:text-white transition-colors"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-
-              <div className="mb-6 bg-white/5 p-4 rounded-lg">
-                <h4 className="font-medium text-white mb-2">Format de fichier attendu</h4>
-                <p className="text-white/70 text-sm">
-                  Votre fichier Excel doit contenir les colonnes suivantes :
+                <p className="text-gray-300">
+                  Voulez-vous effectuer un contrôle d'échantillonnage sur cette table ?
                 </p>
-                <ul className="list-disc list-inside text-white/70 text-sm mt-2 space-y-1">
-                  <li>Position (ID de la case)</li>
-                  <li>Type (type de production)</li>
-                  <li>Quantité (nombre d'unités)</li>
-                  <li>Date de mise en place (format JJ/MM/AAAA)</li>
-                  <li>Calibre (taille des huîtres)</li>
-                  <li>Source (provenance du naissain)</li>
-                </ul>
-                <div className="mt-4">
-                  <a href="#" className="text-brand-tertiary text-sm hover:underline flex items-center">
-                    <Download size={16} className="mr-1" />
-                    Télécharger un modèle de fichier
-                  </a>
-                </div>
-              </div>
-
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                handleImportData();
-              }} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Sélectionner un fichier Excel (.xlsx, .xls) ou CSV
-                  </label>
-                  <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center cursor-pointer hover:border-white/40 transition-colors"
-                    onClick={() => fileInputRef.current?.click()}>
-                    <Upload size={36} className="mx-auto text-white/60 mb-3" />
-                    <p className="text-white/80 mb-2">
-                      Glissez-déposez votre fichier ici ou cliquez pour parcourir
-                    </p>
-                    <p className="text-white/50 text-sm">
-                      Formats supportés: .xlsx, .xls, .csv
-                    </p>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      accept=".xlsx, .xls, .csv"
-                    />
-                  </div>
-                </div>
-
-                {importError && (
-                  <div className="bg-red-900/30 border border-red-500/30 text-red-300 p-4 rounded-lg text-sm">
-                    <div className="font-medium mb-1">Erreur d'importation</div>
-                    {importError}
-                  </div>
-                )}
-
-                {importPreview.length > 0 && (
-                  <div className="bg-white/5 p-4 rounded-lg">
-                    <h4 className="text-white font-medium mb-4">Aperçu des données ({importData.length} enregistrements au total)</h4>
-                    
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-white/10">
-                            {Object.keys(importPreview[0]).map((key) => (
-                              <th key={key} className="text-left py-2 px-3 text-white/80">{key}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {importPreview.map((row, index) => (
-                            <tr key={index} className="border-b border-white/5">
-                              {Object.keys(row).map((key) => (
-                                <td key={key} className="py-2 px-3 text-white/70">{row[key]}</td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    
-                    <div className="mt-4 text-white/60 text-sm">
-                      * Seules les 5 premières lignes sont affichées
-                    </div>
-                  </div>
-                )}
-
                 <div className="flex justify-end space-x-4">
                   <button
-                    type="button"
-                    onClick={() => setShowImportModal(false)}
-                    className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+                    onClick={() => setShowSamplingModal(false)}
+                    className="px-4 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-700 text-gray-300 transition-colors"
                   >
                     Annuler
                   </button>
                   <button
-                    type="submit"
-                    disabled={importData.length === 0}
-                    className={`px-4 py-2 rounded-lg text-white transition-colors flex items-center 
-                    ${importData.length === 0 
-                      ? 'bg-white/20 cursor-not-allowed' 
-                      : 'bg-brand-burgundy hover:bg-brand-burgundy/90'}`}
+                    onClick={handleSampling}
+                    className="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white transition-colors"
                   >
-                    <FileSpreadsheet size={18} className="mr-2" />
-                    Importer les données
+                    Confirmer
                   </button>
                 </div>
-              </form>
-            </motion.div>
-          </motion.div>
+              </div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+      </div>
+    </motion.div>
   );
-}
+};

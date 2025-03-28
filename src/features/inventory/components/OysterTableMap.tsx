@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TableDetail } from './TableDetail';
+import { Table } from '../types';
 import { 
   Droplets, 
   ThermometerSun,
@@ -29,671 +30,534 @@ import {
   Compass,
   Minimize as MinimizeIcon,
   Check,
-  Edit
+  Edit,
+  Gauge,
+  CalendarDays,
+  CalendarCheck
 } from 'lucide-react';
-
-export interface Table {
-  id: string;
-  name: string;
-  tableNumber: string;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-  status: 'optimal' | 'warning' | 'critical';
-  temperature: number;
-  salinity: number;
-  cells: {
-    id: string;
-    filled: boolean;
-    fillOrder?: number;
-    fillDate?: string;
-    type?: 'triplo' | 'diplo' | 'naturelle';
-  }[];
-  currentBatch?: {
-    size: string;
-    quantity: number;
-    estimatedHarvestDate: string;
-  };
-  lastCheck?: string;
-  nextCheck?: string;
-  mortalityRate?: number;
-}
+import { Dialog } from '@headlessui/react';
 
 interface OysterTableMapProps {
   onTableSelect: (table: Table) => void;
   onTableHover?: (table: Table | null) => void;
   hoveredTable?: Table | null;
   selectedTable?: Table | null;
+  onTableUpdate: (table: Table) => void;
+}
+
+interface Table {
+  id: string;
+  name: string;
+  location: string;
+  type: string;
+  status: string;
+  cells: { id: string; filled: boolean | number }[];
+  currentSize: string;
+  targetSize: string;
+  startDate: string;
+  lastUpdate: string;
+  timeProgress: number;
+  sizeProgress: number;
+  layers: number;
+  density: string;
+  alert: boolean;
+  value: number;
+  history: any[];
+  oysterType: string;
+  tableNumber: string;
+  temperature?: number;
+  salinity?: number;
+  sampling?: {
+    lastCheckDate: string;
+    nextCheckDate: string;
+    mortalityRate: number;
+    currentSize: string;
+  };
+  currentBatch?: {
+    size: string;
+    currentSize: string;
+    quantity: number;
+    startDate: string;
+    estimatedHarvestDate: string;
+    oysterType: string;
+    caliber: string;
+  };
 }
 
 const initialTables: Table[] = [
   {
     id: '1',
-    name: 'Bouzigues',
-    tableNumber: 'T-1234',
-    position: { x: 50, y: 150 },
-    size: { width: 150, height: 400 },
+    name: 'Table A-12',
+    location: 'Bouzigues',
+    type: 'Huîtres Triploïdes',
     status: 'optimal',
-    temperature: 12.5,
+    cells: Array(20).fill(null).map((_, i) => ({ 
+      id: `${i}`, 
+      filled: i <= 2 ? false : i === 3 ? 0.75 : i === 8 || i === 16 ? true : i >= 4 ? true : false
+    })),
+    currentSize: 'N°2',
+    targetSize: 'N°3',
+    startDate: '15/11/2023',
+    lastUpdate: 'En cours',
+    timeProgress: 65,
+    sizeProgress: 40,
+    layers: 3,
+    density: 'Élevée',
+    alert: false,
+    value: 72,
+    history: [],
+    oysterType: 'Triploïdes',
+    tableNumber: 'A-12',
+    temperature: 12,
     salinity: 35,
-    lastCheck: '2025-02-19',
-    nextCheck: '2025-02-26',
-    mortalityRate: 2.5,
-    cells: Array(20).fill(null).map((_, i) => {
-      const isFilled = Math.random() > 0.3;
-      // Calculer l'ordre séquentiel: colonne gauche (indices pairs) de 1 à 10, puis colonne droite (indices impairs) de 11 à 20
-      const columnIndex = i % 2; // 0 pour colonne gauche, 1 pour colonne droite
-      const rowIndex = Math.floor(i / 2); // 0 à 9 pour les rangées
-      const sequentialOrder = columnIndex === 0 ? rowIndex + 1 : rowIndex + 11;
-      
-      return {
-        id: `b1-cell-${i}`,
-        filled: isFilled,
-        fillOrder: isFilled ? sequentialOrder : undefined,
-        type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-      };
-    }),
+    sampling: {
+      lastCheckDate: '2024-03-15',
+      nextCheckDate: '2024-04-15',
+      mortalityRate: 2,
+      currentSize: 'N°3'
+    },
     currentBatch: {
-      size: '3',
-      quantity: 300,
-      estimatedHarvestDate: '2025-06-15'
+      size: 'N°3',
+      currentSize: 'N°3',
+      quantity: 1000,
+      startDate: '2024-01-04',
+      estimatedHarvestDate: 'Actuellement',
+      oysterType: 'Triploïdes',
+      caliber: 'N°3'
     }
   },
   {
     id: '2',
-    name: 'Bouzigues',
-    tableNumber: 'T-1235',
-    position: { x: 250, y: 150 },
-    size: { width: 150, height: 400 },
-    status: 'optimal',
-    temperature: 12.8,
-    salinity: 34,
-    lastCheck: '2025-02-19',
-    nextCheck: '2025-02-26',
-    mortalityRate: 1.8,
-    cells: Array(20).fill(null).map((_, i) => {
-      const isFilled = Math.random() > 0.3;
-      // Calculer l'ordre séquentiel: colonne gauche (indices pairs) de 1 à 10, puis colonne droite (indices impairs) de 11 à 20
-      const columnIndex = i % 2; // 0 pour colonne gauche, 1 pour colonne droite
-      const rowIndex = Math.floor(i / 2); // 0 à 9 pour les rangées
-      const sequentialOrder = columnIndex === 0 ? rowIndex + 1 : rowIndex + 11;
-      
-      return {
-        id: `b2-cell-${i}`,
-        filled: isFilled,
-        fillOrder: isFilled ? sequentialOrder : undefined,
-        type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-      };
-    }),
-    currentBatch: {
-      size: '2',
-      quantity: 300,
-      estimatedHarvestDate: '2025-06-20'
-    }
+    name: 'Table B-07',
+    location: 'Bouzigues',
+    type: 'Huîtres Triploïdes',
+    status: 'warning',
+    cells: Array(20).fill(null).map((_, i) => ({ id: `${i}`, filled: true })),
+    currentSize: 'N°3',
+    targetSize: 'N°3',
+    startDate: '10/03/2024',
+    lastUpdate: '30/03/2025',
+    timeProgress: 75,
+    sizeProgress: 60,
+    layers: 4,
+    density: 'Très élevée',
+    alert: true,
+    value: 100,
+    history: [],
+    oysterType: 'Triploïdes',
+    tableNumber: 'B-07'
   },
   {
     id: '3',
-    name: 'Mèze',
-    tableNumber: 'T-2234',
-    position: { x: 500, y: 250 },
-    size: { width: 150, height: 400 },
-    status: 'warning',
-    temperature: 13.2,
-    salinity: 33,
-    lastCheck: '2025-02-18',
-    nextCheck: '2025-02-25',
-    mortalityRate: 4.2,
-    cells: Array(20).fill(null).map((_, i) => {
-      const isFilled = Math.random() > 0.3;
-      // Calculer l'ordre séquentiel: colonne gauche (indices pairs) de 1 à 10, puis colonne droite (indices impairs) de 11 à 20
-      const columnIndex = i % 2; // 0 pour colonne gauche, 1 pour colonne droite
-      const rowIndex = Math.floor(i / 2); // 0 à 9 pour les rangées
-      const sequentialOrder = columnIndex === 0 ? rowIndex + 1 : rowIndex + 11;
-      
-      return {
-        id: `m1-cell-${i}`,
-        filled: isFilled,
-        fillOrder: isFilled ? sequentialOrder : undefined,
-        type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-      };
-    }),
-    currentBatch: {
-      size: '3',
-      quantity: 500,
-      estimatedHarvestDate: '2025-07-01'
-    }
+    name: 'Table C-04',
+    location: 'Marseillan',
+    type: 'Huîtres Diploïdes',
+    status: 'critical',
+    cells: Array(20).fill(null).map((_, i) => ({ id: `${i}`, filled: true })),
+    currentSize: 'T15',
+    targetSize: 'N°3',
+    startDate: '11/01/2025',
+    lastUpdate: '15/01/2026',
+    timeProgress: 30,
+    sizeProgress: 25,
+    layers: 2,
+    density: 'Moyenne',
+    alert: false,
+    value: 100,
+    history: [],
+    oysterType: 'Triploïdes',
+    tableNumber: 'C-04'
   },
   {
     id: '4',
-    name: 'Mèze',
-    tableNumber: 'T-2235',
-    position: { x: 700, y: 250 },
-    size: { width: 150, height: 400 },
-    status: 'warning',
-    temperature: 13.0,
-    salinity: 33,
-    lastCheck: '2025-02-18',
-    nextCheck: '2025-02-25',
-    mortalityRate: 3.7,
-    cells: Array(20).fill(null).map((_, i) => {
-      const isFilled = Math.random() > 0.3;
-      // Calculer l'ordre séquentiel: colonne gauche (indices pairs) de 1 à 10, puis colonne droite (indices impairs) de 11 à 20
-      const columnIndex = i % 2; // 0 pour colonne gauche, 1 pour colonne droite
-      const rowIndex = Math.floor(i / 2); // 0 à 9 pour les rangées
-      const sequentialOrder = columnIndex === 0 ? rowIndex + 1 : rowIndex + 11;
-      
-      return {
-        id: `m2-cell-${i}`,
-        filled: isFilled,
-        fillOrder: isFilled ? sequentialOrder : undefined,
-        type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-      };
-    }),
-    currentBatch: {
-      size: '4',
-      quantity: 350,
-      estimatedHarvestDate: '2025-07-05'
-    }
-  },
-  {
-    id: '5',
-    name: 'Marseillan',
-    tableNumber: 'T-3234',
-    position: { x: 900, y: 400 },
-    size: { width: 150, height: 400 },
+    name: 'Table D-15',
+    location: 'Mèze',
+    type: 'Vide',
     status: 'optimal',
-    temperature: 12.3,
-    salinity: 35,
-    lastCheck: '2025-02-19',
-    nextCheck: '2025-02-26',
-    mortalityRate: 1.5,
-    cells: Array(20).fill(null).map((_, i) => {
-      const isFilled = Math.random() > 0.3;
-      // Calculer l'ordre séquentiel: colonne gauche (indices pairs) de 1 à 10, puis colonne droite (indices impairs) de 11 à 20
-      const columnIndex = i % 2; // 0 pour colonne gauche, 1 pour colonne droite
-      const rowIndex = Math.floor(i / 2); // 0 à 9 pour les rangées
-      const sequentialOrder = columnIndex === 0 ? rowIndex + 1 : rowIndex + 11;
-      
-      return {
-        id: `ma1-cell-${i}`,
-        filled: isFilled,
-        fillOrder: isFilled ? sequentialOrder : undefined,
-        type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-      };
-    }),
-    currentBatch: {
-      size: '3',
-      quantity: 550,
-      estimatedHarvestDate: '2025-06-25'
-    }
-  },
-  {
-    id: '6',
-    name: 'Marseillan',
-    tableNumber: 'T-3235',
-    position: { x: 1100, y: 400 },
-    size: { width: 150, height: 400 },
-    status: 'optimal',
-    temperature: 12.4,
-    salinity: 35,
-    lastCheck: '2025-02-19',
-    nextCheck: '2025-02-26',
-    mortalityRate: 1.9,
-    cells: Array(20).fill(null).map((_, i) => {
-      const isFilled = Math.random() > 0.3;
-      // Calculer l'ordre séquentiel: colonne gauche (indices pairs) de 1 à 10, puis colonne droite (indices impairs) de 11 à 20
-      const columnIndex = i % 2; // 0 pour colonne gauche, 1 pour colonne droite
-      const rowIndex = Math.floor(i / 2); // 0 à 9 pour les rangées
-      const sequentialOrder = columnIndex === 0 ? rowIndex + 1 : rowIndex + 11;
-      
-      return {
-        id: `ma2-cell-${i}`,
-        filled: isFilled,
-        fillOrder: isFilled ? sequentialOrder : undefined,
-        type: ['triplo', 'diplo', 'naturelle'][Math.floor(Math.random() * 3)] as 'triplo' | 'diplo' | 'naturelle'
-      };
-    }),
-    currentBatch: {
-      size: '2',
-      quantity: 480,
-      estimatedHarvestDate: '2025-06-30'
-    }
+    cells: Array(20).fill(null).map((_, i) => ({ id: `${i}`, filled: false })),
+    currentSize: 'Vide',
+    targetSize: 'Vide',
+    startDate: 'Vide',
+    lastUpdate: 'Vide',
+    timeProgress: 15,
+    sizeProgress: 10,
+    layers: 2,
+    density: 'Faible',
+    alert: false,
+    value: 0,
+    history: [],
+    oysterType: 'Triploïdes',
+    tableNumber: 'D-15'
   }
 ];
 
-export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, selectedTable }: OysterTableMapProps) {
-  const [showLegend, setShowLegend] = useState(true);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [viewPosition, setViewPosition] = useState({ x: 0, y: 0 });
-  const [tables, setTables] = useState<Table[]>(initialTables);
+const CALIBER_SCALE = ['T15', 'T30', 'N°5', 'N°4', 'N°3', 'N°2', 'N°1'];
 
-  const [draggedItem, setDraggedItem] = useState<any | null>(null);
-  const [showTableDetail, setShowTableDetail] = useState(false);
+const getCaliberColor = (currentCaliber: string) => {
+  const currentIndex = CALIBER_SCALE.indexOf(currentCaliber);
+  
+  if (currentIndex === -1) return 'bg-gray-500';
+  
+  if (currentIndex <= CALIBER_SCALE.indexOf('N°3')) {
+    return 'bg-gradient-to-r from-blue-500 to-[#22c55e]';
+  } else if (currentIndex <= CALIBER_SCALE.indexOf('N°2')) {
+    return 'bg-gradient-to-r from-[#22c55e] to-orange-300';
+  } else if (currentCaliber === 'N°1') {
+    return 'bg-red-500';  }
+  
+  return 'bg-gradient-to-r from-blue-500 to-cyan-400';
+};
 
-  // États pour l'édition du numéro de table
-  const [isEditingTableNumber, setIsEditingTableNumber] = useState<string | null>(null);
-  const [editedTableNumber, setEditedTableNumber] = useState<string>('');
+const getCaliberColorA12 = (currentCaliber: string) => {
+  if (currentCaliber === 'N°2') {
+    return 'bg-gradient-to-r from-blue-500 via-[#22c55e] to-orange-500';
+  }
+  
+  return 'bg-gradient-to-r from-blue-500 to-cyan-400';
+};
 
-  const cellVariants = {
-    initial: { opacity: 0.6, scale: 0.95 },
-    animate: (custom: number) => ({
-      opacity: [0.6, 1, 0.6],
-      scale: [0.95, 1, 0.95],
-      transition: {
-        duration: 3,
-        repeat: Infinity,
-        delay: custom * 0.1,
-        ease: "easeInOut"
-      }
-    })
-  };
+const getCaliberColorC04 = (currentCaliber: string) => {
+  return 'bg-blue-500';
+};
 
-  const filledCellVariants = {
-    initial: { opacity: 0.8, scale: 0.95 },
-    animate: (custom: number) => ({
-      opacity: [0.8, 1, 0.8],
-      scale: [0.95, 1.05, 0.95],
-      transition: {
-        duration: 4,
-        repeat: Infinity,
-        delay: custom * 0.2,
-        ease: "easeInOut"
-      }
-    })
-  };
+const getCaliberColorD15 = (currentCaliber: string) => {
+  return 'bg-gray-500/20';
+};
 
-  const handleZoomIn = () => {
-    setZoomLevel(prev => {
-      const newZoom = Math.min(prev + 0.2, 3.0);
-      console.log("Zoom in:", newZoom);
-      return newZoom;
-    });
-  };
+const CaliberGauge = ({ currentSize, targetSize, tableName }: { currentSize: string; targetSize: string; tableName: string }) => {
+  if (currentSize === 'Vide' || targetSize === 'Vide') {
+    if (tableName === 'Table D-15') {
+      return (
+        <div className="space-y-2">
+          <div className="relative h-4 bg-white/5 rounded-lg overflow-hidden">
+            <div className="absolute inset-0 flex">
+              {CALIBER_SCALE.map((caliber) => (
+                <div
+                  key={caliber}
+                  className="flex-1 border-r border-white/10 last:border-r-0"
+                />
+              ))}
+            </div>
+            <div
+              className="h-full bg-gray-500/20 transition-all duration-300"
+              style={{ width: '100%' }}
+            />
+          </div>
+          <div className="flex justify-between px-1 text-sm font-medium">
+            {CALIBER_SCALE.map((caliber) => (
+              <span
+                key={caliber}
+                className="text-white/30"
+              >
+                {caliber}
+              </span>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }
 
-  const handleZoomOut = () => {
-    setZoomLevel(prev => {
-      const newZoom = Math.max(prev - 0.2, 0.5);
-      console.log("Zoom out:", newZoom);
-      return newZoom;
-    });
-  };
+  const currentIndex = CALIBER_SCALE.indexOf(currentSize);
+  const progress = ((currentIndex + 1) / CALIBER_SCALE.length) * 100;
 
-  const handleResetZoom = () => {
-    // Dézoom au minimum pour voir toutes les tables
-    setZoomLevel(0.5);
-    // Réinitialise la position de vue au centre
-    setViewPosition({ x: 0, y: 0 });
-  };
+  return (
+    <div className="space-y-2">
+      <div className="relative h-4 bg-white/5 rounded-lg overflow-hidden">
+        <div className="absolute inset-0 flex">
+          {CALIBER_SCALE.map((caliber) => (
+            <div
+              key={caliber}
+              className="flex-1 border-r border-white/10 last:border-r-0"
+            />
+          ))}
+        </div>
+        <div
+          className={`h-full ${
+            tableName === 'Table A-12' 
+              ? getCaliberColorA12(currentSize) 
+              : tableName === 'Table C-04'
+                ? getCaliberColorC04(currentSize)
+                : getCaliberColor(currentSize)
+          } transition-all duration-300`}
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+      <div className="flex justify-between px-1 text-sm font-medium">
+        {CALIBER_SCALE.map((caliber) => (
+          <span
+            key={caliber}
+            className={caliber === 'N°3' ? 'text-cyan-400 border border-cyan-400/50 px-1 rounded' : 'text-white/60'}
+          >
+            {caliber}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-  // Fonction pour gérer l'édition du numéro de table
-  const handleEditTableNumber = (tableId: string, currentNumber: string) => {
-    setIsEditingTableNumber(tableId);
-    setEditedTableNumber(currentNumber);
-  };
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { 
+    duration: 0.5,
+    ease: [0.19, 1.0, 0.22, 1.0] // Expo ease out
+  }
+};
 
-  // Fonction pour sauvegarder le numéro de table modifié
-  const handleSaveTableNumber = (tableId: string) => {
-    // Ici, vous implémenteriez la logique pour mettre à jour le numéro de table
-    // dans votre état ou votre base de données
-    console.log(`Table ID: ${tableId}, Nouveau numéro: ${editedTableNumber}`);
-    
-    // Mise à jour de l'état local (simulé)
-    const updatedTables = tables.map(t => 
-      t.id === tableId ? { ...t, tableNumber: editedTableNumber } : t
-    );
-    
-    // Mettez à jour l'état si vous utilisez un état local
-    // setTables(updatedTables);
-    
-    // Réinitialiser l'état d'édition
-    setIsEditingTableNumber(null);
-  };
+const TableCellsDisplay = ({ table, onCellClick }: { table: Table; onCellClick?: (index: number) => void }) => {
+  return (
+    <div className="space-y-1">
+      {[0, 1].map((row) => (
+        <div key={row} className="grid grid-cols-10 gap-1 w-full bg-[#22c55e]/10">
+          {Array.from({ length: 10 }, (_, i) => {
+            const cellIndex = row * 10 + i;
+            const cell = table.cells[cellIndex];
+            return (
+              <div
+                key={i}
+                onClick={() => onCellClick?.(cellIndex)}
+                className={`w-full h-7 rounded-sm border border-white/10 relative overflow-hidden cursor-pointer hover:border-cyan-400/30 transition-colors`}
+              >
+                <div
+                  className="absolute top-0 right-0 bottom-0 bg-[#22c55e]"
+                  style={{ 
+                    width: typeof cell?.filled === 'number' 
+                      ? `${cell.filled * 100}%` 
+                      : cell?.filled 
+                        ? '100%' 
+                        : '0%' 
+                  }}
+                />
+                <span className="absolute inset-0 flex items-center justify-center text-xs text-white/80 font-medium">
+                  {cellIndex + 1}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+};
 
-  // Fonction pour annuler l'édition
-  const handleCancelTableNumberEdit = () => {
-    setIsEditingTableNumber(null);
+const TableHeader = ({ table, onEdit }: { table: Table; onEdit: (table: Table, newName: string) => void }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState(table.name);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onEdit(table, editedName);
+    setIsEditing(false);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-9 glass-effect rounded-xl">
-          <div className="relative h-[800px] bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 rounded-lg overflow-hidden border border-white/10">
-            <div className="absolute inset-0">
-              <div className="absolute inset-0 bg-gradient-to-b from-brand-burgundy/5 to-brand-burgundy/10" />
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml,...')] opacity-10" />
-            </div>
+    <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-lg bg-cyan-500/20">
+          <Layers size={20} className="text-cyan-400" aria-hidden="true" />
+        </div>
+        {isEditing ? (
+          <form onSubmit={handleSubmit} className="flex items-center">
+            <input
+              type="text"
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+              className="bg-white/5 border border-white/10 rounded-lg px-3 py-1 text-white"
+            />
+          </form>
+        ) : (
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-white">{table.name}</h3>
+            <span className="text-white/60">-</span>
+            <span className="text-lg font-medium text-cyan-400">{table.location}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
-            <div className="absolute top-0 left-0 right-0 flex justify-between p-6">
-              <div className="glass-effect rounded-lg px-4 py-2 flex items-center space-x-2">
-                <MapIcon size={16} className="text-brand-burgundy" />
-                <span className="text-white font-medium">Bouzigues</span>
-              </div>
-              <div className="glass-effect rounded-lg px-4 py-2 flex items-center space-x-2">
-                <MapIcon size={16} className="text-brand-burgundy" />
-                <span className="text-white font-medium">Mèze</span>
-              </div>
-              <div className="glass-effect rounded-lg px-4 py-2 flex items-center space-x-2">
-                <MapIcon size={16} className="text-brand-burgundy" />
-                <span className="text-white font-medium">Marseillan</span>
-              </div>
-            </div>
-
-            <div className="absolute bottom-6 right-6 flex items-center space-x-4">
-              <div className="glass-effect p-2 rounded-lg z-30">
-                <button 
-                  onClick={handleZoomIn}
-                  className="p-1.5 hover:bg-white/10 rounded-md text-white mr-1"
-                >
-                  <ZoomIn size={18} />
-                </button>
-                <button 
-                  onClick={handleZoomOut}
-                  className="p-1.5 hover:bg-white/10 rounded-md text-white mr-1"
-                >
-                  <ZoomOut size={18} />
-                </button>
-                <button 
-                  onClick={handleResetZoom}
-                  className="p-1.5 hover:bg-white/10 rounded-md text-white"
-                >
-                  <Maximize size={18} />
-                </button>
-              </div>
-              
-              <div className="relative w-24 h-24">
-                <div className="absolute inset-0 bg-brand-burgundy/20 rounded-full blur-xl" />
-                <div className="relative w-full h-full bg-black/40 backdrop-blur-sm rounded-full border border-white/20 flex items-center justify-center">
-                  <Compass size={48} className="text-brand-burgundy animate-spin-slow" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-white font-bold text-xs">N</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative h-full overflow-hidden">
-              <div 
-                className="absolute inset-0 transition-transform duration-300 ease-out"
-                style={{ 
-                  transform: `scale(${zoomLevel}) translate(${viewPosition.x}px, ${viewPosition.y}px)`,
-                  transformOrigin: 'center center',
-                  cursor: 'grab'
-                }}
-                onMouseDown={(e) => {
-                  const el = e.currentTarget;
-                  const startX = e.clientX;
-                  const startY = e.clientY;
-                  const startPosX = viewPosition.x;
-                  const startPosY = viewPosition.y;
-                  
-                  const onMouseMove = (moveEvent: MouseEvent) => {
-                    const dx = (moveEvent.clientX - startX) / zoomLevel;
-                    const dy = (moveEvent.clientY - startY) / zoomLevel;
-                    setViewPosition({
-                      x: startPosX + dx,
-                      y: startPosY + dy
-                    });
-                    el.style.cursor = 'grabbing';
-                  };
-                  
-                  const onMouseUp = () => {
-                    document.removeEventListener('mousemove', onMouseMove);
-                    document.removeEventListener('mouseup', onMouseUp);
-                    el.style.cursor = 'grab';
-                  };
-                  
-                  document.addEventListener('mousemove', onMouseMove);
-                  document.addEventListener('mouseup', onMouseUp);
-                }}
-              >
-                {tables.map((table) => (
-                  <motion.div
-                    key={table.id}
-                    className="absolute"
-                    style={{
-                      left: `${table.position.x}px`,
-                      top: `${table.position.y}px`,
-                      width: `${table.size.width}px`,
-                      height: `${table.size.height}px`,
-                    }}
-                    whileHover={{ scale: 1.02 }}
-                    onHoverStart={() => onTableHover?.(table)}
-                    onHoverEnd={() => onTableHover?.(null)}
-                    onClick={() => onTableSelect(table)}
-                  >
-                    <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 glass-effect px-3 py-1 rounded-full">
-                      {isEditingTableNumber === table.id ? (
-                        <div className="flex items-center space-x-1">
-                          <input
-                            type="text"
-                            value={editedTableNumber}
-                            onChange={(e) => setEditedTableNumber(e.target.value)}
-                            className="w-20 py-1 px-2 bg-white/10 border border-white/20 rounded text-white text-sm"
-                            autoFocus
-                            onClick={(e) => e.stopPropagation()}
-                            onKeyDown={(e) => {
-                              e.stopPropagation();
-                              if (e.key === 'Enter') {
-                                handleSaveTableNumber(table.id);
-                              } else if (e.key === 'Escape') {
-                                handleCancelTableNumberEdit();
-                              }
-                            }}
-                          />
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSaveTableNumber(table.id);
-                            }}
-                            className="text-brand-primary hover:text-brand-primary/80"
-                          >
-                            <Check size={14} />
-                          </button>
-                        </div>
-                      ) : (
-                        <span 
-                          className="text-white text-sm font-medium cursor-pointer flex items-center"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditTableNumber(table.id, table.tableNumber);
-                          }}
-                        >
-                          {table.tableNumber}
-                          <Edit size={12} className="ml-1 text-white/60 hover:text-white" />
-                        </span>
-                      )}
-                    </div>
-
-                    <div 
-                      className={`relative h-full rounded-lg overflow-hidden transition-all duration-300
-                        ${selectedTable?.id === table.id ? 'ring-4 ring-brand-burgundy shadow-neon' : 'ring-1 ring-white/20'}`}
-                    >
-                      <div className={`absolute inset-0 backdrop-blur-sm ${
-                        table.status === 'optimal' ? 'bg-green-500/10' :
-                        table.status === 'warning' ? 'bg-yellow-500/10' :
-                        'bg-red-500/10'
-                      }`}>
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
-                      </div>
-
-                      <div className="absolute inset-0 grid grid-cols-2 grid-rows-10 gap-2 p-4">
-                        {table.cells.map((cell, index) => (
-                          <motion.div
-                            key={cell.id}
-                            className={`relative rounded-md transition-all duration-300 ${
-                              cell.filled
-                                ? `${
-                                    cell.type === 'triplo' ? 'bg-brand-burgundy shadow-neon' :
-                                    cell.type === 'diplo' ? 'bg-brand-primary shadow-neon' :
-                                    'bg-brand-tertiary shadow-neon'
-                                  }`
-                                : 'bg-white/5'
-                            }`}
-                            variants={cell.filled ? filledCellVariants : cellVariants}
-                            initial="initial"
-                            animate="animate"
-                            custom={index}
-                          >
-                            {/* Overlay avec contour blanc et ombre */}
-                            <div className="absolute inset-0 rounded-md border-2 border-white shadow-[0_0_8px_rgba(255,255,255,0.8)]">
-                              {/* Affichage du numéro uniquement pour les cellules remplies */}
-                              {cell.filled && (
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                  <span className="text-xs text-white font-bold">{cell.fillOrder}</span>
-                                </div>
-                              )}
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            <div className="absolute bottom-6 left-6 glass-effect rounded-lg p-4">
-              <h4 className="text-white font-medium mb-2">Types d'huîtres</h4>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 rounded-sm bg-brand-burgundy shadow-neon" />
-                  <span className="text-white/60 text-sm">Triploïdes</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 rounded-sm bg-brand-primary shadow-neon" />
-                  <span className="text-white/60 text-sm">Diploïdes</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 rounded-sm bg-brand-tertiary shadow-neon" />
-                  <span className="text-white/60 text-sm">Naturelles</span>
-                </div>
-                <div className="mt-4 pt-2 border-t border-white/10">
-                  <span className="text-white/60 text-sm">Les numéros indiquent l'ordre de remplissage</span>
-                </div>
-              </div>
-            </div>
-
+const TableCard = ({ table, isHovered, isSelected, onClick, onHover }: any) => {
+  return (
+    <motion.div
+      {...fadeInUp}
+      className={`relative p-4 rounded-lg ${
+        isSelected
+          ? 'bg-white/10 shadow-lg'
+          : isHovered
+          ? 'bg-white/5'
+          : 'bg-white/[0.02]'
+      } border border-white/10 hover:border-cyan-400/30 transition-colors cursor-pointer`}
+      onClick={onClick}
+      onMouseEnter={() => onHover(true)}
+      onMouseLeave={() => onHover(false)}
+    >
+      <div className="space-y-4">
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-white">{table.name}</h3>
+            <p className="text-sm text-white/60">{table.type}</p>
           </div>
         </div>
-
-        <div className="col-span-3">
-          <AnimatePresence mode="wait">
-            {(hoveredTable || selectedTable) ? (
-              <motion.div
-                key="table-info"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="glass-effect p-6 rounded-xl h-full"
-              >
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-white">
-                      Table {(selectedTable || hoveredTable)?.tableNumber}
-                    </h3>
-                    <div className={`px-3 py-1 rounded-full text-sm ${
-                      (selectedTable || hoveredTable)?.status === 'optimal' ? 'bg-green-500/20 text-green-400' :
-                      (selectedTable || hoveredTable)?.status === 'warning' ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-red-500/20 text-red-400'
-                    }`}>
-                      {(selectedTable || hoveredTable)?.status === 'optimal' ? 'Optimal' :
-                       (selectedTable || hoveredTable)?.status === 'warning' ? 'Attention' : 'Critique'}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="bg-white/5 p-3 rounded-lg">
-                      <div className="text-white/60 text-sm mb-1">Température</div>
-                      <div className="text-white font-medium flex items-center">
-                        <ThermometerSun className="w-4 h-4 mr-1 text-brand-burgundy" />
-                        {(selectedTable || hoveredTable)?.temperature}°C
-                      </div>
-                    </div>
-                    <div className="bg-white/5 p-3 rounded-lg">
-                      <div className="text-white/60 text-sm mb-1">Salinité</div>
-                      <div className="text-white font-medium flex items-center">
-                        <Droplets className="w-4 h-4 mr-1 text-brand-primary" />
-                        {(selectedTable || hoveredTable)?.salinity} g/L
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mb-6">
-                    <h4 className="text-white font-medium mb-2">Occupation</h4>
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-brand-burgundy"
-                        style={{ 
-                          width: `${((selectedTable || hoveredTable)?.cells.filter(cell => cell.filled).length || 0) * 5}%` 
-                        }}
-                      />
-                    </div>
-                    <div className="flex justify-between mt-1">
-                      <span className="text-xs text-white/60">
-                        {(selectedTable || hoveredTable)?.cells.filter(cell => cell.filled).length} / 20 emplacements
-                      </span>
-                      <span className="text-xs text-white/60">
-                        {((selectedTable || hoveredTable)?.cells.filter(cell => cell.filled).length || 0) * 5}%
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {(selectedTable || hoveredTable)?.currentBatch && (
-                  <div className="glass-effect rounded-lg p-4">
-                    <div className="flex items-center text-white/80 mb-4">
-                      <Shell size={20} className="mr-2 text-brand-burgundy" />
-                      Lot en cours
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-white/60">Calibre</span>
-                        <span className="text-white font-medium">
-                          N°{(selectedTable || hoveredTable)?.currentBatch?.size}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-white/60">Quantité</span>
-                        <span className="text-white font-medium">
-                          {(selectedTable || hoveredTable)?.currentBatch?.quantity} kg d'Huîtres N°{(selectedTable || hoveredTable)?.currentBatch?.size}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-white/60">Récolte estimée</span>
-                        <span className="text-white font-medium">
-                          {new Date((selectedTable || hoveredTable)?.currentBatch?.estimatedHarvestDate || '').toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            ) : (
-              <motion.div
-                key="no-table-selected"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="glass-effect p-6 rounded-xl flex flex-col items-center justify-center h-full text-center"
-                style={{
-                  background: "rgba(var(--color-brand-dark), 0.3)",
-                  WebkitBackdropFilter: "blur(16px)",
-                  backdropFilter: "blur(16px)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                  transition: "border-color 0.2s ease",
-                  willChange: "transform, border-color"
-                }}
-              >
-                <div className="bg-white/5 rounded-full p-4 mb-4">
-                  <MapIcon className="w-10 h-10 text-brand-burgundy" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">Sélectionnez une table</h3>
-                <p className="text-white/60">Cliquez sur une table pour voir ses détails et gérer son contenu</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+        
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-white/60">Calibre actuel</span>
+            <span className="text-white">{table.currentSize}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-white/60">Calibre cible</span>
+            <span className="text-white">{table.targetSize}</span>
+          </div>
+          <CaliberGauge currentSize={table.currentSize} targetSize={table.targetSize} tableName={table.name} />
         </div>
+
+        <TableCellsDisplay table={table} />
       </div>
+    </motion.div>
+  );
+};
+
+export function OysterTableMap({ onTableSelect, onTableHover, hoveredTable, selectedTable, onTableUpdate }: OysterTableMapProps) {
+  const [tables, setTables] = useState(initialTables);
+  const [selectedCell, setSelectedCell] = useState<number | null>(null);
+
+  const handleCellClick = (tableId: string, cell: { id: string; filled: boolean | number }) => {
+    const table = tables.find(t => t.id === tableId);
+    if (!table || !onTableUpdate) return;
+
+    const cellIndex = table.cells.findIndex(c => c.id === cell.id);
+    if (cellIndex === -1) return;
+
+    const updatedCell = {
+      ...cell,
+      filled: !cell.filled
+    };
+
+    const newCells = [...table.cells];
+    newCells[cellIndex] = updatedCell;
+
+    const updatedTable = {
+      ...table,
+      cells: newCells,
+      value: (newCells.filter(cell => cell.filled).length / newCells.length) * 100
+    };
+
+    setTables(tables.map(t => t.id === tableId ? updatedTable : t));
+    onTableUpdate(updatedTable);
+  };
+
+  const handleFillColumn = (tableId: string, side: 'left' | 'right') => {
+    const table = tables.find(t => t.id === tableId);
+    if (!table) return;
+
+    const newCells = [...table.cells];
+    const start = side === 'left' ? 0 : 10;
+    const end = side === 'left' ? 10 : 20;
+
+    for (let i = start; i < end; i++) {
+      newCells[i] = { ...newCells[i], filled: true };
+    }
+
+    const updatedTable = {
+      ...table,
+      cells: newCells,
+      value: (newCells.filter(cell => cell.filled).length / newCells.length) * 100
+    };
+
+    setTables(tables.map(t => t.id === tableId ? updatedTable : t));
+    onTableUpdate(updatedTable);
+  };
+
+  return (
+    <div className="grid grid-cols-1 gap-4 p-4">
+      {tables.map((table) => (
+        <motion.div
+          key={table.id}
+          className={`bg-gray-900/50 backdrop-blur-sm p-6 rounded-lg border border-white/10 hover:border-cyan-500/30 transition-colors ${
+            hoveredTable?.id === table.id ? 'border-cyan-500/50' : ''
+          }`}
+          {...fadeInUp}
+          onClick={() => onTableSelect(table)}
+          onMouseEnter={() => onTableHover?.(table)}
+          onMouseLeave={() => onTableHover?.(null)}
+        >
+          <TableHeader table={table} onEdit={(t, newName) => {
+            const updatedTable = { ...t, name: newName };
+            setTables(tables.map(tbl => tbl.id === t.id ? updatedTable : tbl));
+            onTableUpdate(updatedTable);
+          }} />
+          
+          <div className="space-y-6">
+            {/* Ligne d'informations */}
+            <div className="flex justify-between items-start">
+              {/* Dates */}
+              <div className="flex gap-6">
+                <div className="flex flex-col gap-2">
+                  <span className="text-white/60 font-medium">Mise à l'eau</span>
+                  <span className="text-white font-semibold bg-cyan-500/10 px-3 py-1 rounded-md border border-cyan-500/20">{table.startDate}</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <span className="text-white/60 font-medium">Récolte</span>
+                  <span className="text-white font-semibold bg-cyan-500/10 px-3 py-1 rounded-md border border-cyan-500/20">
+                    {table.name === 'Table A-12' && table.lastUpdate === 'En cours' ? (
+                      <span className="animate-pulse text-cyan-400">En cours</span>
+                    ) : (
+                      table.lastUpdate
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              {/* Type et État */}
+              <div className="flex gap-6">
+                <div className="flex items-center gap-2">
+                  <ThermometerSun size={18} className="text-cyan-400" />
+                  <span className="text-white/60">Type:</span>
+                  <span className="text-gray-300">{table.type}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Gauge size={18} className="text-cyan-400" />
+                  <span className="text-white/60">État:</span>
+                  <span className="text-gray-300">{table.value}%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Grille principale */}
+            <div className="grid grid-cols-2 gap-6">
+              {/* État et carrés */}
+              <div>
+                <h3 className="text-xl font-semibold mb-4 text-white">État</h3>
+                <TableCellsDisplay table={table} onCellClick={(index) => handleCellClick(table.id, table.cells[index])} />
+              </div>
+
+              {/* Calibre et jauge */}
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold text-white">Calibre</h3>
+                  <div className="flex gap-4">
+                    <div className="flex items-center gap-2">
+                      <Shell size={18} className="text-cyan-400" />
+                      <span className="text-white/60">Actuel:</span>
+                      <span className="text-white font-semibold bg-cyan-500/10 px-3 py-1 rounded-md">{table.currentSize}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Star size={18} className="text-cyan-400" />
+                      <span className="text-white/60">Cible:</span>
+                      <span className="text-white font-semibold px-3 py-1 rounded-md border border-cyan-500/20">{table.targetSize}</span>
+                    </div>
+                  </div>
+                </div>
+                <CaliberGauge currentSize={table.currentSize} targetSize={table.targetSize} tableName={table.name} />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      ))}
     </div>
   );
 }
