@@ -4,6 +4,8 @@ import path from 'path';
 
 // Déterminer la base en fonction de l'environnement de déploiement
 const getBase = () => {
+  const deployTarget = process.env.VITE_DEPLOY_TARGET;
+  // Pour Firebase, on utilise la racine
   return '/';
 };
 
@@ -19,10 +21,10 @@ export default defineConfig({
   },
   css: {
     preprocessorOptions: {
-      css: {
-        includePaths: [path.resolve(__dirname, './src/styles')]
-      }
-    }
+      scss: {
+        additionalData: `@import "@styles/_variables.scss";`,
+      },
+    },
   },
   server: {
     port: 5173,
@@ -47,14 +49,11 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: false,
+    sourcemap: true,
     chunkSizeWarningLimit: 1600,
     manifest: true,
     rollupOptions: {
       output: {
-        entryFileNames: 'assets/[name]-[hash].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]',
         manualChunks: {
           vendor: [
             'react', 
@@ -67,6 +66,15 @@ export default defineConfig({
             'convex/react'
           ],
         },
+        assetFileNames: (assetInfo) => {
+          let extType = assetInfo.name.split('.').at(1);
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+            extType = 'img';
+          }
+          return `assets/${extType}/[name]-[hash][extname]`;
+        },
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
       },
     },
   },

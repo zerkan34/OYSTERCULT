@@ -50,11 +50,17 @@
 
 /* Style pour les modales dans le conteneur task-list-container */
 .task-list-container-modal {
-  background-color: rgba(0, 0, 0, 0.8) !important;
-  backdrop-filter: blur(3px) !important;
-  z-index: 999998 !important;
-  padding-top: 80px !important; /* Ajout d'un padding-top pour descendre légèrement la modale */
-  align-items: flex-start !important; /* Aligner en haut plutôt qu'au centre */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
 }
 
 /* Styles pour gérer le contenu dans les modales sans débordement */
@@ -205,4 +211,134 @@
 .new-task-modal *,
 .modal-responsive-content * {
   pointer-events: auto !important;
+}
+
+/* Style pour les modales dans la version mobile */
+@media (max-width: 768px) {
+  .task-list-container-modal {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(3px) !important;
+    z-index: 999998 !important;
+    padding-top: 80px !important;
+    align-items: flex-start !important;
+  }
+
+  .delete-modal-content {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .task-page-wrapper .task-list-container-modal {
+    align-items: flex-end;
+  }
+
+  .task-page-wrapper .task-list-container-modal-content,
+  .task-page-wrapper .task-list-container-modal > div {
+    margin: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+.task-list-container-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 1rem;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    rgba(0, 0, 0, 0.45) 10px 0px 30px -5px,
+    rgba(0, 150, 255, 0.1) 5px 5px 20px -5px,
+    rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset,
+    rgba(0, 210, 200, 0.25) 0px 0px 20px inset,
+    rgba(0, 0, 0, 0.3) 0px 0px 15px inset;
+}
+
+/* Styles pour les modales responsives avec la structure header/body/footer */
+.modal-responsive-container {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999 !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(8px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.modal-responsive-content {
+  background: linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0.5rem !important;
+  width: 100% !important;
+  max-width: 500px !important;
+  margin: 1rem !important;
+  overflow: hidden !important;
+  box-shadow: 
+    rgba(0, 0, 0, 0.45) 10px 0px 30px -5px,
+    rgba(0, 150, 255, 0.1) 5px 5px 20px -5px,
+    rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset,
+    rgba(0, 210, 200, 0.25) 0px 0px 20px inset,
+    rgba(0, 0, 0, 0.3) 0px 0px 15px inset !important;
+}
+
+.modal-responsive-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 1rem !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-responsive-body {
+  padding: 1rem !important;
+}
+
+.modal-responsive-footer {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 0.75rem !important;
+  padding: 1rem !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+@media (max-width: 768px) {
+  .modal-responsive-container {
+    align-items: flex-end !important;
+  }
+
+  .modal-responsive-content {
+    margin: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    max-height: 90vh !important;
+  }
+}
+
+/* Animation d'entrée pour les modales */
+.motion-div-overlay {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

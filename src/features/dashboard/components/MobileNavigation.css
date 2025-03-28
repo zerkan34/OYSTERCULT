@@ -16,10 +16,11 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 1000;
   box-shadow: rgba(0, 0, 0, 0.45) 0px 10px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(0, 210, 200, 0.25) 0px 0px 15px inset;
-  height: 60px; /* Définir une hauteur fixe */
+  height: auto; /* Hauteur adaptative au lieu de fixe */
   transform: translateZ(0); /* Force GPU acceleration */
   will-change: transform; /* Optimisation pour le rendu */
-  padding-bottom: env(safe-area-inset-bottom, 10px); /* Support pour l'iPhone X et ultérieur */
+  padding-bottom: 15px; /* Padding de base */
+  padding-bottom: calc(env(safe-area-inset-bottom) + 15px); /* Support pour la safe area */
   animation: slideUp 0.3s ease-out forwards;
 }
 
@@ -29,44 +30,42 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 6px 12px;
-  border-radius: 12px;
+  padding: 10px 15px;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
   transition: all 0.2s ease;
-  cursor: pointer;
-  min-width: 60px;
-  min-height: 44px; /* Taille minimale pour les cibles tactiles */
-  opacity: 0.7;
+  border-radius: 8px;
+  position: relative;
+  flex: 1;
+  max-width: 80px;
 }
 
 .mobile-nav-item svg {
-  margin-bottom: 4px;
-  color: white;
+  margin-bottom: 5px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.2s ease;
 }
 
 .mobile-nav-item span {
-  font-size: 12px;
-  color: white;
-  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: color 0.2s ease;
 }
 
-/* Item actif/inactif */
+/* État actif */
 .mobile-nav-item.active {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #38bdf8;
 }
 
-/* Animation lors du clic */
+.mobile-nav-item.active svg {
+  color: #38bdf8;
+}
+
+/* Effet au toucher */
 .mobile-nav-item:active {
+  background-color: rgba(255, 255, 255, 0.05);
   transform: scale(0.95);
-}
-
-/* Support pour les appareils iOS */
-@supports (-webkit-touch-callout: none) {
-  .fixed-bottom-nav {
-    padding-bottom: env(safe-area-inset-bottom, 10px);
-    height: calc(60px + env(safe-area-inset-bottom, 0px));
-  }
 }
 
 /* Item d'urgence */
@@ -79,10 +78,9 @@
 }
 
 /* Optimisation pour les écrans de différentes tailles */
-@media (max-width: 374px) {
+@media screen and (max-width: 350px) {
   .mobile-nav-item {
-    padding: 6px 8px;
-    min-width: 50px;
+    padding: 8px;
   }
   
   .mobile-nav-item span {
@@ -90,14 +88,10 @@
   }
 }
 
-/* Support des préférences de mouvement réduites */
+/* Désactiver l'animation pour les utilisateurs qui préfèrent les mouvements réduits */
 @media (prefers-reduced-motion: reduce) {
   .mobile-nav-item {
-    transition: none !important;
-  }
-  
-  .mobile-nav-item:active {
-    transform: none !important;
+    transition: none;
   }
   
   .fixed-bottom-nav {
@@ -120,32 +114,90 @@
 @keyframes slideUp {
   from {
     transform: translateY(100%);
-    opacity: 0;
   }
   to {
     transform: translateY(0);
-    opacity: 1;
   }
 }
 
-/* Assurer la visibilité sur fond clair */
-.fixed-bottom-nav {
-  background: rgba(0, 0, 0, 0.85);
+/* Styles spécifiques pour le mode paysage et portrait */
+.fixed-bottom-nav.landscape {
+  display: flex;
+  height: auto;
+  padding-bottom: 10px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
+}
+
+.fixed-bottom-nav.landscape .mobile-nav-item {
+  flex-direction: row;
+  padding: 8px 10px;
+  max-width: none;
+}
+
+.fixed-bottom-nav.landscape .mobile-nav-item svg {
+  margin-right: 6px;
+  margin-bottom: 0;
+}
+
+.fixed-bottom-nav.portrait {
+  padding-bottom: 15px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 15px);
 }
 
 /* Modification pour garantir une bonne visibilité en mode portrait et paysage */
 @media screen and (orientation: landscape) {
   .fixed-bottom-nav {
-    height: 50px;
+    height: auto;
+    padding-bottom: 10px;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
+    display: flex;
   }
   
   .mobile-nav-item {
     flex-direction: row;
+    padding: 8px 10px;
+    max-width: none;
   }
   
   .mobile-nav-item svg {
     margin-right: 6px;
     margin-bottom: 0;
+  }
+}
+
+/* Espace réservé pour éviter que le contenu ne soit caché par la barre de navigation fixe */
+.nav-spacer {
+  height: 70px;
+  width: 100%;
+}
+
+@media screen and (orientation: landscape) {
+  .nav-spacer {
+    height: 60px;
+  }
+}
+
+/* Styles spécifiques pour le nav-spacer en mode paysage et portrait */
+.nav-spacer.landscape {
+  height: 60px;
+  height: calc(60px + env(safe-area-inset-bottom));
+}
+
+.nav-spacer.portrait {
+  height: 70px;
+  height: calc(70px + env(safe-area-inset-bottom));
+}
+
+/* Ajustement pour les appareils avec safe area (comme l'iPhone X et plus récents) */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .nav-spacer {
+    height: calc(70px + env(safe-area-inset-bottom));
+  }
+  
+  @media screen and (orientation: landscape) {
+    .nav-spacer {
+      height: calc(60px + env(safe-area-inset-bottom));
+    }
   }
 }
 

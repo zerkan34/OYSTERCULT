@@ -345,27 +345,11 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
   const handleEditClick = (task: Task, event?: React.MouseEvent) => {
     if (event) {
       event.stopPropagation();
-      event.preventDefault();
     }
     
-    // Définir immédiatement la tâche en cours d'édition pour ouvrir la modale
+    // Définir la tâche en cours d'édition pour ouvrir la modale
+    setCurrentTaskId(task.id);
     setEditingTask(task);
-    
-    // Capture de la position du bouton Modifier pour positionner la modale
-    if (event && event.currentTarget) {
-      const rect = event.currentTarget.getBoundingClientRect();
-      setTaskPosition({
-        top: rect.top + window.scrollY,
-        left: rect.left + window.scrollX
-      });
-    } else if (taskCardRefs[task.id] && taskCardRefs[task.id].current) {
-      // Fallback si l'événement n'est pas disponible
-      const rect = taskCardRefs[task.id].current!.getBoundingClientRect();
-      setTaskPosition({
-        top: rect.top + window.scrollY,
-        left: rect.left + window.scrollX
-      });
-    }
   };
 
   const handleDeleteClick = (taskId: string) => {
@@ -900,12 +884,10 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
                         </div>
                         <div className="flex justify-between w-full gap-2">
                           <button 
-                            className="task-action-btn edit w-1/2" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              handleEditClick(task, e);
-                            }}
+                            className="task-action-btn edit w-1/2"
+                            onClick={(e) => handleEditClick(task, e)}
+                            aria-label="Modifier"
+                            title="Modifier"
                           >
                             <Edit size={14} />
                             <span>Modifier</span>
@@ -963,6 +945,41 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
                     </div>
                   </div>
                 </div>
+                
+                {/* Modal de confirmation de suppression */}
+                {showDeleteConfirmation && taskToDelete === task.id && (
+                  <div className="modal-responsive-container" onClick={cancelDeleteTask}>
+                    <div className="modal-responsive-content" onClick={(e) => e.stopPropagation()}>
+                      <div className="modal-responsive-header">
+                        <h3 className="text-white text-lg font-medium">Confirmer la suppression</h3>
+                        <button onClick={cancelDeleteTask} className="text-white/60 hover:text-white min-w-[44px] min-h-[44px] p-2 flex items-center justify-center">
+                          <X size={20} />
+                        </button>
+                      </div>
+                      
+                      <div className="modal-responsive-body">
+                        <p className="text-white/90">
+                          Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est irréversible.
+                        </p>
+                      </div>
+                      
+                      <div className="modal-responsive-footer">
+                        <button 
+                          onClick={cancelDeleteTask} 
+                          className="px-4 py-2 text-white/80 hover:text-white"
+                        >
+                          Annuler
+                        </button>
+                        <button 
+                          onClick={confirmDeleteTask} 
+                          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -1137,46 +1154,6 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
                 disabled={!delayReason.trim()}
               >
                 Signaler
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Modal de confirmation de suppression */}
-      {showDeleteConfirmation && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 motion-div-overlay task-list-container-modal" onClick={cancelDeleteTask}>
-          <div 
-            className="border border-white/10 rounded-lg p-4 w-full max-w-md mx-4"
-            style={{ 
-              background: "linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%)",
-              boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset"
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-white text-lg font-medium">Confirmer la suppression</h3>
-              <button onClick={cancelDeleteTask} className="text-white/60 hover:text-white">
-                <X size={20} />
-              </button>
-            </div>
-            
-            <div className="mb-4 text-white">
-              Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est irréversible.
-            </div>
-            
-            <div className="flex justify-end mt-4">
-              <button 
-                onClick={cancelDeleteTask} 
-                className="px-4 py-2 text-white/80 hover:text-white mr-2"
-              >
-                Annuler
-              </button>
-              <button 
-                onClick={confirmDeleteTask} 
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-              >
-                Supprimer
               </button>
             </div>
           </div>

@@ -76,6 +76,7 @@ export const MobileDashboard: React.FC = () => {
   const [selectedPool, setSelectedPool] = useState<ExtendedPoolHealth | null>(null);
   const [visibleTableIndex, setVisibleTableIndex] = useState(0);
   const [visiblePoolIndex, setVisiblePoolIndex] = useState(0);
+  const [isLandscape, setIsLandscape] = useState(false);
 
   // Références pour le composant
   const containerRef = useRef<HTMLDivElement>(null);
@@ -98,16 +99,33 @@ export const MobileDashboard: React.FC = () => {
     }
   }, [activeSection]);
 
-  // Fonction pour gérer le changement de section
-  const setActiveSectionWithScroll = (section: SectionType) => {
-    // Définir la section active
+  // Gestionnaire d'orientation de l'écran
+  useEffect(() => {
+    const checkOrientation = () => {
+      const isLandscapeMode = window.matchMedia("(orientation: landscape)").matches;
+      setIsLandscape(isLandscapeMode);
+    };
+
+    // Vérification initiale
+    checkOrientation();
+
+    // Utiliser addEventListener au lieu de addListener (déprécié)
+    const mediaQuery = window.matchMedia("(orientation: landscape)");
+    mediaQuery.addEventListener('change', checkOrientation);
+
+    // Nettoyage
+    return () => {
+      mediaQuery.removeEventListener('change', checkOrientation);
+    };
+  }, []);
+
+  // Fonction pour gérer le changement de section avec scroll
+  const setActiveSectionWithScroll = useCallback((section: SectionType) => {
     setActiveSection(section);
-    
-    // Faire défiler vers le haut
     if (containerRef.current) {
       containerRef.current.scrollTop = 0;
     }
-  };
+  }, [containerRef]);
 
   // Données pour les tables
   const tableOccupancyData: ExtendedOysterTable[] = [
@@ -439,13 +457,13 @@ export const MobileDashboard: React.FC = () => {
 
           {/* Barre de navigation fixe en bas */}
           <div className="fixed-bottom-nav">
-            <div className="mobile-bottom-nav">
+            <div className={`mobile-bottom-nav ${isLandscape ? 'landscape' : ''}`}>
               <button
                 className={`mobile-nav-item ${activeSection === 'overview' ? 'active' : ''}`}
                 onClick={() => setActiveSectionWithScroll('overview')}
                 aria-label="Vue d'ensemble"
               >
-                <Home size={22} />
+                <Home size={isLandscape ? 18 : 22} />
                 <span>Accueil</span>
               </button>
               <button
@@ -453,7 +471,7 @@ export const MobileDashboard: React.FC = () => {
                 onClick={() => setActiveSectionWithScroll('tables')}
                 aria-label="Tables"
               >
-                <Package size={22} />
+                <Package size={isLandscape ? 18 : 22} />
                 <span>Tables</span>
               </button>
               <button
@@ -461,7 +479,7 @@ export const MobileDashboard: React.FC = () => {
                 onClick={() => setActiveSectionWithScroll('pools')}
                 aria-label="Bassins"
               >
-                <DropletIcon size={22} />
+                <DropletIcon size={isLandscape ? 18 : 22} />
                 <span>Bassins</span>
               </button>
               <button
@@ -469,7 +487,7 @@ export const MobileDashboard: React.FC = () => {
                 onClick={() => setActiveSectionWithScroll('notifications')}
                 aria-label="Alertes"
               >
-                <AlertTriangle size={22} />
+                <AlertTriangle size={isLandscape ? 18 : 22} />
                 <span>Alertes</span>
               </button>
               <button
@@ -477,7 +495,7 @@ export const MobileDashboard: React.FC = () => {
                 onClick={() => setActiveSectionWithScroll('emergency')}
                 aria-label="Urgence"
               >
-                <AlertOctagon size={22} />
+                <AlertOctagon size={isLandscape ? 18 : 22} />
                 <span>Urgence</span>
               </button>
             </div>

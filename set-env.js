@@ -7,11 +7,21 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Vérifier si nous sommes en mode Firebase
-const isFirebase = process.env.DEPLOY_TARGET === 'firebase';
+// Lire le fichier .env.production
+const envPath = path.resolve(__dirname, '.env.production');
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  const envVars = envContent.split('\n').reduce((acc, line) => {
+    const [key, value] = line.split('=');
+    if (key && value) {
+      acc[key.trim()] = value.trim();
+    }
+    return acc;
+  }, {});
 
-// Créer un fichier .env.local avec la bonne valeur
-const envContent = `VITE_DEPLOY_TARGET=${isFirebase ? 'firebase' : ''}\n`;
-fs.writeFileSync(path.join(__dirname, '.env.local'), envContent);
-
-console.log(`✅ Variable d'environnement VITE_DEPLOY_TARGET définie à: ${isFirebase ? 'firebase' : ''}`);
+  // Définir VITE_DEPLOY_TARGET
+  process.env.VITE_DEPLOY_TARGET = envVars.VITE_DEPLOY_TARGET || '';
+  console.log('✅ Variable d\'environnement VITE_DEPLOY_TARGET définie à:', process.env.VITE_DEPLOY_TARGET);
+} else {
+  console.log('⚠️ Fichier .env.production non trouvé');
+}

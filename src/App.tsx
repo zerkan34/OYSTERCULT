@@ -247,8 +247,7 @@ function App() {
   const queryClient = new QueryClient();
   const deployTarget = import.meta.env.VITE_DEPLOY_TARGET || '';
   
-  // Détection si l'utilisateur est sur Github Pages ou Firebase Hosting
-  const baseUrl = deployTarget === 'firebase' ? '' : '/OYSTERCULT';
+  const baseUrl = '';
 
   return (
     <ConvexProvider client={convex}>

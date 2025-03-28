@@ -375,46 +375,83 @@
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
+  right: 0;
   height: 60px;
-  background: var(--secondary);
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  z-index: 100;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+  padding: 0 10px;
+  z-index: 1000;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
 }
 
-/* Bouton de navigation */
-.nav-button {
+.mobile-bottom-nav.landscape {
+  height: 50px;
+  padding: 0 20px;
+}
+
+.mobile-nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1;
-  height: 100%;
-  color: #666;
-  transition: color 0.2s;
-  text-decoration: none;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+  padding: 8px;
+  border-radius: 8px;
+  gap: 4px;
+  width: 25%;
 }
 
-/* Bouton de navigation actif */
-.nav-button.active {
-  color: var(--oyster-primary);
+.mobile-nav-item.active {
+  color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.1);
 }
 
-/* Icône de navigation */
-.nav-icon {
-  font-size: 1.5rem;
-  margin-bottom: 0.25rem;
-}
-
-/* Libellé de navigation */
-.nav-label {
+.mobile-nav-item span {
   font-size: 0.7rem;
-  white-space: nowrap;
+  margin-top: 2px;
+  transition: all 0.2s ease;
+}
+
+.mobile-nav-item:hover {
+  color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.05);
+}
+
+@media screen and (orientation: landscape) {
+  .mobile-bottom-nav {
+    height: 50px;
+    padding: 0 20px;
+  }
+
+  .mobile-nav-item {
+    flex-direction: row;
+    gap: 8px;
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+
+  .mobile-nav-item span {
+    font-size: 0.8rem;
+    margin-top: 0;
+  }
+}
+
+/* S'assurer que le menu reste visible en mode paysage */
+@media screen and (orientation: landscape) and (max-height: 450px) {
+  .mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+  }
 }
 
 /* Section des statistiques */
@@ -611,6 +648,53 @@
   
   .mobile-content {
     padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Support explicite du mode paysage */
+@media screen and (orientation: landscape) and (max-height: 768px) {
+  .mobile-bottom-nav {
+    display: flex !important; /* Force l'affichage en mode paysage */
+    height: 50px; /* Légèrement plus petit en mode paysage */
+    background: rgba(var(--secondary-rgb), 0.95); /* Plus transparent en mode paysage */
+  }
+
+  /* Ajustement du padding pour le contenu en mode paysage */
+  .mobile-content {
+    padding-bottom: 50px;
+  }
+
+  /* Support des encoches en mode paysage */
+  @supports (padding: max(0px)) {
+    .mobile-bottom-nav {
+      padding-bottom: max(0px, env(safe-area-inset-bottom));
+      height: calc(50px + env(safe-area-inset-bottom, 0px));
+    }
+    
+    .mobile-content {
+      padding-bottom: calc(50px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+}
+
+/* Ajustements pour les très petits écrans en mode paysage */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .mobile-bottom-nav {
+    height: 40px; /* Encore plus petit pour les très petits écrans */
+  }
+
+  .mobile-content {
+    padding-bottom: 40px;
+  }
+
+  @supports (padding: max(0px)) {
+    .mobile-bottom-nav {
+      height: calc(40px + env(safe-area-inset-bottom, 0px));
+    }
+    
+    .mobile-content {
+      padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+    }
   }
 }
 

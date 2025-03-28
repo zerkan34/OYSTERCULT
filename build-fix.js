@@ -6,6 +6,24 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Lire le fichier .env.production
+const envPath = path.resolve(__dirname, '.env.production');
+let deployTarget = '';
+
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  const envVars = envContent.split('\n').reduce((acc, line) => {
+    const [key, value] = line.split('=');
+    if (key && value) {
+      acc[key.trim()] = value.trim();
+    }
+    return acc;
+  }, {});
+  deployTarget = envVars.VITE_DEPLOY_TARGET || '';
+}
+
+console.log('VITE_DEPLOY_TARGET environment variable:', deployTarget);
+
 /**
  * Corrige les chemins dans le fichier index.html généré
  */
@@ -18,9 +36,10 @@ function fixPathsInIndexHtml() {
     return;
   }
   
-  // Vérifier la cible de déploiement
-  const deployTarget = process.env.DEPLOY_TARGET || '';
-  const basePath = deployTarget === 'firebase' ? '/' : '/OYSTERCULT/';
+  const isFirebase = deployTarget === 'firebase';
+  const basePath = isFirebase ? '/' : '/OYSTERCULT/';
+  
+  console.log(`🔧 Correction des chemins pour: ${isFirebase ? 'Firebase' : 'GitHub Pages'} avec basePath: ${basePath}`);
   
   let html = fs.readFileSync(indexHtmlPath, 'utf8');
   
@@ -33,20 +52,46 @@ function fixPathsInIndexHtml() {
     if (!html.includes(`<base href="${basePath}"`)) {
       html = html.replace('<head>', `<head>\n  <base href="${basePath}" />`);
     }
+  } else if (isFirebase) {
+    // Pour Firebase, s'assurer qu'il n'y a pas de balise base qui pourrait causer des problèmes
+    html = html.replace(/<base href="[^"]*"[^>]*>/g, '');
+    
+    // S'assurer que les chemins commencent par / pour Firebase
+    html = html.replace(/src="assets\//g, 'src="/assets/');
+    html = html.replace(/href="assets\//g, 'href="/assets/');
   }
   
   // Écrire le HTML modifié
   fs.writeFileSync(indexHtmlPath, html);
   console.log('✅ Chemins corrigés dans index.html');
+}
 
-  // Copier index.html vers 404.html pour la gestion des routes
-  fs.copyFileSync(indexHtmlPath, path.join(distDir, '404.html'));
-  console.log('✅ 404.html créé');
+/**
+ * Crée un fichier 404.html pour GitHub Pages
+ */
+function create404Html() {
+  const distDir = path.resolve(__dirname, 'dist');
+  const indexHtmlPath = path.join(distDir, 'index.html');
+  const notFoundPath = path.join(distDir, '404.html');
+  
+  if (fs.existsSync(indexHtmlPath)) {
+    fs.copyFileSync(indexHtmlPath, notFoundPath);
+    console.log('✅ 404.html créé');
+  }
+}
 
-  // Créer un fichier .nojekyll pour GitHub Pages
-  fs.writeFileSync(path.join(distDir, '.nojekyll'), '');
+/**
+ * Crée un fichier .nojekyll pour GitHub Pages
+ */
+function createNojekyllFile() {
+  const distDir = path.resolve(__dirname, 'dist');
+  const nojekyllPath = path.join(distDir, '.nojekyll');
+  
+  fs.writeFileSync(nojekyllPath, '');
   console.log('✅ .nojekyll créé');
 }
 
-// Exécution de la fonction
+// Exécuter les corrections
 fixPathsInIndexHtml();
+create404Html();
+createNojekyllFile();
