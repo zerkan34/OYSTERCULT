@@ -85,11 +85,45 @@ export function TaskComments({ task }: TaskCommentsProps) {
     setDelayReason('');
   };
 
+  const taskComments: Comment[] = task.comments ? task.comments.map((comment: any, index: number) => {
+    // Vérifier si comment est un objet avec les propriétés attendues
+    if (typeof comment === 'object' && comment !== null) {
+      return {
+        id: index.toString(),
+        content: typeof comment.content === 'string' ? comment.content : JSON.stringify(comment.content),
+        author: {
+          name: typeof comment.author === 'string' ? comment.author : 'Utilisateur'
+        },
+        timestamp: typeof comment.date === 'string' ? comment.date : new Date().toISOString(),
+        type: 'comment',
+        attachments: Array.isArray(comment.attachments) ? comment.attachments.map((attachment: string) => ({
+          name: attachment,
+          url: '#',
+          type: 'document'
+        })) : []
+      };
+    } else {
+      // Fallback si le commentaire n'est pas un objet valide
+      return {
+        id: index.toString(),
+        content: typeof comment === 'string' ? comment : JSON.stringify(comment),
+        author: {
+          name: 'Utilisateur'
+        },
+        timestamp: new Date().toISOString(),
+        type: 'comment',
+        attachments: []
+      };
+    }
+  }) : [];
+
+  const displayComments = taskComments.length > 0 ? taskComments : mockComments;
+
   return (
     <div className="task-comments-container mobile-card">
       {/* Liste des commentaires */}
       <div className="space-y-4">
-        {mockComments.map((comment) => (
+        {displayComments.map((comment) => (
           <div 
             key={comment.id}
             className={`comment-item mobile-fade-in ${
@@ -142,7 +176,9 @@ export function TaskComments({ task }: TaskCommentsProps) {
                   )}
                 </div>
 
-                <p className="comment-content">{comment.content}</p>
+                <p className="comment-content">
+                  {typeof comment.content === 'string' ? comment.content : JSON.stringify(comment.content)}
+                </p>
 
                 {comment.type === 'delay' && comment.delayReason && (
                   <div className="delay-info">

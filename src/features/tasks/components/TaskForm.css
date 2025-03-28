@@ -15,6 +15,7 @@
   max-width: 800px;
   overflow: hidden;
   position: relative;
+  background: linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%);
 }
 
 /* Force les styles sur les éléments de formulaire */
@@ -26,9 +27,7 @@ input[type="password"],
 input[type="search"],
 select,
 textarea {
-  background: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3)) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-  backdrop-filter: blur(10px) !important;
+  background: rgba(0, 20, 50, 0.7) !important;
   color: white !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 8px !important;
@@ -42,13 +41,12 @@ textarea {
 
 /* Ciblage spécifique du champ de titre */
 #title {
-  background: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3)) !important;
-  background-color: transparent !important;
-  -webkit-background-color: transparent !important;
-  -moz-background-color: transparent !important;
-  background-image: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3)) !important;
-  -webkit-background-image: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3)) !important;
-  -moz-background-image: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3)) !important;
+  background: rgba(0, 20, 50, 0.7) !important;
+  background-color: rgba(0, 20, 50, 0.7) !important;
+  -webkit-background-color: rgba(0, 20, 50, 0.7) !important;
+  -moz-background-color: rgba(0, 20, 50, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
 }
 
 /* Style spécifique pour les options des menus déroulants */
@@ -153,7 +151,7 @@ input[type="date"] {
 .form-select,
 .form-textarea {
   width: 100%;
-  background: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3)) !important;
+  background: rgba(0, 20, 50, 0.7) !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   padding: 0.75rem;
@@ -358,4 +356,44 @@ input[type="date"] {
 /* Ajustement du texte pour les labels plus petits */
 label[for="isRecurring"] span {
   font-size: 0.875rem !important;
+}
+
+/* Styles pour la version mobile */
+@media (max-width: 768px) {
+  .modal-container {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+
+  /* Assurer que les boutons de soumission sont toujours visibles */
+  .modal-container form {
+    position: relative;
+  }
+
+  /* Fixer les boutons en bas de la modale en version mobile */
+  .modal-container form .flex.justify-end.space-x-2 {
+    bottom: 0;
+    padding: 0.75rem 0;
+    margin-top: 1rem;
+    z-index: 10;
+    width: 100%;
+  }
+
+  /* Ajuster la section d'évaluation pour qu'elle ne déborde pas */
+  .modal-container .space-y-6 .flex.space-x-1 {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Ajuster la taille des étoiles pour qu'elles tiennent sur une ligne */
+  .modal-container .space-y-6 .flex.space-x-1 button {
+    padding: 0.5rem;
+  }
+
+  .modal-container .space-y-6 .flex.space-x-1 button .w-6.h-6 {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 }

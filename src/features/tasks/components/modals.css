@@ -1,0 +1,208 @@
+/* Styles spécifiques pour les modales et fenêtres de dialogue */
+
+/* Z-index super élevé pour toutes les modales */
+.motion-div-overlay,
+.fixed.motion-div-overlay,
+.modal-responsive-container {
+  position: fixed !important;
+  z-index: 999999 !important;
+}
+
+/* S'assurer que tous les contenus de la modale sont également prioritaires */
+.modal-content, 
+.new-task-modal, 
+.modal-responsive-content {
+  position: relative !important;
+  z-index: 999999 !important;
+  max-height: calc(90vh - 80px) !important;
+  overflow: hidden !important;
+}
+
+/* Gestion spécifique du bouton Modifier et de sa modale */
+[aria-label="Modifier"], 
+.task-action-btn.edit,
+.edit {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Le conteneur du rapport d'activité doit avoir un z-index bas */
+.activity-report-container {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Nouveau style pour la modale de nouvelle tâche */
+.new-task-modal-overlay {
+  padding-top: 120px !important; /* Augmenté de 80px à 120px pour descendre la modale */
+  align-items: flex-start !important;
+}
+
+/* Style spécifique pour la modale Nouvelle tâche dans le conteneur task-list-container */
+.task-list-container-modal.new-task-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(3px) !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  padding-top: 150px !important; /* Encore plus bas pour éviter le bandeau du haut */
+}
+
+/* Style pour les modales dans le conteneur task-list-container */
+.task-list-container-modal {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(3px) !important;
+  z-index: 999998 !important;
+  padding-top: 80px !important; /* Ajout d'un padding-top pour descendre légèrement la modale */
+  align-items: flex-start !important; /* Aligner en haut plutôt qu'au centre */
+}
+
+/* Styles pour gérer le contenu dans les modales sans débordement */
+.new-task-modal-body,
+.modal-content > div {
+  max-height: calc(70vh - 80px) !important;
+  overflow-y: auto !important;
+}
+
+/* Assure que les modales touchées ou cliquées ne sont pas fermées par propagation */
+.modal-content *,
+.new-task-modal *,
+.modal-responsive-content * {
+  pointer-events: auto !important;
+}
+
+/* Style pour le backdrop des modales */
+.modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(3px) !important;
+  z-index: 999998 !important;
+}
+
+/* La page principale doit avoir un z-index bas */
+.task-page-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+/* Styles pour centrer toutes les modales dans le conteneur task-list-container */
+.task-list-container .motion-div-overlay,
+.task-list-container .fixed.motion-div-overlay,
+.task-list-container .modal-responsive-container {
+  position: absolute !important;
+  z-index: 999999 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* S'assurer que les contenus de modale sont centrés */
+.task-list-container .modal-content, 
+.task-list-container .edit-modal-content,
+.task-list-container .new-task-modal, 
+.task-list-container .modal-responsive-content {
+  position: relative !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  margin: 0 auto !important;
+}
+
+/* Override pour la position top */
+.task-list-container .edit-modal-content {
+  /* Centrer verticalement et horizontalement dans task-list-container */
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  /* Supprimer toute marge qui pourrait affecter le centrage */
+  margin: 0 !important;
+}
+
+/* Style spécifique pour la modale du bouton Modifier */
+.task-list-container-modal-content {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+}
+
+/* Assurer que les overlay des modales dans task-list-container sont positionnés correctement */
+.task-list-container-modal {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Styles spécifiques pour la modale d'édition en version mobile */
+.edit-task-modal-overlay {
+  align-items: flex-start !important;
+  padding-top: 20px !important;
+}
+
+@media (max-width: 768px) {
+  .edit-modal-content {
+    max-height: calc(100vh - 40px) !important;
+    overflow-y: auto !important;
+    margin: 20px auto !important;
+    padding: 1rem !important;
+  }
+  
+  /* Assurer que les boutons restent visibles */
+  .edit-modal-content .flex.justify-end {
+    position: sticky !important;
+    bottom: 0 !important;
+    background: linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%) !important;
+    padding: 0.75rem 0 !important;
+    margin-top: 1rem !important;
+    z-index: 10 !important;
+  }
+  
+  /* Ajustement de la hauteur maximale de la modale en version mobile pour les tâches - uniquement pour la modale d'édition */
+  .task-card-wrapper .edit-modal-responsive .edit-modal-responsive-content {
+    max-height: 100% !important;
+    height: 100vh !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Assurer que le contenu de la modale ne déborde pas - uniquement pour la modale d'édition */
+  .task-card-wrapper .edit-modal-responsive .edit-modal-responsive-content > div:not(.modal-responsive-header) {
+    max-height: calc(100vh - 120px) !important; /* Soustraire l'espace pour l'en-tête et les boutons */
+    overflow-y: auto !important;
+  }
+}
+
+/* Style spécifique pour le contenu de la modale Nouvelle tâche */
+.new-task-modal.task-list-container-modal-content {
+  margin-top: 0 !important;
+  max-width: 600px !important;
+  width: calc(100% - 40px) !important;
+  position: relative !important;
+  z-index: 999999 !important;
+  box-shadow: rgba(0, 0, 0, 0.5) 0px 10px 30px -5px, 
+              rgba(0, 150, 255, 0.15) 0px 8px 25px -8px, 
+              rgba(255, 255, 255, 0.1) 0px -1px 5px 0px inset, 
+              rgba(0, 210, 200, 0.3) 0px 0px 20px inset, 
+              rgba(0, 0, 0, 0.3) 0px 0px 15px inset !important;
+}
+
+/* Assure que les modales touchées ou cliquées ne sont pas fermées par propagation */
+.modal-content *,
+.new-task-modal *,
+.modal-responsive-content * {
+  pointer-events: auto !important;
+}

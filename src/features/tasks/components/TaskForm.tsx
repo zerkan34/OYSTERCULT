@@ -24,8 +24,36 @@ interface TaskFormProps {
 export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
   // Commentons cette ligne car nous n'avons pas accès à l'API Convex
   // const createTask = useMutation(api.tasks.createTask);
+  
+  // Préparer les commentaires pour l'affichage dans le formulaire
+  const formatCommentsForDisplay = (comments: any[] | undefined): string => {
+    if (!comments || !Array.isArray(comments)) return '';
+    
+    return comments.map(comment => {
+      if (typeof comment === 'object' && comment !== null) {
+        const author = typeof comment.author === 'string' 
+          ? comment.author 
+          : (comment.author && typeof comment.author === 'object' && comment.author.name)
+            ? comment.author.name
+            : 'Utilisateur';
+            
+        const content = typeof comment.content === 'string'
+          ? comment.content
+          : JSON.stringify(comment.content);
+          
+        return `${author}: ${content}`;
+      }
+      return typeof comment === 'string' ? comment : JSON.stringify(comment);
+    }).join('\n\n');
+  };
+  
+  const initialComments = formatCommentsForDisplay(task?.comments);
+  
   const { register, handleSubmit, formState: { errors }, watch } = useForm<TaskFormData>({
-    defaultValues: task || {}
+    defaultValues: {
+      ...task || {},
+      comments: initialComments
+    }
   });
   
   const [activeTab, setActiveTab] = useState<'details' | 'performance'>('details');
@@ -35,8 +63,15 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
 
   const onSubmit = async (data: TaskFormData) => {
     try {
+      // Préserver les commentaires originaux si disponibles
+      const formattedData = {
+        ...data,
+        // Conserver les commentaires originaux pour éviter de perdre la structure
+        comments: task?.comments || data.comments
+      };
+      
       // Comme nous n'avons pas accès à Convex, simulons la création
-      console.log('Création de tâche:', data);
+      console.log('Mise à jour de tâche:', formattedData);
       // await createTask({
       //   ...data,
       //   estimatedHours: Number(data.estimatedHours),
@@ -45,7 +80,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
       // });
       onClose();
     } catch (error) {
-      console.error('Error creating task:', error);
+      console.error('Error updating task:', error);
     }
   };
 
@@ -65,8 +100,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
               onClick={() => setActiveTab('details')}
               aria-label="Afficher les détails de la tâche"
             >
-              <div className="flex items-center gap-1.5">
-                <ClipboardList size={16} />
+              <div className="flex items-center">
                 Détails
               </div>
             </button>
@@ -78,8 +112,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
               onClick={() => setActiveTab('performance')}
               aria-label="Afficher la performance de la tâche"
             >
-              <div className="flex items-center gap-1.5">
-                <ClipboardList size={16} />
+              <div className="flex items-center">
                 Performance
               </div>
             </button>
@@ -200,7 +233,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
           <div className="space-y-6">
             <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-4 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px] border border-white/10">
               <h3 className="text-lg font-medium text-white mb-2">Évaluation de la tâche</h3>
-              <div className="flex space-x-1">
+              <div className="flex flex-wrap justify-center sm:justify-start space-x-1">
                 {[1, 2, 3, 4, 5].map((rating) => (
                   <button
                     key={rating}
@@ -211,7 +244,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onClose, task }) => {
                     }`}
                     aria-label={`Évaluer ${rating} sur 5`}
                   >
-                    <Star className="w-6 h-6" fill={selectedRating && selectedRating >= rating ? 'currentColor' : 'none'} />
+                    <Star className="w-5 h-5 sm:w-6 sm:h-6" fill={selectedRating && selectedRating >= rating ? 'currentColor' : 'none'} />
                   </button>
                 ))}
               </div>

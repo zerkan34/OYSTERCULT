@@ -116,13 +116,12 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose 
           transform: "translateY(0px)"
         }}
       >
-        {/* Header with close button */}
-        <div className="modal-header px-6 py-4 border-b border-white/10 flex items-center justify-between rounded-t-2xl">
-          <h2 className="text-xl font-semibold text-white bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">Détails de la tâche</h2>
+        {/* En-tête avec titre et bouton de fermeture */}
+        <div className="p-4 border-b border-white/10 flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-white">{task.title}</h2>
           <button 
             onClick={onClose}
-            className="text-white/60 hover:text-white/90 transition-colors p-1 rounded-lg hover:bg-white/5"
-            aria-label="Fermer"
+            className="text-white/60 hover:text-white transition-colors"
           >
             <X size={20} />
           </button>
@@ -212,16 +211,34 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose 
                   <div className="flex items-start">
                     <div className="flex-shrink-0 mr-3">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white font-medium text-sm">
-                        {comment.author.substring(0, 1) || '?'}
+                        {typeof comment.author === 'string' 
+                          ? comment.author.substring(0, 1) 
+                          : typeof comment.author === 'object' && comment.author !== null && comment.author.name 
+                            ? comment.author.name.substring(0, 1) 
+                            : '?'}
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="text-sm font-medium text-white">{comment.author || 'Utilisateur'}</p>
-                        <p className="text-xs text-white/40">{format(new Date(comment.date), 'dd MMM yyyy à HH:mm', { locale: fr })}</p>
+                        <p className="text-sm font-medium text-white">
+                          {typeof comment.author === 'string' 
+                            ? comment.author 
+                            : typeof comment.author === 'object' && comment.author !== null && comment.author.name
+                              ? comment.author.name
+                              : 'Utilisateur'}
+                        </p>
+                        <p className="text-xs text-white/40">
+                          {comment.date ? format(new Date(comment.date), 'dd MMM yyyy à HH:mm', { locale: fr }) : ''}
+                        </p>
                       </div>
                       <div className="prose prose-sm prose-invert mt-1">
-                        <p className="text-white/70 text-sm leading-relaxed">{comment.content}</p>
+                        <p className="text-white/70 text-sm leading-relaxed">
+                          {typeof comment.content === 'string' 
+                            ? comment.content 
+                            : typeof comment.content === 'object' && comment.content !== null
+                              ? JSON.stringify(comment.content)
+                              : ''}
+                        </p>
                       </div>
                       {/* Évaluation du commentaire */}
                       {comment.rating > 0 && (

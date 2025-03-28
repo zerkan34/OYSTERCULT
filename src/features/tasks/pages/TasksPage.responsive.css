@@ -14,516 +14,387 @@
   --teal-600: #0d6e6a;
 }
 
-/* Styles généraux du conteneur de la page */
-.task-page-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
+/* Styles globaux pour éviter le défilement horizontal */
+body, html {
+  overflow-x: hidden;
   width: 100%;
+  max-width: 100%;
+}
+
+/* Styles généraux du conteneur de la page */
+.task-page-wrapper {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0 auto;
   min-height: 100%;
   position: relative;
   isolation: isolate;
-  border-radius: 1rem;
-  overflow: hidden;
 }
 
-/* En-tête de la page avec effet 3D */
-.task-page-header-wrapper {
-  position: relative;
-  margin-bottom: 0.5rem;
-}
-
+/* En-tête de la page des tâches */
 .task-page-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.25rem 1.5rem;
-  background: linear-gradient(145deg, rgba(0, 20, 40, 0.98) 0%, rgba(0, 80, 80, 0.95) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px, rgba(0, 180, 180, 0.1) 0px 0px 10px inset;
-  overflow: hidden;
-  position: relative;
-  will-change: transform;
-  transform: translate3d(0,0,0);
-}
-
-.task-page-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  padding: 1.25rem;
 }
 
 .header-content {
   display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Conteneur des statistiques */
+.stats-container {
+  width: 100%;
+  margin: 1.5rem 0;
+  gap: 1.5rem;
+}
+
+/* Grille des statistiques */
+.stats-grid {
+  width: 100%;
+}
+
+/* Conteneur de la liste des tâches */
+.task-list-container {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.task-list-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Conteneur du rapport d'activité */
+.activity-report-container {
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.activity-report-header {
+  display: flex;
   align-items: center;
   gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.header-icon {
-  width: 64px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, rgba(13, 148, 136, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
-  border-radius: 1rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.header-icon::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-}
-
-.icon-inner {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, rgba(13, 148, 136, 0.4) 0%, rgba(37, 99, 235, 0.4) 100%);
-  border-radius: 0.75rem;
-  color: white;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.15);
-}
-
-.header-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  background: linear-gradient(to right, #3b82f6, #0d9488);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-  margin: 0;
-}
-
-.header-subtitle {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 0.25rem;
-}
-
-.new-task-btn {
+/* Bouton d'exportation */
+.export-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  background: linear-gradient(90deg, rgba(37, 99, 235, 0.9) 0%, rgba(13, 148, 136, 0.9) 100%);
-  border: none;
-  border-radius: 0.75rem;
-  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
   font-weight: 500;
-  font-size: 0.875rem;
-  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2), 0 4px 6px -2px rgba(37, 99, 235, 0.1);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-.new-task-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-}
-
-.new-task-btn .btn-icon {
-  transition: transform 0.3s ease;
-}
-
-.new-task-btn:hover .btn-icon {
-  transform: rotate(90deg);
-}
-
-.new-task-btn .sparks-effect {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  opacity: 0;
-  transform: rotate(-10deg) scale(0.8);
-  transition: all 0.3s ease;
-}
-
-.new-task-btn:hover .sparks-effect {
-  opacity: 0.8;
-  animation: sparkle 1.5s infinite;
-}
-
-@keyframes sparkle {
-  0%, 100% { opacity: 0.8; transform: rotate(-10deg) scale(0.8); }
-  50% { opacity: 0.5; transform: rotate(-5deg) scale(1); }
-}
-
-/* Zone de recherche et filtres avec effet néomorphisme */
-.search-filter-container {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.search-container {
-  flex: 1;
-  position: relative;
-  border-radius: 0.75rem;
-  background: linear-gradient(145deg, rgba(0, 20, 40, 0.98) 0%, rgba(0, 80, 80, 0.95) 100%);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px, rgba(0, 180, 180, 0.1) 0px 0px 10px inset;
-  overflow: hidden;
-  transition: transform 0.3s ease;
-  will-change: transform;
-  transform: translate3d(0,0,0);
-}
-
-.search-container:hover {
-  transform: translateY(-2px);
-}
-
-.search-icon-container {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.search-input {
-  width: 100%;
-  height: 46px;
-  padding: 0 1rem 0 48px;
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.875rem;
-}
-
-.search-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.search-input:focus {
-  outline: none;
-}
-
+/* Bouton de filtre */
 .filter-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0 1.25rem;
-  background: linear-gradient(145deg, rgba(0, 20, 40, 0.98) 0%, rgba(0, 80, 80, 0.95) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.875rem;
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px, rgba(0, 180, 180, 0.1) 0px 0px 10px inset;
-  transition: transform 0.3s ease;
-  will-change: transform;
-  transform: translate3d(0,0,0);
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-.filter-button:hover {
-  transform: translateY(-2px);
+/* Styles pour les boutons d'action */
+.action-buttons {
+  width: 100%;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
 }
 
-.filter-button .filter-icon {
-  transition: transform 0.3s ease;
+.search-container {
+  position: relative;
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
 }
 
-.filter-button:hover .filter-icon {
-  transform: rotate(90deg);
+.search-container .search-icon {
+  position: absolute !important;
+  left: 12px;
+  top: 30%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 10;
 }
 
-/* Section des filtres */
-.filters-container {
-  background: linear-gradient(145deg, rgba(37, 99, 235, 0.05) 0%, rgba(13, 148, 136, 0.05) 100%);
-  border: 1px solid rgba(37, 99, 235, 0.15);
-  border-radius: 1rem;
-  padding: 1.25rem;
-  margin-bottom: 0.5rem;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+.search-container input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 44px;
+  line-height: normal;
 }
 
-/* Dashboard des statistiques */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-/* Grid pour les tables d'huîtres */
-.tables-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-/* Carte de statistique réutilisable avec effet 3D */
-.task-stat-card {
-  background: linear-gradient(145deg, rgba(37, 99, 235, 0.1) 0%, rgba(30, 58, 138, 0.05) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-
-.stat-icon-container {
-  width: 48px;
-  height: 48px;
+.action-button {
+  flex: 1 1 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.75rem;
-  color: white;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  height: 44px;
+  line-height: normal;
 }
 
-.stat-icon-container.blue {
-  background: rgba(59, 130, 246, 0.2);
-  color: rgba(59, 130, 246, 1);
+/* Styles pour les écrans moyens et plus grands */
+@media (min-width: 640px) {
+  .task-page-wrapper {
+    padding: 0.5rem;
+    width: 95%;
+  }
+  
+  .header-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .task-list-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .task-tag {
+    font-size: 0.9em;
+  }
 }
 
-.stat-icon-container.green {
-  background: rgba(16, 185, 129, 0.2);
-  color: rgba(16, 185, 129, 1);
+/* Styles pour les écrans moyens */
+@media (min-width: 481px) and (max-width: 768px) {
+  .task-page-wrapper {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+  }
+  
+  .task-list-container, .activity-report-container {
+    padding: 1rem;
+  }
+
+  .direction-column {
+    flex-direction: column;
+  }
+
+  .to-block {
+    display: block;
+    text-align: center;
+  }
+
+  .task-tag {
+    font-size: 0.9em;
+  }
 }
 
-.stat-icon-container.amber {
-  background: rgba(245, 158, 11, 0.2);
-  color: rgba(245, 158, 11, 1);
+/* Styles pour les petits écrans (mobiles) */
+@media (max-width: 767px) {
+  .search-container,
+  .action-button {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+  
+  /* Force la largeur de l'input sur mobile */
+  .search-container input {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Assure que l'icône reste bien positionnée */
+  .search-container .search-icon {
+    position: absolute !important;
+    left: 12px !important;
+    z-index: 10 !important;
+  }
 }
 
-.stat-icon-container.indigo {
-  background: rgba(99, 102, 241, 0.2);
-  color: rgba(99, 102, 241, 1);
+/* Styles pour les petits écrans */
+@media (max-width: 480px) {
+  .task-page-wrapper {
+    padding: 0;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .task-page-header {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+  }
+  
+  .stats-container {
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  
+  .stats-grid {
+    gap: 0.75rem;
+  }
+  
+  .export-button, .filter-button {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .task-list-container, .activity-report-container {
+    padding: 0.75rem;
+  }
+  
+  .task-list-header, .activity-report-header {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Ajustements pour les boutons d'action */
+  .task-actions {
+    width: 100%;
+  }
+  
+  .delay-btn, .task-action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .direction-column {
+    flex-direction: column;
+  }
+
+  .to-block {
+    display: block !important;
+    text-align: center;
+  }
+
+  .task-tag {
+    font-size: 0.9em;
+  }
 }
 
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: white;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.stat-title {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0;
-}
-
-/* Séparateur visuel */
-.task-section-divider {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 0.5rem 0 1.5rem;
-}
-
-.divider-line {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.3) 50%, transparent 100%);
-}
-
-.divider-text {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
-  padding: 0 0.5rem;
-}
-
-/* Liste des tâches */
-.task-list-container {
-  background: linear-gradient(145deg, rgba(37, 99, 235, 0.05) 0%, rgba(13, 148, 136, 0.05) 100%);
-  border-radius: 1rem;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Modal de nouvelle tâche */
-.new-task-modal-overlay {
-  position: fixed;
+/* Styles pour les modales responsives */
+.modal-responsive-container {
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 100;
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 1000;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
 }
 
-.new-task-modal {
-  background: linear-gradient(145deg, rgba(0, 20, 40, 0.98) 0%, rgba(0, 80, 80, 0.95) 100%);
-  border-radius: 1rem;
-  padding: 2rem;
-  width: 90%;
-  max-width: 600px;
-  position: relative;
+.modal-responsive-content {
+  background: linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%);
+  border-radius: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: rgba(0, 0, 0, 0.45) 0px 5px 15px, 
+              rgba(0, 150, 255, 0.1) 0px 5px 10px, 
+              rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset,
+              rgba(0, 210, 200, 0.25) 0px 0px 20px inset, 
+              rgba(0, 0, 0, 0.3) 0px 0px 15px inset;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  transform: translate3d(0,0,0);
-  will-change: transform;
+  position: relative;
 }
 
-.new-task-modal-header {
+.modal-responsive-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.new-task-modal-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+.modal-responsive-header h3 {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: white;
+  margin: 0;
 }
 
-.close-modal-btn {
+.modal-responsive-close {
   background: transparent;
   border: none;
   color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
-  padding: 0.5rem;
-  transition: color 0.3s ease;
-  border-radius: 0.5rem;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
 }
 
-.close-modal-btn:hover {
-  color: rgba(255, 255, 255, 0.9);
-  background: rgba(255, 255, 255, 0.1);
+.modal-responsive-close:hover {
+  color: white;
 }
 
-/* Styles pour la scrollbar personnalisée dans le modal */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 210, 255, 0.2);
-  border-radius: 10px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 210, 255, 0.3);
-}
-@media (prefers-reduced-motion: reduce) {
-  .custom-scrollbar {
-    scroll-behavior: auto;
-  }
-}
-
-/* Styles pour les tablettes */
-@media (max-width: 1024px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Styles pour les mobiles */
+/* Ajustements pour les écrans de petite taille */
 @media (max-width: 768px) {
-  .task-page-container {
-    padding: 1rem;
-    gap: 1rem;
+  .task-card-wrapper {
+    position: relative;
   }
   
-  .task-page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem;
+  /* Masquer les modales normales en mode responsive */
+  .isResponsive .fixed {
+    display: none;
   }
   
-  .new-task-btn {
-    width: 100%;
-    justify-content: center;
+  /* Ajustements pour les modales responsives */
+  .modal-responsive-container {
+    position: absolute;
+    z-index: 9999;
   }
   
-  .search-filter-container {
-    flex-direction: column;
-  }
-  
-  .filter-button {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
+  .modal-responsive-content {
+    max-height: 90vh;
+    overflow-y: auto;
   }
 }
 
-/* Styles pour les très petits écrans */
-@media (max-width: 480px) {
-  .header-icon {
-    width: 48px;
-    height: 48px;
-  }
-  
-  .icon-inner {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .header-title {
-    font-size: 1.25rem;
-  }
-  
-  .task-stat-card .p-5 {
-    padding: 0.75rem;
-  }
-  
-  .stat-icon-container {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .stat-value {
-    font-size: 1.25rem;
-  }
+/* Ajustements globaux pour les modales */
+.fixed {
+  z-index: 9999 !important;
+}
+
+/* Ajustements pour la modale de nouvelle tâche */
+.new-task-modal-overlay {
+  padding-top: 80px; /* Décale la modale vers le bas */
+  align-items: flex-start !important;
+}
+
+.new-task-modal {
+  max-height: calc(90vh - 80px);
+  overflow: hidden;
+}
+
+.new-task-modal-body {
+  max-height: calc(70vh - 80px);
+  overflow-y: auto;
+}
+
+/* Force les modales à s'afficher au-dessus de tout */
+.motion-div-overlay {
+  position: fixed;
+  z-index: 99999 !important; 
+  inset: 0;
 }

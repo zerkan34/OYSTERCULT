@@ -1,0 +1,529 @@
+/* TasksPage Responsive Styles */
+
+/* Définition des variables pour les couleurs */
+:root {
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --green-500: #10b981;
+  --green-600: #059669;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --teal-500: #0d9488;
+  --teal-600: #0d6e6a;
+}
+
+/* Styles généraux du conteneur de la page */
+.task-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  min-height: 100%;
+  position: relative;
+  isolation: isolate;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+/* En-tête de la page avec effet 3D */
+.task-page-header-wrapper {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.task-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(145deg, rgba(0, 20, 40, 0.98) 0%, rgba(0, 80, 80, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px, rgba(0, 180, 180, 0.1) 0px 0px 10px inset;
+  overflow: hidden;
+  position: relative;
+  will-change: transform;
+  transform: translate3d(0,0,0);
+}
+
+.task-page-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-icon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+.icon-inner {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.4) 0%, rgba(37, 99, 235, 0.4) 100%);
+  border-radius: 0.75rem;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+.header-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #3b82f6, #0d9488);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  margin: 0;
+}
+
+.header-subtitle {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.25rem;
+}
+
+.new-task-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.9) 0%, rgba(13, 148, 136, 0.9) 100%);
+  border: none;
+  border-radius: 0.75rem;
+  color: white;
+  font-weight: 500;
+  font-size: 0.875rem;
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2), 0 4px 6px -2px rgba(37, 99, 235, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.new-task-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+}
+
+.new-task-btn .btn-icon {
+  transition: transform 0.3s ease;
+}
+
+.new-task-btn:hover .btn-icon {
+  transform: rotate(90deg);
+}
+
+.new-task-btn .sparks-effect {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  opacity: 0;
+  transform: rotate(-10deg) scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.new-task-btn:hover .sparks-effect {
+  opacity: 0.8;
+  animation: sparkle 1.5s infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.8; transform: rotate(-10deg) scale(0.8); }
+  50% { opacity: 0.5; transform: rotate(-5deg) scale(1); }
+}
+
+/* Zone de recherche et filtres avec effet néomorphisme */
+.search-filter-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.search-container {
+  flex: 1;
+  position: relative;
+  border-radius: 0.75rem;
+  background: linear-gradient(145deg, rgba(0, 20, 40, 0.98) 0%, rgba(0, 80, 80, 0.95) 100%);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px, rgba(0, 180, 180, 0.1) 0px 0px 10px inset;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  will-change: transform;
+  transform: translate3d(0,0,0);
+}
+
+.search-container:hover {
+  transform: translateY(-2px);
+}
+
+.search-icon-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.search-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 1rem 0 48px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.filter-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1.25rem;
+  background: linear-gradient(145deg, rgba(0, 20, 40, 0.98) 0%, rgba(0, 80, 80, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px, rgba(0, 180, 180, 0.1) 0px 0px 10px inset;
+  transition: transform 0.3s ease;
+  will-change: transform;
+  transform: translate3d(0,0,0);
+}
+
+.filter-button:hover {
+  transform: translateY(-2px);
+}
+
+.filter-button .filter-icon {
+  transition: transform 0.3s ease;
+}
+
+.filter-button:hover .filter-icon {
+  transform: rotate(90deg);
+}
+
+/* Section des filtres */
+.filters-container {
+  background: linear-gradient(145deg, rgba(37, 99, 235, 0.05) 0%, rgba(13, 148, 136, 0.05) 100%);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 0.5rem;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* Dashboard des statistiques */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Grid pour les tables d'huîtres */
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Carte de statistique réutilisable avec effet 3D */
+.task-stat-card {
+  background: linear-gradient(145deg, rgba(37, 99, 235, 0.1) 0%, rgba(30, 58, 138, 0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.stat-icon-container {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.stat-icon-container.blue {
+  background: rgba(59, 130, 246, 0.2);
+  color: rgba(59, 130, 246, 1);
+}
+
+.stat-icon-container.green {
+  background: rgba(16, 185, 129, 0.2);
+  color: rgba(16, 185, 129, 1);
+}
+
+.stat-icon-container.amber {
+  background: rgba(245, 158, 11, 0.2);
+  color: rgba(245, 158, 11, 1);
+}
+
+.stat-icon-container.indigo {
+  background: rgba(99, 102, 241, 0.2);
+  color: rgba(99, 102, 241, 1);
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.stat-title {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+/* Séparateur visuel */
+.task-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.5rem 0 1.5rem;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.3) 50%, transparent 100%);
+}
+
+.divider-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0 0.5rem;
+}
+
+/* Liste des tâches */
+.task-list-container {
+  background: linear-gradient(145deg, rgba(37, 99, 235, 0.05) 0%, rgba(13, 148, 136, 0.05) 100%);
+  border-radius: 1rem;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Modal de nouvelle tâche */
+.new-task-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.new-task-modal {
+  background: linear-gradient(145deg, rgba(0, 20, 40, 0.98) 0%, rgba(0, 80, 80, 0.95) 100%);
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  transform: translate3d(0,0,0);
+  will-change: transform;
+}
+
+.new-task-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.new-task-modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.close-modal-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.3s ease;
+  border-radius: 0.5rem;
+}
+
+.close-modal-btn:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Styles pour la scrollbar personnalisée dans le modal */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 210, 255, 0.2);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 210, 255, 0.3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .custom-scrollbar {
+    scroll-behavior: auto;
+  }
+}
+
+/* Styles pour les tablettes */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Styles pour les mobiles */
+@media (max-width: 768px) {
+  .task-page-container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .task-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .new-task-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .search-filter-container {
+    flex-direction: column;
+  }
+  
+  .filter-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Styles pour les très petits écrans */
+@media (max-width: 480px) {
+  .header-icon {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .icon-inner {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .header-title {
+    font-size: 1.25rem;
+  }
+  
+  .task-stat-card .p-5 {
+    padding: 0.75rem;
+  }
+  
+  .stat-icon-container {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .stat-value {
+    font-size: 1.25rem;
+  }
+}

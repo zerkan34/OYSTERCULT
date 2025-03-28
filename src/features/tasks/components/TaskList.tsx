@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useStore } from '@/lib/store';
 import { 
   Calendar, 
@@ -32,6 +32,7 @@ import { TaskDetailModal } from './TaskDetailModal';
 import { AnimatePresence, motion } from 'framer-motion';
 import './TaskList.css';
 import './TaskCard.css';
+import './modals.css';
 
 // Définition du type Task (à placer dans un fichier types plus tard)
 interface Task {
@@ -158,7 +159,7 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const localExampleTasks: Task[] = [
+export const exampleTasks: Task[] = [
   {
     id: '1',
     title: 'Nettoyage des poches d\'huîtres',
@@ -249,13 +250,18 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
   const [delayModalOpen, setDelayModalOpen] = useState(false);
   const [currentComment, setCurrentComment] = useState('');
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  const [isResponsive, setIsResponsive] = useState(false);
+  const [taskCardRefs, setTaskCardRefs] = useState<{ [key: string]: React.RefObject<HTMLDivElement> }>({});
   const [delayReason, setDelayReason] = useState('');
   const [delayDuration, setDelayDuration] = useState('');
   const [showPerformanceIndicator, setShowPerformanceIndicator] = useState(true);
+  const [taskPosition, setTaskPosition] = useState({ top: 0, left: 0 });
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   
   // Utilisation des tâches d'exemple au lieu du store
   // const { tasks } = useStore();
-  const [tasks] = useState<Task[]>(localExampleTasks);
+  const [tasks, setTasks] = useState<Task[]>(exampleTasks);
   
   // Filtrer les tâches en fonction de la recherche
   const filteredTasks = useMemo(() => {
@@ -335,13 +341,65 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
     });
   };
 
-  const handleEditClick = (task: Task) => {
+  // Fonction pour gérer le clic sur le bouton d'édition
+  const handleEditClick = (task: Task, event?: React.MouseEvent) => {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    
+    // Définir immédiatement la tâche en cours d'édition pour ouvrir la modale
     setEditingTask(task);
+    
+    // Capture de la position du bouton Modifier pour positionner la modale
+    if (event && event.currentTarget) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      setTaskPosition({
+        top: rect.top + window.scrollY,
+        left: rect.left + window.scrollX
+      });
+    } else if (taskCardRefs[task.id] && taskCardRefs[task.id].current) {
+      // Fallback si l'événement n'est pas disponible
+      const rect = taskCardRefs[task.id].current!.getBoundingClientRect();
+      setTaskPosition({
+        top: rect.top + window.scrollY,
+        left: rect.left + window.scrollX
+      });
+    }
   };
 
   const handleDeleteClick = (taskId: string) => {
-    // Logique de suppression à implémenter
-    console.log(`Delete task: ${taskId}`);
+    // Afficher la confirmation avant de supprimer
+    setTaskToDelete(taskId);
+    setShowDeleteConfirmation(true);
+  };
+
+  const confirmDeleteTask = () => {
+    if (taskToDelete) {
+      // Supprimer la tâche de la liste des tâches
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskToDelete));
+      
+      // Si la tâche supprimée était sélectionnée, réinitialiser la sélection
+      if (selectedTask && selectedTask.id === taskToDelete) {
+        setSelectedTask(null);
+      }
+      
+      // Si la tâche supprimée était en cours d'édition, fermer la modale d'édition
+      if (editingTask && editingTask.id === taskToDelete) {
+        setEditingTask(null);
+      }
+      
+      console.log(`Task deleted: ${taskToDelete}`);
+      
+      // Réinitialiser l'état de confirmation
+      setShowDeleteConfirmation(false);
+      setTaskToDelete(null);
+    }
+  };
+
+  const cancelDeleteTask = () => {
+    setShowDeleteConfirmation(false);
+    setTaskToDelete(null);
   };
 
   const handleStatusUpdate = (taskId: string, newStatus: string) => {
@@ -349,8 +407,11 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
     console.log(`Update task ${taskId} status to ${newStatus}`);
   };
 
-  const openTaskDetails = (task: Task) => {
-    setSelectedTask(task);
+  const handleTaskClick = (task: Task) => {
+    if (isResponsive) {
+      setCurrentTaskId(task.id);
+    }
+    // setSelectedTask(task);
   };
 
   // Fonction pour formater une date
@@ -376,6 +437,30 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
     setDelayModalOpen(true);
   };
 
+  const handleCloseModal = (e: React.MouseEvent | null, setter: React.Dispatch<React.SetStateAction<boolean>> | React.Dispatch<React.SetStateAction<Task | null>>) => {
+    if (e) e.stopPropagation();
+    if (typeof setter === 'function') {
+      if (setter === setSelectedTask || setter === setEditingTask) {
+        setter(null);
+      } else {
+        setter(false as never);
+      }
+    }
+  };
+
+  const handleCloseEditModal = (e: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    setEditingTask(null);
+  };
+
+  const handleModalContentClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
   const handleSubmitComment = () => {
     if (currentTaskId && currentComment) {
       console.log(`Commentaire ajouté pour la tâche ${currentTaskId}:`, currentComment);
@@ -398,8 +483,41 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
     }
   };
 
+  // Initialiser les refs pour chaque carte de tâche
+  useEffect(() => {
+    const refs: { [key: string]: React.RefObject<HTMLDivElement> } = {};
+    filteredTasks.forEach(task => {
+      refs[task.id] = React.createRef<HTMLDivElement>();
+    });
+    setTaskCardRefs(refs);
+  }, [filteredTasks]);
+
+  // Détecter si l'écran est en mode responsive
+  useEffect(() => {
+    const checkResponsive = () => {
+      setIsResponsive(window.innerWidth <= 768);
+    };
+    
+    checkResponsive();
+    window.addEventListener('resize', checkResponsive);
+    
+    return () => {
+      window.removeEventListener('resize', checkResponsive);
+    };
+  }, []);
+
+  // Condition pour afficher les modales normales ou responsives
+  const shouldShowNormalModals = !isResponsive;
+
+  // Fonction pour calculer la position optimale de la modale
+  const calculateModalPosition = (position: { top: number, left: number }) => {
+    // Dans notre cas, les positions sont maintenant gérées par CSS
+    // Cette fonction est maintenue pour la compatibilité avec le code existant
+    return { top: 0, left: 0 };
+  };
+
   return (
-    <div className="task-list">
+    <div className={`task-list ${isResponsive ? 'isResponsive' : ''}`}>
       {filteredTasks.length === 0 ? (
         <div 
           className="empty-task-state"
@@ -439,8 +557,194 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
               <div
                 key={task.id}
                 className="task-card-wrapper"
+                ref={taskCardRefs[task.id]}
               >
-                <div className="task-card">
+                {/* Modales responsives à l'intérieur des cartes */}
+                {isResponsive && currentTaskId === task.id && (
+                  <>
+                    {/* Modale de commentaire en responsive */}
+                    {commentModalOpen && (
+                      <div 
+                        className="modal-responsive-container"
+                        onClick={(e) => handleCloseModal(e, setCommentModalOpen)}
+                      >
+                        <div 
+                          className="modal-responsive-content"
+                          onClick={handleModalContentClick}
+                        >
+                          <div className="modal-responsive-header">
+                            <h3>Ajouter un commentaire</h3>
+                            <button 
+                              onClick={(e) => handleCloseModal(e, setCommentModalOpen)} 
+                              className="modal-responsive-close"
+                            >
+                              <X size={20} />
+                            </button>
+                          </div>
+                          
+                          <div className="p-4">
+                            <textarea
+                              value={currentComment}
+                              onChange={(e) => setCurrentComment(e.target.value)}
+                              className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white resize-none h-32"
+                              placeholder="Écrivez votre commentaire ici..."
+                            />
+                            
+                            <div className="flex justify-end mt-4">
+                              <button 
+                                onClick={(e) => handleCloseModal(e, setCommentModalOpen)} 
+                                className="px-4 py-2 text-white/80 hover:text-white mr-2"
+                              >
+                                Annuler
+                              </button>
+                              <button 
+                                onClick={handleSubmitComment} 
+                                className="px-4 py-2 bg-brand-teal text-white rounded-lg hover:bg-brand-teal/90 disabled:opacity-50"
+                                disabled={!currentComment.trim()}
+                              >
+                                Envoyer
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Modale de retard en responsive */}
+                    {delayModalOpen && (
+                      <div 
+                        className="modal-responsive-container"
+                        onClick={(e) => handleCloseModal(e, setDelayModalOpen)}
+                      >
+                        <div 
+                          className="modal-responsive-content"
+                          onClick={handleModalContentClick}
+                        >
+                          <div className="modal-responsive-header">
+                            <h3>Signaler un retard</h3>
+                            <button 
+                              onClick={(e) => handleCloseModal(e, setDelayModalOpen)} 
+                              className="modal-responsive-close"
+                            >
+                              <X size={20} />
+                            </button>
+                          </div>
+                          
+                          <div className="p-4">
+                            <div className="mb-4">
+                              <label className="block text-white mb-2">Raison du retard</label>
+                              <textarea
+                                value={delayReason}
+                                onChange={(e) => setDelayReason(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white resize-none h-20"
+                                placeholder="Expliquez la raison du retard..."
+                              />
+                            </div>
+                            
+                            <div className="mb-4">
+                              <label className="block text-white mb-2">Durée estimée du retard</label>
+                              <input
+                                type="text"
+                                value={delayDuration}
+                                onChange={(e) => setDelayDuration(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white"
+                                placeholder="Exemple: 3 jours, 2 semaines, etc."
+                              />
+                            </div>
+                            
+                            <div className="flex justify-end mt-4">
+                              <button 
+                                onClick={(e) => handleCloseModal(e, setDelayModalOpen)} 
+                                className="px-4 py-2 text-white/80 hover:text-white mr-2"
+                              >
+                                Annuler
+                              </button>
+                              <button 
+                                onClick={handleSubmitDelay} 
+                                className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 disabled:opacity-50"
+                                disabled={!delayReason.trim()}
+                              >
+                                Signaler
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Modale de détail de tâche en responsive */}
+                    {/* Commenté temporairement
+                    {selectedTask && selectedTask.id === task.id && (
+                      <div 
+                        className="modal-responsive-container"
+                        onClick={(e) => handleCloseModal(e, setSelectedTask)}
+                      >
+                        <div 
+                          className="modal-responsive-content"
+                          onClick={handleModalContentClick}
+                        >
+                          <div className="modal-responsive-header">
+                            <h3>Détails de la tâche</h3>
+                            <button 
+                              onClick={(e) => handleCloseModal(e, setSelectedTask)} 
+                              className="modal-responsive-close"
+                            >
+                              <X size={20} />
+                            </button>
+                          </div>
+                          
+                          <div className="p-4">
+                            <TaskDetailModal 
+                              task={selectedTask}
+                              onClose={() => handleCloseModal(null, setSelectedTask)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    */}
+                    
+                    <AnimatePresence>
+                      {editingTask && editingTask.id === task.id && (
+                        <motion.div 
+                          className="modal-responsive-container edit-modal-responsive"
+                          onClick={handleCloseEditModal}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                        >
+                          <motion.div 
+                            className="modal-responsive-content edit-modal-responsive-content"
+                            onClick={handleModalContentClick}
+                            variants={modalVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                          >
+                            <div className="modal-responsive-header">
+                              <h3>Modifier la tâche</h3>
+                              <button 
+                                onClick={handleCloseEditModal} 
+                                className="modal-responsive-close"
+                              >
+                                <X size={20} />
+                              </button>
+                            </div>
+                            
+                            <div className="p-4">
+                              <TaskForm 
+                                onClose={handleCloseEditModal} 
+                                task={editingTask}
+                              />
+                            </div>
+                          </motion.div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </>
+                )}
+                
+                <div className="task-card" onClick={() => handleTaskClick(task)}>
                   {/* En-tête de la carte avec icône de priorité */}
                   <div className={`task-card-header ${priorityStyles[priority].gradientClass}`}>
                     <div className="task-header-content">
@@ -475,16 +779,15 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
                         </button>
                         
                         <button 
-                          className="delay-btn p-1.5 rounded-full hover:bg-white/10 transition-colors flex items-center mr-1"
+                          className="delay-btn icon-only p-1.5 rounded-full hover:bg-white/10 transition-colors flex items-center mr-1"
                           onClick={(e) => handleOpenDelayModal(task.id, e)}
                           aria-label="Signaler un retard"
                           title="Signaler un retard"
                         >
                           <AlertCircle 
                             size={16} 
-                            className="text-amber-400 mr-1" 
+                            className="text-amber-400" 
                           />
-                          <span className="text-xs">Signaler un retard</span>
                         </button>
                         
                         <button 
@@ -568,33 +871,56 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
                         )}
                       </div>
                       
-                      <div className="task-actions">
-                        <button 
-                          className="delay-btn p-1.5 rounded-full hover:bg-white/10 transition-colors flex items-center mr-1"
-                          onClick={(e) => handleOpenDelayModal(task.id, e)}
-                          aria-label="Signaler un retard"
-                          title="Signaler un retard"
-                        >
-                          <AlertCircle 
-                            size={16} 
-                            className="text-amber-400 mr-1" 
-                          />
-                          <span className="text-xs">Signaler un retard</span>
-                        </button>
-                        <button className="task-action-btn edit" onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditClick(task);
-                        }}>
-                          <Edit size={14} />
-                          <span>Modifier</span>
-                        </button>
-                        <button className="task-action-btn delete" onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteClick(task.id);
-                        }}>
-                          <Trash2 size={14} />
-                          <span>Supprimer</span>
-                        </button>
+                      <div className="task-actions flex flex-col gap-2 w-full">
+                        <div className="flex justify-between w-full gap-2">
+                          <button 
+                            className="delay-btn comment-btn p-1.5 rounded-md hover:bg-white/10 transition-colors flex items-center justify-center w-1/2"
+                            onClick={(e) => handleOpenCommentModal(task.id, e)}
+                            aria-label="Commenter"
+                            title="Commenter"
+                          >
+                            <MessageSquare 
+                              size={16} 
+                              className="text-blue-400 mr-2" 
+                            />
+                            <span className="text-s">Commenter</span>
+                          </button>
+                          <button 
+                            className="delay-btn p-1.5 rounded-md hover:bg-white/10 transition-colors flex items-center justify-center w-1/2"
+                            onClick={(e) => handleOpenDelayModal(task.id, e)}
+                            aria-label="Signaler un retard"
+                            title="Signaler un retard"
+                          >
+                            <AlertCircle 
+                              size={16} 
+                              className="text-amber-400 mr-2" 
+                            />
+                            <span className="text-s">Signaler un retard</span>
+                          </button>
+                        </div>
+                        <div className="flex justify-between w-full gap-2">
+                          <button 
+                            className="task-action-btn edit w-1/2" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              handleEditClick(task, e);
+                            }}
+                          >
+                            <Edit size={14} />
+                            <span>Modifier</span>
+                          </button>
+                          <button 
+                            className="task-action-btn delete w-1/2" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(task.id);
+                            }}
+                          >
+                            <Trash2 size={14} />
+                            <span>Supprimer</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                     
@@ -645,17 +971,18 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
       
       {/* Modal de détails de tâche */}
       <AnimatePresence>
-        {selectedTask && (
+        {/* Commenté temporairement
+        {selectedTask && shouldShowNormalModals && (
           <motion.div 
-            className="modal-overlay"
+            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 motion-div-overlay task-list-container-modal"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setSelectedTask(null)}
+            onClick={(e) => handleCloseModal(e, setSelectedTask)}
           >
             <motion.div 
               className="modal-content"
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
               variants={modalVariants}
               initial="hidden"
               animate="visible"
@@ -663,53 +990,71 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
             >
               <TaskDetailModal
                 task={selectedTask}
-                onClose={() => setSelectedTask(null)}
+                onClose={() => handleCloseModal(null, setSelectedTask)}
               />
+            </motion.div>
+          </motion.div>
+        )}
+        */}
+      </AnimatePresence>
+      
+      {/* Formulaire d'édition */}
+      <AnimatePresence>
+        {editingTask && shouldShowNormalModals && (
+          <motion.div 
+            className="fixed inset-0 bg-black/70 z-50 motion-div-overlay task-list-container-modal edit-task-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={(e) => handleCloseModal(e, setEditingTask)}
+          >
+            <motion.div 
+              className="p-4 sm:p-6 rounded-lg max-w-2xl w-full mx-2 sm:mx-4 overflow-hidden border border-white/10 border-t-white/20 border-l-white/20 edit-modal-content task-list-container-modal-content"
+              style={{
+                background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
+                backdropFilter: "blur(10px)",
+                boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 150, 255, 0.1) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
+              }}
+              onClick={handleModalContentClick}
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              {/* Effet de contour lumineux */}
+              <div className="absolute -inset-[1px] bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-lg blur-lg opacity-70 pointer-events-none"></div>
+              
+              <div className="relative">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-white text-lg font-medium">Modifier la tâche</h3>
+                  <button onClick={() => handleCloseModal(null, setEditingTask)} className="text-white/60 hover:text-white min-w-[44px] min-h-[44px] p-2 flex items-center justify-center">
+                    <X size={20} />
+                  </button>
+                </div>
+                <TaskForm 
+                  onClose={() => handleCloseModal(null, setEditingTask)} 
+                  task={editingTask}
+                />
+              </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
       
-      {/* Formulaire d'édition */}
-      {editingTask && (
-        <motion.div 
-          className="modal-overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setEditingTask(null)}
-        >
-          <motion.div 
-            className="modal-content"
-            onClick={e => e.stopPropagation()}
-            variants={modalVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            <TaskForm 
-              onClose={() => setEditingTask(null)} 
-              task={editingTask}
-            />
-          </motion.div>
-        </motion.div>
-      )}
-      
       {/* Modal pour ajouter un commentaire */}
-      {commentModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      {commentModalOpen && shouldShowNormalModals && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 motion-div-overlay task-list-container-modal" onClick={() => handleCloseModal(null, setCommentModalOpen)}>
           <div 
             className="border border-white/10 rounded-lg p-4 w-full max-w-md mx-4"
             style={{ 
-              background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
-              WebkitBackdropFilter: "blur(20px)",
-              backdropFilter: "blur(20px)",
+              background: "linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%)",
               boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset"
             }}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-white text-lg font-medium">Ajouter un commentaire</h3>
-              <button onClick={() => setCommentModalOpen(false)} className="text-white/60 hover:text-white">
+              <button onClick={() => handleCloseModal(null, setCommentModalOpen)} className="text-white/60 hover:text-white">
                 <X size={20} />
               </button>
             </div>
@@ -723,7 +1068,7 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
             
             <div className="flex justify-end mt-4">
               <button 
-                onClick={() => setCommentModalOpen(false)} 
+                onClick={() => handleCloseModal(null, setCommentModalOpen)} 
                 className="px-4 py-2 text-white/80 hover:text-white mr-2"
               >
                 Annuler
@@ -741,20 +1086,19 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
       )}
       
       {/* Modal pour signaler un retard */}
-      {delayModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      {delayModalOpen && shouldShowNormalModals && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 motion-div-overlay task-list-container-modal" onClick={() => handleCloseModal(null, setDelayModalOpen)}>
           <div 
             className="border border-white/10 rounded-lg p-4 w-full max-w-md mx-4"
             style={{ 
-              background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
-              WebkitBackdropFilter: "blur(20px)",
-              backdropFilter: "blur(20px)",
+              background: "linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%)",
               boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset"
             }}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-white text-lg font-medium">Signaler un retard</h3>
-              <button onClick={() => setDelayModalOpen(false)} className="text-white/60 hover:text-white">
+              <button onClick={() => handleCloseModal(null, setDelayModalOpen)} className="text-white/60 hover:text-white">
                 <X size={20} />
               </button>
             </div>
@@ -782,7 +1126,7 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
             
             <div className="flex justify-end mt-4">
               <button 
-                onClick={() => setDelayModalOpen(false)} 
+                onClick={() => handleCloseModal(null, setDelayModalOpen)} 
                 className="px-4 py-2 text-white/80 hover:text-white mr-2"
               >
                 Annuler
@@ -793,6 +1137,46 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
                 disabled={!delayReason.trim()}
               >
                 Signaler
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Modal de confirmation de suppression */}
+      {showDeleteConfirmation && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 motion-div-overlay task-list-container-modal" onClick={cancelDeleteTask}>
+          <div 
+            className="border border-white/10 rounded-lg p-4 w-full max-w-md mx-4"
+            style={{ 
+              background: "linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%)",
+              boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white text-lg font-medium">Confirmer la suppression</h3>
+              <button onClick={cancelDeleteTask} className="text-white/60 hover:text-white">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="mb-4 text-white">
+              Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est irréversible.
+            </div>
+            
+            <div className="flex justify-end mt-4">
+              <button 
+                onClick={cancelDeleteTask} 
+                className="px-4 py-2 text-white/80 hover:text-white mr-2"
+              >
+                Annuler
+              </button>
+              <button 
+                onClick={confirmDeleteTask} 
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+              >
+                Supprimer
               </button>
             </div>
           </div>

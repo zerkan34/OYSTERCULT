@@ -53,16 +53,171 @@
       .modernoir-text {
         font-family: 'TT Modernoir', sans-serif !important;
       }
+      
+      /* Styles pour l'écran de chargement initial */
+      #loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        background: linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%);
+      }
+      
+      #loading-logo {
+        margin-bottom: 2rem;
+        position: relative;
+      }
+      
+      #loading-logo .logo-text {
+        font-family: 'TT Modernoir', sans-serif;
+        font-weight: 400;
+        letter-spacing: 0.04em;
+        line-height: 0.9;
+        color: white;
+        font-size: 3rem;
+        text-shadow: rgba(255,255,255,0.3) 0px 0px 20px, rgba(255,255,255,0.1) 0px 0px 40px;
+        filter: drop-shadow(0px 0px 30px rgba(255,255,255,0.2));
+      }
+      
+      #loading-logo .logo-text:last-child {
+        transform: translate3d(3.75rem, -0.3rem, 0);
+      }
+      
+      #loading-logo .logo-waves {
+        position: relative;
+        width: 4rem;
+        height: 4rem;
+        margin-top: 0.75rem;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      #loading-logo .logo-glow {
+        position: absolute;
+        inset: 0;
+        opacity: 0.8;
+        background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 70%);
+        filter: blur(8px);
+      }
+      
+      #loading-progress {
+        width: 16rem;
+        height: 2px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 9999px;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      
+      #loading-progress-bar {
+        height: 100%;
+        background-color: rgb(56, 189, 248);
+        border-radius: 9999px;
+        animation: loading-progress 2s ease-in-out infinite alternate;
+      }
+      
+      #loading-message {
+        margin-top: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.875rem;
+        font-weight: 300;
+        letter-spacing: 0.05em;
+      }
+      
+      @keyframes loading-progress {
+        0% {
+          width: 0%;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+      
+      /* Animation du logo */
+      .logo-wave {
+        stroke: white;
+        stroke-width: 5;
+        stroke-linecap: round;
+        fill: none;
+        stroke-dasharray: 100;
+        stroke-dashoffset: 100;
+        animation: logo-wave-animation 2s forwards;
+      }
+      
+      .logo-wave-1 {
+        animation-delay: 0.2s;
+      }
+      
+      .logo-wave-2 {
+        animation-delay: 0.4s;
+      }
+      
+      .logo-wave-3 {
+        animation-delay: 0.6s;
+      }
+      
+      .logo-wave-4 {
+        animation-delay: 0.8s;
+      }
+      
+      @keyframes logo-wave-animation {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
     </style>
     <title>OysterCult</title>
   </head>
   <body>
     <div id="root">
-      <h2>Chargement de OysterCult...</h2>
+      <div id="loading-screen">
+        <div id="loading-logo">
+          <div class="logo-text">O Y S T E R</div>
+          <div class="logo-text">C&nbsp;&nbsp;U&nbsp;&nbsp;L&nbsp;&nbsp;T</div>
+          <div class="logo-waves">
+            <div class="logo-glow"></div>
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path class="logo-wave logo-wave-1" d="M15 20 Q25 12, 35 20 T55 20 T75 20 T95 20" />
+              <path class="logo-wave logo-wave-2" d="M15 40 Q25 32, 35 40 T55 40 T75 40 T95 40" />
+              <path class="logo-wave logo-wave-3" d="M15 60 Q25 52, 35 60 T55 60 T75 60 T95 60" />
+              <path class="logo-wave logo-wave-4" d="M15 80 Q25 72, 35 80 T55 80 T75 80 T95 80" />
+            </svg>
+          </div>
+        </div>
+        <div id="loading-progress">
+          <div id="loading-progress-bar"></div>
+        </div>
+        <div id="loading-message">Initialisation...</div>
+      </div>
       <noscript>
         <p>Vous devez activer JavaScript pour utiliser cette application.</p>
       </noscript>
     </div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Script pour masquer l'écran de chargement une fois que l'application est chargée
+      window.addEventListener('load', function() {
+        // Attendre un peu pour s'assurer que l'application React est rendue
+        setTimeout(function() {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            loadingScreen.style.transition = 'opacity 0.5s ease';
+            
+            // Supprimer l'élément après la transition
+            setTimeout(function() {
+              loadingScreen.remove();
+            }, 500);
+          }
+        }, 1000);
+      });
+    </script>
   </body>
 </html>
