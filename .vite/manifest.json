@@ -1,6 +1,6 @@
 {
   "_browser-BOd3kSkT.js": {
-    "file": "assets/browser-BOd3kSkT.js",
+    "file": "assets/js/browser-BOd3kSkT.js",
     "name": "browser",
     "isDynamicEntry": true,
     "imports": [
@@ -8,11 +8,11 @@
     ]
   },
   "_vendor-CXjY3Ao_.js": {
-    "file": "assets/vendor-CXjY3Ao_.js",
+    "file": "assets/js/vendor-CXjY3Ao_.js",
     "name": "vendor"
   },
   "index.html": {
-    "file": "assets/index-Bp7F64KG.js",
+    "file": "assets/js/index-CfMAj3iW.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -27,11 +27,11 @@
       "node_modules/qr-scanner/qr-scanner-worker.min.js"
     ],
     "css": [
-      "assets/index-LoD755o4.css"
+      "assets/css/index-iiQHs3V9.css"
     ]
   },
   "node_modules/canvg/lib/index.es.js": {
-    "file": "assets/index.es-D3N9rOBl.js",
+    "file": "assets/js/index.es-DAc72Jye.js",
     "name": "index.es",
     "src": "node_modules/canvg/lib/index.es.js",
     "isDynamicEntry": true,
@@ -41,19 +41,19 @@
     ]
   },
   "node_modules/dompurify/dist/purify.es.js": {
-    "file": "assets/purify.es-C_uT9hQ1.js",
+    "file": "assets/js/purify.es-C_uT9hQ1.js",
     "name": "purify.es",
     "src": "node_modules/dompurify/dist/purify.es.js",
     "isDynamicEntry": true
   },
   "node_modules/html2canvas/dist/html2canvas.esm.js": {
-    "file": "assets/html2canvas.esm-CBrSDip1.js",
+    "file": "assets/js/html2canvas.esm-CBrSDip1.js",
     "name": "html2canvas.esm",
     "src": "node_modules/html2canvas/dist/html2canvas.esm.js",
     "isDynamicEntry": true
   },
   "node_modules/qr-scanner/qr-scanner-worker.min.js": {
-    "file": "assets/qr-scanner-worker.min-D85Z9gVD.js",
+    "file": "assets/js/qr-scanner-worker.min-D85Z9gVD.js",
     "name": "qr-scanner-worker.min",
     "src": "node_modules/qr-scanner/qr-scanner-worker.min.js",
     "isDynamicEntry": true
