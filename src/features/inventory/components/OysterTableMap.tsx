@@ -311,7 +311,7 @@ const TableCellsDisplay = ({ table, onCellClick }: { table: Table; onCellClick?:
   return (
     <div className="space-y-1">
       {[0, 1].map((row) => (
-        <div key={row} className="grid grid-cols-10 gap-1 w-full bg-[#22c55e]/10">
+        <div key={row} className="grid grid-cols-10 gap-1 w-full bg-cyan-950/50">
           {Array.from({ length: 10 }, (_, i) => {
             const cellIndex = row * 10 + i;
             const cell = table.cells[cellIndex];
@@ -319,10 +319,10 @@ const TableCellsDisplay = ({ table, onCellClick }: { table: Table; onCellClick?:
               <div
                 key={i}
                 onClick={() => onCellClick?.(cellIndex)}
-                className={`w-full h-7 rounded-sm border border-white/10 relative overflow-hidden cursor-pointer hover:border-cyan-400/30 transition-colors`}
+                className={`w-full h-7 rounded-[4px] border border-white/10 relative overflow-hidden cursor-pointer hover:border-cyan-400/30 transition-colors`}
               >
                 <div
-                  className="absolute top-0 right-0 bottom-0 bg-[#22c55e]"
+                  className="absolute top-0 right-0 bottom-0 bg-cyan-500/40"
                   style={{ 
                     width: typeof cell?.filled === 'number' 
                       ? `${cell.filled * 100}%` 
