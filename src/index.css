@@ -562,6 +562,20 @@ html, body {
   }
 }
 
+/* Assurer une marge inférieure sur toutes les pages */
+.outlet-container {
+  margin-bottom: 40px !important;
+  padding-bottom: 40px !important;
+}
+
+/* Ajustement pour les appareils mobiles avec barre de navigation fixe */
+@media (max-width: 768px) {
+  .outlet-container {
+    margin-bottom: 80px !important; /* Plus grande marge pour les mobiles avec barre de navigation */
+    padding-bottom: 80px !important;
+  }
+}
+
 @supports(padding: max(0px)) {
   body {
     padding-left: env(safe-area-inset-left);

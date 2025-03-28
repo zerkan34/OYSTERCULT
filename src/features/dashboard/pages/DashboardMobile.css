@@ -25,9 +25,8 @@
     margin: 0;
     padding: 0;
     width: 100%;
-    overflow-x: hidden;
     height: 100%;
-    position: fixed;
+    overflow: hidden;
   }
 
   #root {
@@ -38,10 +37,12 @@
 
   /* Container de statistiques avec défilement interne */
   .stats-container {
-    height: 70vh;
+    height: calc(100vh - 80px); /* Ajusté pour laisser de l'espace pour la barre de navigation */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 60px; /* Espace pour la barre fixe */
+    padding-bottom: 80px; /* Espace pour la barre fixe */
+    position: relative;
+    z-index: 1;
   }
 }
 

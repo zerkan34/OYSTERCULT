@@ -14,7 +14,7 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  z-index: 1000;
+  z-index: 1001;
   box-shadow: rgba(0, 0, 0, 0.45) 0px 10px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(0, 210, 200, 0.25) 0px 0px 15px inset;
   height: auto; /* Hauteur adaptative au lieu de fixe */
   transform: translateZ(0); /* Force GPU acceleration */

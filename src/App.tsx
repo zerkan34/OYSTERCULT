@@ -73,6 +73,7 @@ function MainLayout() {
   const [showEmergency, setShowEmergency] = useState(false);
   const previousPageRef = useRef<string | null>(null);
   const [isIOS, setIsIOS] = useState(false);
+  const [isResponsive, setIsResponsive] = useState(false);
   const { totalUnreadCount, markAsRead } = useMessages();
   
   useEffect(() => {
@@ -83,6 +84,16 @@ function MainLayout() {
     if (isIOSDevice) {
       document.body.classList.add('ios-device');
     }
+  }, []);
+
+  useEffect(() => {
+    const checkResponsive = () => {
+      setIsResponsive(window.innerWidth <= 768);
+    };
+    
+    checkResponsive();
+    window.addEventListener('resize', checkResponsive);
+    return () => window.removeEventListener('resize', checkResponsive);
   }, []);
 
   useEffect(() => {
@@ -160,12 +171,19 @@ function MainLayout() {
             inset: "0",
             width: "100%",
             height: "100%",
-            overflow: "auto"
+            overflow: isResponsive && location.pathname.endsWith('/dashboard') ? "hidden" : "auto"
           }}
         >
-          <main className={`flex-1 p-6 overflow-x-hidden ${location.pathname.endsWith('/dashboard') ? 'h-full' : ''}`}>
-            <div className="max-w-7xl mx-auto h-full">
+          <main className={`flex-1 p-6 ${
+            location.pathname.endsWith('/dashboard') 
+              ? 'h-full' 
+              : 'h-[calc(100%-80px)]'
+          } ${isResponsive && location.pathname.endsWith('/dashboard') ? 'overflow-hidden' : ''}`}>
+            <div className={`max-w-7xl mx-auto h-full outlet-container ${
+              location.pathname.includes('/tasks') && !isResponsive ? 'mt-[50px]' : ''
+            }`} style={{ minHeight: 'calc(100% - 40px)' }}>
               <Outlet />
+              <div style={{ height: '40px' }}></div>
             </div>
           </main>
         </div>
@@ -197,7 +215,7 @@ function AppContent() {
   const isDirectSurveillanceAccess = location.pathname === '/surveillance/simple';
 
   return (
-    <div className="min-h-screen w-screen h-screen fixed inset-0 overflow-auto">
+    <div className="min-h-screen w-screen h-screen fixed inset-0 overflow-hidden">
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/surveillance/simple" element={<SurveillanceSimplePage />} />
