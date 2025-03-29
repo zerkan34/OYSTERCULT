@@ -132,7 +132,7 @@ export const routes = [
     element: <SuppliersPage />
   },
   {
-    path: '/suppliers/catalog',
+    path: '/suppliers/:supplierId/catalog',
     element: <SupplierCatalogPage />
   },
   {

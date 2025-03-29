@@ -67,7 +67,7 @@ export function TableDetailModal({ table, onClose }: TableDetailModalProps) {
   return (
     <motion.div
       {...modalAnimation.overlay}
-      className="fixed inset-0 flex items-center justify-center p-4 bg-black/50"
+      className="absolute inset-0 flex items-center justify-center p-4 bg-black/50"
       style={{ zIndex: 100 }}
       onClick={onClose}
     >

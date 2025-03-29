@@ -262,7 +262,24 @@ export function DashboardPage() {
       </motion.div>
 
       {/* Section principale avec 3 colonnes en grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full relative">
+        {/* Les modales sont maintenant rendues dans cette section grid mais conservent leur positionnement absolu */}
+        <div className="col-span-full">
+          <AnimatePresence>
+            {selectedTable && (
+              <TableDetailModal
+                table={selectedTable}
+                onClose={() => setSelectedTable(null)}
+              />
+            )}
+            {selectedPool && (
+              <PoolDetailModal
+                pool={selectedPool}
+                onClose={() => setSelectedPool(null)}
+              />
+            )}
+          </AnimatePresence>
+        </div>
         
         {/* Colonne 1: Statistiques */}
         <motion.div 
@@ -465,22 +482,6 @@ export function DashboardPage() {
           </div>
         </motion.div>
       </div>
-
-      {/* Modaux avec design moderne */}
-      <AnimatePresence>
-        {selectedTable && (
-          <TableDetailModal
-            table={selectedTable}
-            onClose={() => setSelectedTable(null)}
-          />
-        )}
-        {selectedPool && (
-          <PoolDetailModal
-            pool={selectedPool}
-            onClose={() => setSelectedPool(null)}
-          />
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }
