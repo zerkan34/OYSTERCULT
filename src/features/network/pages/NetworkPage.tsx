@@ -40,6 +40,7 @@ export function NetworkPage({ messageView = false, activeTab: initialActiveTab }
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const { unreadCount } = useStore();
 
   useEffect(() => {
@@ -61,6 +62,17 @@ export function NetworkPage({ messageView = false, activeTab: initialActiveTab }
       setActiveTab('messages');
     }
   }, [location.pathname, activeTab]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   return (
     <div className="p-6 space-y-6">
@@ -89,13 +101,15 @@ export function NetworkPage({ messageView = false, activeTab: initialActiveTab }
             <UserPlus size={20} />
             Ajouter un contact
           </button>
-          <button
-            onClick={() => setShowNewPost(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
-          >
-            <Plus size={20} />
-            Nouvelle publication
-          </button>
+          {activeTab === 'feed' && (
+            <button
+              onClick={() => setShowNewPost(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
+            >
+              <Plus size={20} />
+              Nouvelle publication
+            </button>
+          )}
         </div>
       </div>
 
