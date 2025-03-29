@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface CartItem {
   productId: string;
@@ -24,7 +24,7 @@ export function useCart() {
     }
   }, []);
 
-  const addToCart = (productId: string, quantity: number) => {
+  const addToCart = useCallback((productId: string, quantity: number) => {
     const newCart = [...cartItems];
     const existingItem = newCart.find(item => item.productId === productId);
     
@@ -36,9 +36,9 @@ export function useCart() {
     
     setCartItems(newCart);
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newCart));
-  };
+  }, [cartItems]);
 
-  const removeFromCart = (productId: string) => {
+  const removeFromCart = useCallback((productId: string) => {
     const newCart = cartItems.filter(item => item.productId !== productId);
     setCartItems(newCart);
     
@@ -47,16 +47,16 @@ export function useCart() {
     } else {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newCart));
     }
-  };
+  }, [cartItems]);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCartItems([]);
     localStorage.removeItem(CART_STORAGE_KEY);
-  };
+  }, []);
 
-  const toggleCartModal = () => {
+  const toggleCartModal = useCallback(() => {
     setIsCartModalOpen(!isCartModalOpen);
-  };
+  }, [isCartModalOpen]);
 
   return {
     cartItems,
@@ -64,6 +64,6 @@ export function useCart() {
     removeFromCart,
     clearCart,
     isCartModalOpen,
-    setIsCartModalOpen: toggleCartModal,
+    setIsCartModalOpen,
   };
 }

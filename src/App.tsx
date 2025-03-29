@@ -247,7 +247,7 @@ function AppContent() {
             <Route path="/shop" element={<ShopPage />} />
             <Route path="/suppliers" element={<SuppliersPage />} />
             <Route path="/digital-vault" element={<DigitalVaultPage />} />
-            <Route path="/supplier/:id" element={<SupplierCatalogPage />} />
+            <Route path="/suppliers/:supplierId/catalog" element={<SupplierCatalogPage />} />
             <Route path="/suppliers/orders" element={<OrdersPage />} />
             <Route path="/surveillance" element={<SurveillancePage />} />
             <Route path="/analyses" element={<AnalysesPage />} />

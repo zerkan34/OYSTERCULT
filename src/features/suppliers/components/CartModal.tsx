@@ -17,8 +17,13 @@ interface CartModalProps {
 export function CartModal({ isOpen, onClose, items, products, onRemoveItem, onClearCart }: CartModalProps) {
   if (!isOpen) return null;
 
+  // Debugging logs
+  console.log("CartModal - items:", items);
+  console.log("CartModal - products:", products);
+
   const totalPrice = items.reduce((total, item) => {
     const product = products.find(p => p.id === item.productId);
+    console.log(`Item ${item.productId} - Found product:`, product);
     return total + (product ? product.price * item.quantity : 0);
   }, 0);
 

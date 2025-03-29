@@ -23,6 +23,8 @@ export function SuppliersPage() {
   };
 
   const handleViewCatalog = (id: string) => {
+    console.log('Bouton Catalogue cliqué, ID du fournisseur:', id);
+    console.log('Navigation vers:', `/suppliers/${id}/catalog`);
     navigate(`/suppliers/${id}/catalog`);
   };
 

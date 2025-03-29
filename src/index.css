@@ -89,6 +89,11 @@
   --mesh-opacity: 0.05;
 }
 
+/* Classe pour forcer la position de l'icône de recherche */
+.search-icon-fixed {
+  position: absolute !important;
+}
+
 /* Reset global pour garantir la largeur totale et éviter tous décalages */
 html, body {
   margin: 0;
