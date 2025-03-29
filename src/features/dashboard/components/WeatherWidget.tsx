@@ -193,7 +193,7 @@ export function WeatherWidget() {
         </div>
 
         {/* Desktop layout avec 4 widgets alignés */}
-        <div className="hidden md:flex md:flex-wrap md:justify-center md:gap-4 md:mb-6">
+        <div className="hidden md:grid md:grid-cols-4 md:gap-4 md:mb-6">
           <WeatherCard
             title="Température"
             icon={<ThermometerSun size={20} />}
@@ -312,11 +312,6 @@ export function WeatherWidget() {
               ))}
             </div>
           </div>
-          {/* Indicateur de défilement */}
-          <div className="absolute right-6 top-6 text-white/40 text-xs hidden md:flex items-center">
-            <span>Glisser </span>
-            <ChevronRight className="h-3 w-3 ml-1" />
-          </div>
         </div>
 
         {/* Prévisions des prochains jours */}
@@ -412,11 +407,6 @@ export function WeatherWidget() {
                 </div>
               </div>
             </div>
-          </div>
-          {/* Indicateur de défilement */}
-          <div className="absolute right-6 top-6 text-white/40 text-xs hidden md:flex items-center">
-            <span>Glisser </span>
-            <ChevronRight className="h-3 w-3 ml-1" />
           </div>
         </div>
 

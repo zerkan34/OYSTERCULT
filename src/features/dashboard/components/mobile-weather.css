@@ -208,7 +208,6 @@
 .forecast-scroll-container {
   display: flex;
   overflow-x: auto;
-  gap: 16px;
   padding: 8px 0;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox */
