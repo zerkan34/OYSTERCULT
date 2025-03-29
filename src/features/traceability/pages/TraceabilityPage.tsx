@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Shell, Filter, QrCode, Download, Package, Waves, FileText, Truck, MapPin, History, Thermometer, Droplets, AlertCircle, Edit2, Save, Eye, Search, X, Plus, ChevronDown, Calendar, Lock } from 'lucide-react';
+import { Shell, Filter, QrCode, Download, Package, Waves, FileText, Truck, MapPin, History, Thermometer, Droplets, AlertCircle, Edit2, Save, Eye, Search, X, Plus, ChevronDown, Calendar, Lock, Info } from 'lucide-react';
 import { Modal } from '../../../components/Modal';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -436,31 +436,58 @@ export function TraceabilityPage() {
     doc.text(`Période: ${new Date().toLocaleDateString('fr-FR')} - ${new Date().toLocaleDateString('fr-FR')}`, 14, 49);
     
     // Fonction helper pour créer l'en-tête d'un tableau
-    const createTableHeader = (headers: string[]) => {
+    const createTableHeader = (headers: string[], columnWidths: number[]) => {
       doc.setFillColor(10, 42, 64);
       doc.rect(10, yPosition, pageWidth - 20, 10, 'F');
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(10);
       
-      let xPosition = 14;
-      headers.forEach((header) => {
-        const columnWidth = (pageWidth - 28) / headers.length;
-        doc.text(header, xPosition, yPosition + 7);
+      let xPosition = 10;
+      headers.forEach((header, index) => {
+        const columnWidth = columnWidths[index];
+        doc.text(header, xPosition + (columnWidth / 2), yPosition + 7, { align: 'center' });
         xPosition += columnWidth;
       });
       
       yPosition += 10;
     };
 
+    // Vérifier si on a besoin d'une nouvelle page
+    const checkPageBreak = (rowsToAdd: number, rowHeight: number = 10) => {
+      const requiredSpace = rowsToAdd * rowHeight;
+      if (yPosition + requiredSpace > pageHeight - 20) {
+        doc.addPage();
+        
+        // Réinitialiser la position Y et ajouter l'en-tête de page
+        yPosition = 30;
+        
+        // Ajouter un en-tête de page
+        doc.setFillColor(10, 42, 64);
+        doc.rect(0, 0, pageWidth, 20, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(12);
+        doc.text('Rapport de Traçabilité OYSTER CULT (suite)', pageWidth/2, 13, { align: 'center' });
+        
+        return true;
+      }
+      return false;
+    };
+
     // Fonction pour exporter les données des lots
     const exportLots = () => {
       doc.setFontSize(14);
       doc.setTextColor(10, 42, 64);
-      doc.text('Lots en cours', 14, yPosition);
+      doc.text('Lots en cours', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
-      // En-têtes du tableau
-      createTableHeader(['ID', 'Nom', 'Emplacement', 'Stock', 'Status', 'Date']);
+      // Définir les largeurs des colonnes (sans la colonne ID)
+      const columnWidths = [(pageWidth - 20) * 0.25, (pageWidth - 20) * 0.25, (pageWidth - 20) * 0.20, (pageWidth - 20) * 0.15, (pageWidth - 20) * 0.15];
+      
+      // En-têtes du tableau (sans ID)
+      createTableHeader(['Nom', 'Emplacement', 'Stock', 'Status', 'Date'], columnWidths);
+      
+      // Vérifier si on a besoin d'une nouvelle page
+      checkPageBreak(mockLots.length);
       
       // Lignes du tableau
       mockLots.forEach((lot, index) => {
@@ -470,12 +497,26 @@ export function TraceabilityPage() {
           doc.rect(10, y, pageWidth - 20, 10, 'F');
         }
         doc.setTextColor(60, 60, 60);
-        doc.text(lot.id, 14, y + 7);
-        doc.text(lot.name, 30, y + 7);
-        doc.text(lot.location, 70, y + 7);
-        doc.text(`${lot.stock.quantity} ${lot.stock.unit}`, 120, y + 7);
-        doc.text(lot.status, 160, y + 7);
-        doc.text(lot.date, 190, y + 7);
+        
+        let xPosition = 10;
+        // Nom
+        doc.text(lot.name, xPosition + (columnWidths[0] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[0];
+        
+        // Emplacement
+        doc.text(lot.location, xPosition + (columnWidths[1] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[1];
+        
+        // Stock
+        doc.text(`${lot.stock.quantity} ${lot.stock.unit}`, xPosition + (columnWidths[2] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[2];
+        
+        // Status
+        doc.text(lot.status, xPosition + (columnWidths[3] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[3];
+        
+        // Date
+        doc.text(lot.date, xPosition + (columnWidths[4] / 2), y + 7, { align: 'center' });
       });
 
       yPosition += (mockLots.length * 10) + 15;
@@ -485,11 +526,17 @@ export function TraceabilityPage() {
     const exportBassins = () => {
       doc.setFontSize(14);
       doc.setTextColor(10, 42, 64);
-      doc.text('Bassins', 14, yPosition);
+      doc.text('Bassins', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
-      // En-têtes du tableau
-      createTableHeader(['ID', 'Nom', 'Emplacement', 'Stock', 'Occupation', 'Statut', 'Proch. Maintenance']);
+      // Définir les largeurs des colonnes (sans la colonne ID)
+      const columnWidths = [(pageWidth - 20) * 0.20, (pageWidth - 20) * 0.20, (pageWidth - 20) * 0.15, (pageWidth - 20) * 0.15, (pageWidth - 20) * 0.15, (pageWidth - 20) * 0.15];
+      
+      // En-têtes du tableau (sans ID)
+      createTableHeader(['Nom', 'Emplacement', 'Stock', 'Occupation', 'Statut', 'Proch. Maintenance'], columnWidths);
+      
+      // Vérifier si on a besoin d'une nouvelle page
+      checkPageBreak(mockBassins.length);
       
       // Lignes du tableau
       mockBassins.forEach((bassin, index) => {
@@ -499,13 +546,30 @@ export function TraceabilityPage() {
           doc.rect(10, y, pageWidth - 20, 10, 'F');
         }
         doc.setTextColor(60, 60, 60);
-        doc.text(bassin.id, 14, y + 7);
-        doc.text(bassin.name, 30, y + 7);
-        doc.text(bassin.location, 70, y + 7);
-        doc.text(`${bassin.stock.quantity} ${bassin.stock.unit}`, 120, y + 7);
-        doc.text(bassin.occupation, 160, y + 7);
-        doc.text(bassin.status, 190, y + 7);
-        doc.text(bassin.nextMaintenance, 230, y + 7);
+        
+        let xPosition = 10;
+        // Nom
+        doc.text(bassin.name, xPosition + (columnWidths[0] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[0];
+        
+        // Emplacement
+        doc.text(bassin.location, xPosition + (columnWidths[1] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[1];
+        
+        // Stock
+        doc.text(`${bassin.stock.quantity} ${bassin.stock.unit}`, xPosition + (columnWidths[2] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[2];
+        
+        // Occupation
+        doc.text(bassin.occupation, xPosition + (columnWidths[3] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[3];
+        
+        // Statut
+        doc.text(bassin.status, xPosition + (columnWidths[4] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[4];
+        
+        // Maintenance
+        doc.text(bassin.nextMaintenance, xPosition + (columnWidths[5] / 2), y + 7, { align: 'center' });
       });
 
       yPosition += (mockBassins.length * 10) + 15;
@@ -515,11 +579,17 @@ export function TraceabilityPage() {
     const exportStockage = () => {
       doc.setFontSize(14);
       doc.setTextColor(10, 42, 64);
-      doc.text('Emplacements de stockage', 14, yPosition);
+      doc.text('Emplacements de stockage', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
-      // En-têtes du tableau
-      createTableHeader(['ID', 'Nom', 'Emplacement', 'Température', 'Humidité', 'Statut']);
+      // Définir les largeurs des colonnes (sans la colonne ID)
+      const columnWidths = [(pageWidth - 20) * 0.25, (pageWidth - 20) * 0.25, (pageWidth - 20) * 0.20, (pageWidth - 20) * 0.15, (pageWidth - 20) * 0.15];
+      
+      // En-têtes du tableau (sans ID)
+      createTableHeader(['Nom', 'Emplacement', 'Température', 'Humidité', 'Statut'], columnWidths);
+      
+      // Vérifier si on a besoin d'une nouvelle page
+      checkPageBreak(mockStorage.length);
       
       // Lignes du tableau
       mockStorage.forEach((storage, index) => {
@@ -529,152 +599,218 @@ export function TraceabilityPage() {
           doc.rect(10, y, pageWidth - 20, 10, 'F');
         }
         doc.setTextColor(60, 60, 60);
-        doc.text(storage.id, 14, y + 7);
-        doc.text(storage.name, 30, y + 7);
-        doc.text(storage.location, 90, y + 7);
         
+        let xPosition = 10;
+        // Nom
+        doc.text(storage.name, xPosition + (columnWidths[0] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[0];
+        
+        // Emplacement
+        doc.text(storage.location, xPosition + (columnWidths[1] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[1];
+        
+        // Température
         const temperature = storage.stats.find(stat => stat.label === 'Température')?.value || 'N/A';
-        const humidite = storage.stats.find(stat => stat.label === 'Humidité')?.value || 'N/A';
+        doc.text(temperature, xPosition + (columnWidths[2] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[2];
         
-        doc.text(temperature, 170, y + 7);
-        doc.text(humidite, 210, y + 7);
-        doc.text(storage.status, 240, y + 7);
+        // Humidité
+        const humidite = storage.stats.find(stat => stat.label === 'Humidité')?.value || 'N/A';
+        doc.text(humidite, xPosition + (columnWidths[3] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[3];
+        
+        // Statut
+        doc.text(storage.status, xPosition + (columnWidths[4] / 2), y + 7, { align: 'center' });
       });
 
       yPosition += (mockStorage.length * 10) + 15;
 
       // Détails des produits stockés
+      doc.addPage();
+      yPosition = 30; // Position Y plus haute pour avoir plus d'espace
+
       doc.setFontSize(14);
       doc.setTextColor(10, 42, 64);
-      doc.text('Produits stockés', 14, yPosition);
+      doc.text('Produits stockés', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
+      // Définir les largeurs des colonnes
+      const productColumnWidths = [(pageWidth - 20) * 0.25, (pageWidth - 20) * 0.35, (pageWidth - 20) * 0.20, (pageWidth - 20) * 0.20];
+      
       // En-têtes du tableau
-      createTableHeader(['Emplacement', 'Produit', 'Quantité', 'DLC']);
+      createTableHeader(['Emplacement', 'Produit', 'Quantité', 'DLC'], productColumnWidths);
+      
+      // Calculer le nombre total de produits
+      let totalProducts = 0;
+      mockStorage.forEach(storage => {
+        totalProducts += storage.products.length;
+      });
+      
+      // Vérifier si on a besoin d'une nouvelle page
+      checkPageBreak(totalProducts);
       
       // Lignes du tableau avec tous les produits de tous les emplacements
       let rowCount = 0;
       mockStorage.forEach(storage => {
         storage.products.forEach((product, pIndex) => {
-          const y = yPosition + (rowCount * 10);
+          // Si nous atteignons la limite de la page, créer une nouvelle page
+          if (rowCount > 0 && rowCount % 25 === 0) {
+            doc.addPage();
+            yPosition = 30;
+            createTableHeader(['Emplacement', 'Produit', 'Quantité', 'DLC'], productColumnWidths);
+          }
+          
+          const y = yPosition + (rowCount % 25) * 10;
           if (rowCount % 2 === 0) {
             doc.setFillColor(240, 240, 240);
             doc.rect(10, y, pageWidth - 20, 10, 'F');
           }
           doc.setTextColor(60, 60, 60);
-          doc.text(storage.name, 14, y + 7);
-          doc.text(product.name, 90, y + 7);
-          doc.text(product.quantity, 170, y + 7);
-          doc.text(product.dlc, 220, y + 7);
+          
+          let xPosition = 10;
+          // Emplacement
+          doc.text(storage.name, xPosition + (productColumnWidths[0] / 2), y + 7, { align: 'center' });
+          xPosition += productColumnWidths[0];
+          
+          // Produit
+          doc.text(product.name, xPosition + (productColumnWidths[1] / 2), y + 7, { align: 'center' });
+          xPosition += productColumnWidths[1];
+          
+          // Quantité
+          doc.text(product.quantity, xPosition + (productColumnWidths[2] / 2), y + 7, { align: 'center' });
+          xPosition += productColumnWidths[2];
+          
+          // DLC
+          doc.text(product.dlc, xPosition + (productColumnWidths[3] / 2), y + 7, { align: 'center' });
+          
           rowCount++;
         });
       });
 
-      yPosition += (rowCount * 10) + 15;
+      yPosition += ((rowCount % 25) * 10) + 15;
     };
 
     // Fonction pour exporter les bons de livraison
     const exportBL = () => {
       doc.setFontSize(14);
       doc.setTextColor(10, 42, 64);
-      doc.text('Bons de livraison', 14, yPosition);
+      doc.text('Bons de livraison', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
-      // En-têtes du tableau
-      createTableHeader(['Référence', 'Client', 'Date', 'Statut', 'Montant']);
+      // Définir les largeurs des colonnes
+      const columnWidths = [(pageWidth - 20) * 0.20, (pageWidth - 20) * 0.30, (pageWidth - 20) * 0.25, (pageWidth - 20) * 0.25];
       
-      // Simuler des bons de livraison
-      const bls = mockBLs;
+      // En-têtes du tableau
+      createTableHeader(['Référence', 'Client', 'Date', 'Statut'], columnWidths);
+      
+      // Vérifier si on a besoin d'une nouvelle page
+      checkPageBreak(mockBLs.length);
       
       // Lignes du tableau
-      bls.forEach((bl, index) => {
+      mockBLs.forEach((bl, index) => {
         const y = yPosition + (index * 10);
         if (index % 2 === 0) {
           doc.setFillColor(240, 240, 240);
           doc.rect(10, y, pageWidth - 20, 10, 'F');
         }
         doc.setTextColor(60, 60, 60);
-        doc.text(bl.reference, 14, y + 7);
-        doc.text(bl.client, 60, y + 7);
-        doc.text(bl.date, 120, y + 7);
-        doc.text(bl.status, 170, y + 7);
-        doc.text('N/A', 220, y + 7);
+        
+        let xPosition = 10;
+        // Référence
+        doc.text(bl.reference, xPosition + (columnWidths[0] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[0];
+        
+        // Client
+        doc.text(bl.client, xPosition + (columnWidths[1] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[1];
+        
+        // Date
+        doc.text(bl.date, xPosition + (columnWidths[2] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[2];
+        
+        // Statut
+        doc.text(bl.status, xPosition + (columnWidths[3] / 2), y + 7, { align: 'center' });
       });
 
-      yPosition += (bls.length * 10) + 15;
+      yPosition += (mockBLs.length * 10) + 15;
     };
 
     // Fonction pour exporter l'historique
     const exportHistorique = () => {
       doc.setFontSize(14);
       doc.setTextColor(10, 42, 64);
-      doc.text('Historique des activités', 14, yPosition);
+      doc.text('Historique des activités', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
-      // En-têtes du tableau
-      createTableHeader(['Date', 'Utilisateur', 'Action', 'Détails']);
+      // Définir les largeurs des colonnes
+      const columnWidths = [(pageWidth - 20) * 0.20, (pageWidth - 20) * 0.20, (pageWidth - 20) * 0.20, (pageWidth - 20) * 0.40];
       
-      // Simuler un historique
-      const historique = mockHistory;
+      // En-têtes du tableau
+      createTableHeader(['Date', 'Utilisateur', 'Action', 'Détails'], columnWidths);
+      
+      // Vérifier si on a besoin d'une nouvelle page
+      checkPageBreak(mockHistory.length);
       
       // Lignes du tableau
-      historique.forEach((item, index) => {
+      mockHistory.forEach((item, index) => {
         const y = yPosition + (index * 10);
         if (index % 2 === 0) {
           doc.setFillColor(240, 240, 240);
           doc.rect(10, y, pageWidth - 20, 10, 'F');
         }
         doc.setTextColor(60, 60, 60);
-        doc.text(item.date, 14, y + 7);
-        doc.text(item.user, 60, y + 7);
-        doc.text(item.action, 120, y + 7);
-        doc.text(item.details, 180, y + 7);
+        
+        let xPosition = 10;
+        // Date
+        doc.text(item.date, xPosition + (columnWidths[0] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[0];
+        
+        // Utilisateur
+        doc.text(item.user, xPosition + (columnWidths[1] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[1];
+        
+        // Action
+        doc.text(item.action, xPosition + (columnWidths[2] / 2), y + 7, { align: 'center' });
+        xPosition += columnWidths[2];
+        
+        // Détails
+        doc.text(item.details, xPosition + (columnWidths[3] / 2), y + 7, { align: 'center' });
       });
 
-      yPosition += (historique.length * 10) + 15;
+      yPosition += (mockHistory.length * 10) + 15;
     };
     
-    // Exporter en fonction de l'onglet actif
-    switch(activeTab) {
-      case 'lots':
-        exportLots();
-        break;
-      case 'bassins':
-        exportBassins();
-        break;
-      case 'autre_emplacement':
-        exportStockage();
-        break;
-      case 'bl':
-        exportBL();
-        break;
-      case 'historique':
-        exportHistorique();
-        break;
-      default:
-        // Si tous les onglets sont inclus, ajouter chaque section
-        exportLots();
-        doc.addPage();
-        yPosition = 60;
-        exportBassins();
-        doc.addPage();
-        yPosition = 60;
-        exportStockage();
-        doc.addPage();
-        yPosition = 60;
-        exportBL();
-        doc.addPage();
-        yPosition = 60;
-        exportHistorique();
-    }
+    // Toujours exporter toutes les données, indépendamment de l'onglet actif
+    // Premier onglet : Lots
+    exportLots();
+    
+    // Ajouter une nouvelle page pour chaque onglet suivant
+    doc.addPage();
+    yPosition = 30; // Réinitialiser la position Y pour la nouvelle page
+    exportBassins();
+    
+    doc.addPage();
+    yPosition = 30;
+    exportStockage();
+    
+    doc.addPage();
+    yPosition = 30;
+    exportBL();
+    
+    doc.addPage();
+    yPosition = 30;
+    exportHistorique();
 
     // Ajouter un pied de page
-    const pageCount = doc.internal.pages.length;
+    const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(10);
       doc.setTextColor(100, 100, 100);
-      doc.text(`OYSTER CULT - Traçabilité - Page ${i} / ${pageCount}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      
+      // Formatage corrigé pour éviter le problème de pagination
+      const pageText = `Page ${i}/${pageCount}`;
+      doc.text(`OYSTER CULT - Traçabilité - ${pageText}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
     }
 
     // Sauvegarder le PDF
@@ -1023,7 +1159,7 @@ export function TraceabilityPage() {
             </button>
             <button
               onClick={() => setShowFilterModal(false)}
-              className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
               aria-label="Appliquer les filtres"
             >
               <Filter className="w-4 h-4" aria-hidden="true" />
@@ -1088,7 +1224,18 @@ export function TraceabilityPage() {
         title="Exporter les données"
       >
         <div className="space-y-4">
-          <p className="text-white" id="export-description">Voulez-vous exporter les données de traçabilité en PDF ?</p>
+          <p className="text-white" id="export-description">Voulez-vous exporter toutes les données de traçabilité en PDF ? Le document contiendra toutes les informations de chaque onglet (Lots, Bassins, Stockage, Bons de livraison et Historique).</p>
+          <div className="bg-white/5 p-4 rounded-lg border border-white/10 mb-4">
+            <h3 className="text-cyan-400 font-medium mb-2 flex items-center gap-2">
+              <Info className="w-4 h-4" />
+              Informations importantes
+            </h3>
+            <ul className="list-disc pl-5 text-sm text-white/80 space-y-2">
+              <li>Le PDF généré contiendra <strong>toutes les données</strong> de tous les onglets, quelle que soit la page actuellement affichée.</li>
+              <li>Les données seront organisées par sections avec une mise en page optimisée.</li>
+              <li>Pour les sections contenant beaucoup de données, plusieurs pages seront créées automatiquement.</li>
+            </ul>
+          </div>
           <div className="flex flex-col sm:flex-row justify-end gap-3">
             <button
               onClick={() => setShowExportModal(false)}
@@ -1205,10 +1352,10 @@ export function TraceabilityPage() {
             <button
               onClick={() => setShowQRModal(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
-              aria-label="Scanner un QR code"
+              aria-label="Ajouter un lot"
             >
-              <QrCode className="w-4 h-4" />
-              <span className="hidden sm:inline">Scanner</span>
+              <Plus className="w-4 h-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Ajouter</span>
             </button>
             <button
               onClick={() => setShowExportModal(true)}
@@ -1456,20 +1603,10 @@ export function TraceabilityPage() {
           <>
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-8">
-                <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-                  <History size={20} className="text-cyan-400" aria-hidden="true" />
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <History className="text-cyan-400" aria-hidden="true" />
                   Historique des activités
                 </h2>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setShowExportModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] p-2 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
-                    aria-label="Exporter l'historique"
-                  >
-                    <Download className="w-4 h-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Exporter</span>
-                  </button>
-                </div>
               </div>
               
               <div className="space-y-4 mt-6">

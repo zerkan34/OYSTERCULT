@@ -732,48 +732,26 @@ export function TaskList({ searchQuery, onTaskSelect }: TaskListProps) {
                   {/* En-tête de la carte avec icône de priorité */}
                   <div className={`task-card-header ${priorityStyles[priority].gradientClass}`}>
                     <div className="task-header-content">
-                      {task.status === 'completed' && (
-                        <div className="ml-2 flex items-center">
-                          <div className="efficiency-indicator flex items-center" title="Pourcentage de rendement basé sur le temps">
-                            <span className="text-xs text-white/60 mr-1">Rendement:</span>
-                            <span className={`text-sm font-medium ${getEfficiencyColor(getTimeEfficiency(task.id))}`}>
-                              {getTimeEfficiency(task.id)}%
-                            </span>
+                      <div className="task-header-left">
+                        {task.status === 'completed' && (
+                          <div className="ml-2 flex items-center">
+                            <div className="efficiency-indicator flex items-center" title="Pourcentage de rendement basé sur le temps">
+                              <span className="text-xs text-white/60 mr-1">Rendement:</span>
+                              <span className={`text-sm font-medium ${getEfficiencyColor(getTimeEfficiency(task.id))}`}>
+                                {getTimeEfficiency(task.id)}%
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      
-                      <div className="status-container">
-                        <div className={`status-badge ${statusStyles[statusStyleKey as keyof typeof statusStyles].badgeClass}`}>
-                          <span>{statusText}</span>
+                        )}
+                        
+                        <div className="status-container">
+                          <div className={`status-badge ${statusStyles[statusStyleKey as keyof typeof statusStyles].badgeClass}`}>
+                            <span>{statusText}</span>
+                          </div>
                         </div>
                       </div>
                       
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          className="comment-btn p-1.5 rounded-full hover:bg-white/10 transition-colors"
-                          onClick={(e) => handleOpenCommentModal(task.id, e)}
-                          aria-label="Ajouter un commentaire"
-                          title="Ajouter un commentaire"
-                        >
-                          <MessageSquare 
-                            size={16} 
-                            className="text-blue-400" 
-                          />
-                        </button>
-                        
-                        <button 
-                          className="delay-btn icon-only p-1.5 rounded-full hover:bg-white/10 transition-colors flex items-center mr-1"
-                          onClick={(e) => handleOpenDelayModal(task.id, e)}
-                          aria-label="Signaler un retard"
-                          title="Signaler un retard"
-                        >
-                          <AlertCircle 
-                            size={16} 
-                            className="text-amber-400" 
-                          />
-                        </button>
-                        
+                      <div className="task-header-right">
                         <button 
                           className="expand-task-btn p-1.5 rounded-full hover:bg-white/10 transition-colors"
                           onClick={(e) => {

@@ -266,6 +266,67 @@
   }
 }
 
+/* Cacher la barre de défilement tout en gardant la fonctionnalité */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE et Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari et Opera */
+}
+
+/* Structure des prévisions (horaires et quotidiennes) */
+.forecast-container {
+  width: 100%;
+  position: relative;
+  overflow: hidden; /* Pour masquer tout dépassement potentiel */
+  margin-bottom: 5px; /* Espace en-dessous du conteneur */
+}
+
+.forecast-scroll-container {
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 10px; /* Espace pour la barre de défilement */
+  margin-bottom: -10px; /* Compenser le padding pour éviter l'espace supplémentaire */
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  gap: 12px; /* Espace entre les éléments */
+}
+
+.forecast-item {
+  flex: 0 0 calc(25% - 9px); /* 25% moins l'espace entre items */
+  min-width: 0; /* Permet de rétrécir si nécessaire */
+  box-sizing: border-box;
+  scroll-snap-align: start;
+}
+
+/* Animation pour l'indicateur de défilement */
+@keyframes scrollHint {
+  0% { transform: translateX(0); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+.forecast-container:hover + div svg {
+  animation: scrollHint 1.5s infinite;
+}
+
+/* Adaptation pour les écrans plus petits */
+@media (max-width: 768px) {
+  .forecast-item {
+    flex: 0 0 calc(50% - 6px); /* 2 éléments par rangée sur tablette */
+  }
+}
+
+@media (max-width: 480px) {
+  .forecast-item {
+    flex: 0 0 100%; /* 1 élément visible à la fois sur mobile */
+  }
+}
+
 /* Support pour le mode sombre natif */
 @media (prefers-color-scheme: dark) {
   .weather-widget {

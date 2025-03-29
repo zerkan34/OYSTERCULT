@@ -27,7 +27,6 @@ input[type="password"],
 input[type="search"],
 select,
 textarea {
-  background: rgba(0, 20, 50, 0.7) !important;
   color: white !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 8px !important;
@@ -41,24 +40,18 @@ textarea {
 
 /* Ciblage spécifique du champ de titre */
 #title {
-  background: rgba(0, 20, 50, 0.7) !important;
-  background-color: rgba(0, 20, 50, 0.7) !important;
-  -webkit-background-color: rgba(0, 20, 50, 0.7) !important;
-  -moz-background-color: rgba(0, 20, 50, 0.7) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   color: white !important;
 }
 
 /* Style spécifique pour les options des menus déroulants */
 select option {
-  background-color: rgb(15, 23, 42) !important;
   color: white !important;
 }
 
 /* Support pour tous les navigateurs */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
   select {
-    background-color: rgb(15, 23, 42) !important;
     appearance: none !important;
     -webkit-appearance: none !important;
     -moz-appearance: none !important;
@@ -151,7 +144,6 @@ input[type="date"] {
 .form-select,
 .form-textarea {
   width: 100%;
-  background: rgba(0, 20, 50, 0.7) !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   padding: 0.75rem;

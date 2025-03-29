@@ -11,7 +11,8 @@ import {
   ArrowDown,
   Sun,
   CloudRain,
-  Calendar
+  Calendar,
+  ChevronRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import './weather-widget.css';
@@ -43,6 +44,7 @@ interface WeatherData {
     tempMax: number;
     windSpeed: number;
     windDirection: number;
+    waveHeight: number;
   }>;
 }
 
@@ -66,10 +68,10 @@ const mockWeather: WeatherData = {
     { time: '21:00', temp: 16, windSpeed: 16, windDirection: 305, waveHeight: 0.9 }
   ],
   dailyForecast: [
-    { day: 'Demain', condition: 'sunny', tempMin: 16, tempMax: 21, windSpeed: 12, windDirection: 45 },
-    { day: 'Mercredi', condition: 'partly-cloudy', tempMin: 15, tempMax: 19, windSpeed: 14, windDirection: 90 },
-    { day: 'Jeudi', condition: 'rainy', tempMin: 14, tempMax: 17, windSpeed: 18, windDirection: 135 },
-    { day: 'Vendredi', condition: 'cloudy', tempMin: 15, tempMax: 20, windSpeed: 10, windDirection: 225 }
+    { day: 'Demain', condition: 'sunny', tempMin: 16, tempMax: 21, windSpeed: 12, windDirection: 45, waveHeight: 0.5 },
+    { day: 'Mercredi', condition: 'partly-cloudy', tempMin: 15, tempMax: 19, windSpeed: 14, windDirection: 90, waveHeight: 0.6 },
+    { day: 'Jeudi', condition: 'rainy', tempMin: 14, tempMax: 17, windSpeed: 18, windDirection: 135, waveHeight: 0.7 },
+    { day: 'Vendredi', condition: 'cloudy', tempMin: 15, tempMax: 20, windSpeed: 10, windDirection: 225, waveHeight: 0.5 }
   ]
 };
 
@@ -179,16 +181,19 @@ export function WeatherWidget() {
           <div className="flex items-center">
             <span aria-hidden="true"><ThermometerSun size={20} className="text-cyan-400 mr-2" /></span>
             <h2 className="text-lg font-medium bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent whitespace-nowrap">
-              Météo & Conditions Maritimes
+              Météo & Conditions Maritimes Actuelles
             </h2>
           </div>
+          <h1 className="text-2xl font-bold text-cyan-300 absolute left-1/2 transform -translate-x-1/2">
+            Bouzigues
+          </h1>
           <div className="text-sm text-white/60 whitespace-nowrap">
             {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
           </div>
         </div>
 
         {/* Desktop layout avec 4 widgets alignés */}
-        <div className="hidden md:grid md:grid-cols-4 md:gap-4 md:mb-6">
+        <div className="hidden md:flex md:flex-wrap md:justify-center md:gap-4 md:mb-6">
           <WeatherCard
             title="Température"
             icon={<ThermometerSun size={20} />}
@@ -270,57 +275,148 @@ export function WeatherWidget() {
         </div>
 
         {/* Prévisions horaires en bas */}
-        <div className="border-t border-white/10 p-6">
+        <div className="border-t border-white/10 p-6 relative">
           <h3 className="text-white font-medium mb-4">Prévisions horaires</h3>
-          <div className="grid grid-cols-4 gap-4">
-            {mockWeather.forecast.map((forecast, index) => (
-              <div key={index} className="bg-white/5 rounded-lg p-3 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
-                <div className="text-sm text-white/60 mb-2">{forecast.time}</div>
-                <div className="text-lg font-medium text-white mb-2">{forecast.temp}°C</div>
+          <div className="forecast-container">
+            <div className="forecast-scroll-container hide-scrollbar">
+              {[
+                { time: '12:00', temp: 18, windSpeed: 15, windDirection: 315, waveHeight: 0.8 },
+                { time: '15:00', temp: 19, windSpeed: 18, windDirection: 320, waveHeight: 0.9 },
+                { time: '18:00', temp: 17, windSpeed: 20, windDirection: 310, waveHeight: 1.0 },
+                { time: '21:00', temp: 16, windSpeed: 16, windDirection: 305, waveHeight: 0.9 },
+                { time: '00:00', temp: 15, windSpeed: 14, windDirection: 300, waveHeight: 0.7 },
+                { time: '03:00', temp: 14, windSpeed: 12, windDirection: 290, waveHeight: 0.6 },
+                { time: '06:00', temp: 15, windSpeed: 10, windDirection: 280, waveHeight: 0.5 },
+                { time: '09:00', temp: 16, windSpeed: 12, windDirection: 270, waveHeight: 0.4 }
+              ].map((forecast, index) => (
+                <div 
+                  key={index} 
+                  className="forecast-item bg-white/5 rounded-lg p-3 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300"
+                >
+                  <div className="text-sm text-white/60 mb-2">{forecast.time}</div>
+                  <div className="text-lg font-medium text-white mb-2">{forecast.temp}°C</div>
+                  <div className="space-y-2 text-sm text-white/60">
+                    <div className="flex items-center">
+                      <Navigation
+                        className="w-4 h-4 text-brand-burgundy mr-1"
+                        style={{ transform: `rotate(${forecast.windDirection}deg)` }}
+                      />
+                      <span>{forecast.windSpeed} km/h</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Waves className="w-4 h-4 text-brand-burgundy mr-1" />
+                      <span>{forecast.waveHeight}m</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Indicateur de défilement */}
+          <div className="absolute right-6 top-6 text-white/40 text-xs hidden md:flex items-center">
+            <span>Glisser </span>
+            <ChevronRight className="h-3 w-3 ml-1" />
+          </div>
+        </div>
+
+        {/* Prévisions des prochains jours */}
+        <div className="border-t border-white/10 p-6 relative">
+          <h3 className="text-white font-medium mb-4">Prévisions des prochains jours</h3>
+          <div className="forecast-container">
+            <div className="forecast-scroll-container hide-scrollbar overflow-x-auto">
+              {/* Premières prévisions quotidiennes */}
+              {mockWeather.dailyForecast.map((forecast, index) => (
+                <div key={index} className="forecast-item bg-white/5 rounded-lg p-3 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
+                  <div className="text-sm text-white/60 mb-2">{forecast.day}</div>
+                  <div className="flex justify-center mb-2">
+                    <WeatherIcon condition={forecast.condition} />
+                  </div>
+                  <div className="text-lg font-medium text-white mb-2">{forecast.tempMin}° - {forecast.tempMax}°</div>
+                  <div className="space-y-2 text-sm text-white/60">
+                    <div className="flex items-center">
+                      <Navigation
+                        className="w-4 h-4 text-brand-burgundy mr-1"
+                        style={{ transform: `rotate(${forecast.windDirection}deg)` }}
+                      />
+                      <span>{forecast.windSpeed} km/h</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Waves className="w-4 h-4 text-brand-burgundy mr-1" />
+                      <span>{forecast.waveHeight || '0.5'}m</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              {/* Prévisions quotidiennes supplémentaires */}
+              <div className="forecast-item bg-white/5 rounded-lg p-3 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
+                <div className="text-sm text-white/60 mb-2">Samedi</div>
+                <div className="flex justify-center mb-2">
+                  <WeatherIcon condition="sunny" />
+                </div>
+                <div className="text-lg font-medium text-white mb-2">21° - 26°</div>
                 <div className="space-y-2 text-sm text-white/60">
                   <div className="flex items-center">
                     <Navigation
                       className="w-4 h-4 text-brand-burgundy mr-1"
-                      style={{ transform: `rotate(${forecast.windDirection}deg)` }}
+                      style={{ transform: `rotate(240deg)` }}
                     />
-                    <span>{forecast.windSpeed} km/h</span>
+                    <span>10 km/h</span>
                   </div>
                   <div className="flex items-center">
                     <Waves className="w-4 h-4 text-brand-burgundy mr-1" />
-                    <span>{forecast.waveHeight}m</span>
+                    <span>0.5m</span>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Prévisions jours à venir */}
-        <div className="border-t border-white/10 p-6">
-          <h3 className="text-white font-medium mb-4">Prévisions des prochains jours</h3>
-          <div className="grid grid-cols-4 gap-4">
-            {mockWeather.dailyForecast.map((forecast, index) => (
-              <div key={index} className="bg-white/5 rounded-lg p-3 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
-                <div className="text-sm text-white/60 mb-2">{forecast.day}</div>
+              
+              <div className="forecast-item bg-white/5 rounded-lg p-3 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
+                <div className="text-sm text-white/60 mb-2">Dimanche</div>
                 <div className="flex justify-center mb-2">
-                  <WeatherIcon condition={forecast.condition} />
+                  <WeatherIcon condition="partly-cloudy" />
                 </div>
-                <div className="text-center text-lg font-medium text-white mb-2">
-                  <span className="text-brand-burgundy">{forecast.tempMin}°</span> / <span>{forecast.tempMax}°</span>
-                </div>
-                <div className="text-sm text-white/60 text-center">
-                  <div className="flex items-center justify-center">
-                    <Wind className="w-4 h-4 text-brand-burgundy mr-1" />
-                    <span>{forecast.windSpeed} km/h</span>
-                    <Navigation 
-                      className="w-4 h-4 text-brand-burgundy ml-2"
-                      style={{ transform: `rotate(${forecast.windDirection || 0}deg)` }} 
+                <div className="text-lg font-medium text-white mb-2">19° - 24°</div>
+                <div className="space-y-2 text-sm text-white/60">
+                  <div className="flex items-center">
+                    <Navigation
+                      className="w-4 h-4 text-brand-burgundy mr-1"
+                      style={{ transform: `rotate(225deg)` }}
                     />
-                    <span className="ml-1">{getWindDirection(forecast.windDirection || 0)}</span>
+                    <span>12 km/h</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Waves className="w-4 h-4 text-brand-burgundy mr-1" />
+                    <span>0.6m</span>
                   </div>
                 </div>
               </div>
-            ))}
+              
+              <div className="forecast-item bg-white/5 rounded-lg p-3 shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
+                <div className="text-sm text-white/60 mb-2">Lundi</div>
+                <div className="flex justify-center mb-2">
+                  <WeatherIcon condition="cloudy" />
+                </div>
+                <div className="text-lg font-medium text-white mb-2">18° - 22°</div>
+                <div className="space-y-2 text-sm text-white/60">
+                  <div className="flex items-center">
+                    <Navigation
+                      className="w-4 h-4 text-brand-burgundy mr-1"
+                      style={{ transform: `rotate(180deg)` }}
+                    />
+                    <span>15 km/h</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Waves className="w-4 h-4 text-brand-burgundy mr-1" />
+                    <span>0.7m</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Indicateur de défilement */}
+          <div className="absolute right-6 top-6 text-white/40 text-xs hidden md:flex items-center">
+            <span>Glisser </span>
+            <ChevronRight className="h-3 w-3 ml-1" />
           </div>
         </div>
 
@@ -357,9 +453,9 @@ export function WeatherWidget() {
           </div>
           
           {/* Widgets météo mobile */}
-          <div className="w-full grid grid-cols-2 gap-3" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', margin: 0 }}>
+          <div className="w-full flex flex-wrap justify-center" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', margin: 0 }}>
             {/* Card 1: Marées */}
-            <div className="mobile-weather-card shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
+            <div className="mobile-weather-card shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300 m-2">
               <div className="mobile-weather-card-header">
                 <span aria-hidden="true"><Waves size={20} className="mobile-weather-card-icon" /></span>
                 <div className="mobile-weather-card-title">Marées</div>
@@ -379,7 +475,7 @@ export function WeatherWidget() {
             </div>
             
             {/* Card 2: Vent */}
-            <div className="mobile-weather-card shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
+            <div className="mobile-weather-card shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 transition-all duration-300 m-2">
               <div className="mobile-weather-card-header">
                 <span aria-hidden="true"><Wind size={20} className="mobile-weather-card-icon" /></span>
                 <div className="mobile-weather-card-title">Vent</div>
@@ -405,21 +501,72 @@ export function WeatherWidget() {
               <span aria-hidden="true"><Calendar size={20} className="mobile-forecast-icon" /></span>
               <div className="mobile-forecast-title">Prévisions</div>
             </div>
-            <div className="mobile-forecast-content">
-              {mockWeather.forecast.map((forecast, index) => (
-                <div key={index} className="mobile-forecast-item">
-                  <div className="mobile-forecast-time">{forecast.time}</div>
-                  <div className="mobile-forecast-temp">{forecast.temp}°</div>
+            <div className="mobile-forecast-content overflow-x-auto">
+              <div className="flex" style={{ minWidth: "100%" }}>
+                {mockWeather.forecast.map((forecast, index) => (
+                  <div key={index} className="mobile-forecast-item" style={{ minWidth: "80px" }}>
+                    <div className="mobile-forecast-time">{forecast.time}</div>
+                    <div className="mobile-forecast-temp">{forecast.temp}°</div>
+                    <div className="mobile-forecast-wind">
+                      <Navigation size={14} className="mobile-forecast-wind-icon" style={{ transform: `rotate(${forecast.windDirection}deg)` }} />
+                      <span>{forecast.windSpeed}</span>
+                    </div>
+                    <div className="mobile-forecast-waves">
+                      <Waves size={14} className="mobile-forecast-waves-icon" />
+                      <span>{forecast.waveHeight}m</span>
+                    </div>
+                  </div>
+                ))}
+                {/* Prévisions supplémentaires pour permettre le défilement horizontal */}
+                <div className="mobile-forecast-item" style={{ minWidth: "80px" }}>
+                  <div className="mobile-forecast-time">00:00</div>
+                  <div className="mobile-forecast-temp">15°</div>
                   <div className="mobile-forecast-wind">
-                    <Navigation size={14} className="mobile-forecast-wind-icon" style={{ transform: `rotate(${forecast.windDirection}deg)` }} />
-                    <span>{forecast.windSpeed}</span>
+                    <Navigation size={14} className="mobile-forecast-wind-icon" style={{ transform: `rotate(300deg)` }} />
+                    <span>14</span>
                   </div>
                   <div className="mobile-forecast-waves">
                     <Waves size={14} className="mobile-forecast-waves-icon" />
-                    <span>{forecast.waveHeight}m</span>
+                    <span>0.7m</span>
                   </div>
                 </div>
-              ))}
+                <div className="mobile-forecast-item" style={{ minWidth: "80px" }}>
+                  <div className="mobile-forecast-time">03:00</div>
+                  <div className="mobile-forecast-temp">14°</div>
+                  <div className="mobile-forecast-wind">
+                    <Navigation size={14} className="mobile-forecast-wind-icon" style={{ transform: `rotate(290deg)` }} />
+                    <span>12</span>
+                  </div>
+                  <div className="mobile-forecast-waves">
+                    <Waves size={14} className="mobile-forecast-waves-icon" />
+                    <span>0.6m</span>
+                  </div>
+                </div>
+                <div className="mobile-forecast-item" style={{ minWidth: "80px" }}>
+                  <div className="mobile-forecast-time">06:00</div>
+                  <div className="mobile-forecast-temp">15°</div>
+                  <div className="mobile-forecast-wind">
+                    <Navigation size={14} className="mobile-forecast-wind-icon" style={{ transform: `rotate(295deg)` }} />
+                    <span>13</span>
+                  </div>
+                  <div className="mobile-forecast-waves">
+                    <Waves size={14} className="mobile-forecast-waves-icon" />
+                    <span>0.5m</span>
+                  </div>
+                </div>
+                <div className="mobile-forecast-item" style={{ minWidth: "80px" }}>
+                  <div className="mobile-forecast-time">09:00</div>
+                  <div className="mobile-forecast-temp">16°</div>
+                  <div className="mobile-forecast-wind">
+                    <Navigation size={14} className="mobile-forecast-wind-icon" style={{ transform: `rotate(300deg)` }} />
+                    <span>15</span>
+                  </div>
+                  <div className="mobile-forecast-waves">
+                    <Waves size={14} className="mobile-forecast-waves-icon" />
+                    <span>0.6m</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

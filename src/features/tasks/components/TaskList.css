@@ -52,9 +52,19 @@
   }
   
   .task-header-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .task-header-left {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
+  }
+  
+  .task-header-right {
+    margin-left: auto;
   }
   
   .status-container {
@@ -299,8 +309,20 @@
 
 .task-header-content {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
+  width: 100%;
+}
+
+.task-header-left {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.task-header-right {
+  margin-left: auto;
 }
 
 .priority-badge {
@@ -591,7 +613,6 @@
 .edit-modal-content input,
 .edit-modal-content textarea,
 .edit-modal-content select {
-  background: rgba(0, 20, 50, 0.7) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   color: white !important;
 }
@@ -718,9 +739,19 @@
   }
   
   .task-header-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .task-header-left {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
+  }
+  
+  .task-header-right {
+    margin-left: auto;
   }
   
   .status-container {
@@ -850,7 +881,6 @@
 .edit-modal-content input,
 .edit-modal-content textarea,
 .edit-modal-content select {
-  background: rgba(0, 20, 50, 0.7) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   color: white !important;
 }
