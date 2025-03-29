@@ -1,0 +1,185 @@
+/* Animations pour la page de configuration */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Support des préférences de mouvement réduites */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeIn {
+    animation: none;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Styles des tabs */
+.tab-list {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem;
+  background: linear-gradient(135deg, rgba(15,23,42,0.3) 0%, rgba(20,100,100,0.3) 100%);
+  backdrop-filter: blur(10px);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.tab {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tab:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.tab.active {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25), 0 0 15px rgba(255,255,255,0.1);
+}
+
+/* Conteneurs */
+.config-container {
+  background: linear-gradient(135deg, rgba(15,23,42,0.3) 0%, rgba(20,100,100,0.3) 100%);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s;
+  box-shadow: 
+    rgba(0,0,0,0.2) 0px 10px 20px -5px,
+    rgba(255,255,255,0.1) 0px 8px 16px -8px,
+    rgba(255,255,255,0.07) 0px -1px 2px 0px inset,
+    rgba(255,255,255,0.05) 0px 0px 8px inset,
+    rgba(0,0,0,0.05) 0px 0px 1px inset;
+}
+
+.config-container:hover {
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* Titres */
+.config-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  background: linear-gradient(to right, rgba(255,255,255,0.5), rgba(255,255,255,0.5));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 1rem;
+}
+
+/* Boutons */
+.config-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 
+    0 4px 10px rgba(0,0,0,0.25),
+    0 0 15px rgba(255,255,255,0.1),
+    0 0 5px rgba(0,0,0,0.2) inset;
+}
+
+.config-button:hover {
+  border-color: rgba(255,255,255,0.3);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 6px 15px rgba(0,0,0,0.3),
+    0 0 20px rgba(255,255,255,0.15),
+    0 0 5px rgba(0,0,0,0.2) inset;
+}
+
+.config-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+}
+
+/* Champs de saisie */
+.config-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.75rem;
+  color: white;
+  transition: all 0.2s ease-in-out;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.config-input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+.config-input:hover {
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+}
+
+.config-input:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.3);
+  box-shadow: 
+    0 0 0 2px rgba(255,255,255,0.1),
+    0 4px 10px rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.1);
+}
+
+/* Support des états désactivés */
+.config-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Style pour les champs avec erreur */
+.config-input.error {
+  border-color: rgba(239,68,68,0.5);
+}
+
+.config-input.error:focus {
+  box-shadow: 
+    0 0 0 2px rgba(239,68,68,0.2),
+    0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Style pour les textarea */
+textarea.config-input {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Style pour les select */
+select.config-input {
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' opacity='0.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.25rem;
+}

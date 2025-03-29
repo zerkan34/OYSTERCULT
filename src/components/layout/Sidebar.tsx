@@ -11,6 +11,7 @@ import {
 interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
+  notifications: number;
 }
 
 interface MenuItem {
@@ -20,7 +21,7 @@ interface MenuItem {
   label: string;
 }
 
-export function Sidebar({ isOpen, onToggle }: SidebarProps) {
+export function Sidebar({ isOpen, onToggle, notifications }: SidebarProps) {
   const location = useLocation();
 
   const menuItems: MenuItem[] = [
@@ -56,6 +57,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           className="p-2 hover:bg-white/5 rounded-lg text-white/60 hover:text-white transition-colors"
         >
           {isOpen ? <Package size={24} /> : <Package size={24} />}
+          {/* Notification badge */}
+          {notifications > 0 && (
+            <div className="absolute -top-1 -right-1 min-w-[20px] h-[20px] rounded-full bg-gradient-to-r from-[#00D1FF] to-[#0047FF] flex items-center justify-center text-xs font-medium text-white shadow-lg">
+              {notifications}
+            </div>
+          )}
         </button>
       </div>
 

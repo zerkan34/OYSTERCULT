@@ -9,6 +9,7 @@ import { PricingConfig } from '../components/PricingConfig';
 import { LocationConfig } from '../components/LocationConfig';
 import { UnitConfig } from '../components/UnitConfig';
 import { OysterLogo } from '@/components/ui/OysterLogo';
+import './config.css';
 
 type ConfigSection = 'company' | 'roles' | 'products' | 'suppliers' | 'pricing' | 'locations' | 'units';
 
@@ -51,26 +52,6 @@ const sections: { id: ConfigSection; label: string; icon: React.ReactNode; descr
   }
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { 
-    opacity: 1,
-    transition: { 
-      staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { 
-    y: 0, 
-    opacity: 1,
-    transition: { type: "spring", stiffness: 100 }
-  }
-};
-
 export function ConfigPage() {
   const [activeSection, setActiveSection] = useState<ConfigSection>('company');
 
@@ -96,114 +77,67 @@ export function ConfigPage() {
   };
 
   return (
-    <motion.div 
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className="space-y-6 p-6"
-    >
+    <div className="max-w-7xl mx-auto space-y-8 p-6 animate-fadeIn">
       {/* En-tête avec titre */}
-      <motion.div 
-        variants={itemVariants}
-        className="flex items-center justify-between"
-        style={{
-          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)",
-          padding: "1.5rem",
-          borderRadius: "1rem",
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
-          boxShadow: "rgba(0, 0, 0, 0.3) 0px 10px 25px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset"
-        }}
-      >
-        <div className="flex items-center space-x-3">
+      <div className="config-container">
+        <div className="flex items-center space-x-4">
           <div className="relative w-12 h-12 flex items-center justify-center">
-            <div className="absolute inset-0 bg-[#00D1FF]/20 blur-xl rounded-full" />
-            <Settings size={24} className="text-[#00D1FF] relative z-10" />
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-lg" />
+            <Settings size={24} className="text-cyan-400 relative z-10" aria-hidden="true" />
           </div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent" 
-            style={{ backgroundImage: "linear-gradient(90deg, #ffffff, #a5f3fc)" }}>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
             Configuration
           </h1>
         </div>
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-12 gap-6">
         {/* Menu latéral */}
-        <motion.div 
-          variants={itemVariants}
-          className="col-span-3 rounded-xl overflow-hidden"
-          style={{
-            background: "linear-gradient(135deg, rgba(0, 10, 40, 0.85) 0%, rgba(0, 100, 120, 0.8) 100%)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
-          }}
-        >
-          <nav className="p-4 space-y-2">
+        <nav className="col-span-3">
+          <div className="config-container space-y-2">
             {sections.map((section) => (
-              <motion.button
+              <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
-                className={`w-full flex items-start p-4 rounded-lg transition-all duration-300 group relative overflow-hidden
+                className={`
+                  flex items-center w-full gap-3 px-4 py-3 rounded-lg transition-all duration-300
                   ${activeSection === section.id 
-                    ? 'bg-[#00D1FF]/10 text-white' 
-                    : 'text-white/60 hover:text-white hover:bg-white/5'}`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                style={{
-                  background: activeSection === section.id 
-                    ? "linear-gradient(135deg, rgba(0, 209, 255, 0.15) 0%, rgba(0, 209, 255, 0.05) 100%)"
-                    : "transparent"
-                }}
+                    ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]' 
+                    : 'text-white/60 hover:text-white hover:bg-white/5'}
+                  min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40
+                `}
+                aria-selected={activeSection === section.id}
+                role="tab"
               >
-                <div className="flex-shrink-0 mt-1">
+                <span className="flex items-center justify-center w-5 h-5">
                   {section.icon}
+                </span>
+                <div className="flex flex-col items-start">
+                  <span className="font-medium">{section.label}</span>
+                  <span className="text-sm text-white/70">{section.description}</span>
                 </div>
-                <div className="ml-3 text-left">
-                  <span className="block font-medium">{section.label}</span>
-                  <span className={`text-sm ${
-                    activeSection === section.id ? 'text-white/80' : 'text-white/40'
-                  }`}>
-                    {section.description}
-                  </span>
-                </div>
-                {activeSection === section.id && (
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-[#00D1FF]/10 to-transparent"
-                    layoutId="activeSection"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-              </motion.button>
+              </button>
             ))}
-          </nav>
-        </motion.div>
+          </div>
+        </nav>
 
         {/* Contenu principal */}
-        <motion.div 
-          variants={itemVariants}
-          className="col-span-9 rounded-xl"
-          style={{
-            background: "linear-gradient(135deg, rgba(0, 10, 40, 0.85) 0%, rgba(0, 100, 120, 0.8) 100%)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
-          }}
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeSection}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2 }}
-              className="p-6"
-            >
-              {renderSection()}
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
+        <main className="col-span-9">
+          <div className="config-container">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeSection}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {renderSection()}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </main>
       </div>
-    </motion.div>
+    </div>
   );
 }
