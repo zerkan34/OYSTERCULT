@@ -18,12 +18,12 @@ import {
   ChevronRight,
   ArrowUp,
   Database,
-  DropletIcon,
   Star,
   AlertCircle,
   Info,
   Phone,
-  AlertOctagon
+  AlertOctagon,
+  Droplet
 } from 'lucide-react';
 import MobileWeatherWidget from './NewMobileWeather';
 import './mobile-weather.css';
@@ -33,6 +33,7 @@ import { PoolDetailModal } from './PoolDetailModal';
 import { OysterTable, Pool, PoolHealth } from '../types';
 import '../pages/DashboardMobile.css'; // Import CSS pour le dashboard mobile
 import './MobileNavigation.css'; // Import du CSS spécifique pour la navigation
+import { MobileNavigation } from './MobileNavigation';
 
 // Types locaux pour les fonctionnalités ajoutées
 interface ExtendedOysterTable extends OysterTable {
@@ -77,45 +78,23 @@ export const MobileDashboard: React.FC = () => {
   const [visibleTableIndex, setVisibleTableIndex] = useState(0);
   const [visiblePoolIndex, setVisiblePoolIndex] = useState(0);
   const [isLandscape, setIsLandscape] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Références pour le composant
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Effet pour animer les éléments lors du chargement
   useEffect(() => {
+    setMounted(true);
     const elements = document.querySelectorAll('.animate-fade-in');
     elements.forEach((element, index) => {
       setTimeout(() => {
         element.classList.add('visible');
       }, index * 100);
     });
-  }, []);
 
-  // Effet pour remonter au haut lors du changement de section
-  useEffect(() => {
-    // Retourner au haut de la page lors du changement de section
-    if (containerRef.current) {
-      containerRef.current.scrollTop = 0;
-    }
-  }, [activeSection]);
-
-  // Gestionnaire d'orientation de l'écran
-  useEffect(() => {
-    const checkOrientation = () => {
-      const isLandscapeMode = window.matchMedia("(orientation: landscape)").matches;
-      setIsLandscape(isLandscapeMode);
-    };
-
-    // Vérification initiale
-    checkOrientation();
-
-    // Utiliser addEventListener au lieu de addListener (déprécié)
-    const mediaQuery = window.matchMedia("(orientation: landscape)");
-    mediaQuery.addEventListener('change', checkOrientation);
-
-    // Nettoyage
     return () => {
-      mediaQuery.removeEventListener('change', checkOrientation);
+      setMounted(false);
     };
   }, []);
 
@@ -126,6 +105,46 @@ export const MobileDashboard: React.FC = () => {
       containerRef.current.scrollTop = 0;
     }
   }, [containerRef]);
+
+  // Effet pour détecter l'orientation et mettre à jour l'état
+  useEffect(() => {
+    // Fonction pour détecter l'orientation
+    const checkOrientation = () => {
+      const isLandscape = window.innerWidth > window.innerHeight;
+      setIsLandscape(isLandscape);
+    };
+
+    // Vérifier l'orientation au chargement
+    checkOrientation();
+
+    // Ajouter un écouteur d'événement pour les changements d'orientation
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(checkOrientation, 100);
+    });
+
+    // Nettoyer l'écouteur d'événement
+    return () => {
+      window.removeEventListener('resize', checkOrientation);
+      window.removeEventListener('orientationchange', checkOrientation);
+    };
+  }, []);
+
+  // Fonction pour déterminer la classe de couleur en fonction du taux d'occupation
+  const getOccupancyColorClass = (rate: number) => {
+    if (rate < 30) return 'text-blue-400';
+    if (rate < 60) return 'text-green-400';
+    if (rate < 80) return 'text-yellow-400';
+    return 'text-red-400';
+  };
+
+  // Fonction pour déterminer la classe de couleur en fonction de l'indice de santé
+  const getHealthColorClass = (health: number) => {
+    if (health < 30) return 'text-red-400';
+    if (health < 60) return 'text-yellow-400';
+    if (health < 80) return 'text-green-400';
+    return 'text-cyan-400';
+  };
 
   // Données pour les tables
   const tableOccupancyData: ExtendedOysterTable[] = [
@@ -287,22 +306,6 @@ export const MobileDashboard: React.FC = () => {
     }
   ];
 
-  // Fonction pour déterminer la classe de couleur en fonction du taux d'occupation
-  const getOccupancyColorClass = (rate: number) => {
-    if (rate < 30) return 'text-blue-400';
-    if (rate < 60) return 'text-green-400';
-    if (rate < 80) return 'text-yellow-400';
-    return 'text-red-400';
-  };
-
-  // Fonction pour déterminer la classe de couleur en fonction de l'indice de santé
-  const getHealthColorClass = (health: number) => {
-    if (health < 30) return 'text-red-400';
-    if (health < 60) return 'text-yellow-400';
-    if (health < 80) return 'text-green-400';
-    return 'text-cyan-400';
-  };
-
   // Rendu du composant
   return (
     <div className="mobile-dashboard">
@@ -456,50 +459,11 @@ export const MobileDashboard: React.FC = () => {
           )}
 
           {/* Barre de navigation fixe en bas */}
-          <div className="fixed-bottom-nav">
-            <div className={`mobile-bottom-nav ${isLandscape ? 'landscape' : ''}`}>
-              <button
-                className={`mobile-nav-item ${activeSection === 'overview' ? 'active' : ''}`}
-                onClick={() => setActiveSectionWithScroll('overview')}
-                aria-label="Vue d'ensemble"
-              >
-                <Home size={isLandscape ? 18 : 22} />
-                <span>Accueil</span>
-              </button>
-              <button
-                className={`mobile-nav-item ${activeSection === 'tables' ? 'active' : ''}`}
-                onClick={() => setActiveSectionWithScroll('tables')}
-                aria-label="Tables"
-              >
-                <Package size={isLandscape ? 18 : 22} />
-                <span>Tables</span>
-              </button>
-              <button
-                className={`mobile-nav-item ${activeSection === 'pools' ? 'active' : ''}`}
-                onClick={() => setActiveSectionWithScroll('pools')}
-                aria-label="Bassins"
-              >
-                <DropletIcon size={isLandscape ? 18 : 22} />
-                <span>Bassins</span>
-              </button>
-              <button
-                className={`mobile-nav-item ${activeSection === 'notifications' ? 'active' : ''}`}
-                onClick={() => setActiveSectionWithScroll('notifications')}
-                aria-label="Alertes"
-              >
-                <AlertTriangle size={isLandscape ? 18 : 22} />
-                <span>Alertes</span>
-              </button>
-              <button
-                className={`mobile-nav-item emergency ${activeSection === 'emergency' ? 'active' : ''}`}
-                onClick={() => setActiveSectionWithScroll('emergency')}
-                aria-label="Urgence"
-              >
-                <AlertOctagon size={isLandscape ? 18 : 22} />
-                <span>Urgence</span>
-              </button>
-            </div>
-          </div>
+          <MobileNavigation 
+            activeSection={activeSection}
+            onSectionChange={setActiveSectionWithScroll}
+            isLandscape={isLandscape}
+          />
 
           {/* Modales */}
           <AnimatePresence>

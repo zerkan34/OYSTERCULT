@@ -562,6 +562,27 @@ html, body {
   }
 }
 
+/* Styles pour la navigation mobile */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.9);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 60px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Styles pour le contenu avec navigation fixe */
+body.has-fixed-nav .dashboard-page {
+  padding-bottom: 60px;
+}
+
 /* Assurer une marge inférieure sur toutes les pages */
 .outlet-container {
   margin-bottom: 40px !important;
@@ -701,5 +722,32 @@ html, body {
     height: 60px;
     z-index: 1000;
     border-top: 1px solid var(--border);
+  }
+}
+
+/* Suppression des styles qui causent des conflits */
+body.app-mobile {
+  /* Styles supprimés */
+}
+
+body.has-mobile-nav {
+  /* Styles supprimés */
+}
+
+@supports(padding: max(0px)) {
+  body.has-mobile-nav {
+    /* Styles supprimés */
+  }
+  
+  body.has-mobile-nav .dashboard-page {
+    /* Styles supprimés */
+  }
+  
+  .mobile-bottom-nav {
+    /* Styles supprimés */
+  }
+  
+  .fixed-bottom-nav {
+    /* Styles supprimés */
   }
 }

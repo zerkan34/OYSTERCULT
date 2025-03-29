@@ -1,65 +1,115 @@
 /* Styles spécifiques pour la navigation mobile fixe */
 
 /* Structure de base et grille */
-.fixed-bottom-nav {
+.fixed-bottom-nav, .mobile-bottom-nav {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 9999 !important;
+  box-shadow: rgba(0, 0, 0, 0.45) 0px 10px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(0, 210, 200, 0.25) 0px 0px 15px inset;
+  min-height: 60px !important;
+  height: auto !important;
+  transform: translateY(0) !important;
+  will-change: transform; /* Optimisation pour le rendu */
+  transition: padding-bottom 0.2s ease !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Désactiver le safe-area-inset pour éviter les problèmes */
+.mobile-bottom-nav {
+  padding-bottom: 0 !important; /* Le padding sera géré par JavaScript */
+}
+
+/* Navigation mobile - styles de base */
+.mobile-bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
+  z-index: 9999;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 10px 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  z-index: 1001;
-  box-shadow: rgba(0, 0, 0, 0.45) 0px 10px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(0, 210, 200, 0.25) 0px 0px 15px inset;
-  height: auto; /* Hauteur adaptative au lieu de fixe */
-  transform: translateZ(0); /* Force GPU acceleration */
-  will-change: transform; /* Optimisation pour le rendu */
-  padding-bottom: 15px; /* Padding de base */
-  padding-bottom: calc(env(safe-area-inset-bottom) + 15px); /* Support pour la safe area */
-  animation: slideUp 0.3s ease-out forwards;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+  min-height: 60px;
+  /* Padding de base + safe-area-inset-bottom */
+  padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px));
+  /* Transitions fluides */
+  transition: padding-bottom 0.2s ease;
 }
 
-/* Élément de navigation */
+/* Orientation paysage - ajuster la taille */
+.mobile-bottom-nav.landscape {
+  min-height: 50px;
+}
+
+/* Éléments de navigation */
 .mobile-nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 15px;
+  padding: 8px 4px;
   color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
+  background: transparent;
+  border: none;
   transition: all 0.2s ease;
-  border-radius: 8px;
-  position: relative;
   flex: 1;
   max-width: 80px;
 }
 
+/* Icônes dans la navigation */
 .mobile-nav-item svg {
-  margin-bottom: 5px;
-  color: rgba(255, 255, 255, 0.7);
-  transition: color 0.2s ease;
+  margin-bottom: 6px;
 }
 
+/* Texte sous les icônes */
 .mobile-nav-item span {
   font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  transition: color 0.2s ease;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 /* État actif */
 .mobile-nav-item.active {
-  color: #38bdf8;
+  color: #00d2c8;
 }
 
-.mobile-nav-item.active svg {
-  color: #38bdf8;
+/* Item d'urgence */
+.mobile-nav-item.emergency {
+  color: #ff5252;
+}
+
+.mobile-nav-item.emergency.active {
+  color: #ff0000;
+}
+
+/* Ajustements pour petits écrans */
+@media (max-width: 360px) {
+  .mobile-nav-item {
+    padding: 6px 2px;
+  }
+  
+  .mobile-nav-item span {
+    font-size: 9px;
+  }
 }
 
 /* Effet au toucher */
@@ -68,40 +118,9 @@
   transform: scale(0.95);
 }
 
-/* Item d'urgence */
-.mobile-nav-item.emergency {
-  color: #ef4444;
-}
-
-.mobile-nav-item.emergency svg {
-  color: #ef4444;
-}
-
-/* Optimisation pour les écrans de différentes tailles */
-@media screen and (max-width: 350px) {
-  .mobile-nav-item {
-    padding: 8px;
-  }
-  
-  .mobile-nav-item span {
-    font-size: 10px;
-  }
-}
-
-/* Désactiver l'animation pour les utilisateurs qui préfèrent les mouvements réduits */
-@media (prefers-reduced-motion: reduce) {
-  .mobile-nav-item {
-    transition: none;
-  }
-  
-  .fixed-bottom-nav {
-    animation: none !important;
-  }
-}
-
 /* Focus visible pour l'accessibilité */
 .mobile-nav-item:focus-visible {
-  outline: 2px solid #38bdf8;
+  outline: 2px solid #00d2c8;
   outline-offset: 2px;
 }
 
@@ -114,9 +133,11 @@
 @keyframes slideUp {
   from {
     transform: translateY(100%);
+    opacity: 0;
   }
   to {
     transform: translateY(0);
+    opacity: 1;
   }
 }
 
@@ -251,4 +272,15 @@
 @keyframes fadein {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Désactiver l'animation pour les utilisateurs qui préfèrent les mouvements réduits */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-item {
+    transition: none;
+  }
+  
+  .fixed-bottom-nav {
+    animation: none !important;
+  }
 }

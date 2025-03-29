@@ -203,8 +203,14 @@ export function DashboardPage() {
     checkIfMobile();
     window.addEventListener('resize', checkIfMobile);
     
+    // Forcer une vérification supplémentaire après le chargement complet
+    const timeoutId = setTimeout(() => {
+      checkIfMobile();
+    }, 500);
+    
     return () => {
       window.removeEventListener('resize', checkIfMobile);
+      clearTimeout(timeoutId);
     };
   }, []);
 
