@@ -3,6 +3,7 @@ import { Plus, Filter, Search, FileText, Download } from 'lucide-react';
 import { InvoiceList } from '../components/InvoiceList';
 import { InvoiceForm } from '../components/InvoiceForm';
 import type { InvoiceWithItems } from '@/types/accounting';
+import { Dialog } from '@/components/ui/Dialog';
 
 export function InvoicesPage() {
   const [activeTab, setActiveTab] = useState<'sales' | 'purchases'>('sales');
@@ -20,8 +21,8 @@ export function InvoicesPage() {
   };
 
   const handleDeleteInvoice = (invoice: InvoiceWithItems) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer la facture ${invoice.number} ?`)) {
-      console.log('Deleting invoice:', invoice.number);
+    if (confirm(`Êtes-vous sûr de vouloir supprimer la facture ${invoice.id} ?`)) {
+      console.log('Deleting invoice:', invoice.id);
     }
   };
 
@@ -92,21 +93,25 @@ export function InvoicesPage() {
         onDelete={handleDeleteInvoice}
       />
 
-      {(showNewInvoice || editingInvoice) && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md p-6 rounded-lg">
-            <InvoiceForm
-              type={activeTab === 'sales' ? 'sale' : 'purchase'}
-              initialData={editingInvoice || undefined}
-              onSubmit={handleCreateInvoice}
-              onCancel={() => {
-                setShowNewInvoice(false);
-                setEditingInvoice(null);
-              }}
-            />
-          </div>
+      <Dialog
+        open={showNewInvoice || editingInvoice !== null}
+        onClose={() => {
+          setShowNewInvoice(false);
+          setEditingInvoice(null);
+        }}
+      >
+        <div className="max-w-4xl bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] border border-white/10 hover:border-white/20 transition-all duration-300">
+          <InvoiceForm
+            type={activeTab === 'sales' ? 'sale' : 'purchase'}
+            initialData={editingInvoice || undefined}
+            onSubmit={handleCreateInvoice}
+            onCancel={() => {
+              setShowNewInvoice(false);
+              setEditingInvoice(null);
+            }}
+          />
         </div>
-      )}
+      </Dialog>
     </div>
   );
 }

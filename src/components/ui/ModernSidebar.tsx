@@ -85,7 +85,19 @@ const categories = {
   }
 };
 
-const navItems = [
+interface NavItem {
+  path: string;
+  label: string;
+  icon: JSX.Element;
+  notifications?: number;
+}
+
+interface NavGroup {
+  category: string;
+  items: NavItem[];
+}
+
+const navItems: NavGroup[] = [
   {
     category: "Principal",
     items: [
@@ -169,16 +181,6 @@ const navItems = [
   {
     category: "Paramètres",
     items: [
-      { 
-        path: '/config', 
-        label: 'Configuration', 
-        icon: <Settings size={22} />
-      },
-      { 
-        path: '/profile', 
-        label: 'Mon Espace', 
-        icon: <UserCircle size={22} />
-      },
       { 
         path: '/surveillance', 
         label: 'Surveillance', 
@@ -450,83 +452,17 @@ export function ModernSidebar({
                                 transition={{ duration: 0.3 }}
                               />
                             )}
-                            <div className={`
-                              relative z-10 transition-all duration-200
-                              ${isActive ? `text-${categoryStyle.textColor.split('-')[1]}` : 'text-white/70 group-hover:text-white'}
-                              flex items-center justify-center w-7 h-7 rounded-full
-                              ${!isActive && hoveredItem === item.path ? 'shadow-[0_0_5px_rgba(255,255,255,0.4)] filter brightness-110' : ''}
-                              transition-all transform hover:scale-110
-                            `}>
-                              {isActive ? (
-                                <motion.div
-                                  animate="pulse"
-                                  variants={createColorPulse(
-                                    categoryStyle.textColor.includes('blue') ? '#3b82f680' : 
-                                    categoryStyle.textColor.includes('green') ? '#10b98180' : 
-                                    categoryStyle.textColor.includes('purple') ? '#8b5cf680' : 
-                                    categoryStyle.textColor.includes('amber') ? '#f59e0b80' : 
-                                    '#06b6d480'
-                                  )}
-                                  className="flex items-center justify-center"
-                                >
-                                  {item.icon}
-                                </motion.div>
-                              ) : (
-                                <div 
-                                  className={hoveredItem === item.path ? "animate-pulse" : ""}
-                                >
-                                  {item.icon}
+                            <div className="flex items-center w-full">
+                              {item.icon}
+                              <span className={`ml-3 whitespace-nowrap transition-opacity duration-200 ${collapsed ? 'opacity-0' : 'opacity-100'}`}>
+                                {item.label}
+                              </span>
+                              {item.notifications > 0 && (
+                                <div className="ml-auto min-w-[20px] h-[20px] rounded-full bg-gradient-to-r from-[#00D1FF] to-[#0047FF] flex items-center justify-center text-xs font-medium text-white shadow-lg">
+                                  {item.notifications}
                                 </div>
                               )}
                             </div>
-                            <AnimatePresence>
-                              {!collapsed && (
-                                <motion.span 
-                                  className={`ml-2 md:ml-3 relative z-10 ${isActive ? 'font-medium' : ''} whitespace-nowrap`}
-                                  variants={contentFadeVariants}
-                                  initial="hidden"
-                                  animate="visible"
-                                  exit="hidden"
-                                >
-                                  {item.label}
-                                </motion.span>
-                              )}
-                            </AnimatePresence>
-
-                            {/* Infobulle personnalisée et stylisée qui s'affiche uniquement quand la sidebar est réduite */}
-                            {collapsed && (
-                              <AnimatePresence>
-                                {hoveredItem === item.path && (
-                                  <motion.div
-                                    initial={{ opacity: 0, x: 10 }}
-                                    animate={{ opacity: 1, x: 20 }}
-                                    exit={{ opacity: 0, x: 5 }}
-                                    transition={{ 
-                                      type: "spring",
-                                      stiffness: 350,
-                                      damping: 25
-                                    }}
-                                    className={`
-                                      absolute left-14 px-4 py-2 rounded-lg z-50
-                                      text-sm font-medium whitespace-nowrap
-                                      bg-gradient-to-r 
-                                      ${categoryStyle.color.replace('/30', '/70').replace('/10', '/40')} 
-                                      backdrop-blur-sm border border-white/10
-                                      ${
-                                        categoryStyle.textColor.includes('blue') ? 'shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 
-                                        categoryStyle.textColor.includes('green') ? 'shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 
-                                        categoryStyle.textColor.includes('purple') ? 'shadow-[0_0_10px_rgba(139,92,246,0.5)]' : 
-                                        categoryStyle.textColor.includes('amber') ? 'shadow-[0_0_10px_rgba(245,158,11,0.5)]' : 
-                                        'shadow-[0_0_10px_rgba(6,182,212,0.5)]'
-                                      }
-                                    `}
-                                  >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-transparent opacity-50"></div>
-                                    <span className={`text-white font-medium`}>{item.label}</span>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            )}
                             {isActive && (
                               <motion.div 
                                 className={`absolute left-0 w-1.5 h-8 rounded-r-md`}

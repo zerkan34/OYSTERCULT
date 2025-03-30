@@ -85,29 +85,37 @@ export function ConfigPage() {
     <div className="space-y-6">
       <div className="flex items-center space-x-3">
         <div className="relative">
-          <div className="absolute inset-0 bg-[#00D1FF]/20 blur-xl rounded-full" />
+          <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur-lg" />
           <Settings size={24} className="text-[#00D1FF] relative z-10" />
         </div>
-        <h1 className="text-2xl font-bold text-gradient">Configuration</h1>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+          Configuration
+        </h1>
       </div>
 
       <div className="grid grid-cols-12 gap-6">
         {/* Menu latéral */}
         <motion.div 
-          className="col-span-3 glass-effect rounded-lg overflow-hidden"
+          className="col-span-3 rounded-xl p-6"
+          style={{
+            background: 'linear-gradient(135deg, rgba(15,23,42,0.3) 0%, rgba(20,100,100,0.3) 100%)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: 'rgba(0, 0, 0, 0.2) 0px 10px 20px -5px, rgba(0, 150, 255, 0.1) 0px 8px 16px -8px, rgba(255, 255, 255, 0.07) 0px -1px 2px 0px inset, rgba(0, 65, 255, 0.05) 0px 0px 8px inset, rgba(0, 0, 0, 0.05) 0px 0px 1px inset'
+          }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <nav className="p-4 space-y-2">
+          <nav className="space-y-2">
             {sections.map((section) => (
               <motion.button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
-                className={`w-full flex items-start p-4 rounded-lg transition-all duration-300 group relative overflow-hidden
-                  ${activeSection === section.id 
+                className={`w-full flex items-start p-4 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
+                  activeSection === section.id 
                     ? 'bg-[#00D1FF]/10 text-white' 
-                    : 'text-white/60 hover:text-white hover:bg-white/5'}`}
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -122,13 +130,6 @@ export function ConfigPage() {
                     {section.description}
                   </span>
                 </div>
-                {activeSection === section.id && (
-                  <motion.div
-                    className="absolute inset-0 bg-[#00D1FF]/10"
-                    layoutId="activeSection"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
               </motion.button>
             ))}
           </nav>
@@ -136,7 +137,12 @@ export function ConfigPage() {
 
         {/* Contenu principal */}
         <motion.div 
-          className="col-span-9 glass-effect rounded-lg"
+          className="col-span-9 rounded-xl"
+          style={{
+            background: 'linear-gradient(135deg, rgba(15,23,42,0.3) 0%, rgba(20,100,100,0.3) 100%)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: 'rgba(0, 0, 0, 0.2) 0px 10px 20px -5px, rgba(0, 150, 255, 0.1) 0px 8px 16px -8px, rgba(255, 255, 255, 0.07) 0px -1px 2px 0px inset, rgba(0, 65, 255, 0.05) 0px 0px 8px inset, rgba(0, 0, 0, 0.05) 0px 0px 1px inset'
+          }}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
