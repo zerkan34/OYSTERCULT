@@ -198,7 +198,7 @@ export function NetworkPage({ messageView = false, activeTab: initialActiveTab }
 
       <div className="flex items-center space-x-4 mb-6">
         <div className="flex-1 relative">
-          <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" />
+          <Search size={20} className="absolute left-3 transform -translate-y-1/2 text-white/40" style={{top: '30%', zIndex: 1}} aria-label="Search icon" />
           <input
             type="text"
             value={searchQuery}

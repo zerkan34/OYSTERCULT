@@ -114,7 +114,7 @@ export function HRPage() {
       {(activeTab === 'employees') && (
         <div className="flex items-center space-x-4">
           <div className="flex-1 relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" />
+            <Search size={20} className="absolute left-3 transform -translate-y-1/2 text-white/40" style={{top: '26%'}} aria-label="Search icon" />
             <input
               type="text"
               value={searchQuery}

@@ -119,7 +119,7 @@ export function ShopPage() {
   return (
     <div className="min-h-screen bg-[rgb(var(--color-brand-bg))]">
       {/* Contenu principal avec espacement correct */}
-      <main className="max-w-[1400px] mx-auto px-6 pt-12 pb-24">
+      <main className="max-w-[1400px] mx-auto px-6 pb-24">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -149,13 +149,13 @@ export function ShopPage() {
         <div className="mb-8 flex flex-col sm:flex-row gap-4">
           {/* Barre de recherche */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgb(var(--color-text-secondary))]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgb(var(--color-text-secondary))]" aria-label="Search icon" />
             <input
               type="text"
               placeholder="Rechercher un produit..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg focus:outline-none focus:border-[rgb(var(--color-brand-primary))]"
+              className="w-full pl-10 pr-4 py-2.5 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg focus:outline-none focus:border-[rgb(var(--color-brand-primary))] w-full bg-cyan-500/10 border border-cyan-500/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
             />
           </div>
 
@@ -163,7 +163,7 @@ export function ShopPage() {
           <div className="relative">
             <button
               onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-              className="w-full sm:w-48 px-4 py-2.5 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg flex items-center justify-between gap-2"
+              className="w-full sm:w-48 px-4 py-2.5 bg-[rgb(var(--color-brand-surface))] border border-[rgb(var(--color-border)_/_var(--color-border-opacity))] rounded-lg flex items-center justify-between gap-2 bg-cyan-500/10 border border-cyan-500/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
             >
               <span className="text-[rgb(var(--color-text-primary))]">
                 {selectedCategory === 'all' ? 'Toutes catégories' : selectedCategory}

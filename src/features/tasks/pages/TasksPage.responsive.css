@@ -152,11 +152,6 @@ body, html {
 
 /* Styles pour les écrans moyens et plus grands */
 @media (min-width: 640px) {
-  .task-page-wrapper {
-    padding: 0.5rem;
-    width: 95%;
-  }
-  
   .header-content {
     flex-direction: row;
     justify-content: space-between;

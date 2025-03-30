@@ -87,13 +87,13 @@ export function MessageList({ onSelectContact }: MessageListProps) {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-3 py-2 sm:px-4 sm:py-3 pl-9 sm:pl-10 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 text-sm sm:text-base"
             />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={16} />
+            <Search className="absolute left-3 transform -translate-y-1/2 text-white/40" style={{top: '33%'}} aria-label="Search icon" size={16} />
           </div>
         </div>
 
         {/* Contact list or chat */}
         {selectedContactId ? (
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1">
             <NetworkChat 
               contactId={selectedContactId} 
               onClose={() => setSelectedContactId(null)} 

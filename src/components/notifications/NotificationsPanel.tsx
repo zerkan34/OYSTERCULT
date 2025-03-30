@@ -170,7 +170,7 @@ export function NotificationsPanel({ onClose }: NotificationsPanelProps) {
                   className="overflow-hidden"
                 >
                   <div className="relative mt-4">
-                    <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" />
+                    <Search size={20} className="absolute left-3 transform -translate-y-1/2 text-white/40" style={{top: '26%'}} aria-label="Search icon" />
                     <input
                       type="text"
                       value={searchQuery}
