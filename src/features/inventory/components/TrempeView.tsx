@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Plus, Search, Filter, ArrowRight, Loader2, CheckCircle2, CircleDot, X, Clock, Calendar, User, MessageSquare, Tag } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { useStore } from '@/lib/store';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogPortal } from "@/components/ui/dialog";
 
 interface Batch {
   id: string;
@@ -455,411 +455,420 @@ export const TrempeView: React.FC = () => {
         </div>
       </ModernCardBase>
 
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent 
-          className="bg-brand-darker/95 border-white/10 max-w-2xl w-full"
-          style={{
-            WebkitBackdropFilter: 'blur(16px)',
-            backdropFilter: 'blur(16px)',
-            willChange: 'transform'
-          }}
-        >
-          <motion.div
-            variants={modalVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="relative"
-            style={{ willChange: 'transform, opacity' }}
-          >
-            <DialogHeader className="pb-4 border-b border-white/10">
-              <div className="flex items-start justify-between">
-                <div>
-                  <DialogTitle className="text-2xl font-bold text-white">
-                    {selectedSquare?.tableName}
-                  </DialogTitle>
-                  <DialogDescription className="text-white/60 mt-1">
-                    {selectedSquare?.description}
-                  </DialogDescription>
-                </div>
-                <Button
-                  variant="ghost"
-                  className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
-            </DialogHeader>
-
-            <div className="py-4 space-y-6">
-              {/* Status et Informations */}
-              <motion.div variants={modalItemVariants} className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${
-                      selectedSquare?.status === 'en_trempe' ? 'bg-green-500/20 text-green-400 border border-green-500/20' :
-                      selectedSquare?.status === 'pret' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/20' :
-                      'bg-gray-500/20 text-gray-400 border border-gray-500/20'
-                    }`}>
-                      {selectedSquare?.status === 'en_trempe' ? (
-                        <>
-                          <Clock className="w-4 h-4" />
-                          <span>Active</span>
-                        </>
-                      ) : selectedSquare?.status === 'pret' ? (
-                        <>
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span>Prêt</span>
-                        </>
-                      ) : (
-                        <>
-                          <CircleDot className="w-4 h-4" />
-                          <span>Disponible</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tabs */}
-                <div className="flex space-x-4 border-b border-white/10">
-                  <button className="px-4 py-2 text-white border-b-2 border-brand-accent">Informations</button>
-                  <button className="px-4 py-2 text-white/60 hover:text-white">Historique</button>
-                </div>
-
-                {/* Occupation de la table */}
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold text-white">Occupation de la table</h3>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-white/60">Progression</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-white font-medium">
-                        {selectedSquare?.occupancy.current}/{selectedSquare?.occupancy.total} unités
-                      </span>
-                      <span className="text-white/60">
-                        ({Math.round((selectedSquare?.occupancy.current || 0) / (selectedSquare?.occupancy.total || 1) * 100)}%)
-                      </span>
-                    </div>
-                  </div>
-                  <div className="w-full h-2 bg-brand-darker/50 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ scaleX: 0 }}
-                      animate={{ 
-                        scaleX: selectedSquare ? selectedSquare.occupancy.current / selectedSquare.occupancy.total : 0,
-                        backgroundColor: 'rgb(34 197 94 / 0.5)'
-                      }}
-                      transition={{ duration: 0.6, ease: [0.25, 0.25, 0, 1] }}
-                      className="h-full rounded-full origin-left"
-                      style={{ willChange: 'transform' }}
-                    />
-                  </div>
-                </div>
-
-                {/* Progression du calibre */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white">Progression du calibre</h3>
-                  <div className="grid grid-cols-3 gap-4">
+      {/* Modales déplacées à l'intérieur de la div avec la classe border border-white/10 rounded-lg overflow-hidden */}
+      {isModalOpen && (
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogPortal>
+            <DialogContent 
+              className="bg-brand-darker/95 border-white/10 max-w-2xl w-full"
+              style={{
+                WebkitBackdropFilter: 'blur(16px)',
+                backdropFilter: 'blur(16px)',
+                willChange: 'transform'
+              }}
+            >
+              <motion.div
+                variants={modalVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="relative"
+                style={{ willChange: 'transform, opacity' }}
+              >
+                <DialogHeader className="pb-4 border-b border-white/10">
+                  <div className="flex items-start justify-between">
                     <div>
-                      <div className="text-sm text-white/60 mb-1">Début</div>
-                      <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
-                        <span className="text-white font-medium">T15</span>
-                      </div>
+                      <DialogTitle className="text-2xl font-bold text-white">
+                        {selectedSquare?.tableName}
+                      </DialogTitle>
+                      <DialogDescription className="text-white/60 mt-1">
+                        {selectedSquare?.description}
+                      </DialogDescription>
                     </div>
-                    <div>
-                      <div className="text-sm text-white/60 mb-1">Objectif</div>
-                      <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
-                        <span className="text-white font-medium">{selectedSquare?.targetSize}</span>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-white/60 mb-1">Final</div>
-                      <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
-                        <span className="text-white font-medium">{selectedSquare?.currentSize}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Gauge optimisée avec dégradé et curseur dynamique */}
-                  <div className="relative">
-                    <div className="h-[3px] w-full rounded-full overflow-hidden" 
-                         style={{ 
-                           background: 'linear-gradient(to right, #3b82f6 0%, #3b82f6 30%, #60a5fa 50%, #93c5fd 75%, #22c55e 85%, #f97316 95%, #ef4444 100%)'
-                         }}>
-                    </div>
-                    
-                    {/* Marqueur d'objectif */}
-                    <div className="absolute top-0 bottom-0 w-px bg-white/40" 
-                         style={{ 
-                           left: '85%',
-                           transform: 'translateX(-50%)',
-                           willChange: 'transform'
-                         }} />
-
-                    {/* Curseur dynamique */}
-                    <motion.div 
-                      className="absolute top-1/2 -translate-y-1/2 w-4 h-4"
-                      style={{ 
-                        left: `${(['T15', 'N°5', 'N°4', 'N°3', 'N°2', 'N°1'].indexOf(selectedSquare?.currentSize || 'T15') / 5) * 100}%`,
-                        willChange: 'transform, left'
-                      }}
-                      initial={false}
-                      animate={{
-                        scale: [1, 1.2, 1],
-                        transition: {
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }
-                      }}
+                    <Button
+                      variant="ghost"
+                      className="text-white/60 hover:text-white transition-colors"
+                      onClick={() => setIsModalOpen(false)}
                     >
-                      <div className="absolute inset-0 rounded-full bg-blue-500/20 animate-pulse" />
-                      <div className="absolute inset-[2px] rounded-full bg-blue-500" />
-                    </motion.div>
+                      <X className="w-5 h-5" />
+                    </Button>
                   </div>
+                </DialogHeader>
 
-                  <div className="flex items-center justify-between space-x-2 py-2">
-                    {['T15', 'N°5', 'N°4', 'N°3', 'N°2', 'N°1'].map((size) => (
-                      <div key={size} className="flex-1 text-center">
-                        <div className={`text-xs ${
-                          size === selectedSquare?.currentSize 
-                            ? 'text-blue-400 font-medium' 
-                            : size === selectedSquare?.targetSize
-                              ? 'text-green-400 font-medium'
-                              : 'text-white/40'
+                <div className="py-4 space-y-6">
+                  {/* Status et Informations */}
+                  <motion.div variants={modalItemVariants} className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${
+                          selectedSquare?.status === 'en_trempe' ? 'bg-green-500/20 text-green-400 border border-green-500/20' :
+                          selectedSquare?.status === 'pret' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/20' :
+                          'bg-gray-500/20 text-gray-400 border border-gray-500/20'
                         }`}>
-                          {size}
+                          {selectedSquare?.status === 'en_trempe' ? (
+                            <>
+                              <Clock className="w-4 h-4" />
+                              <span>Active</span>
+                            </>
+                          ) : selectedSquare?.status === 'pret' ? (
+                            <>
+                              <CheckCircle2 className="w-4 h-4" />
+                              <span>Prêt</span>
+                            </>
+                          ) : (
+                            <>
+                              <CircleDot className="w-4 h-4" />
+                              <span>Disponible</span>
+                            </>
+                          )}
                         </div>
-                        <div className={`h-1 mt-1 rounded-full transform origin-center transition-transform ${
-                          size === selectedSquare?.currentSize 
-                            ? 'bg-blue-500 scale-100' 
-                            : size === selectedSquare?.targetSize
-                              ? 'bg-green-500 scale-100'
-                              : 'bg-white/10 scale-75'
-                        }`} 
-                        style={{ willChange: 'transform' }} />
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
 
-                {/* Calibres actuels */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <div className="text-sm text-white/60">Calibre actuel</div>
-                    <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
-                      <span className="text-white font-medium">{selectedSquare?.currentSize}</span>
+                    {/* Tabs */}
+                    <div className="flex space-x-4 border-b border-white/10">
+                      <button className="px-4 py-2 text-white border-b-2 border-brand-accent">Informations</button>
+                      <button className="px-4 py-2 text-white/60 hover:text-white">Historique</button>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="text-sm text-white/60">Calibre cible</div>
-                    <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
-                      <span className="text-white font-medium">{selectedSquare?.targetSize}</span>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Informations de production */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white">Informations de production</h3>
-                  <div className="grid grid-cols-2 gap-4">
+                    {/* Occupation de la table */}
                     <div className="space-y-2">
-                      <div className="text-sm text-white/60">Date de démarrage</div>
-                      <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
-                        <span className="text-white font-medium">
-                          {new Date(selectedSquare?.startDate || '').toLocaleDateString('fr-FR')}
-                        </span>
+                      <h3 className="text-lg font-semibold text-white">Occupation de la table</h3>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-white/60">Progression</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-white font-medium">
+                            {selectedSquare?.occupancy.current}/{selectedSquare?.occupancy.total} unités
+                          </span>
+                          <span className="text-white/60">
+                            ({Math.round((selectedSquare?.occupancy.current || 0) / (selectedSquare?.occupancy.total || 1) * 100)}%)
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-full h-2 bg-brand-darker/50 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ scaleX: 0 }}
+                          animate={{ 
+                            scaleX: selectedSquare ? selectedSquare.occupancy.current / selectedSquare.occupancy.total : 0,
+                            backgroundColor: 'rgb(34 197 94 / 0.5)'
+                          }}
+                          transition={{ duration: 0.6, ease: [0.25, 0.25, 0, 1] }}
+                          className="h-full rounded-full origin-left"
+                          style={{ willChange: 'transform' }}
+                        />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <div className="text-sm text-white/60">Date de récolte prévue</div>
-                      <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
-                        <span className="text-white font-medium">
-                          {new Date(selectedSquare?.harvestDate || '').toLocaleDateString('fr-FR')}
-                        </span>
+
+                    {/* Progression du calibre */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-white">Progression du calibre</h3>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div>
+                          <div className="text-sm text-white/60 mb-1">Début</div>
+                          <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
+                            <span className="text-white font-medium">T15</span>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-white/60 mb-1">Objectif</div>
+                          <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
+                            <span className="text-white font-medium">{selectedSquare?.targetSize}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-white/60 mb-1">Final</div>
+                          <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
+                            <span className="text-white font-medium">{selectedSquare?.currentSize}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Gauge optimisée avec dégradé et curseur dynamique */}
+                      <div className="relative">
+                        <div className="h-[3px] w-full rounded-full overflow-hidden" 
+                             style={{ 
+                               background: 'linear-gradient(to right, #3b82f6 0%, #3b82f6 30%, #60a5fa 50%, #93c5fd 75%, #22c55e 85%, #f97316 95%, #ef4444 100%)'
+                             }}>
+                        </div>
+                        
+                        {/* Marqueur d'objectif */}
+                        <div className="absolute top-0 bottom-0 w-px bg-white/40" 
+                             style={{ 
+                               left: '85%',
+                               transform: 'translateX(-50%)',
+                               willChange: 'transform'
+                             }} />
+
+                        {/* Curseur dynamique */}
+                        <motion.div 
+                          className="absolute top-1/2 -translate-y-1/2 w-4 h-4"
+                          style={{ 
+                            left: `${(['T15', 'N°5', 'N°4', 'N°3', 'N°2', 'N°1'].indexOf(selectedSquare?.currentSize || 'T15') / 5) * 100}%`,
+                            willChange: 'transform, left'
+                          }}
+                          initial={false}
+                          animate={{
+                            scale: [1, 1.2, 1],
+                            transition: {
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }
+                          }}
+                        >
+                          <div className="absolute inset-0 rounded-full bg-blue-500/20 animate-pulse" />
+                          <div className="absolute inset-[2px] rounded-full bg-blue-500" />
+                        </motion.div>
+                      </div>
+
+                      <div className="flex items-center justify-between space-x-2 py-2">
+                        {['T15', 'N°5', 'N°4', 'N°3', 'N°2', 'N°1'].map((size) => (
+                          <div key={size} className="flex-1 text-center">
+                            <div className={`text-xs ${
+                              size === selectedSquare?.currentSize 
+                                ? 'text-blue-400 font-medium' 
+                                : size === selectedSquare?.targetSize
+                                  ? 'text-green-400 font-medium'
+                                  : 'text-white/40'
+                            }`}>
+                              {size}
+                            </div>
+                            <div className={`h-1 mt-1 rounded-full transform origin-center transition-transform ${
+                              size === selectedSquare?.currentSize 
+                                ? 'bg-blue-500 scale-100' 
+                                : size === selectedSquare?.targetSize
+                                  ? 'bg-green-500 scale-100'
+                                  : 'bg-white/10 scale-75'
+                            }`} 
+                            style={{ willChange: 'transform' }} />
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <div className="text-sm text-white/60">Taux de mortalité</div>
-                      <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
-                        <span className="text-white font-medium">{selectedSquare?.mortalityRate}%</span>
+
+                    {/* Calibres actuels */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="text-sm text-white/60">Calibre actuel</div>
+                        <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
+                          <span className="text-white font-medium">{selectedSquare?.currentSize}</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="text-sm text-white/60">Calibre cible</div>
+                        <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
+                          <span className="text-white font-medium">{selectedSquare?.targetSize}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+
+                    {/* Informations de production */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-white">Informations de production</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <div className="text-sm text-white/60">Date de démarrage</div>
+                          <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
+                            <span className="text-white font-medium">
+                              {new Date(selectedSquare?.startDate || '').toLocaleDateString('fr-FR')}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="text-sm text-white/60">Date de récolte prévue</div>
+                          <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
+                            <span className="text-white font-medium">
+                              {new Date(selectedSquare?.harvestDate || '').toLocaleDateString('fr-FR')}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="text-sm text-white/60">Taux de mortalité</div>
+                          <div className="px-3 py-2 rounded-lg bg-brand-darker/30 border border-white/10">
+                            <span className="text-white font-medium">{selectedSquare?.mortalityRate}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Actions */}
+                  <motion.div variants={modalItemVariants} className="flex items-center gap-3 pt-4 border-t border-white/10">
+                    <Button 
+                      variant="primary"
+                      className="flex-1 bg-brand-accent hover:bg-brand-accent/90"
+                    >
+                      Ajouter des cordes
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      Récolter
+                    </Button>
+                  </motion.div>
                 </div>
               </motion.div>
-
-              {/* Actions */}
-              <motion.div variants={modalItemVariants} className="flex items-center gap-3 pt-4 border-t border-white/10">
-                <Button 
-                  variant="primary"
-                  className="flex-1 bg-brand-accent hover:bg-brand-accent/90"
-                >
-                  Ajouter des cordes
-                </Button>
-                <Button 
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Récolter
-                </Button>
-              </motion.div>
-            </div>
-          </motion.div>
-        </DialogContent>
-      </Dialog>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+      )}
 
       {/* Modal Nouvelle Table */}
-      <Dialog open={showNewTableModal} onOpenChange={setShowNewTableModal}>
-        <DialogContent 
-          className="bg-brand-darker/95 border-white/10 max-w-2xl w-full"
-          style={{
-            WebkitBackdropFilter: 'blur(16px)',
-            backdropFilter: 'blur(16px)',
-            willChange: 'transform'
-          }}
-        >
-          <motion.div
-            variants={modalVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="relative"
-            style={{ willChange: 'transform, opacity' }}
-          >
-            <DialogHeader className="pb-4 border-b border-white/10">
-              <div className="flex items-start justify-between">
-                <div>
-                  <DialogTitle className="text-2xl font-bold text-white">
-                    Nouvelle table
-                  </DialogTitle>
-                  <DialogDescription className="text-white/60 mt-1">
-                    Créer une nouvelle table de trempe
-                  </DialogDescription>
-                </div>
-                <Button
-                  variant="ghost"
-                  className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5"
-                  onClick={() => setShowNewTableModal(false)}
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
-            </DialogHeader>
-
-            <div className="py-4 space-y-6">
-              <motion.div variants={modalItemVariants} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm text-white/60">Nom de la table</label>
-                  <Input
-                    value={newTableData.tableName}
-                    onChange={(e) => setNewTableData({ ...newTableData, tableName: e.target.value })}
-                    placeholder="ex: Table Nord #128"
-                    className="w-full bg-brand-darker/30 border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-white"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm text-white/60">Description</label>
-                  <Input
-                    value={newTableData.description}
-                    onChange={(e) => setNewTableData({ ...newTableData, description: e.target.value })}
-                    className="w-full bg-brand-darker/30 border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-white"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm text-white/60">Date de démarrage</label>
-                    <Input
-                      type="date"
-                      value={newTableData.startDate}
-                      onChange={(e) => setNewTableData({ ...newTableData, startDate: e.target.value })}
-                      className="w-full bg-brand-darker/30 border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm text-white/60">Date de récolte prévue</label>
-                    <Input
-                      type="date"
-                      value={newTableData.harvestDate}
-                      onChange={(e) => setNewTableData({ ...newTableData, harvestDate: e.target.value })}
-                      className="w-full bg-brand-darker/30 border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm text-white/60">Calibre initial</label>
-                    <select
-                      value={newTableData.currentSize}
-                      onChange={(e) => setNewTableData({ ...newTableData, currentSize: e.target.value as typeof newTableData.currentSize })}
-                      className="w-full bg-brand-darker/30 border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-white"
+      {showNewTableModal && (
+        <Dialog open={showNewTableModal} onOpenChange={setShowNewTableModal}>
+          <DialogPortal>
+            <DialogContent 
+              className="bg-brand-darker/95 border-white/10 max-w-2xl w-full"
+              style={{
+                WebkitBackdropFilter: 'blur(16px)',
+                backdropFilter: 'blur(16px)',
+                willChange: 'transform'
+              }}
+            >
+              <motion.div
+                variants={modalVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="relative"
+                style={{ willChange: 'transform, opacity' }}
+              >
+                <DialogHeader className="pb-4 border-b border-white/10">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <DialogTitle className="text-2xl font-bold text-white">
+                        Nouvelle table
+                      </DialogTitle>
+                      <DialogDescription className="text-white/60 mt-1">
+                        Créer une nouvelle table de trempe
+                      </DialogDescription>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      className="text-white/60 hover:text-white transition-colors"
+                      onClick={() => setShowNewTableModal(false)}
                     >
-                      {['T15', 'N°5', 'N°4', 'N°3', 'N°2', 'N°1'].map((size) => (
-                        <option key={size} value={size}>{size}</option>
-                      ))}
-                    </select>
+                      <X className="w-5 h-5" />
+                    </Button>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm text-white/60">Calibre cible</label>
-                    <select
-                      value={newTableData.targetSize}
-                      onChange={(e) => setNewTableData({ ...newTableData, targetSize: e.target.value as typeof newTableData.targetSize })}
-                      className="w-full bg-brand-darker/30 border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-white"
+                </DialogHeader>
+
+                <div className="py-4 space-y-6">
+                  <motion.div variants={modalItemVariants} className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-sm text-white/60">Nom de la table</label>
+                      <Input
+                        value={newTableData.tableName}
+                        onChange={(e) => setNewTableData({ ...newTableData, tableName: e.target.value })}
+                        placeholder="ex: Table Nord #128"
+                        className="w-full bg-brand-darker/30 border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-white"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm text-white/60">Description</label>
+                      <Input
+                        value={newTableData.description}
+                        onChange={(e) => setNewTableData({ ...newTableData, description: e.target.value })}
+                        className="w-full bg-brand-darker/30 border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-white"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm text-white/60">Date de démarrage</label>
+                        <Input
+                          type="date"
+                          value={newTableData.startDate}
+                          onChange={(e) => setNewTableData({ ...newTableData, startDate: e.target.value })}
+                          className="w-full bg-brand-darker/30 border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-white"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm text-white/60">Date de récolte prévue</label>
+                        <Input
+                          type="date"
+                          value={newTableData.harvestDate}
+                          onChange={(e) => setNewTableData({ ...newTableData, harvestDate: e.target.value })}
+                          className="w-full bg-brand-darker/30 border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm text-white/60">Calibre initial</label>
+                        <select
+                          value={newTableData.currentSize}
+                          onChange={(e) => setNewTableData({ ...newTableData, currentSize: e.target.value as typeof newTableData.currentSize })}
+                          className="w-full bg-brand-darker/30 border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-white"
+                        >
+                          {['T15', 'N°5', 'N°4', 'N°3', 'N°2', 'N°1'].map((size) => (
+                            <option key={size} value={size}>{size}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm text-white/60">Calibre cible</label>
+                        <select
+                          value={newTableData.targetSize}
+                          onChange={(e) => setNewTableData({ ...newTableData, targetSize: e.target.value as typeof newTableData.targetSize })}
+                          className="w-full bg-brand-darker/30 border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-white"
+                        >
+                          {['T15', 'N°5', 'N°4', 'N°3', 'N°2', 'N°1'].map((size) => (
+                            <option key={size} value={size}>{size}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Actions */}
+                  <motion.div variants={modalItemVariants} className="flex items-center gap-3 pt-4 border-t border-white/10">
+                    <Button 
+                      variant="primary"
+                      className="flex-1 bg-brand-accent hover:bg-brand-accent/90"
+                      onClick={() => {
+                        const newTable: TrempeSquare = {
+                          id: trempeSquares.length + 1,
+                          status: 'disponible',
+                          batches: [],
+                          number: trempeSquares.length + 1,
+                          remainingRopes: 100,
+                          totalRopes: 100,
+                          tableName: newTableData.tableName,
+                          description: newTableData.description,
+                          startDate: newTableData.startDate,
+                          harvestDate: newTableData.harvestDate,
+                          mortalityRate: 0,
+                          currentSize: newTableData.currentSize,
+                          targetSize: newTableData.targetSize,
+                          occupancy: {
+                            current: 0,
+                            total: 10
+                          }
+                        };
+                        setTrempeSquares([...trempeSquares, newTable]);
+                        setShowNewTableModal(false);
+                      }}
                     >
-                      {['T15', 'N°5', 'N°4', 'N°3', 'N°2', 'N°1'].map((size) => (
-                        <option key={size} value={size}>{size}</option>
-                      ))}
-                    </select>
-                  </div>
+                      Créer la table
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => setShowNewTableModal(false)}
+                    >
+                      Annuler
+                    </Button>
+                  </motion.div>
                 </div>
               </motion.div>
-
-              {/* Actions */}
-              <motion.div variants={modalItemVariants} className="flex items-center gap-3 pt-4 border-t border-white/10">
-                <Button 
-                  variant="primary"
-                  className="flex-1 bg-brand-accent hover:bg-brand-accent/90"
-                  onClick={() => {
-                    const newTable: TrempeSquare = {
-                      id: trempeSquares.length + 1,
-                      status: 'disponible',
-                      batches: [],
-                      number: trempeSquares.length + 1,
-                      remainingRopes: 100,
-                      totalRopes: 100,
-                      tableName: newTableData.tableName,
-                      description: newTableData.description,
-                      startDate: newTableData.startDate,
-                      harvestDate: newTableData.harvestDate,
-                      mortalityRate: 0,
-                      currentSize: newTableData.currentSize,
-                      targetSize: newTableData.targetSize,
-                      occupancy: {
-                        current: 0,
-                        total: 10
-                      }
-                    };
-                    setTrempeSquares([...trempeSquares, newTable]);
-                    setShowNewTableModal(false);
-                  }}
-                >
-                  Créer la table
-                </Button>
-                <Button 
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => setShowNewTableModal(false)}
-                >
-                  Annuler
-                </Button>
-              </motion.div>
-            </div>
-          </motion.div>
-        </DialogContent>
-      </Dialog>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+      )}
     </motion.div>
   );
 };

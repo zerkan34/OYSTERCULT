@@ -67,6 +67,21 @@ interface EnhancedSidebarProps {
   onEmergencyClick: () => void;
 }
 
+interface NavItem {
+  path: string;
+  label: string;
+  icon: JSX.Element;
+  notifications?: number;
+  color?: string;
+  highlight?: boolean;
+  ariaLabel?: string;
+}
+
+interface NavGroup {
+  category: string;
+  items: NavItem[];
+}
+
 // Catégories avec leurs couleurs spécifiques
 const categories = {
   "Principal": {
@@ -85,17 +100,13 @@ const categories = {
     color: "from-amber-500/30 to-amber-600/10",
     textColor: "text-amber-300"
   },
-  "Paramètres": {
-    color: "from-cyan-500/30 to-cyan-600/10",
-    textColor: "text-cyan-300"
-  },
   "Surveillance": {
     color: "from-red-500/30 to-red-600/10",
     textColor: "text-red-300"
   }
 };
 
-const navItems = [
+const navItems: NavGroup[] = [
   {
     category: "Principal",
     items: [
@@ -125,7 +136,7 @@ const navItems = [
         path: '/stocks', 
         label: 'Stocks', 
         icon: <Package size={22} />,
-        badge: "Nouveau"
+        notifications: 1
       },
       { 
         path: '/traceability', 
@@ -172,14 +183,14 @@ const navItems = [
         path: '/accounting', 
         label: 'Comptabilité', 
         icon: <Calculator size={22} />,
-        badge: "2 tâches",
+        notifications: 2,
         color: "rgb(160, 38, 72)" // Burgundy
       },
       { 
         path: '/hr', 
         label: 'Gestion RH', 
         icon: <Users size={22} />,
-        badge: "2 tâches",
+        notifications: 2,
         color: "rgb(160, 38, 72)" // Burgundy
       },
       { 
@@ -187,21 +198,6 @@ const navItems = [
         label: 'Coffre fort numérique', 
         icon: <Lock size={22} />,
         color: "rgb(56, 189, 248)" // Bleu
-      },
-      { 
-        path: '/profile', 
-        label: 'Mon Espace', 
-        icon: <UserCircle size={22} />
-      }
-    ]
-  },
-  {
-    category: "Paramètres",
-    items: [
-      { 
-        path: '/config', 
-        label: 'Configuration', 
-        icon: <Settings size={22} />
       }
     ]
   },
@@ -579,15 +575,10 @@ export function EnhancedSidebar({
                                   </motion.span>
                                   
                                   {/* Badge de notification */}
-                                  {item.badge && (
-                                    <motion.span
-                                      className="ml-auto bg-brand-burgundy text-white text-xs px-2 py-1 rounded-full"
-                                      initial={{ opacity: 0, scale: 0.8 }}
-                                      animate={{ opacity: 1, scale: 1 }}
-                                      transition={{ duration: 0.3, delay: 0.1 }}
-                                    >
-                                      {item.badge}
-                                    </motion.span>
+                                  {item.notifications > 0 && (
+                                    <div className="ml-auto min-w-[20px] h-[20px] rounded-full bg-gradient-to-r from-[#00D1FF] to-[#0047FF] flex items-center justify-center text-xs font-medium text-white shadow-lg">
+                                      {item.notifications}
+                                    </div>
                                   )}
                                 </motion.div>
                               )}
@@ -625,10 +616,10 @@ export function EnhancedSidebar({
                                     ></div>
                                     <div className="flex items-center">
                                       <span className="text-white font-medium">{item.label}</span>
-                                      {item.badge && (
-                                        <span className="ml-2 bg-brand-burgundy text-white text-xs px-2 py-0.5 rounded-full">
-                                          {item.badge}
-                                        </span>
+                                      {item.notifications > 0 && (
+                                        <div className="ml-2 min-w-[20px] h-[20px] rounded-full bg-gradient-to-r from-[#00D1FF] to-[#0047FF] flex items-center justify-center text-xs font-medium text-white shadow-lg">
+                                          {item.notifications}
+                                        </div>
                                       )}
                                     </div>
                                   </motion.div>

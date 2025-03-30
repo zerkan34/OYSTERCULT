@@ -93,7 +93,7 @@ export function MessageList({ onSelectContact }: MessageListProps) {
 
         {/* Contact list or chat */}
         {selectedContactId ? (
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1">
             <NetworkChat 
               contactId={selectedContactId} 
               onClose={() => setSelectedContactId(null)} 

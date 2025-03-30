@@ -50,7 +50,7 @@ const DigitalVaultPage: React.FC = () => {
           
           <div className="mb-6">
             <div className="relative">
-              <Search className="absolute left-3 top-3 text-white/60" size={18} />
+              <Search className="absolute left-3 top-3 text-white/60" size={18} style={{ top:'26%'}} aria-label="Search icon"  />
               <input
                 type="text"
                 placeholder="Rechercher un document..."

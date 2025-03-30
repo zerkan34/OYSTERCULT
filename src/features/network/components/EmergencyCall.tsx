@@ -1,10 +1,163 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Phone, MapPin, Clock, AlertTriangle, X, Anchor, Ship, LifeBuoy, Wrench, Bell, AlertOctagon } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
-import { Phone, MapPin, Clock, AlertTriangle, X, Anchor, Ship, LifeBuoy } from 'lucide-react';
 
 interface EmergencyCallProps {
   isOpen: boolean;
   onClose: () => void;
+}
+
+// Composant pour la notification de confirmation
+function ConfirmationModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const currentTime = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Signal envoyé"
+      size="lg"
+      className="!bg-gradient-to-br !from-cyan-900/95 !to-brand-dark/95"
+    >
+      <div className="p-6 space-y-8">
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-xl font-semibold text-cyan-400 mb-2">Appel d'urgence activé</h3>
+            <p className="text-white/70">
+              Des notifications ont été envoyées aux producteurs à proximité et aux services de secours.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-cyan-400" />
+              <div>
+                <div className="font-medium text-white">Localisation</div>
+                <div className="text-white/70">Position GPS transmise automatiquement</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-cyan-400" />
+              <div>
+                <div className="font-medium text-white">Heure de l'appel</div>
+                <div className="text-white/70">{currentTime}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col mt-8">
+          <button
+            onClick={() => {
+              // Logique pour signaler une fausse alerte
+              onClose();
+            }}
+            className="w-full px-8 py-5 bg-white rounded-full text-red-500 text-xl hover:bg-white/90 focus:ring-2 focus:ring-red-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transform hover:-translate-y-1"
+          >
+            Fausse alerte - Tout va bien
+          </button>
+          <button
+            onClick={onClose}
+            className="w-full px-8 py-5 bg-white/5 rounded-full text-white/70 text-xl hover:bg-white/10 focus:ring-2 focus:ring-cyan-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transform hover:-translate-y-1"
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+// Composant pour la modale de panne
+function BreakdownModal({ isOpen, onClose, onSignalSent }: { isOpen: boolean; onClose: () => void; onSignalSent: () => void }) {
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Signalement de panne"
+      size="lg"
+      className="!bg-gradient-to-br !from-cyan-900/95 !to-brand-dark/95"
+    >
+      <div className="p-6 space-y-6">
+        <div className="flex items-start gap-4">
+          <div className="p-3 bg-cyan-500/20 rounded-full">
+            <Wrench className="w-8 h-8 text-cyan-400" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold text-cyan-400 mb-2">Besoin d'assistance technique ?</h3>
+            <p className="text-white/70">
+              Nous allons notifier les producteurs à proximité de votre position. 
+              Un professionnel viendra vous aider dès que possible.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-4">
+          <button
+            onClick={onClose}
+            className="px-6 py-3 text-white/70 hover:text-white transition-colors"
+          >
+            Annuler
+          </button>
+          <button
+            onClick={() => {
+              onSignalSent();
+              onClose();
+            }}
+            className="px-6 py-3 bg-cyan-500/20 text-cyan-400 rounded-full hover:bg-cyan-500/30 transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] transform hover:-translate-y-1"
+          >
+            Envoyer le signal
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+// Composant pour la confirmation de fausse alerte
+function FalseAlertConfirmModal({ isOpen, onClose, onConfirm }: { isOpen: boolean; onClose: () => void; onConfirm: () => void }) {
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Confirmation"
+      size="sm"
+      className="!bg-gradient-to-br !from-cyan-900/95 !to-brand-dark/95"
+    >
+      <div className="p-6 space-y-6">
+        <div className="flex items-start gap-4">
+          <div className="p-3 bg-red-500/20 rounded-full">
+            <AlertOctagon className="w-8 h-8 text-red-400" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-2">Confirmer l'annulation</h3>
+            <p className="text-white/70">
+              Êtes-vous certain(e) que tout va bien et qu'il s'agit d'une fausse alerte ?
+            </p>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-6 py-3 bg-white/5 text-white/70 rounded-lg hover:bg-white/10 transition-all duration-300"
+          >
+            Retour
+          </button>
+          <button
+            onClick={() => {
+              onConfirm();
+              onClose();
+            }}
+            className="px-6 py-3 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(255,0,0,0.2)]"
+          >
+            Confirmer
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
 }
 
 export function EmergencyCall({ isOpen, onClose }: EmergencyCallProps) {
@@ -13,7 +166,10 @@ export function EmergencyCall({ isOpen, onClose }: EmergencyCallProps) {
   const [location, setLocation] = useState<string>('');
   const [countdown, setCountdown] = useState<number>(8);
   const [isCountdownActive, setIsCountdownActive] = useState<boolean>(true);
-  const [showBreakdownButton, setShowBreakdownButton] = useState<boolean>(false);
+  const [showDangerButton, setShowDangerButton] = useState<boolean>(false);
+  const [showBreakdownModal, setShowBreakdownModal] = useState<boolean>(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState<boolean>(false);
+  const [showFalseAlertModal, setShowFalseAlertModal] = useState<boolean>(false);
   const [showEmergencyMessage, setShowEmergencyMessage] = useState<boolean>(false);
   
   const emergencyTypes = [
@@ -41,7 +197,6 @@ export function EmergencyCall({ isOpen, onClose }: EmergencyCallProps) {
         setCountdown(prev => prev - 1);
       }, 1000);
     } else if (countdown === 0) {
-      // Action à effectuer lorsque le compte à rebours atteint 0
       setShowEmergencyMessage(true);
       setIsCountdownActive(false);
     }
@@ -51,25 +206,23 @@ export function EmergencyCall({ isOpen, onClose }: EmergencyCallProps) {
     };
   }, [isOpen, countdown, isCountdownActive]);
 
-  // Réinitialiser le compte à rebours quand la modal s'ouvre
+  // Réinitialiser le compte à rebours quand la modale s'ouvre
   useEffect(() => {
     if (isOpen) {
       setCountdown(8);
       setIsCountdownActive(true);
-      setShowBreakdownButton(false);
+      setShowDangerButton(false);
       setShowEmergencyMessage(false);
     }
   }, [isOpen]);
 
   const handleStopCountdown = useCallback(() => {
     setIsCountdownActive(false);
-    setShowBreakdownButton(true);
+    setShowDangerButton(true);
   }, []);
 
-  const handleReportBreakdown = useCallback(() => {
-    // Logique pour signaler une panne
-    setShowEmergencyMessage(true);
-    setEmergencyType('boatIssue');
+  const handleBreakdown = useCallback(() => {
+    setShowBreakdownModal(true);
   }, []);
 
   const handleSendEmergency = useCallback(() => {
@@ -125,151 +278,107 @@ export function EmergencyCall({ isOpen, onClose }: EmergencyCallProps) {
           </div>
         </div>
 
-        <button
-          onClick={handleCloseEmergencyMessage}
-          className="px-8 py-3 bg-white text-red-600 rounded-lg font-bold hover:bg-white/90 transition-colors"
-        >
-          Fermer
-        </button>
+        <div className="flex flex-col gap-4">
+          <button
+            onClick={() => setShowFalseAlertModal(true)}
+            className="w-full px-8 py-5 bg-white rounded-full text-red-500 text-xl hover:bg-white/90 focus:ring-2 focus:ring-red-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transform hover:-translate-y-1"
+          >
+            Fausse alerte - Tout va bien
+          </button>
+          <button
+            onClick={handleCloseEmergencyMessage}
+            className="w-full px-8 py-5 bg-white/5 rounded-full text-white/70 text-xl hover:bg-white/10 focus:ring-2 focus:ring-cyan-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transform hover:-translate-y-1"
+          >
+            Fermer
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Appel d'Urgence"
-      size="xl"
-      showCloseButton={false}
-      className="!bg-gradient-to-br !from-red-900/95 !to-brand-dark/95"
-    >
-      <div className="space-y-6">
-        {/* Compte à rebours */}
-        {isCountdownActive && (
-          <div className="text-center mb-6">
-            <p className="text-white text-lg mb-2">Appel automatique dans :</p>
-            <div className="flex justify-center items-center mb-4">
-              <div className="flex items-center justify-center bg-red-500 text-white w-16 h-16 rounded-full text-3xl font-bold">
+    <>
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Appel d'urgence"
+        >
+          <div 
+            className="bg-red-600 !rounded-full !p-0 w-[800px] aspect-square flex items-center justify-center mb-8"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {/* Compte à rebours */}
+            <div className="w-[600px] h-[600px] rounded-full flex items-center justify-center">
+              <span className="text-[300px] font-bold text-white" aria-label={`Compte à rebours : ${countdown} secondes`}>
                 {countdown}
-              </div>
+              </span>
             </div>
-            <button 
-              onClick={handleStopCountdown}
-              className="px-4 py-2 bg-white/10 rounded-lg text-white hover:bg-white/20 transition-colors"
+          </div>
+          
+          {/* Boutons en dessous */}
+          <div className="flex flex-col gap-6 w-full max-w-lg">
+            {isCountdownActive ? (
+              <button 
+                onClick={handleStopCountdown}
+                className="w-full px-8 py-5 bg-cyan-500/20 text-cyan-400 rounded-full text-xl hover:bg-cyan-500/30 focus:ring-2 focus:ring-cyan-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] transform hover:-translate-y-1"
+              >
+                Arrêter le compte à rebours
+              </button>
+            ) : (
+              <button 
+                onClick={() => setShowEmergencyMessage(true)}
+                className="w-full px-8 py-5 bg-red-500 text-white rounded-full text-xl hover:bg-red-600 focus:ring-2 focus:ring-red-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(255,0,0,0.25),0_0_15px_rgba(255,0,0,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(255,0,0,0.3),0_0_20px_rgba(255,0,0,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] transform hover:-translate-y-1"
+              >
+                Je suis en danger
+              </button>
+            )}
+
+            {showDangerButton && (
+              <button 
+                onClick={handleBreakdown}
+                className="w-full px-8 py-5 bg-cyan-500/20 text-cyan-400 rounded-full text-xl hover:bg-cyan-500/30 focus:ring-2 focus:ring-cyan-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] transform hover:-translate-y-1"
+              >
+                Je suis en panne
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="w-full mt-4 px-8 py-5 bg-white/5 rounded-full text-white/70 text-xl hover:bg-white/10 focus:ring-2 focus:ring-cyan-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transform hover:-translate-y-1"
+              aria-label="Fermer la modale d'urgence"
             >
-              Arrêter le compte à rebours
+              Annuler
             </button>
           </div>
-        )}
-
-        {/* Bouton "Je suis en panne" - apparaît après l'arrêt du compte à rebours */}
-        {showBreakdownButton && (
-          <div className="mb-6 p-4 border border-red-500/30 rounded-lg bg-red-500/10">
-            <div className="flex items-start">
-              <LifeBuoy className="text-red-500 mr-3 mt-1" size={24} />
-              <div>
-                <h3 className="text-lg font-medium text-red-400 mb-2">En panne en mer ?</h3>
-                <p className="text-white/70 mb-4">
-                  Vous êtes en panne en mer avec votre bateau ? Cliquez ici pour envoyer un appel d'aide immédiat. 
-                  Une notification sera envoyée aux producteurs à proximité, et quelqu'un viendra rapidement vous prêter main forte.
-                </p>
-                <button 
-                  onClick={handleReportBreakdown}
-                  className="px-4 py-2 bg-red-500 rounded-lg text-white hover:bg-red-600 transition-colors"
-                >
-                  Je suis en panne
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6">
-          <h3 className="text-lg font-medium text-red-400 mb-2">Numéros d'urgence</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {emergencyContacts.map((contact) => (
-              <a
-                key={contact.number}
-                href={`tel:${contact.number}`}
-                className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
-              >
-                <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
-                  <Phone className="text-white" size={20} />
-                </div>
-                <div>
-                  <div className="font-medium text-white">{contact.name}</div>
-                  <div className="text-red-400 text-lg font-bold">{contact.number}</div>
-                </div>
-              </a>
-            ))}
-          </div>
         </div>
+      )}
 
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-white mb-1">
-              Type d'urgence
-            </label>
-            <select
-              value={emergencyType}
-              onChange={(e) => setEmergencyType(e.target.value)}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-            >
-              <option value="">Sélectionner le type d'urgence</option>
-              {emergencyTypes.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
-          </div>
+      {/* Modale de panne */}
+      <BreakdownModal 
+        isOpen={showBreakdownModal} 
+        onClose={() => setShowBreakdownModal(false)}
+        onSignalSent={() => setShowConfirmationModal(true)}
+      />
 
-          <div>
-            <label className="block text-sm font-medium text-white mb-1">
-              Description de l'urgence
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={4}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-              placeholder="Décrivez la situation d'urgence..."
-            />
-          </div>
+      {/* Modale de confirmation */}
+      <ConfirmationModal
+        isOpen={showConfirmationModal}
+        onClose={() => setShowConfirmationModal(false)}
+      />
 
-          <div>
-            <label className="block text-sm font-medium text-white mb-1">
-              Localisation
-            </label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
-                placeholder="Précisez l'emplacement..."
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-end space-x-4">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-white/70 hover:text-white transition-colors"
-          >
-            Annuler
-          </button>
-          <button
-            onClick={handleSendEmergency}
-            className="px-4 py-2 bg-red-500 rounded-lg text-white hover:bg-red-600 transition-colors"
-          >
-            Signaler l'urgence
-          </button>
-        </div>
-      </div>
-    </Modal>
+      {/* Modale de confirmation de fausse alerte */}
+      <FalseAlertConfirmModal
+        isOpen={showFalseAlertModal}
+        onClose={() => setShowFalseAlertModal(false)}
+        onConfirm={() => {
+          handleCloseEmergencyMessage();
+          setShowFalseAlertModal(false);
+          onClose();
+        }}
+      />
+    </>
   );
 }

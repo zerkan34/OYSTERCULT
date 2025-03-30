@@ -55,55 +55,47 @@ export function HRPage() {
       <div className="flex items-center space-x-4 border-b border-white/10">
         <button
           onClick={() => handleTabChange('employees')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
             activeTab === 'employees'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <Users size={16} className="mr-2" />
-            Employés
-          </div>
+          <Users size={16} />
+          Employés
         </button>
         <button
           onClick={() => handleTabChange('schedule')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
             activeTab === 'schedule'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <Calendar size={16} className="mr-2" />
-            Planning
-          </div>
+          <Calendar size={16} />
+          Planning
         </button>
         <button
           onClick={() => handleTabChange('leave')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
             activeTab === 'leave'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <Calendar size={16} className="mr-2" />
-            Congés
-          </div>
+          <Calendar size={16} />
+          Congés
         </button>
         <button
           onClick={() => handleTabChange('performance')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
             activeTab === 'performance'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <Star size={16} className="mr-2" />
-            Évaluations
-          </div>
+          <Star size={16} />
+          Évaluations
         </button>
       </div>
 

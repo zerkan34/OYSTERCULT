@@ -76,8 +76,7 @@ export function CompanySettings() {
       variants={formVariants}
     >
       <motion.div variants={inputVariants}>
-        <h2 className="text-2xl font-bold bg-clip-text text-transparent mb-2"
-          style={{ backgroundImage: "linear-gradient(90deg, #ffffff, #a5f3fc)" }}>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-2">
           Informations de l'entreprise
         </h2>
         <p className="text-white/60 mb-6">
@@ -91,65 +90,56 @@ export function CompanySettings() {
           variants={inputVariants}
         >
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-2">
+            <label className="block text-sm font-medium text-white/80 mb-2" htmlFor="name">
               Nom de l'entreprise
             </label>
             <input
               type="text"
+              id="name"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none"
-              style={{
-                backdropFilter: "blur(10px)",
-                WebkitBackdropFilter: "blur(10px)"
-              }}
+              className="config-input"
               placeholder="Oyster Cult Enterprise"
               required
+              aria-required="true"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-2">
+            <label className="block text-sm font-medium text-white/80 mb-2" htmlFor="siret">
               Numéro SIRET
             </label>
             <input
               type="text"
+              id="siret"
               name="siret"
               value={formData.siret}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none"
-              style={{
-                backdropFilter: "blur(10px)",
-                WebkitBackdropFilter: "blur(10px)"
-              }}
+              className="config-input"
               placeholder="123 456 789 00012"
               required
+              aria-required="true"
             />
           </div>
         </motion.div>
 
         <motion.div variants={inputVariants}>
-          <label className="block text-sm font-medium text-white/80 mb-2">
+          <label className="block text-sm font-medium text-white/80 mb-2" htmlFor="logo">
             Logo de l'entreprise
           </label>
-          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-white/10 border-dashed rounded-xl transition-all duration-200 hover:border-[#00D1FF]/30 group"
-            style={{
-              background: "linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)",
-              backdropFilter: "blur(10px)",
-              WebkitBackdropFilter: "blur(10px)"
-            }}>
+          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-white/10 border-dashed rounded-xl transition-all duration-200 hover:border-white/30 group config-container">
             <div className="space-y-2 text-center">
-              <Upload className="mx-auto h-12 w-12 text-white/40 group-hover:text-[#00D1FF]/60 transition-colors duration-200" />
+              <Upload className="mx-auto h-12 w-12 text-white/40 group-hover:text-white/60 transition-colors duration-200" />
               <div className="flex text-sm text-white/60">
                 <label
                   htmlFor="file-upload"
-                  className="relative cursor-pointer rounded-md font-medium text-[#00D1FF] hover:text-[#00D1FF]/80 focus-within:outline-none transition-colors duration-200"
+                  className="relative cursor-pointer rounded-md font-medium text-white hover:text-white/80 focus-within:outline-none focus-within:ring-2 focus-within:ring-white/20 transition-colors duration-200"
                 >
                   <span>Télécharger un fichier</span>
                   <input 
                     id="file-upload" 
                     name="logo"
-                    type="file" 
+                    type="file"
                     className="sr-only"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
@@ -160,32 +150,30 @@ export function CompanySettings() {
                         }));
                       }
                     }}
+                    accept="image/*"
                   />
                 </label>
                 <p className="pl-1">ou glisser-déposer</p>
               </div>
               <p className="text-xs text-white/40">
-                PNG, JPG jusqu'à 10MB
+                PNG, JPG, GIF jusqu'à 10MB
               </p>
             </div>
           </div>
         </motion.div>
 
         <motion.div variants={inputVariants}>
-          <label className="block text-sm font-medium text-white/80 mb-2">
+          <label className="block text-sm font-medium text-white/80 mb-2" htmlFor="description">
             Description
           </label>
           <textarea
+            id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
+            className="config-input"
+            placeholder="Une brève description de votre entreprise..."
             rows={4}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none"
-            style={{
-              backdropFilter: "blur(10px)",
-              WebkitBackdropFilter: "blur(10px)"
-            }}
-            placeholder="Description de votre entreprise..."
           />
         </motion.div>
 
@@ -194,102 +182,90 @@ export function CompanySettings() {
           variants={inputVariants}
         >
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-2">
+            <label className="block text-sm font-medium text-white/80 mb-2" htmlFor="email">
               Email
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
               <input
                 type="email"
+                id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none"
-                style={{
-                  backdropFilter: "blur(10px)",
-                  WebkitBackdropFilter: "blur(10px)"
-                }}
-                placeholder="contact@example.com"
+                className="config-input"
+                placeholder="contact@oystercult.com"
                 required
+                aria-required="true"
               />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-2">
+            <label className="block text-sm font-medium text-white/80 mb-2" htmlFor="phone">
               Téléphone
             </label>
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
               <input
                 type="tel"
+                id="phone"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none"
-                style={{
-                  backdropFilter: "blur(10px)",
-                  WebkitBackdropFilter: "blur(10px)"
-                }}
+                className="config-input"
                 placeholder="+33 1 23 45 67 89"
                 required
+                aria-required="true"
               />
             </div>
           </div>
         </motion.div>
 
         <motion.div variants={inputVariants}>
-          <label className="block text-sm font-medium text-white/80 mb-2">
+          <label className="block text-sm font-medium text-white/80 mb-2" htmlFor="address">
             Adresse
           </label>
           <div className="relative">
             <MapPin className="absolute left-3 top-3 text-white/40" size={20} />
-            <textarea
+            <input
+              type="text"
+              id="address"
               name="address"
               value={formData.address}
               onChange={handleChange}
-              rows={2}
-              className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none"
-              style={{
-                backdropFilter: "blur(10px)",
-                WebkitBackdropFilter: "blur(10px)"
-              }}
-              placeholder="Adresse complète..."
+              className="config-input"
+              placeholder="123 rue de la Mer, 75001 Paris"
               required
+              aria-required="true"
             />
           </div>
         </motion.div>
 
         <motion.div variants={inputVariants}>
-          <label className="block text-sm font-medium text-white/80 mb-2">
+          <label className="block text-sm font-medium text-white/80 mb-2" htmlFor="website">
             Site web
           </label>
           <div className="relative">
             <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
             <input
               type="url"
+              id="website"
               name="website"
               value={formData.website}
               onChange={handleChange}
-              className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white transition-all duration-200 focus:border-[#00D1FF]/50 focus:ring-2 focus:ring-[#00D1FF]/20 focus:outline-none"
-              style={{
-                backdropFilter: "blur(10px)",
-                WebkitBackdropFilter: "blur(10px)"
-              }}
-              placeholder="https://www.example.com"
+              className="config-input"
+              placeholder="https://www.oystercult.com"
             />
           </div>
         </motion.div>
 
         <motion.div 
-          variants={inputVariants}
           className="flex justify-end"
+          variants={inputVariants}
         >
           <button
             type="submit"
-            className="px-6 py-3 bg-gradient-to-r from-[#00D1FF] to-[#00D1FF]/80 text-white font-medium rounded-xl transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#00D1FF]/50"
-            style={{
-              boxShadow: "0 0 20px rgba(0, 209, 255, 0.3)"
-            }}
+            className="config-button bg-white/10 text-white hover:bg-white/15"
           >
             Enregistrer les modifications
           </button>

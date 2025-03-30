@@ -18,68 +18,58 @@ export function ProfilePage() {
       <div className="flex items-center space-x-4 border-b border-white/10">
         <button
           onClick={() => setActiveTab('info')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
             activeTab === 'info'
-              ? 'border-brand-burgundy text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <UserCircle size={16} className="mr-2" />
-            Informations
-          </div>
+          <UserCircle size={16} />
+          Informations
         </button>
         <button
           onClick={() => setActiveTab('friend-code')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
             activeTab === 'friend-code'
-              ? 'border-brand-burgundy text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <Users size={16} className="mr-2" />
-            Code ami
-          </div>
+          <Users size={16} />
+          Code ami
         </button>
         <button
           onClick={() => setActiveTab('security')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
             activeTab === 'security'
-              ? 'border-brand-burgundy text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <Shield size={16} className="mr-2" />
-            Sécurité
-          </div>
+          <Shield size={16} />
+          Sécurité
         </button>
         <button
           onClick={() => setActiveTab('activity')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
             activeTab === 'activity'
-              ? 'border-brand-burgundy text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <History size={16} className="mr-2" />
-            Activité
-          </div>
+          <History size={16} />
+          Activité
         </button>
         <button
           onClick={() => setActiveTab('export')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
             activeTab === 'export'
-              ? 'border-brand-burgundy text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <Download size={16} className="mr-2" />
-            Export
-          </div>
+          <Download size={16} />
+          Export
         </button>
       </div>
 

@@ -108,7 +108,7 @@ export function AuthPage() {
           <motion.button
             variants={itemVariants}
             onClick={handleDemoAccess}
-            className={`w-full px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-xl text-white font-medium transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg backdrop-blur-sm ${showAuth ? 'scale-0 h-0 opacity-0 mt-0 mb-0' : ''}`}
+            className={`w-full h-full px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-xl text-white font-medium transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg backdrop-blur-sm ${showAuth ? 'scale-0 h-0 opacity-0 mt-0 mb-0' : ''}`}
           >
             Connexion
           </motion.button>

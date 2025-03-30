@@ -4,6 +4,8 @@ import { useStore } from '@/lib/store';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { OysterLogo } from './OysterLogo';
 import { modalAnimation, glassEffectStyle, ProgressBar } from './CommonStyles';
+import { UserCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
 interface ModernHeaderProps {
   onShowMobileMenu: () => void;
@@ -25,10 +27,28 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
   const { unreadCount } = useStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const [previousPath, setPreviousPath] = useState<string>('/dashboard');
+
+  // Mettre à jour le chemin précédent quand on change de page
+  useEffect(() => {
+    if (location.pathname !== '/profile') {
+      setPreviousPath(location.pathname);
+    }
+  }, [location.pathname]);
 
   const handleLogoClick = () => {
     if (location.pathname !== '/dashboard') {
       navigate('/dashboard');
+    }
+  };
+
+  const handleProfileClick = () => {
+    if (location.pathname === '/profile') {
+      // Si on est sur la page profile, retourner à la page précédente
+      navigate(previousPath);
+    } else {
+      // Sinon, aller à la page profile
+      navigate('/profile');
     }
   };
 
@@ -280,6 +300,26 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
                 shadow-[0_0_15px_rgba(255,255,255,0.3)]
                 border border-white/30 bg-white/10
               "
+              onClick={handleProfileClick}
+              aria-label={location.pathname === '/profile' ? "Retour à la page précédente" : "Mon espace"}
+              style={{ transform: 'translate3d(0,0,0)' }}
+            >
+              <div className="absolute inset-0 bg-white/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <UserCircle 
+                size={26} 
+                className={location.pathname === '/profile' ? 'text-cyan-400' : 'text-white'}
+              />
+            </button>
+
+            <button 
+              className="
+                inline-flex items-center justify-center font-medium rounded-lg transition-all
+                text-white hover:text-white hover:bg-white/20
+                p-3 relative group
+                will-change-transform
+                shadow-[0_0_15px_rgba(255,255,255,0.3)]
+                border border-white/30 bg-white/10
+              "
               onClick={onToggleMessages}
               aria-label="Afficher les messages"
               style={{ transform: 'translate3d(0,0,0)' }}
@@ -290,7 +330,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
                 <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"></path>
               </svg>
               {unreadMessagesCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 text-xs font-bold text-white shadow-[0_0_15px_rgba(0,210,255,0.5),0_0_5px_rgba(0,0,0,0.3)_inset] min-w-[20px] min-h-[20px]" aria-label={`${unreadMessagesCount} messages non lus`}>
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 text-xs font-bold text-white shadow-[0_0_15px_rgba(0,210,255,0.5),0_0_5px_rgba(0,0,0,0.3)_inset] min-w-[20px] min-h-[20px]">
                   {unreadMessagesCount}
                 </span>
               )}

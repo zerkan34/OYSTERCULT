@@ -9,6 +9,7 @@ export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
 export type InvoiceType = 'sale' | 'purchase';
 
 export interface InvoiceWithItems extends Invoice {
+  id: string;
   items: InvoiceItem[];
   customer?: Customer;
   supplier?: Supplier;

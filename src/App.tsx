@@ -174,7 +174,7 @@ function MainLayout() {
             overflow: isResponsive && location.pathname.endsWith('/dashboard') ? "hidden" : "auto"
           }}
         >
-          <main className={`flex-1 p-6 ${
+          <main className={`flex-1 p-6 pt-12 ${
             location.pathname.endsWith('/dashboard') 
               ? 'h-full' 
               : 'h-[calc(100%-80px)]'

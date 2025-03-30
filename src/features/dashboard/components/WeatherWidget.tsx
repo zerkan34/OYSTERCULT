@@ -12,7 +12,9 @@ import {
   Sun,
   CloudRain,
   Calendar,
-  ChevronRight
+  ChevronRight,
+  Clock,
+  MapPin
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import './weather-widget.css';
@@ -46,6 +48,8 @@ interface WeatherData {
     windDirection: number;
     waveHeight: number;
   }>;
+  waterTemp: number;
+  feelsLike: number;
 }
 
 const mockWeather: WeatherData = {
@@ -68,11 +72,13 @@ const mockWeather: WeatherData = {
     { time: '21:00', temp: 16, windSpeed: 16, windDirection: 305, waveHeight: 0.9 }
   ],
   dailyForecast: [
-    { day: 'Demain', condition: 'sunny', tempMin: 16, tempMax: 21, windSpeed: 12, windDirection: 45, waveHeight: 0.5 },
-    { day: 'Mercredi', condition: 'partly-cloudy', tempMin: 15, tempMax: 19, windSpeed: 14, windDirection: 90, waveHeight: 0.6 },
-    { day: 'Jeudi', condition: 'rainy', tempMin: 14, tempMax: 17, windSpeed: 18, windDirection: 135, waveHeight: 0.7 },
-    { day: 'Vendredi', condition: 'cloudy', tempMin: 15, tempMax: 20, windSpeed: 10, windDirection: 225, waveHeight: 0.5 }
-  ]
+    { day: 'Lundi', condition: 'sunny', tempMin: 16, tempMax: 22, windSpeed: 12, windDirection: 45, waveHeight: 0.5 },
+    { day: 'Mardi', condition: 'sunny', tempMin: 17, tempMax: 23, windSpeed: 10, windDirection: 90, waveHeight: 0.4 },
+    { day: 'Mercredi', condition: 'sunny', tempMin: 15, tempMax: 19, windSpeed: 14, windDirection: 90, waveHeight: 0.6 },
+    { day: 'Jeudi', condition: 'rainy', tempMin: 14, tempMax: 17, windSpeed: 18, windDirection: 135, waveHeight: 0.7 }
+  ],
+  waterTemp: 18,
+  feelsLike: 18
 };
 
 const getWindDirection = (degrees: number): string => {
@@ -175,20 +181,23 @@ const WeatherCard = ({
 export function WeatherWidget() {
   return (
     <div className="weather-widget-container w-full" style={{ width: '100%', margin: 0, padding: 0, position: 'relative', boxSizing: 'border-box' }}>
-      <div className="weather-widget w-full flex flex-col glass-effect rounded-xl p-5" style={{ width: '100%', maxWidth: '100%', margin: 0, boxSizing: 'border-box' }}>
-        {/* En-tête avec titre et icône */}
-        <div className="flex items-center justify-between mb-4 w-full">
+      <div className="weather-widget w-full flex flex-col glass-effect rounded-xl p-6" style={{ width: '100%', maxWidth: '100%', margin: 0, boxSizing: 'border-box' }}>
+        {/* En-tête avec titre et localisation */}
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            <span aria-hidden="true"><ThermometerSun size={20} className="text-cyan-400 mr-2" /></span>
-            <h2 className="text-2xl font-semibold bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent whitespace-nowrap">
-              Météo & Conditions Maritimes Actuelles
+            <span aria-hidden="true"><ThermometerSun size={24} className="text-cyan-400 mr-3" /></span>
+            <h2 className="text-3xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent whitespace-nowrap">
+              Météo & Conditions Maritimes
             </h2>
           </div>
-          <div className="text-sm text-white/60 whitespace-nowrap flex items-center gap-2">
-            {`${new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}, Bouzigues`}
+          <div className="flex items-center gap-2">
+            <MapPin size={20} className="text-cyan-400" aria-hidden="true" />
+            <span className="text-2xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Bouzigues</span><span className="text-white/60">, </span>
+            <span className="text-white/60 text-base">
+              {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </span>
           </div>
         </div>
-
         {/* Desktop layout avec 4 widgets alignés */}
         <div className="hidden md:grid md:grid-cols-4 md:gap-4 md:mb-4" style={{ minHeight: '200px' }}>
           <WeatherCard
@@ -196,14 +205,23 @@ export function WeatherWidget() {
             icon={<ThermometerSun size={20} />}
             className="h-full shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 flex-1"
           >
-            <div className="flex items-center">
-              <div className="text-3xl font-bold text-white">{mockWeather.temperature}°</div>
-              <div className="text-white/60 ml-2">C</div>
-            </div>
-            <div className="text-white/60 mt-1">Ressenti 19°C</div>
-            <div className="flex items-center mt-3">
-              <Droplets size={16} className="text-cyan-400 mr-2" />
-              <span className="text-white/80">Humidité {mockWeather.humidity}%</span>
+            <div className="flex flex-col h-full justify-between py-2 items-center text-center">
+              <div className="flex flex-col items-center">
+                <div className="flex items-baseline justify-center">
+                  <div className="text-4xl font-bold text-white">{mockWeather.temperature}</div>
+                  <div className="text-2xl text-white/60 ml-1">°C</div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2 mt-2 items-center">
+                <div className="flex items-center">
+                  <ThermometerSun size={16} className="text-cyan-400 mr-2" />
+                  <span className="text-white/80">Ressenti {mockWeather.feelsLike}°C</span>
+                </div>
+                <div className="flex items-center">
+                  <Droplets size={16} className="text-cyan-400 mr-2" />
+                  <span className="text-white/80">Humidité {mockWeather.humidity}%</span>
+                </div>
+              </div>
             </div>
           </WeatherCard>
           
@@ -212,20 +230,27 @@ export function WeatherWidget() {
             icon={<Wind size={20} />}
             className="h-full shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 flex-1"
           >
-            <div className="flex items-center mb-1">
-              <div className="text-2xl font-bold text-white">{mockWeather.windSpeed}</div>
-              <div className="text-white/60 ml-1">km/h</div>
-            </div>
-            <div className="flex items-center mb-3">
-              <Navigation 
-                size={16} 
-                className="text-cyan-400 mr-2"
-                style={{ transform: `rotate(${mockWeather.windDirection}deg)` }}
-              />
-              <span className="text-white/80">{getWindDirection(mockWeather.windDirection)}</span>
-            </div>
-            <div className="text-sm text-white/60">
-              Rafales jusqu'à {mockWeather.windGust} km/h
+            <div className="flex flex-col h-full justify-between py-2 items-center text-center">
+              <div className="flex flex-col items-center">
+                <div className="flex items-baseline justify-center">
+                  <div className="text-4xl font-bold text-white">{mockWeather.windSpeed}</div>
+                  <div className="text-2xl text-white/60 ml-1">km/h</div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2 mt-2 items-center">
+                <div className="flex items-center">
+                  <Navigation 
+                    size={16} 
+                    className="text-cyan-400 mr-2"
+                    style={{ transform: `rotate(${mockWeather.windDirection}deg)` }}
+                  />
+                  <span className="text-white/80">{getWindDirection(mockWeather.windDirection)}</span>
+                </div>
+                <div className="flex items-center">
+                  <Wind size={16} className="text-cyan-400 mr-2" />
+                  <span className="text-white/80">Rafales {mockWeather.windGust} km/h</span>
+                </div>
+              </div>
             </div>
           </WeatherCard>
           
@@ -234,16 +259,23 @@ export function WeatherWidget() {
             icon={<Waves size={20} />}
             className="h-full shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 flex-1"
           >
-            <div className="flex items-center mb-1">
-              <div className="text-2xl font-bold text-white">{mockWeather.waveHeight}</div>
-              <div className="text-white/60 ml-1">mètres</div>
-            </div>
-            <div className="flex items-center mb-3">
-              <Compass className="text-cyan-400 mr-2" size={16} />
-              <span className="text-white/80">{getWindDirection(mockWeather.waveDirection)}</span>
-            </div>
-            <div className="text-sm text-white/60">
-              Température de l'eau: 16°C
+            <div className="flex flex-col h-full justify-between py-2 items-center text-center">
+              <div className="flex flex-col items-center">
+                <div className="flex items-baseline justify-center">
+                  <div className="text-4xl font-bold text-white">{mockWeather.waveHeight}</div>
+                  <div className="text-2xl text-white/60 ml-1">m</div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2 mt-2 items-center">
+                <div className="flex items-center">
+                  <Compass size={16} className="text-cyan-400 mr-2" />
+                  <span className="text-white/80">{getWindDirection(mockWeather.waveDirection)}</span>
+                </div>
+                <div className="flex items-center">
+                  <ThermometerSun size={16} className="text-cyan-400 mr-2" />
+                  <span className="text-white/80">Eau {mockWeather.waterTemp}°C</span>
+                </div>
+              </div>
             </div>
           </WeatherCard>
           
@@ -252,7 +284,7 @@ export function WeatherWidget() {
             icon={<Compass size={20} />}
             className="h-full shadow-[0_0_15px_rgba(0,210,200,0.15),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10 hover:border-cyan-400/30 flex-1"
           >
-            <div className="space-y-2">
+            <div className="flex flex-col h-full justify-between py-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <ArrowUp size={16} className="text-cyan-400 mr-2" />
@@ -260,7 +292,7 @@ export function WeatherWidget() {
                 </div>
                 <div className="text-white font-medium">{mockWeather.nextHighTide}</div>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mt-2">
                 <div className="flex items-center">
                   <ArrowDown size={16} className="text-cyan-400 mr-2" />
                   <span className="text-white/80">Marée basse</span>
@@ -273,26 +305,26 @@ export function WeatherWidget() {
 
         {/* Section des prévisions horaires */}
         <div className="mb-6">
-          <div className="flex items-center mb-3">
-            <Calendar size={18} className="text-cyan-400 mr-2" />
-            <h3 className="text-lg font-medium text-white">Prévisions horaires</h3>
+          <div className="flex items-center mb-4">
+            <Calendar size={20} className="text-cyan-400 mr-2" />
+            <h3 className="text-xl font-semibold bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">Prévisions horaires</h3>
           </div>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 gap-6">
             {mockWeather.forecast.map((hour, index) => (
               <WeatherCard
                 key={index}
                 title={hour.time}
-                icon={<ThermometerSun size={18} />}
-                className="text-center"
+                icon={<Clock size={20} />}
+                className="text-center p-5 transform hover:scale-105 transition-transform duration-300"
               >
-                <div className="flex flex-col items-center space-y-2">
-                  <div className="text-2xl font-bold text-white">{hour.temp}°C</div>
-                  <div className="flex items-center space-x-2 text-white/60">
-                    <Wind size={16} />
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="text-3xl font-bold text-white">{hour.temp}°C</div>
+                  <div className="flex items-center space-x-3 text-white/80">
+                    <Wind size={18} className="text-cyan-400" />
                     <span>{hour.windSpeed} km/h</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-white/60">
-                    <Waves size={16} />
+                  <div className="flex items-center space-x-3 text-white/80">
+                    <Waves size={18} className="text-cyan-400" />
                     <span>{hour.waveHeight}m</span>
                   </div>
                 </div>
@@ -303,36 +335,36 @@ export function WeatherWidget() {
 
         {/* Section des prévisions journalières */}
         <div>
-          <div className="flex items-center mb-3">
-            <Calendar size={18} className="text-cyan-400 mr-2" />
-            <h3 className="text-lg font-medium text-white">Prévisions des prochains jours</h3>
+          <div className="flex items-center mb-4">
+            <Calendar size={20} className="text-cyan-400 mr-2" />
+            <h3 className="text-xl font-semibold bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">Prévisions des prochains jours</h3>
           </div>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 gap-6">
             {mockWeather.dailyForecast.map((day, index) => (
               <WeatherCard
                 key={index}
                 title={day.day}
                 icon={<WeatherIcon condition={day.condition} />}
-                className="text-center"
+                className="text-center p-5 transform hover:scale-105 transition-transform duration-300"
               >
-                <div className="flex flex-col items-center space-y-2">
-                  <div className="flex items-center justify-center space-x-2">
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="flex items-center justify-center space-x-4">
                     <div className="flex items-center text-red-400">
-                      <ArrowUp size={14} />
-                      <span className="text-lg font-medium">{day.tempMax}°</span>
+                      <ArrowUp size={16} />
+                      <span className="text-2xl font-semibold">{day.tempMax}°</span>
                     </div>
                     <div className="text-white/20">|</div>
                     <div className="flex items-center text-blue-400">
-                      <ArrowDown size={14} />
-                      <span className="text-lg font-medium">{day.tempMin}°</span>
+                      <ArrowDown size={16} />
+                      <span className="text-2xl font-semibold">{day.tempMin}°</span>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2 text-white/60">
-                    <Wind size={16} />
+                  <div className="flex items-center space-x-3 text-white/80">
+                    <Wind size={18} className="text-cyan-400" />
                     <span>{day.windSpeed} km/h</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-white/60">
-                    <Waves size={16} />
+                  <div className="flex items-center space-x-3 text-white/80">
+                    <Waves size={18} className="text-cyan-400" />
                     <span>{day.waveHeight}m</span>
                   </div>
                 </div>
