@@ -247,11 +247,11 @@ export function NetworkChat({ contactId, onClose }: NetworkChatProps) {
   const selectedContact = findContactById(selectedContactIdInternal);
 
   return (
-    <div className="h-[calc(100vh-12rem)] flex flex-col md:flex-row">
+    <div className="h-full flex flex-col md:flex-row">
       <div className="hidden md:block w-80 border-r border-white/10">
         <div className="p-4">
           <div className="relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" />
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" style={{top: '26%'}} aria-label="Search icon"/>
             <input
               type="text"
               value={searchQuery}

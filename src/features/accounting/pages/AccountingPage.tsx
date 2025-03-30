@@ -197,7 +197,7 @@ export function AccountingPage() {
           <h3 className="text-xl font-semibold text-white">Transactions récentes</h3>
           <div className="flex gap-4">
             <div className="relative">
-              <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" aria-hidden="true" />
+              <Search size={20} className="absolute left-3 -translate-y-1/2 text-white/40" style={{top: '48%'}} aria-label="Search icon" />
               <input
                 type="text"
                 placeholder="Rechercher..."
