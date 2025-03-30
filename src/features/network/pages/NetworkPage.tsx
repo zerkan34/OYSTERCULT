@@ -21,9 +21,8 @@ import { AddFriendModal } from '../components/AddFriendModal';
 import { FriendSuppliers } from '../components/FriendSuppliers';
 import { MessageList } from '../components/MessageList';
 import { useStore } from '@/lib/store';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 
 type NetworkTab = 'feed' | 'contacts' | 'directory' | 'forum' | 'messages' | 'suppliers';
 
@@ -34,6 +33,7 @@ interface NetworkPageProps {
 
 export function NetworkPage({ messageView = false, activeTab: initialActiveTab }: NetworkPageProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<NetworkTab>(initialActiveTab || messageView ? 'messages' : 'feed');
   const [showNewPost, setShowNewPost] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
@@ -163,8 +163,11 @@ export function NetworkPage({ messageView = false, activeTab: initialActiveTab }
           Forum
         </button>
         <button
-          onClick={() => setActiveTab('messages')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 ${
+          onClick={() => {
+            setActiveTab('messages');
+            navigate('/network/messages', { replace: true });
+          }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 relative ${
             activeTab === 'messages'
               ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
               : 'text-white/60 hover:text-white hover:bg-white/5'
@@ -173,6 +176,11 @@ export function NetworkPage({ messageView = false, activeTab: initialActiveTab }
         >
           <MessageCircle size={16} />
           Messagerie
+          {unreadCount > 0 && (
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[20px] h-[20px] rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center text-xs font-medium text-white shadow-lg">
+              {unreadCount}
+            </div>
+          )}
         </button>
         <button
           onClick={() => setActiveTab('suppliers')}
@@ -207,9 +215,9 @@ export function NetworkPage({ messageView = false, activeTab: initialActiveTab }
         <button className="relative p-3 bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px] border border-white/10 hover:border-cyan-400/30 text-white hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] transition-all duration-300 transform hover:-translate-y-1 min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40">
           <Bell size={18} className="text-cyan-400" />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-cyan-500 rounded-full flex items-center justify-center text-xs font-bold shadow-[0_0_10px_rgba(0,210,200,0.5)]">
+            <div className="absolute -top-1 -right-1 w-5 h-5 bg-cyan-500 rounded-full flex items-center justify-center text-xs font-bold shadow-[0_0_10px_rgba(0,210,200,0.5)]">
               {unreadCount}
-            </span>
+            </div>
           )}
         </button>
       </div>
@@ -221,21 +229,24 @@ export function NetworkPage({ messageView = false, activeTab: initialActiveTab }
             searchQuery={searchQuery}
             onSelectContact={(contactId) => {
               setSelectedContactId(contactId);
-              setActiveTab('feed');
+              setActiveTab('messages');
             }}
+          />
+        )}
+        {activeTab === 'messages' && (
+          <NetworkChat 
+            contactId={selectedContactId}
+            onClose={() => setSelectedContactId(null)}
           />
         )}
         {activeTab === 'directory' && (
           <ProDirectory 
-            searchQuery={searchQuery} 
-            selectedSkill={selectedSkill}
+            searchQuery={searchQuery}
+            selectedSkill={null}
           />
         )}
         {activeTab === 'forum' && (
           <Forum searchQuery={searchQuery} />
-        )}
-        {activeTab === 'messages' && (
-          <MessageList />
         )}
         {activeTab === 'suppliers' && (
           <FriendSuppliers />

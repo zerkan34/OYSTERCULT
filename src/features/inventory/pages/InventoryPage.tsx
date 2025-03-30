@@ -3,7 +3,7 @@ import { Plus, Filter, Search, BarChart2, Package, AlertTriangle, Droplets, Shop
 import { motion } from 'framer-motion';
 import { OysterTableMap, Table } from '../components/OysterTableMap';
 import { PurificationPools } from '../components/PurificationPools';
-import { TrempeView } from '../components/TrempeView';
+import { TrempeTables } from '../components/TrempeTables';
 import { useStore } from '@/lib/store';
 import { TableDetail } from '../components/TableDetail';
 import { InventoryForm } from '../components/InventoryForm';
@@ -15,7 +15,7 @@ import { Modal } from '@/components/ui/Modal';
 import { useForm } from 'react-hook-form';
 import { PageTitle } from '@/components/ui/PageTitle';
 
-type TabType = 'tables' | 'pools' | 'trempes' | 'autres' | 'achats' | 'charges';
+type TabType = 'tables' | 'pools' | 'trempe' | 'autres' | 'achats' | 'charges';
 
 export const InventoryPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('tables');
@@ -196,8 +196,8 @@ export const InventoryPage: React.FC = () => {
     switch (activeTab) {
       case 'tables':
         return 'Tables';
-      case 'trempes':
-        return 'Trempes';
+      case 'trempe':
+        return 'Tables de trempe';
       case 'pools':
         return 'Bassins';
       case 'autres':
@@ -303,16 +303,16 @@ export const InventoryPage: React.FC = () => {
           </div>
         </button>
         <button
-          onClick={() => setActiveTab('trempes')}
+          onClick={() => setActiveTab('trempe')}
           className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'trempes'
+            activeTab === 'trempe'
               ? 'border-brand-primary text-white'
               : 'border-transparent text-white/60 hover:text-white'
           }`}
         >
           <div className="flex items-center">
             <Droplets size={16} className="mr-2" />
-            Trempes
+            Tables de trempe
           </div>
         </button>
         <button
@@ -324,7 +324,7 @@ export const InventoryPage: React.FC = () => {
           }`}
         >
           <div className="flex items-center">
-            <Droplets size={16} className="mr-2" />
+            <AlertTriangle size={16} className="mr-2" />
             Bassins
           </div>
         </button>
@@ -397,8 +397,20 @@ export const InventoryPage: React.FC = () => {
           selectedTable={selectedTable}
         />
       )}
+      {activeTab === 'trempe' && (
+        <TrempeTables
+          onTableSelect={(table) => {
+            // Handle trempe table selection
+          }}
+          onTableHover={(table) => {
+            // Handle trempe table hover
+          }}
+          onTableUpdate={(table) => {
+            // Handle trempe table update
+          }}
+        />
+      )}
       {activeTab === 'pools' && <PurificationPools />}
-      {activeTab === 'trempes' && <TrempeView />}
       {activeTab === 'autres' && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">

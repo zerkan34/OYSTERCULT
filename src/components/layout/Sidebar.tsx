@@ -5,13 +5,14 @@ import {
   Package,
   Network,
   FileText,
-  Lock
+  Lock,
+  MessageCircle,
+  Users
 } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
-  notifications: number;
 }
 
 interface MenuItem {
@@ -19,9 +20,10 @@ interface MenuItem {
   path: string;
   icon: any;
   label: string;
+  notifications?: number;
 }
 
-export function Sidebar({ isOpen, onToggle, notifications }: SidebarProps) {
+export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const location = useLocation();
 
   const menuItems: MenuItem[] = [
@@ -32,7 +34,9 @@ export function Sidebar({ isOpen, onToggle, notifications }: SidebarProps) {
     { category: "COMMERCIAL", path: '/suppliers', icon: Package, label: 'Fournisseurs' },
     { path: '/clients', icon: Package, label: 'Clients' },
     { path: '/orders', icon: Package, label: 'Commandes' },
-    { category: "ADMINISTRATION", path: '/analytics', icon: Package, label: 'Analyses' },
+    { category: "ADMINISTRATION", path: '/hr', icon: Users, label: 'Gestion RH' },
+    { path: '/network', icon: MessageCircle, label: 'Messagerie', notifications: 3 },
+    { path: '/analytics', icon: Package, label: 'Analyses' },
     { path: '/company', icon: Package, label: 'Entreprise' },
     { path: '/digital-vault', icon: Lock, label: 'Coffre fort numérique' },
     { category: "PARAMETRES", path: '/settings', icon: Package, label: 'Configuration' },
@@ -57,12 +61,6 @@ export function Sidebar({ isOpen, onToggle, notifications }: SidebarProps) {
           className="p-2 hover:bg-white/5 rounded-lg text-white/60 hover:text-white transition-colors"
         >
           {isOpen ? <Package size={24} /> : <Package size={24} />}
-          {/* Notification badge */}
-          {notifications > 0 && (
-            <div className="absolute -top-1 -right-1 min-w-[20px] h-[20px] rounded-full bg-gradient-to-r from-[#00D1FF] to-[#0047FF] flex items-center justify-center text-xs font-medium text-white shadow-lg">
-              {notifications}
-            </div>
-          )}
         </button>
       </div>
 
@@ -82,7 +80,7 @@ export function Sidebar({ isOpen, onToggle, notifications }: SidebarProps) {
                 <li>
                   <Link
                     to={item.path}
-                    className={`flex items-center px-4 py-3 mx-2 rounded-lg transition-all duration-200 group ${
+                    className={`flex items-center px-4 py-3 mx-2 rounded-lg transition-all duration-200 group relative ${
                       isActive
                         ? 'bg-brand-blue text-white'
                         : 'text-white/60 hover:bg-white/5 hover:text-white'
@@ -95,6 +93,11 @@ export function Sidebar({ isOpen, onToggle, notifications }: SidebarProps) {
                     {isOpen && (
                       <span className="font-medium">{item.label}</span>
                     )}
+                    {item.notifications && (
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[20px] h-[20px] rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center text-xs font-medium text-white shadow-lg">
+                        {item.notifications}
+                      </div>
+                    )}
                     {!isOpen && (
                       <div className="absolute left-20 px-3 py-2 bg-brand-dark rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
                         {item.category && (
@@ -102,7 +105,12 @@ export function Sidebar({ isOpen, onToggle, notifications }: SidebarProps) {
                             {item.category}
                           </span>
                         )}
-                        {item.label}
+                        <span className="text-white">{item.label}</span>
+                        {item.notifications && (
+                          <div className="absolute -right-1 top-1/2 -translate-y-1/2 min-w-[20px] h-[20px] rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center text-xs font-medium text-white shadow-lg">
+                            {item.notifications}
+                          </div>
+                        )}
                       </div>
                     )}
                   </Link>

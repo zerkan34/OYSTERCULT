@@ -87,44 +87,27 @@ interface Table {
 const initialTables: Table[] = [
   {
     id: '1',
-    name: 'Table A-12',
+    name: 'Table Nord #128',
     location: 'Bouzigues',
     type: 'Huîtres Triploïdes',
-    status: 'optimal',
+    status: 'en_trempe',
     cells: Array(20).fill(null).map((_, i) => ({ 
       id: `${i}`, 
-      filled: i <= 2 ? false : i === 3 ? 0.75 : i === 8 || i === 16 ? true : i >= 4 ? true : false
+      filled: i < 3 ? false : i === 3 ? 0.75 : true
     })),
     currentSize: 'N°2',
     targetSize: 'N°3',
     startDate: '15/11/2023',
     lastUpdate: 'En cours',
-    timeProgress: 65,
-    sizeProgress: 40,
-    layers: 3,
-    density: 'Élevée',
+    timeProgress: 72,
+    sizeProgress: 85,
+    layers: 2,
+    density: 'Normale',
     alert: false,
-    value: 72,
+    value: 85,
     history: [],
-    oysterType: 'Triploïdes',
-    tableNumber: 'A-12',
-    temperature: 12,
-    salinity: 35,
-    sampling: {
-      lastCheckDate: '2024-03-15',
-      nextCheckDate: '2024-04-15',
-      mortalityRate: 2,
-      currentSize: 'N°3'
-    },
-    currentBatch: {
-      size: 'N°3',
-      currentSize: 'N°3',
-      quantity: 1000,
-      startDate: '2024-01-04',
-      estimatedHarvestDate: 'Actuellement',
-      oysterType: 'Triploïdes',
-      caliber: 'N°3'
-    }
+    oysterType: 'Huîtres Triploïdes',
+    tableNumber: '128'
   },
   {
     id: '2',

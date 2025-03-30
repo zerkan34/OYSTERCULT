@@ -40,14 +40,14 @@ export function HRPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Gestion des Ressources Humaines</h1>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">Gestion RH</h1>
         {activeTab === 'employees' && (
           <button
             onClick={() => setShowNewEmployeeForm(true)}
-            className="flex items-center px-4 py-2 bg-brand-primary rounded-lg text-white hover:bg-brand-primary/90 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
           >
-            <Plus size={20} className="mr-2" />
-            Nouvel Employé
+            <Plus size={20} className="text-cyan-400" />
+            <span className="text-cyan-400">Nouvel Employé</span>
           </button>
         )}
       </div>
@@ -55,47 +55,47 @@ export function HRPage() {
       <div className="flex items-center space-x-4 border-b border-white/10">
         <button
           onClick={() => handleTabChange('employees')}
-          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
             activeTab === 'employees'
               ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
               : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
           <Users size={16} />
-          Employés
+          <span>Employés</span>
         </button>
         <button
           onClick={() => handleTabChange('schedule')}
-          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
             activeTab === 'schedule'
               ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
               : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
           <Calendar size={16} />
-          Planning
+          <span>Planning</span>
         </button>
         <button
           onClick={() => handleTabChange('leave')}
-          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
             activeTab === 'leave'
               ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
               : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
           <Calendar size={16} />
-          Congés
+          <span>Congés</span>
         </button>
         <button
           onClick={() => handleTabChange('performance')}
-          className={`py-4 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 rounded-lg ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
             activeTab === 'performance'
               ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
               : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
           <Star size={16} />
-          Évaluations
+          <span>Évaluations</span>
         </button>
       </div>
 

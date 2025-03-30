@@ -31,186 +31,55 @@ const mockContacts: Contact[] = [
   {
     id: '2',
     name: 'Marie Martin',
-    lastMessage: 'Je vous recontacte demain',
+    lastMessage: 'On se voit demain ?',
     lastMessageTime: '09:15',
+    unreadCount: 0,
     online: false
-  },
-  {
-    id: '3',
-    name: 'Pierre Durand',
-    lastMessage: 'Pouvez-vous me donner les prix pour...',
-    lastMessageTime: 'Hier',
-    online: true
-  },
-  {
-    id: '4',
-    name: 'Sophie Dubois',
-    lastMessage: 'Je vous envoie les documents',
-    lastMessageTime: 'Lun',
-    unreadCount: 1,
-    online: false
-  },
-  {
-    id: '5',
-    name: 'Luc Moreau',
-    lastMessage: 'Merci pour votre réponse',
-    lastMessageTime: '23/02',
-    online: true
   }
 ];
 
-// Messages pour chaque contact
 const mockMessagesByContact: Record<string, Message[]> = {
-  // Jean Dupont
   '1': [
     {
-      id: '1-1',
-      content: 'Bonjour, avez-vous des huîtres plates disponibles ?',
+      id: '1',
+      content: 'Bonjour, comment allez-vous ?',
       sender: 'Jean Dupont',
-      timestamp: '10:15',
+      timestamp: '10:00',
       isMe: false
     },
     {
-      id: '1-2',
-      content: 'Oui, nous en avons en stock. Quelle quantité vous intéresse ?',
+      id: '2',
+      content: 'Très bien, merci ! Et vous ?',
       sender: 'Moi',
-      timestamp: '10:20',
+      timestamp: '10:15',
       isMe: true
     },
     {
-      id: '1-3',
-      content: 'Je cherche environ 500 douzaines pour un événement',
-      sender: 'Jean Dupont',
-      timestamp: '10:25',
-      isMe: false
-    },
-    {
-      id: '1-4',
+      id: '3',
       content: 'Parfait, merci !',
       sender: 'Jean Dupont',
       timestamp: '10:30',
       isMe: false
     }
   ],
-  
-  // Marie Martin
   '2': [
     {
-      id: '2-1',
-      content: 'Bonjour, je souhaite connaître vos tarifs pour une livraison à Paris',
-      sender: 'Marie Martin',
-      timestamp: '09:00',
-      isMe: false
-    },
-    {
-      id: '2-2',
-      content: 'Bonjour Marie, pour Paris les frais de livraison sont de 15€ pour les commandes inférieures à 100€, et gratuits au-delà',
-      sender: 'Moi',
-      timestamp: '09:10',
-      isMe: true
-    },
-    {
-      id: '2-3',
-      content: 'Je vous recontacte demain pour passer ma commande, merci',
+      id: '1',
+      content: 'Hey, on se voit demain ?',
       sender: 'Marie Martin',
       timestamp: '09:15',
       isMe: false
     }
-  ],
-  
-  // Pierre Durand
-  '3': [
-    {
-      id: '3-1',
-      content: 'Bonjour, j\'organise un mariage le mois prochain',
-      sender: 'Pierre Durand',
-      timestamp: '14:20',
-      isMe: false
-    },
-    {
-      id: '3-2',
-      content: 'Félicitations ! Nous pouvons vous proposer une dégustation d\'huîtres pour votre événement',
-      sender: 'Moi',
-      timestamp: '14:30',
-      isMe: true
-    },
-    {
-      id: '3-3',
-      content: 'Pouvez-vous me donner les prix pour 200 personnes ?',
-      sender: 'Pierre Durand',
-      timestamp: '14:35',
-      isMe: false
-    }
-  ],
-  
-  // Sophie Dubois
-  '4': [
-    {
-      id: '4-1',
-      content: 'J\'ai besoin d\'une facture pour ma dernière commande',
-      sender: 'Sophie Dubois',
-      timestamp: 'Lun 15:10',
-      isMe: false
-    },
-    {
-      id: '4-2',
-      content: 'Bien sûr, je vous prépare cela tout de suite',
-      sender: 'Moi',
-      timestamp: 'Lun 15:20',
-      isMe: true
-    },
-    {
-      id: '4-3',
-      content: 'Je vous envoie les documents dès que possible',
-      sender: 'Sophie Dubois',
-      timestamp: 'Lun 15:25',
-      isMe: false
-    }
-  ],
-  
-  // Luc Moreau
-  '5': [
-    {
-      id: '5-1',
-      content: 'Avez-vous des huîtres spéciales de Marennes-Oléron ?',
-      sender: 'Luc Moreau',
-      timestamp: '23/02 11:05',
-      isMe: false
-    },
-    {
-      id: '5-2',
-      content: 'Oui, nous avons des spéciales n°2 et n°3, ainsi que des fines de claire',
-      sender: 'Moi',
-      timestamp: '23/02 11:15',
-      isMe: true
-    },
-    {
-      id: '5-3',
-      content: 'Je vais prendre deux douzaines de spéciales n°2',
-      sender: 'Luc Moreau',
-      timestamp: '23/02 11:30',
-      isMe: false
-    },
-    {
-      id: '5-4',
-      content: 'Merci pour votre réponse',
-      sender: 'Luc Moreau',
-      timestamp: '23/02 11:35',
-      isMe: false
-    }
   ]
 };
-
-// Ancien mockMessages, maintenu pour compatibilité
-const mockMessages: Message[] = mockMessagesByContact['1'];
 
 interface NetworkChatProps {
   contactId: string;
   onClose: () => void;
 }
 
-const findContactById = (id: string) => {
-  return mockContacts.find((contact) => contact.id === id);
+const findContactById = (id: string): Contact | undefined => {
+  return mockContacts.find(contact => contact.id === id);
 };
 
 export function NetworkChat({ contactId, onClose }: NetworkChatProps) {
