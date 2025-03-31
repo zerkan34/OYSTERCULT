@@ -330,3 +330,230 @@
     background-color: rgba(15, 23, 42, 0.5);
   }
 }
+
+.weather-widget-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.glass-effect {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Mobile styles */
+.mobile-weather-main {
+  padding: 1rem;
+  border-radius: 0.75rem;
+}
+
+.mobile-weather-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.mobile-current-temp {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+}
+
+.mobile-weather-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.mobile-weather-detail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.mobile-weather-detail-icon {
+  color: #22d3ee;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-weather-detail-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.25rem;
+}
+
+.mobile-weather-detail-value {
+  font-weight: 500;
+  color: white;
+}
+
+.mobile-weather-status {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.125rem;
+  margin-top: 1rem;
+}
+
+.mobile-weather-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  width: calc(50% - 1rem);
+}
+
+.mobile-weather-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.mobile-weather-card-icon {
+  color: #22d3ee;
+  margin-right: 0.75rem;
+}
+
+.mobile-weather-card-title {
+  color: white;
+  font-weight: 500;
+}
+
+.mobile-weather-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobile-weather-card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-weather-card-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+}
+
+.mobile-weather-card-value {
+  color: white;
+  font-weight: 500;
+}
+
+.mobile-forecast-section {
+  padding: 1rem;
+  border-radius: 0.75rem;
+}
+
+.mobile-forecast-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.mobile-forecast-icon {
+  color: #22d3ee;
+  margin-right: 0.75rem;
+}
+
+.mobile-forecast-title {
+  color: white;
+  font-weight: 500;
+}
+
+.mobile-forecast-content {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mobile-forecast-content::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-forecast-item {
+  padding: 0.75rem;
+  text-align: center;
+  min-width: 80px;
+}
+
+.mobile-forecast-time {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-forecast-temp {
+  color: white;
+  font-weight: bold;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-forecast-wind,
+.mobile-forecast-waves {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+}
+
+.mobile-forecast-wind-icon,
+.mobile-forecast-waves-icon {
+  color: #22d3ee;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .weather-widget {
+    padding: 1rem;
+  }
+  
+  .mobile-weather-details {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .mobile-weather-card {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.2s ease-out forwards;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-down {
+    animation: none;
+  }
+  
+  .mobile-forecast-content {
+    scroll-behavior: auto;
+  }
+}

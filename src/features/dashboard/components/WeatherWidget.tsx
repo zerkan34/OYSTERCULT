@@ -14,9 +14,10 @@ import {
   Calendar,
   ChevronRight,
   Clock,
-  MapPin
+  MapPin,
+  ChevronDown
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import './weather-widget.css';
 
 interface WeatherData {
@@ -178,6 +179,46 @@ const WeatherCard = ({
   );
 };
 
+function WeatherAccordion({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  return (
+    <div className="mb-6">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+        aria-expanded={isOpen}
+      >
+        <div className="flex items-center">
+          {icon}
+          <h3 className="ml-2 text-xl font-semibold bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">{title}</h3>
+        </div>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronDown size={20} className="text-cyan-400" />
+        </motion.div>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="pt-4">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export function WeatherWidget() {
   return (
     <div className="weather-widget-container w-full" style={{ width: '100%', margin: 0, padding: 0, position: 'relative', boxSizing: 'border-box' }}>
@@ -304,11 +345,10 @@ export function WeatherWidget() {
         </div>
 
         {/* Section des prévisions horaires */}
-        <div className="mb-6">
-          <div className="flex items-center mb-4">
-            <Calendar size={20} className="text-cyan-400 mr-2" />
-            <h3 className="text-xl font-semibold bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">Prévisions horaires</h3>
-          </div>
+        <WeatherAccordion
+          title="Prévisions horaires"
+          icon={<Calendar size={20} className="text-cyan-400" />}
+        >
           <div className="grid grid-cols-4 gap-6">
             {mockWeather.forecast.map((hour, index) => (
               <WeatherCard
@@ -331,14 +371,13 @@ export function WeatherWidget() {
               </WeatherCard>
             ))}
           </div>
-        </div>
+        </WeatherAccordion>
 
         {/* Section des prévisions journalières */}
-        <div>
-          <div className="flex items-center mb-4">
-            <Calendar size={20} className="text-cyan-400 mr-2" />
-            <h3 className="text-xl font-semibold bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">Prévisions des prochains jours</h3>
-          </div>
+        <WeatherAccordion
+          title="Prévisions des prochains jours"
+          icon={<Calendar size={20} className="text-cyan-400" />}
+        >
           <div className="grid grid-cols-4 gap-6">
             {mockWeather.dailyForecast.map((day, index) => (
               <WeatherCard
@@ -371,7 +410,7 @@ export function WeatherWidget() {
               </WeatherCard>
             ))}
           </div>
-        </div>
+        </WeatherAccordion>
 
         {/* Mobile layout */}
         <div className="md:hidden flex flex-col space-y-4 w-full" style={{ width: '100%', maxWidth: '100%', margin: 0, padding: 0, boxSizing: 'border-box' }}>
