@@ -1,28 +1,34 @@
 @import url('https://fonts.cdnfonts.com/css/sf-pro-display');
 @import url('https://fonts.cdnfonts.com/css/sf-mono');
 @import './styles/vendor-prefixes.css';
-@import './styles/mobile.css';
-@import './styles/effects.css';
 @import './styles/accessibility.css';
+@import './styles/effects.css';
+@import './styles/mobile.css';
 @import './styles/compatibility.css';
 @import './styles/text-handling.css';
-@import './styles/sidebar-responsive.css';
+@import './styles/globals.css';
 
-@font-face {
-  font-family: 'Industry Inc Base';
-  src: local('Arial'), local('Helvetica');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Directives Tailwind */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Variables CSS */
 :root {
+  --primary-color: #22d3ee;
+  --secondary-color: #0ea5e9;
+  --accent-color: #f59e0b;
+  --background-color: #0f172a;
+  --text-color: #f8fafc;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --hover-color: rgba(255, 255, 255, 0.05);
+  --shadow-color: rgba(0, 0, 0, 0.25);
+  --glow-color: rgba(0, 210, 200, 0.2);
+  --error-color: #ef4444;
+  --success-color: #22c55e;
+  --warning-color: #f59e0b;
+  --info-color: #0ea5e9;
+  
+  /* Effets visuels */
+  --blur-amount: 10px;
+  --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.2);
+  --glass-opacity: 0.85;
+  --mesh-opacity: 0.05;
+  
   /* Variables de couleur */
   --background: #000000;
   --foreground: #ffffff;
@@ -89,8 +95,22 @@
   --glass-opacity: 0.85;
   --mesh-opacity: 0.05;
   
+  /* Variables de mise à l'échelle */
   --viewport-width: 1920px;  /* Largeur de référence */
   --viewport-height: 1080px; /* Hauteur de référence */
+}
+
+/* Classe pour le style de toutes les modales */
+.modal-style {
+  background: linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%);
+  box-shadow: rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 150, 255, 0.1) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset;
+  opacity: 1;
+  transform: translate3d(0px, 0px, 0px);
+}
+
+/* Classe pour le style de tous les <option> de <select> */
+select option {
+  background-color: rgb(var(--color-brand-burgundy) / var(--tw-bg-opacity));
 }
 
 /* Classe pour forcer la position de l'icône de recherche */
@@ -770,3 +790,7 @@ body.has-mobile-nav {
     /* Styles supprimés */
   }
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

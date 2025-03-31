@@ -38,7 +38,11 @@ export function BatchExitModal({ isOpen, onClose, onConfirm, batch }: BatchExitM
       title="Sortie de lot"
       size="md"
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form 
+        onSubmit={handleSubmit} 
+        className="space-y-6" 
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="bg-white/5 rounded-lg p-4">
           <h3 className="text-lg font-medium text-white mb-2">Détails du lot</h3>
           <div className="grid grid-cols-2 gap-4">

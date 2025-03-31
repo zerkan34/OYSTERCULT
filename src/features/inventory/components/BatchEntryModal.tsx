@@ -36,7 +36,11 @@ export function BatchEntryModal({ isOpen, onClose, onConfirm, lastBatchNumber, p
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Ajouter un nouveau lot" size="md">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form 
+        onSubmit={handleSubmit} 
+        className="space-y-6" 
+        onClick={(e) => e.stopPropagation()}
+      >
         <div>
           <label className="block text-sm font-medium text-white mb-2">
             Numéro de lot

@@ -261,7 +261,15 @@ export function AccountingPage() {
 
       {showNewInvoice && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.95)] p-6 rounded-lg shadow-2xl max-w-2xl w-full mx-4">
+          <div 
+            style={{
+              background: "linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%)",
+              boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 150, 255, 0.1) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
+              opacity: 1,
+              transform: "translate3d(0px, 0px, 0px)"
+            }}
+            className="bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.95)] p-6 rounded-lg shadow-2xl max-w-2xl w-full mx-4"
+          >
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-white">Nouvelle Facture</h2>
               <button 

@@ -113,7 +113,13 @@ export function SupplierDialog({ open, onOpenChange, editingSupplier }: Supplier
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-[#1a1c25] text-white border-[#2a2d3a]">
+      <DialogContent className="sm:max-w-[500px] bg-[#1a1c25] text-white border-[#2a2d3a]"
+        style={{
+          background: "linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%)",
+          boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 150, 255, 0.1) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
+          opacity: 1
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="text-white">{isEditing ? 'Modifier le fournisseur' : 'Ajouter un fournisseur'}</DialogTitle>
           <DialogDescription>
@@ -126,7 +132,7 @@ export function SupplierDialog({ open, onOpenChange, editingSupplier }: Supplier
         <form onSubmit={handleSubmit} className="space-y-5 my-2">
           <div className="space-y-1.5">
             <Label htmlFor="name" className="text-sm font-medium flex items-center gap-2">
-              <User className="h-3.5 w-3.5 text-indigo-400" />
+              <User className="h-3.5 w-3.5" />
               Nom du fournisseur
             </Label>
             <Input
@@ -135,14 +141,19 @@ export function SupplierDialog({ open, onOpenChange, editingSupplier }: Supplier
               value={formState.name}
               onChange={handleChange}
               placeholder="Atlantique Coquillages"
-              className={`bg-[#12141d] border-[#2a2d3a] focus:border-indigo-500 text-white ${errors.name ? 'border-red-500' : ''}`}
+              className={`bg-[#12141d] border-[#2a2d3a] text-white ${errors.name ? 'border-red-500' : ''}`}
+              style={{
+                background: "linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%)",
+                boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 150, 255, 0.1) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
+                opacity: 1
+              }}
             />
             {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
           </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
-              <Mail className="h-3.5 w-3.5 text-indigo-400" />
+              <Mail className="h-3.5 w-3.5" />
               Email
             </Label>
             <Input
@@ -152,14 +163,19 @@ export function SupplierDialog({ open, onOpenChange, editingSupplier }: Supplier
               value={formState.email}
               onChange={handleChange}
               placeholder="contact@atlantique-coquillages.fr"
-              className={`bg-[#12141d] border-[#2a2d3a] focus:border-indigo-500 text-white ${errors.email ? 'border-red-500' : ''}`}
+              className={`border-[#2a2d3a] text-white ${errors.email ? 'border-red-500' : ''}`}
+              style={{
+                background: "linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%)",
+                boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 150, 255, 0.1) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
+                opacity: 1
+              }}
             />
             {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
           </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-2">
-              <Phone className="h-3.5 w-3.5 text-indigo-400" />
+              <Phone className="h-3.5 w-3.5" />
               Téléphone
             </Label>
             <Input
@@ -168,14 +184,19 @@ export function SupplierDialog({ open, onOpenChange, editingSupplier }: Supplier
               value={formState.phone}
               onChange={handleChange}
               placeholder="01 23 45 67 89"
-              className={`bg-[#12141d] border-[#2a2d3a] focus:border-indigo-500 text-white ${errors.phone ? 'border-red-500' : ''}`}
+              className={`border-[#2a2d3a] text-white ${errors.phone ? 'border-red-500' : ''}`}
+              style={{
+                background: "linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%)",
+                boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 150, 255, 0.1) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
+                opacity: 1
+              }}
             />
             {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
           </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="address" className="text-sm font-medium flex items-center gap-2">
-              <MapPin className="h-3.5 w-3.5 text-indigo-400" />
+              <MapPin className="h-3.5 w-3.5" />
               Adresse
             </Label>
             <Input
@@ -184,7 +205,12 @@ export function SupplierDialog({ open, onOpenChange, editingSupplier }: Supplier
               value={formState.address}
               onChange={handleChange}
               placeholder="42 Avenue du Port, 85230 Bouin"
-              className={`bg-[#12141d] border-[#2a2d3a] focus:border-indigo-500 text-white ${errors.address ? 'border-red-500' : ''}`}
+              className={`border-[#2a2d3a] text-white ${errors.address ? 'border-red-500' : ''}`}
+              style={{
+                background: "linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%)",
+                boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 150, 255, 0.1) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
+                opacity: 1
+              }}
             />
             {errors.address && <p className="text-xs text-red-500 mt-1">{errors.address}</p>}
           </div>
@@ -201,7 +227,7 @@ export function SupplierDialog({ open, onOpenChange, editingSupplier }: Supplier
             <Button 
               type="submit" 
               disabled={isSubmitting}
-              className="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white"
+              className="bg-gradient-to-r text-white"
             >
               {isSubmitting ? 'Enregistrement...' : isEditing ? 'Mettre à jour' : 'Ajouter'}
             </Button>

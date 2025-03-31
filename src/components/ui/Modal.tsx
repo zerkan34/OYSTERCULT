@@ -1,7 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useClickOutside } from '@/lib/hooks';
+
+// Compteur global pour suivre le niveau d'imbrication des modales
+let modalCounter = 0;
 
 interface ModalProps {
   isOpen: boolean;
@@ -31,10 +34,30 @@ export function Modal({
   className = ''
 }: ModalProps) {
   const modalRef = useClickOutside(onClose);
+  
+  // Référence pour stocker le niveau de z-index de cette modale
+  const zIndexRef = useRef<number>(0);
+  
+  // Générer un z-index unique pour cette modale lors de son ouverture
+  useEffect(() => {
+    if (isOpen) {
+      modalCounter += 1;
+      zIndexRef.current = 9000 + modalCounter;
+    }
+    
+    return () => {
+      if (isOpen) {
+        modalCounter -= 1;
+      }
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      // Ne fermer que la modale de plus haut niveau lorsqu'on appuie sur Escape
+      if (e.key === 'Escape' && zIndexRef.current === 9000 + modalCounter) {
+        onClose();
+      }
     };
 
     if (isOpen) {
@@ -51,7 +74,7 @@ export function Modal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[9999]">
+        <div className="fixed inset-0" style={{ zIndex: zIndexRef.current }}>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -67,7 +90,8 @@ export function Modal({
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", duration: 0.5 }}
-                className={`w-full ${sizeClasses[size]} bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md rounded-lg shadow-xl ${className}`}
+                className={`modal-container w-full ${sizeClasses[size]} bg-gradient-to-br from-brand-dark/95 to-brand-purple/95 backdrop-blur-md rounded-lg shadow-xl ${className}`}
+                onClick={(e) => e.stopPropagation()}
               >
                 {(title || showCloseButton) && (
                   <div className="flex items-center justify-between p-6 border-b border-white/10">

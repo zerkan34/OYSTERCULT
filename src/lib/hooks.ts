@@ -1,24 +1,30 @@
 import { useEffect, useState, useRef, FormEvent } from 'react';
 import { useStore } from './store';
 
-// Improved useClickOutside hook with better timing
+// Improved useClickOutside hook with better handling of nested modals
 export const useClickOutside = (callback: () => void) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Créer une fonction qui vérifie si le clic est en dehors de la référence
     const handleClickOutside = (event: MouseEvent) => {
+      // Si la référence existe et que le clic est en dehors de celle-ci
       if (ref.current && !ref.current.contains(event.target as Node)) {
-        callback();
+        // Vérifier si l'élément cliqué est une autre modale ou est à l'intérieur d'une autre modale
+        // On utilise closest pour trouver l'ancêtre le plus proche qui a la classe 'modal-container'
+        const clickedOnAnotherModal = (event.target as Element).closest('.modal-container');
+        
+        // Si l'élément cliqué n'est pas dans une autre modale, alors on peut fermer cette modale
+        if (!clickedOnAnotherModal) {
+          callback();
+        }
       }
     };
 
-    // Add delay to prevent immediate closing
-    const timeoutId = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside);
-    }, 100);
+    // Utiliser mousedown pour capturer le clic initial
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      clearTimeout(timeoutId);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [callback]);
@@ -139,10 +145,34 @@ export const useTouchGestures = (
   };
 };
 
-// Modal state management hook
+// Modal state management hook with nested modals support
 export const useModal = (initialState = false) => {
   const [isOpen, setIsOpen] = useState(initialState);
-  const modalRef = useClickOutside(() => setIsOpen(false));
+  
+  // Créer une référence qui ne fermera pas la modale lorsqu'on clique à l'intérieur
+  const modalRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        // Vérifier si l'élément cliqué est une autre modale ou est à l'intérieur d'une autre modale
+        const clickedOnAnotherModal = (event.target as Element).closest('.modal-container');
+        
+        // Si l'élément cliqué n'est pas dans une autre modale, alors on peut fermer cette modale
+        if (!clickedOnAnotherModal) {
+          setIsOpen(false);
+        }
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
