@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { PoolMaintenanceModal } from './PoolMaintenanceModal';
 import { BatchExitModal } from './BatchExitModal';
+import { BatchEntryModal } from './BatchEntryModal';
 
 interface Pool {
   id: string;
@@ -164,19 +165,21 @@ function PoolDetail({ pool, onClose }: PoolDetailProps) {
     setSelectedBatch(null);
   };
 
-  const handleNewBatchConfirm = () => {
-    if (!newLotNumber || !newLotQuantity) return;
-
+  const handleNewBatchConfirm = (data: { number: string; quantity: number; type: 'plates' | 'creuses' | 'speciales' }) => {
+    console.log('Nouveau lot ajouté:', data);
+    
+    // Ajouter le nouveau lot à la liste des lots
     const newBatch = {
-      number: newLotNumber,
-      quantity: parseInt(newLotQuantity),
-      entryTime: new Date().toISOString()
+      id: `batch-${Date.now()}`,
+      number: data.number,
+      quantity: data.quantity,
+      type: data.type,
+      entryTime: new Date().toISOString(),
+      remainingTime: 72 // 72 heures par défaut
     };
-
-    setShowModal(true);
-    setModalType('newBatch');
-    setNewLotNumber('');
-    setNewLotQuantity('');
+    
+    setBatches([...batches, newBatch]);
+    setShowModal(false);
   };
 
   return (
@@ -546,314 +549,32 @@ function PoolDetail({ pool, onClose }: PoolDetailProps) {
       </motion.div>
 
       {showModal && modalType === 'maintenance' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
-          onClick={() => setShowModal(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.95 }}
-            className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg w-full max-w-md shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10"
-            onClick={(e) => e.stopPropagation()}
-            ref={useClickOutside(() => setShowModal(false))}
-          >
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                {maintenanceType === 'cleaning' ? 'Nettoyer le bassin' : 'Changer la lampe UV'}
-              </h2>
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-white/60 hover:text-white transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              {maintenanceType === 'cleaning' && (
-                <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-4 rounded-lg border border-white/10">
-                  <div className="flex items-start gap-3">
-                    <AlertTriangle size={20} className="text-yellow-400 shrink-0 mt-1" />
-                    <div className="space-y-4">
-                      <p className="text-white font-medium">
-                        Avant de procéder au nettoyage, assurez-vous que :
-                      </p>
-                      <div className="space-y-3">
-                        <label className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer group">
-                          <div className="relative">
-                            <input
-                              type="checkbox"
-                              checked={isBasinEmptyConfirmed}
-                              onChange={(e) => setIsBasinEmptyConfirmed(e.target.checked)}
-                              className="w-5 h-5 rounded border-2 border-white/20 bg-white/5 text-cyan-400 focus:ring-2 focus:ring-cyan-400/30 focus:ring-offset-0 focus:ring-offset-transparent transition-all duration-300 checked:bg-cyan-400 hover:border-cyan-400/50"
-                            />
-                            <motion.div
-                              initial={false}
-                              animate={{
-                                scale: isBasinEmptyConfirmed ? 1 : 0,
-                                opacity: isBasinEmptyConfirmed ? 1 : 0
-                              }}
-                              transition={{ duration: 0.2 }}
-                              className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                            >
-                              <Check size={14} className="text-black" />
-                            </motion.div>
-                          </div>
-                          <span className="text-white/80 group-hover:text-white transition-colors">
-                            Le bassin est complètement vide
-                          </span>
-                        </label>
-                        <label className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer group">
-                          <div className="relative">
-                            <input
-                              type="checkbox"
-                              checked={isSystemsOffConfirmed}
-                              onChange={(e) => setIsSystemsOffConfirmed(e.target.checked)}
-                              className="w-5 h-5 rounded border-2 border-white/20 bg-white/5 text-cyan-400 focus:ring-2 focus:ring-cyan-400/30 focus:ring-offset-0 focus:ring-offset-transparent transition-all duration-300 checked:bg-cyan-400 hover:border-cyan-400/50"
-                            />
-                            <motion.div
-                              initial={false}
-                              animate={{
-                                scale: isSystemsOffConfirmed ? 1 : 0,
-                                opacity: isSystemsOffConfirmed ? 1 : 0
-                              }}
-                              transition={{ duration: 0.2 }}
-                              className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                            >
-                              <Check size={14} className="text-black" />
-                            </motion.div>
-                          </div>
-                          <span className="text-white/80 group-hover:text-white transition-colors">
-                            Les systèmes de filtration et UV sont éteints
-                          </span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-white mb-2">
-                  Notes (optionnel)
-                </label>
-                <textarea
-                  value={cleaningNotes}
-                  onChange={(e) => setCleaningNotes(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white min-h-[100px] resize-none focus:border-cyan-400/30 focus:ring-1 focus:ring-cyan-400/30 transition-colors"
-                  placeholder="Ajoutez des notes sur le nettoyage..."
-                />
-              </div>
-
-              <div className="flex justify-end items-center gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowModal(false);
-                    setCleaningNotes('');
-                    setIsBasinEmptyConfirmed(false);
-                    setIsSystemsOffConfirmed(false);
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 text-white/60 hover:text-white shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transition-all duration-300"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={() => handleMaintenanceConfirm(maintenanceType, cleaningNotes)}
-                  disabled={maintenanceType === 'cleaning' && (!isBasinEmptyConfirmed || !isSystemsOffConfirmed)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                    maintenanceType === 'cleaning' && (!isBasinEmptyConfirmed || !isSystemsOffConfirmed)
-                      ? 'bg-white/5 text-white/40 cursor-not-allowed'
-                      : 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/20 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)]'
-                  }`}
-                >
-                  {maintenanceType === 'cleaning' ? <Brush size={16} /> : <Zap size={16} />}
-                  Confirmer {maintenanceType === 'cleaning' ? 'le nettoyage' : 'le changement'}
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
+        <PoolMaintenanceModal
+          isOpen={showModal && modalType === 'maintenance'}
+          onClose={() => setShowModal(false)}
+          onConfirm={handleMaintenanceConfirm}
+          maintenanceType={maintenanceType}
+          lastMaintenance={pool.lastMaintenance}
+          uvLampHours={pool.uvLampHours}
+        />
       )}
 
       {showModal && modalType === 'exit' && selectedBatch && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
-          onClick={() => setShowModal(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.95 }}
-            className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg w-full max-w-md"
-            onClick={(e) => e.stopPropagation()}
-            ref={useClickOutside(() => setShowModal(false))}
-          >
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-white">Sortie du lot {selectedBatch.number}</h2>
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-white/60 hover:text-white"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-white/5 rounded-lg p-4">
-                <div className="text-white/60">Informations du lot</div>
-                <div className="mt-2">
-                  <div className="text-white">{selectedBatch.quantity}kg - {selectedBatch.type}</div>
-                  <div className="text-sm text-white/60">
-                    Entrée le {format(new Date(selectedBatch.entryTime), 'dd/MM/yyyy HH:mm', { locale: fr })}
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm text-white/60 mb-1">
-                  Destination
-                </label>
-                <select
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
-                >
-                  <option value="expedition">Expédition</option>
-                  <option value="stockage">Stockage</option>
-                  <option value="autre">Autre</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm text-white/60 mb-1">
-                  Notes (optionnel)
-                </label>
-                <textarea
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white min-h-[100px]"
-                  placeholder="Ajoutez des notes sur la sortie du lot..."
-                />
-              </div>
-
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-lg bg-white/5 text-white/60 hover:bg-white/10"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={() => {
-                    // Logique de sortie du lot
-                    setShowModal(false);
-                    setSelectedBatch(null);
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30"
-                >
-                  <ArrowUpRight size={16} />
-                  Confirmer la sortie
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
+        <BatchExitModal
+          isOpen={showModal && modalType === 'exit'}
+          onClose={() => setShowModal(false)}
+          onConfirm={handleBatchExit}
+          batch={selectedBatch}
+        />
       )}
 
       {showModal && modalType === 'newBatch' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
-          onClick={() => setShowModal(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.95 }}
-            className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg w-full max-w-2xl"
-            onClick={(e) => e.stopPropagation()}
-            ref={useClickOutside(() => setShowModal(false))}
-          >
-            <div className="flex flex-col max-h-[80vh] overflow-hidden">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white">
-                  Rentrer un lot dans {pool.name}
-                </h3>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-white/60 hover:text-white transition-colors"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                handleNewBatchConfirm();
-              }} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Numéro de lot
-                  </label>
-                  <input
-                    type="text"
-                    value={newLotNumber}
-                    onChange={(e) => setNewLotNumber(e.target.value)}
-                    placeholder={`${lastBatchNumber} (Dernier lot sorti de la trempe 1)`}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Quantité
-                  </label>
-                  <input
-                    type="number"
-                    value={newLotQuantity}
-                    onChange={(e) => setNewLotQuantity(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Type d'huîtres
-                  </label>
-                  <select
-                    className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
-                  >
-                    <option value="plates">Plates</option>
-                    <option value="creuses">Creuses</option>
-                    <option value="speciales">Spéciales</option>
-                  </select>
-                </div>
-
-                <div className="flex justify-end space-x-4 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="px-4 py-2 rounded-lg bg-white/5 text-white/60 hover:bg-white/10"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30"
-                  >
-                    Ajouter
-                  </button>
-                </div>
-              </form>
-            </div>
-          </motion.div>
-        </motion.div>
+        <BatchEntryModal
+          isOpen={showModal && modalType === 'newBatch'}
+          onClose={() => setShowModal(false)}
+          onConfirm={handleNewBatchConfirm}
+          pool={pool}
+        />
       )}
     </>
   );
@@ -868,25 +589,25 @@ export function PurificationPools() {
   const [modalType, setModalType] = useState<'maintenance' | 'exit' | 'newBatch'>('maintenance');
   const [selectedBatch, setSelectedBatch] = useState<any>(null);
   const [newBatchData, setNewBatchData] = useState<any>(null);
-  const [newLotNumber, setNewLotNumber] = useState('');
-  const [newLotQuantity, setNewLotQuantity] = useState('');
   const lastBatchNumber = "LOT-2025-003"; // À remplacer par la vraie logique
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
-  const handleNewBatchConfirm = () => {
-    if (!newLotNumber || !newLotQuantity) return;
-
+  const handleNewBatchConfirm = (data: { number: string; quantity: number; type: 'plates' | 'creuses' | 'speciales' }) => {
+    console.log('Nouveau lot ajouté:', data);
+    
+    // Ajouter le nouveau lot à la liste des lots
     const newBatch = {
-      number: newLotNumber,
-      quantity: parseInt(newLotQuantity),
-      entryTime: new Date().toISOString()
+      id: `batch-${Date.now()}`,
+      number: data.number,
+      quantity: data.quantity,
+      type: data.type,
+      entryTime: new Date().toISOString(),
+      remainingTime: 72 // 72 heures par défaut
     };
-
+    
     setNewBatchData(newBatch);
     setShowModal(true);
     setModalType('newBatch');
-    setNewLotNumber('');
-    setNewLotQuantity('');
   };
 
   const handleConfirmationClose = () => {
@@ -914,6 +635,17 @@ export function PurificationPools() {
       setShowModal(false);
       setSelectedPool(null);
     }
+  };
+
+  const handleMaintenanceConfirm = (type: 'cleaning' | 'uv_lamp', notes?: string) => {
+    console.log(`Maintenance ${type} confirmée pour le bassin ${selectedPool?.name}`, { notes });
+    setShowModal(false);
+  };
+
+  const handleBatchExit = (data: { quantity: number; destination: string; notes?: string }) => {
+    console.log('Sortie du lot:', { batch: selectedBatch, ...data });
+    setShowModal(false);
+    setSelectedBatch(null);
   };
 
   return (
@@ -1050,108 +782,32 @@ export function PurificationPools() {
       </AnimatePresence>
 
       {showModal && modalType === 'newBatch' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
-          onClick={() => setShowModal(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.95 }}
-            className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg w-full max-w-md"
-            onClick={(e) => e.stopPropagation()}
-            ref={useClickOutside(() => setShowModal(false))}
-          >
-            <div className="flex flex-col max-h-[80vh] overflow-hidden">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white">
-                  Rentrer un lot dans {selectedPool?.name}
-                </h3>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-white/60 hover:text-white transition-colors"
-                >
-                  <X size={24} />
-                </button>
-              </div>
+        <BatchEntryModal
+          isOpen={showModal && modalType === 'newBatch'}
+          onClose={() => setShowModal(false)}
+          onConfirm={handleNewBatchConfirm}
+          pool={selectedPool}
+        />
+      )}
 
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                handleAddBatch();
-              }} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Numéro de lot
-                  </label>
-                  <input
-                    type="text"
-                    value={newBatchData.number}
-                    onChange={(e) => setNewBatchData({...newBatchData, number: e.target.value})}
-                    className="w-full p-4 bg-white/5 rounded-lg text-white border border-white/10"
-                  />
-                </div>
+      {showModal && modalType === 'maintenance' && (
+        <PoolMaintenanceModal
+          isOpen={showModal && modalType === 'maintenance'}
+          onClose={() => setShowModal(false)}
+          onConfirm={handleMaintenanceConfirm}
+          maintenanceType={'cleaning'}
+          lastMaintenance={selectedPool?.lastMaintenance}
+          uvLampHours={selectedPool?.uvLampHours}
+        />
+      )}
 
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Type d'huîtres
-                  </label>
-                  <select
-                    value={newBatchData.type}
-                    onChange={(e) => setNewBatchData({...newBatchData, type: e.target.value})}
-                    className="w-full p-4 bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white [&>option]:bg-gray-800 [&>option]:text-white"
-                  >
-                    <option value="plates">Plates</option>
-                    <option value="creuses">Creuses</option>
-                    <option value="speciales">Spéciales</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Quantité
-                  </label>
-                  <input
-                    type="number"
-                    value={newBatchData.quantity}
-                    onChange={(e) => setNewBatchData({...newBatchData, quantity: parseInt(e.target.value)})}
-                    className="w-full p-4 bg-white/5 rounded-lg text-white border border-white/10"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Date et heure d'entrée
-                  </label>
-                  <input
-                    type="datetime-local"
-                    value={newBatchData.entryTime}
-                    onChange={(e) => setNewBatchData({...newBatchData, entryTime: e.target.value})}
-                    className="w-full p-4 bg-white/5 rounded-lg text-white border border-white/10"
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-4 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="px-4 py-2 rounded-lg bg-white/5 text-white/60 hover:bg-white/10"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded-lg bg-brand-primary text-white hover:bg-brand-primary/90 transition-colors"
-                  >
-                    Ajouter le lot
-                  </button>
-                </div>
-              </form>
-            </div>
-          </motion.div>
-        </motion.div>
+      {showModal && modalType === 'exit' && selectedBatch && (
+        <BatchExitModal
+          isOpen={showModal && modalType === 'exit'}
+          onClose={() => setShowModal(false)}
+          onConfirm={handleBatchExit}
+          batch={selectedBatch}
+        />
       )}
 
       {showConfirmationModal && (
