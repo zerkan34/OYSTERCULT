@@ -6,6 +6,7 @@
 @import './styles/accessibility.css';
 @import './styles/compatibility.css';
 @import './styles/text-handling.css';
+@import './styles/sidebar-responsive.css';
 
 @font-face {
   font-family: 'Industry Inc Base';

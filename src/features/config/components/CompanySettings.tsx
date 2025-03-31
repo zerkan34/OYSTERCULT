@@ -186,14 +186,14 @@ export function CompanySettings() {
               Email
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
+              <Mail className="absolute left-3 top-[30%] transform -translate-y-1/2 text-white/40" size={20} aria-label="Email icon" />
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="config-input"
+                className="pl-10 config-input"
                 placeholder="contact@oystercult.com"
                 required
                 aria-required="true"
@@ -205,14 +205,14 @@ export function CompanySettings() {
               Téléphone
             </label>
             <div className="relative">
-              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
+              <Phone aria-label="Phone icon" className="absolute left-3 top-[30%] transform -translate-y-1/2 text-white/40" size={20} />
               <input
                 type="tel"
                 id="phone"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="config-input"
+                className="pl-10 config-input"
                 placeholder="+33 1 23 45 67 89"
                 required
                 aria-required="true"
@@ -226,14 +226,14 @@ export function CompanySettings() {
             Adresse
           </label>
           <div className="relative">
-            <MapPin className="absolute left-3 top-3 text-white/40" size={20} />
+            <MapPin aria-label="Map pin icon" className="absolute left-3 top-[28%] transform -translate-y-1/2 text-white/40" size={20} />
             <input
               type="text"
               id="address"
               name="address"
               value={formData.address}
               onChange={handleChange}
-              className="config-input"
+              className="pl-10 config-input"
               placeholder="123 rue de la Mer, 75001 Paris"
               required
               aria-required="true"
@@ -246,14 +246,14 @@ export function CompanySettings() {
             Site web
           </label>
           <div className="relative">
-            <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
+            <Globe aria-label="Globe icon" className="absolute left-3 top-[28%] transform -translate-y-1/2 text-white/40" size={20} />
             <input
               type="url"
               id="website"
               name="website"
               value={formData.website}
               onChange={handleChange}
-              className="config-input"
+              className="pl-10 config-input"
               placeholder="https://www.oystercult.com"
             />
           </div>

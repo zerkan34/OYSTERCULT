@@ -11,7 +11,7 @@ export function MessagesPage() {
   };
 
   return (
-    <div className="h-full flex flex-col overflow-hidden bg-background text-white">
+    <div className="h-full flex flex-col bg-background text-white">
       <div className="flex items-center justify-between p-3 sm:p-4 border-b border-white/10">
         <div className="flex items-center">
           <button 

@@ -238,6 +238,16 @@ export function EnhancedSidebar({
     
     return () => clearTimeout(timer);
   }, []);
+  
+  // Fermer le menu lors des changements de page si la résolution est entre 1024px et 1690px
+  useEffect(() => {
+    const width = window.innerWidth;
+    // Uniquement pour les résolutions entre 1024px et 1690px
+    if (width >= 1024 && width <= 1690) {
+      setCollapsed(true);
+    }
+    // Ne rien faire pour les résolutions > 1690px, préserver le choix de l'utilisateur
+  }, [location.pathname]);
 
   // Détecter les changements de taille d'écran
   useEffect(() => {
@@ -254,9 +264,19 @@ export function EnhancedSidebar({
           onCloseMobileMenu();
         }
       }
+      
+      // Pour les résolutions entre 1024px et 1690px, fermer automatiquement le menu
+      const width = window.innerWidth;
+      if (width >= 1024 && width <= 1690) {
+        setCollapsed(true);
+      }
     };
 
     window.addEventListener('resize', handleResize);
+    
+    // Exécuter une fois au chargement
+    handleResize();
+    
     return () => window.removeEventListener('resize', handleResize);
   }, [isMobile, showMobileMenu, onCloseMobileMenu]);
 
@@ -382,6 +402,7 @@ export function EnhancedSidebar({
           fixed inset-y-0 left-0 z-50 overflow-x-hidden
           transition-all duration-300 ease-in-out rounded-tr-3xl rounded-br-3xl
           ${isMobile ? 'hidden lg:block' : ''}
+          sidebar-auto-collapse
         `}
         initial={isFirstRender ? false : true}
         animate={collapsed ? "collapsed" : "expanded"}

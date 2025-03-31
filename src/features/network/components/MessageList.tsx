@@ -1,66 +1,17 @@
 import React, { useState } from 'react';
 import { Search, MessageSquare, Plus, X } from 'lucide-react';
 import { NetworkChat } from './NetworkChat';
+import { mockContacts, Contact } from '../data/mockData';
 
 interface MessageListProps {
   onSelectContact?: (id: string) => void;
 }
 
-interface Contact {
-  id: string;
-  name: string;
-  avatar?: string;
-  lastMessage?: string;
-  lastMessageTime?: string;
-  unreadCount?: number;
-  online: boolean;
-}
-
-const mockContacts: Contact[] = [
-  {
-    id: '1',
-    name: 'Jean Dupont',
-    lastMessage: 'Parfait, merci !',
-    lastMessageTime: '10:30',
-    unreadCount: 2,
-    online: true
-  },
-  {
-    id: '2',
-    name: 'Marie Martin',
-    lastMessage: 'Je vous recontacte demain',
-    lastMessageTime: '09:15',
-    online: false
-  },
-  {
-    id: '3',
-    name: 'Pierre Durand',
-    lastMessage: 'Pouvez-vous me donner les prix pour...',
-    lastMessageTime: 'Hier',
-    online: true
-  },
-  {
-    id: '4',
-    name: 'Sophie Dubois',
-    lastMessage: 'Je vous envoie les documents',
-    lastMessageTime: 'Lun',
-    unreadCount: 1,
-    online: false
-  },
-  {
-    id: '5',
-    name: 'Luc Moreau',
-    lastMessage: 'Merci pour votre réponse',
-    lastMessageTime: '23/02',
-    online: true
-  }
-];
-
 export function MessageList({ onSelectContact }: MessageListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
 
-  const filteredContacts = mockContacts.filter(contact => 
+  const filteredContacts = mockContacts.filter((contact: Contact) => 
     contact.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -103,7 +54,7 @@ export function MessageList({ onSelectContact }: MessageListProps) {
           <div className="flex-1 overflow-y-auto divide-y divide-white/10">
             {filteredContacts.length > 0 ? (
               <div className="space-y-0.5">
-                {filteredContacts.map(contact => (
+                {filteredContacts.map((contact: Contact) => (
                   <div
                     key={contact.id}
                     onClick={() => {
