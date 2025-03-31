@@ -65,6 +65,8 @@ interface EnhancedSidebarProps {
   showMobileMenu: boolean;
   onCloseMobileMenu: () => void;
   onEmergencyClick: () => void;
+  onToggleMessages: () => void;
+  onToggleNotifications: () => void;
 }
 
 interface NavItem {
@@ -217,7 +219,9 @@ const navItems: NavGroup[] = [
 export function EnhancedSidebar({ 
   showMobileMenu, 
   onCloseMobileMenu,
-  onEmergencyClick
+  onEmergencyClick,
+  onToggleMessages,
+  onToggleNotifications
 }: EnhancedSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();

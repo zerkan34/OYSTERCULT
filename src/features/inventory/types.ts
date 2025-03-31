@@ -8,10 +8,12 @@ export interface Table {
   lastUpdate: string;
   cells: TableCell[];
   history: HistoryEntry[];
-  exondation?: {
-    isExonded: boolean;
-    startTime?: string;
-    endTime?: string;
+  exondation?: Exondation;
+  sampling?: {
+    lastCheckDate: string;
+    nextCheckDate: string;
+    mortalityRate: number;
+    currentSize: string;
   };
 }
 
@@ -24,18 +26,24 @@ export interface TableCell {
     batchNumber: string;
     dateAdded: string;
   };
+  exondation?: Exondation;
+  history?: HistoryEntry[];
 }
 
 export interface HistoryEntry {
   date: string;
-  naissain: string;
-  lotNumber: string;
-  mortalityRate: number;
-  notes: string;
-  action?: string;
-  details?: string;
-  spat?: {
-    name: string;
-    batchNumber: string;
-  };
+  action: string;
+  details: string;
+  type?: string;
+  naissain?: string;
+  lotNumber?: string;
+  mortalityRate?: number;
+  notes?: string;
+}
+
+export interface Exondation {
+  isExonded: boolean;
+  startTime?: string;
+  endTime?: string;
+  exondationCount?: number;
 }

@@ -214,13 +214,30 @@ const CaliberGauge = ({ currentSize, targetSize, tableName }: { currentSize: str
         <div className="space-y-2">
           <div className="relative h-4 bg-white/5 rounded-lg overflow-hidden">
             <div className="absolute inset-0 flex">
-              {CALIBER_SCALE.map((caliber) => (
-                <div
-                  key={caliber}
-                  className="flex-1 border-r border-white/10 last:border-r-0"
-                />
-              ))}
+              <div className="h-full relative" style={{ width: '16.7%' }}>
+                <div className="absolute inset-0 bg-gradient-to-b from-[#0d9488]/75 to-[#0d9488]/90 transition-all duration-500"></div>
+                <div className="absolute left-1/2 bottom-4 transform -translate-x-1/2 z-20">
+                  <div className="flex flex-col items-center">
+                    <div className="bg-white/10 backdrop-blur-md px-1.5 py-0.5 rounded-md border border-brand-burgundy/30 mb-1 shadow-lg">
+                      <span className="text-white text-xs font-semibold">N°3</span>
+                    </div>
+                    <div className="text-xs text-white font-medium">500kg</div>
+                  </div>
+                </div>
+              </div>
+              <div className="h-full relative" style={{ width: '10%' }}>
+                <div className="absolute inset-0 bg-gradient-to-b from-blue-500/75 to-blue-600/90 transition-all duration-500" style={{ boxShadow: 'rgba(37, 99, 235, 0.2) 0px 0px 20px' }}></div>
+                <div className="absolute left-1/2 bottom-4 transform -translate-x-1/2 z-20">
+                  <div className="flex flex-col items-center">
+                    <div className="bg-white/10 backdrop-blur-md px-1.5 py-0.5 rounded-md border border-blue-500/30 mb-1 shadow-lg">
+                      <span className="text-white text-xs font-semibold">N°2</span>
+                    </div>
+                    <div className="text-xs text-white font-medium">300kg</div>
+                  </div>
+                </div>
+              </div>
             </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/5 to-transparent pointer-events-none" style={{ opacity: 0 }}></div>
           </div>
           <div className="flex justify-between px-1 text-sm font-medium">
             {CALIBER_SCALE.map((caliber) => (

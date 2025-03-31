@@ -1,8 +1,9 @@
 import React from 'react';
 import { TableOccupationDashboard } from '../components/TableOccupationDashboard.tsx';
 import { PoolHealthSection } from '../components/PoolHealthSection.tsx';
+import { WeatherWidget } from '../components/WeatherWidget';
 import { motion } from 'framer-motion';
-import { BarChart3, Activity, AlertTriangle, TrendingUp, Layers, ThermometerSun } from 'lucide-react';
+import { BarChart3, Activity, AlertTriangle, TrendingUp, Layers, ThermometerSun, Cloud } from 'lucide-react';
 
 // Animation variants
 const containerVariants = {
@@ -103,6 +104,30 @@ export function Dashboard() {
               <p className="text-2xl font-bold text-white">1,250 kg</p>
             </div>
           </div>
+        </motion.div>
+
+        {/* Météo */}
+        <motion.div 
+          variants={itemVariants}
+          className="rounded-xl p-5"
+          style={{
+            background: "linear-gradient(135deg, rgba(0, 10, 40, 0.85) 0%, rgba(0, 100, 120, 0.8) 100%)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
+          }}
+        >
+          <div className="flex items-center mb-4">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-3"
+              style={{
+                background: "linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%)",
+                boxShadow: "0 3px 6px rgba(0, 0, 0, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.25)"
+              }}>
+              <Cloud className="text-cyan-400" size={22} />
+            </div>
+            <h2 className="text-lg font-medium text-white">Météo</h2>
+          </div>
+          <WeatherWidget />
         </motion.div>
 
         {/* Activité récente */}
