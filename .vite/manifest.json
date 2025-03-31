@@ -12,7 +12,7 @@
     "name": "vendor"
   },
   "index.html": {
-    "file": "assets/js/index-Cl7Ec1su.js",
+    "file": "assets/js/index-BH4gPSp2.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -27,11 +27,11 @@
       "node_modules/qr-scanner/qr-scanner-worker.min.js"
     ],
     "css": [
-      "assets/css/index--EJ2kJB1.css"
+      "assets/css/index-CPWFFZFw.css"
     ]
   },
   "node_modules/canvg/lib/index.es.js": {
-    "file": "assets/js/index.es-C0ioGmjD.js",
+    "file": "assets/js/index.es-BFK9wgmf.js",
     "name": "index.es",
     "src": "node_modules/canvg/lib/index.es.js",
     "isDynamicEntry": true,
