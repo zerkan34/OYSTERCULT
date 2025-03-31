@@ -12,6 +12,7 @@ import { useStore } from '@/lib/store';
 import { routes } from './routes';
 import StocksList from './components/StocksList';
 import { useMessages } from '@/features/network/hooks/useMessages';
+import './styles/fixed-scale.css';
 
 // Pages
 import { AuthPage } from '@/features/auth/pages/AuthPage';
@@ -215,48 +216,52 @@ function AppContent() {
   const isDirectSurveillanceAccess = location.pathname === '/surveillance/simple';
 
   return (
-    <div className="min-h-screen w-screen h-screen fixed inset-0 overflow-hidden">
-      <Routes>
-        <Route path="/auth" element={<AuthPage />} />
-        <Route path="/surveillance/simple" element={<SurveillanceSimplePage />} />
-        {isAuthenticated ? (
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/stocks" element={<InventoryPage />} />
-            <Route path="/stock/:id" element={<StockPage />} />
-            <Route path="/tables/:id" element={<TableDetailsPage />} />
-            <Route path="/accounting" element={<AccountingPage />} />
-            <Route path="/invoices" element={<InvoicesPage />} />
-            <Route path="/hr" element={<HRPage />} />
-            <Route path="/network" element={<NetworkPage />} />
-            <Route path="/network/messages" element={<MessagesPage />} />
-            <Route path="/config" element={<ConfigPage />} />
-            <Route path="/notifications" element={<NotificationsPage />} />
-            <Route path="/tasks" element={<TasksPage />} />
-            <Route path="/traceability" element={<TraceabilityPage />} />
-            <Route path="/traceability/storage-locations" element={<StorageLocations />} />
-            <Route path="/traceability/market-purchases" element={<MarketPurchases />} />
-            <Route path="/traceability/invoices-delivery-notes" element={<InvoicesAndDeliveryNotes />} />
-            <Route path="/traceability/batches" element={<BatchList />} />
-            <Route path="/traceability/batch-history" element={<BatchHistory searchQuery="" />} />
-            <Route path="/traceability/purification-pools" element={<PurificationPools />} />
-            <Route path="/sales" element={<SalesPage />} />
-            <Route path="/purchases" element={<PurchasesPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/shop" element={<ShopPage />} />
-            <Route path="/suppliers" element={<SuppliersPage />} />
-            <Route path="/digital-vault" element={<DigitalVaultPage />} />
-            <Route path="/suppliers/:supplierId/catalog" element={<SupplierCatalogPage />} />
-            <Route path="/suppliers/orders" element={<OrdersPage />} />
-            <Route path="/surveillance" element={<SurveillancePage />} />
-            <Route path="/analyses" element={<AnalysesPage />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Route>
-        ) : (
-          <Route path="*" element={<Navigate to="/auth" replace />} />
-        )}
-      </Routes>
+    <div className="scale-wrapper">
+      <div className="fixed-scale-container">
+        <div className="min-h-full w-full relative">
+          <Routes>
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/surveillance/simple" element={<SurveillanceSimplePage />} />
+            {isAuthenticated ? (
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/stocks" element={<InventoryPage />} />
+                <Route path="/stock/:id" element={<StockPage />} />
+                <Route path="/tables/:id" element={<TableDetailsPage />} />
+                <Route path="/accounting" element={<AccountingPage />} />
+                <Route path="/invoices" element={<InvoicesPage />} />
+                <Route path="/hr" element={<HRPage />} />
+                <Route path="/network" element={<NetworkPage />} />
+                <Route path="/network/messages" element={<MessagesPage />} />
+                <Route path="/config" element={<ConfigPage />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/tasks" element={<TasksPage />} />
+                <Route path="/traceability" element={<TraceabilityPage />} />
+                <Route path="/traceability/storage-locations" element={<StorageLocations />} />
+                <Route path="/traceability/market-purchases" element={<MarketPurchases />} />
+                <Route path="/traceability/invoices-delivery-notes" element={<InvoicesAndDeliveryNotes />} />
+                <Route path="/traceability/batches" element={<BatchList />} />
+                <Route path="/traceability/batch-history" element={<BatchHistory searchQuery="" />} />
+                <Route path="/traceability/purification-pools" element={<PurificationPools />} />
+                <Route path="/sales" element={<SalesPage />} />
+                <Route path="/purchases" element={<PurchasesPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/shop" element={<ShopPage />} />
+                <Route path="/suppliers" element={<SuppliersPage />} />
+                <Route path="/digital-vault" element={<DigitalVaultPage />} />
+                <Route path="/suppliers/:supplierId/catalog" element={<SupplierCatalogPage />} />
+                <Route path="/suppliers/orders" element={<OrdersPage />} />
+                <Route path="/surveillance" element={<SurveillancePage />} />
+                <Route path="/analyses" element={<AnalysesPage />} />
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Route>
+            ) : (
+              <Route path="*" element={<Navigate to="/auth" replace />} />
+            )}
+          </Routes>
+        </div>
+      </div>
     </div>
   );
 }

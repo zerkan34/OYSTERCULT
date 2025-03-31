@@ -1,0 +1,78 @@
+/* Styles pour une mise à l'échelle adaptative */
+:root {
+  --base-width: 1920px;     /* Largeur de référence */
+  --base-height: 1080px;    /* Hauteur de référence */
+  --aspect-ratio: calc(16 / 9);
+}
+
+.scale-wrapper {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fixed-scale-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
+  max-height: 100vh;
+  margin: 0 auto;
+  transform-origin: center;
+}
+
+/* Ajustement automatique de l'échelle */
+@media (min-width: 320px) {
+  .fixed-scale-container {
+    width: min(100vw, calc(100vh * var(--aspect-ratio)));
+    height: min(100vh, calc(100vw / var(--aspect-ratio)));
+  }
+}
+
+/* Pour les écrans plus larges que hauts */
+@media (orientation: landscape) {
+  .fixed-scale-container {
+    width: calc(100vh * var(--aspect-ratio));
+    height: 100vh;
+  }
+}
+
+/* Pour les écrans plus hauts que larges */
+@media (orientation: portrait) {
+  .fixed-scale-container {
+    width: 100vw;
+    height: calc(100vw / var(--aspect-ratio));
+  }
+}
+
+/* Optimisations pour différentes tailles d'écran */
+@media (min-width: 1921px) {
+  .fixed-scale-container {
+    max-width: 90vw;
+    max-height: 90vh;
+  }
+}
+
+@media (max-width: 1366px) {
+  .fixed-scale-container {
+    font-size: calc(14px * (100vw / var(--base-width)));
+  }
+}
+
+/* Préserver la lisibilité sur petits écrans */
+@media (max-width: 768px) {
+  .fixed-scale-container {
+    font-size: calc(12px * (100vw / var(--base-width)));
+  }
+}
+
+/* Support des préférences de réduction de mouvement */
+@media (prefers-reduced-motion: reduce) {
+  .fixed-scale-container {
+    transition: none;
+  }
+}

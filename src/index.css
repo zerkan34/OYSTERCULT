@@ -88,6 +88,9 @@
   --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.2);
   --glass-opacity: 0.85;
   --mesh-opacity: 0.05;
+  
+  --viewport-width: 1920px;  /* Largeur de référence */
+  --viewport-height: 1080px; /* Hauteur de référence */
 }
 
 /* Classe pour forcer la position de l'icône de recherche */
@@ -104,13 +107,23 @@ html, body {
   overflow-x: hidden;
 }
 
-#root, #app {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
+html {
+  font-size: calc(16px * (100vw / var(--viewport-width)));
+}
+
+body {
+  min-width: var(--viewport-width);
+  min-height: var(--viewport-height);
+  transform-origin: top left;
+  transform: scale(calc(100vw / var(--viewport-width)));
   overflow-x: hidden;
-  box-sizing: border-box;
+}
+
+#root, #app {
+  width: var(--viewport-width);
+  min-height: var(--viewport-height);
+  margin: 0 auto;
+  position: relative;
 }
 
 /* Styles de base */
