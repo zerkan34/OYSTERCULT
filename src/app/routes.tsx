@@ -7,6 +7,7 @@ import { SuppliersPage } from '@/features/suppliers';
 import { SupplierCatalogPage } from '@/features/suppliers/pages/SupplierCatalogPage';
 import { HRPage } from '@/features/hr/pages/HRPage';
 import { NetworkPage } from '@/features/network/pages/NetworkPage';
+import { PurchasesPage } from '@/features/purchases/pages/PurchasesPage';
 
 export const router = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ export const router = createBrowserRouter([
       {
         path: '/network/messages',
         element: <NetworkPage messageView={true} activeTab="messages" />
+      },
+      {
+        path: '/purchases',
+        element: <PurchasesPage />
       }
     ]
   }

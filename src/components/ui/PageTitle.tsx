@@ -9,13 +9,14 @@ const slideInVariants = {
 interface PageTitleProps {
   icon: React.ReactNode;
   title: string;
+  className?: string;
 }
 
-export function PageTitle({ icon, title }: PageTitleProps) {
+export function PageTitle({ icon, title, className }: PageTitleProps) {
   return (
     <motion.div 
       variants={slideInVariants}
-      className="flex items-center mb-8 mt-6"
+      className={`flex items-center mb-8 mt-6 ${className}`}
     >
       <div className="relative mr-4">
         <div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,128,128,0.9)] to-[rgba(0,160,160,0.7)] blur-xl opacity-70 rounded-full"></div>

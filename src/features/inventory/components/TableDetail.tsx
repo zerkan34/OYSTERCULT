@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Table, TableCell, HistoryEntry } from '../types';
 import { 
   Clock, 
   Calendar,
@@ -16,8 +15,66 @@ import {
   ChevronDown,
   RefreshCw,
   Plus,
-  ShoppingCart
+  ShoppingCart,
+  X,
+  Sprout
 } from 'lucide-react';
+
+interface TableCell {
+  id: string;
+  filled: boolean;
+  ropeCount?: number;
+  spat?: {
+    name: string;
+    batchNumber: string;
+    dateAdded?: string;
+  };
+  exondation?: {
+    startTime: string;
+    isExonded: boolean;
+    exondationCount: number;
+  };
+  history?: {
+    date: string;
+    action: string;
+    details: string;
+    mortalityRate?: number;
+    spat?: {
+      name: string;
+      batchNumber: string;
+      dateAdded?: string;
+    };
+    type?: string;
+  }[];
+}
+
+interface Table {
+  id: string;
+  name: string;
+  tableNumber: number;
+  oysterType: string;
+  temperature: number;
+  salinity: number;
+  lastUpdate: string;
+  cells: TableCell[];
+  exondation?: {
+    startTime: string;
+    isExonded: boolean;
+    exondationCount: number;
+  };
+  history?: {
+    date: string;
+    action: string;
+    details: string;
+    mortalityRate?: number;
+    spat?: {
+      name: string;
+      batchNumber: string;
+      dateAdded?: string;
+    };
+    type?: string;
+  }[];
+}
 
 interface TableDetailProps {
   table: Table;
@@ -28,7 +85,7 @@ interface TableDetailProps {
 interface CellModalProps {
   cell: TableCell;
   onClose: () => void;
-  onSave: (updatedCell: TableCell) => void;
+  children?: React.ReactNode;
 }
 
 interface HarvestModalProps {
@@ -45,88 +102,90 @@ const generateBatchNumber = () => {
   return `${year}${month}-${random}`;
 };
 
-const CellModal: React.FC<CellModalProps> = ({ cell, onClose, onSave }) => {
+const updateCellSpat = (cell: TableCell, updatedSpat: { name: string; batchNumber: string; dateAdded?: string }) => {
+  return {
+    ...cell,
+    spat: updatedSpat,
+    history: [
+      ...(cell.history || []),
+      {
+        date: new Date().toISOString(),
+        action: 'Mise à jour naissain',
+        spat: updatedSpat,
+        details: `Nouveau naissain : ${updatedSpat.name} (${updatedSpat.batchNumber})`
+      }
+    ]
+  };
+};
+
+const CellModal: React.FC<CellModalProps> = ({ cell, onClose, children }) => {
   const [ropeCount, setRopeCount] = useState<number>(cell.ropeCount || 0);
   const [spatName, setSpatName] = useState(cell.spat?.name || '');
   const [batchNumber, setBatchNumber] = useState(cell.spat?.batchNumber || generateBatchNumber());
+  const [mortalityRate, setMortalityRate] = useState<number>(0);
+  const [samplingNotes, setSamplingNotes] = useState('');
 
   const handleSave = () => {
-    onSave({
-      ...cell,
-      filled: true,
-      ropeCount,
-      spat: {
-        name: spatName,
-        batchNumber,
-        dateAdded: new Date().toISOString(),
-      },
-    });
+    onClose(updateCellSpat(cell, {
+      ...cell.spat,
+      name: spatName,
+      batchNumber,
+      dateAdded: new Date().toISOString(),
+    }));
     onClose();
+  };
+
+  const handleSampling = () => {
+    if (mortalityRate >= 0) {
+      const newEntry = {
+        date: new Date().toISOString(),
+        action: 'Échantillonnage',
+        details: samplingNotes || 'Pas de notes',
+        mortalityRate: mortalityRate,
+        spat: {
+          name: cell.spat?.name,
+          batchNumber: cell.spat?.batchNumber,
+        }
+      };
+
+      // Mise à jour de l'historique
+      const updatedHistory = [...(cell.history || []), newEntry].sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+
+      // TODO: Mettre à jour l'état de la table avec le nouvel historique
+      console.log('Nouvel échantillonnage :', newEntry);
+      
+      // Réinitialisation des champs
+      setMortalityRate(0);
+      setSamplingNotes('');
+      onClose();
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       <motion.div 
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.95)] p-6 rounded-lg w-96 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px] border border-white/10"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="bg-gray-900/95 backdrop-blur-sm p-6 rounded-xl w-[400px] border border-white/10"
       >
-        <h3 className="text-2xl font-semibold mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-          Ajouter des cordes
-        </h3>
-        <div className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium mb-2 text-white/70">Nombre de cordes</label>
-            <input
-              type="number"
-              value={ropeCount}
-              onChange={(e) => setRopeCount(Number(e.target.value))}
-              className="w-full bg-black/20 rounded-lg p-3 border border-white/10 focus:border-cyan-500/30 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
-              min="0"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2 text-white/70">Naissain</label>
-            <input
-              type="text"
-              value={spatName}
-              onChange={(e) => setSpatName(e.target.value)}
-              className="w-full bg-black/20 rounded-lg p-3 border border-white/10 focus:border-cyan-500/30 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
-              placeholder="Nom du naissain"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2 text-white/70">Numéro de lot</label>
-            <div className="relative">
-              <input
-                type="text"
-                value={batchNumber}
-                onChange={(e) => setBatchNumber(e.target.value)}
-                className="w-full bg-black/20 rounded-lg p-3 border border-white/10 focus:border-cyan-500/30 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
-                placeholder="Auto-généré"
-              />
-              <button
-                onClick={() => setBatchNumber(generateBatchNumber())}
-                className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs bg-cyan-500/20 text-cyan-400 rounded hover:bg-cyan-500/30 transition-colors"
-              >
-                Générer
-              </button>
-            </div>
-          </div>
-          <div className="flex justify-end space-x-3 pt-2">
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-cyan-200 bg-clip-text text-transparent">
+              Détails du carré
+            </h3>
             <button
               onClick={onClose}
-              className="px-4 py-2.5 bg-white/5 rounded-lg hover:bg-white/10 border border-white/10 transition-colors"
+              className="text-gray-400 hover:text-white transition-colors"
+              aria-label="Fermer"
             >
-              Annuler
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg hover:from-cyan-400 hover:to-blue-400 transition-colors font-medium"
-            >
-              Enregistrer
+              <X size={24} aria-hidden="true" />
             </button>
           </div>
+
+          {children}
         </div>
       </motion.div>
     </div>
@@ -149,12 +208,10 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ cell, onClose, onSave }) =>
     // Si on récolte toutes les cordes de la cellule
     const isFullyHarvested = remainingRopes === 0;
 
-    onSave({
-      ...cell,
-      filled: !isFullyHarvested,
-      ropeCount: remainingRopes,
-      spat: isFullyHarvested ? undefined : cell.spat,
-    });
+    onSave(updateCellSpat(cell, {
+      ...cell.spat,
+      batchNumber: isFullyHarvested ? undefined : cell.spat?.batchNumber,
+    }));
     onClose();
   };
 
@@ -215,10 +272,10 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ cell, onClose, onSave }) =>
                 <button
                   onClick={() => {
                     const newBatchNumber = generateBatchNumber();
-                    onSave({
-                      ...cell,
-                      spat: { ...cell.spat, batchNumber: newBatchNumber }
-                    });
+                    onSave(updateCellSpat(cell, {
+                      ...cell.spat,
+                      batchNumber: newBatchNumber
+                    }));
                   }}
                   className="p-1 rounded bg-white/5 hover:bg-white/10 text-white/70"
                 >
@@ -246,7 +303,7 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ cell, onClose, onSave }) =>
                 const newExondationCount = (cell.exondation?.exondationCount || 0) + 1;
                 
                 // Créer une nouvelle entrée d'historique
-                const historyEntry: HistoryEntry = {
+                const historyEntry: any = {
                   date: now,
                   action: 'Exondation',
                   details: `Exondation #${newExondationCount}`,
@@ -254,6 +311,10 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ cell, onClose, onSave }) =>
                 };
 
                 // Mettre à jour la cellule
+                onSave(updateCellSpat(cell, {
+                  ...cell.spat,
+                  batchNumber: undefined,
+                }));
                 onSave({
                   ...cell,
                   exondation: {
@@ -303,6 +364,70 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ cell, onClose, onSave }) =>
   );
 };
 
+const HistorySection = ({ history }: { history: any[] }) => {
+  return (
+    <div className="space-y-4">
+      <h3 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-cyan-200 bg-clip-text text-transparent flex items-center gap-2">
+        <Clock size={20} className="text-cyan-400" aria-hidden="true" />
+        Historique
+      </h3>
+      <div className="space-y-3">
+        {history?.map((entry, index) => (
+          <div
+            key={index}
+            className="bg-black/20 rounded-lg p-4 border border-white/10"
+          >
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Calendar size={16} className="text-cyan-400" aria-hidden="true" />
+                  <span className="text-sm text-white/70">
+                    {new Date(entry.date).toLocaleDateString('fr-FR', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </span>
+                </div>
+                <h4 className="font-medium text-white">{entry.action}</h4>
+                {entry.mortalityRate !== undefined && (
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-sm">Taux de mortalité:</span>
+                    <span 
+                      className={`px-2 py-0.5 rounded text-sm ${
+                        entry.mortalityRate <= 15
+                          ? 'bg-green-500/20 text-green-400'
+                          : entry.mortalityRate <= 30
+                          ? 'bg-yellow-500/20 text-yellow-400'
+                          : 'bg-red-500/20 text-red-400'
+                      }`}
+                    >
+                      {entry.mortalityRate}%
+                    </span>
+                  </div>
+                )}
+                {entry.spat && (
+                  <div className="flex items-center gap-2 mt-1 text-sm text-white/70">
+                    <Sprout size={16} className="text-cyan-400" aria-hidden="true" />
+                    <span>{entry.spat.name}</span>
+                    <span className="text-white/40">|</span>
+                    <span>{entry.spat.batchNumber}</span>
+                  </div>
+                )}
+                {entry.details && (
+                  <p className="text-sm text-white/70 mt-2">{entry.details}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTableUpdate }) => {
   const [selectedCell, setSelectedCell] = useState<TableCell | null>(null);
   const [showCellModal, setShowCellModal] = useState(false);
@@ -312,6 +437,8 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
   const [showExondationModal, setShowExondationModal] = useState(false);
   const [selectedExondationOption, setSelectedExondationOption] = useState<'all' | 'right' | 'left' | 'custom'>('all');
   const [selectedCells, setSelectedCells] = useState<number[]>([]);
+  const [mortalityRate, setMortalityRate] = useState<number>(0);
+  const [samplingNotes, setSamplingNotes] = useState('');
 
   // Initialiser les cellules avec les cellules 9 et 17 remplies
   React.useEffect(() => {
@@ -333,7 +460,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
     const now = new Date().toISOString();
     const newExondationCount = (table.exondation?.exondationCount || 0) + 1;
     
-    const historyEntry: HistoryEntry = {
+    const historyEntry: any = {
       date: now,
       action: 'Exondation',
       details: `Exondation #${newExondationCount} - ${
@@ -404,7 +531,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
     if (index !== -1) {
       newCells[index] = updatedCell;
 
-      const historyEntry: HistoryEntry = {
+      const historyEntry: any = {
         date: new Date().toISOString(),
         action: 'Mise à jour cellule',
         spat: updatedCell.spat,
@@ -426,7 +553,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
     if (index !== -1) {
       newCells[index] = updatedCell;
 
-      const historyEntry: HistoryEntry = {
+      const historyEntry: any = {
         date: new Date().toISOString(),
         action: 'Récolte de cordes',
         spat: updatedCell.spat,
@@ -442,6 +569,35 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
     setShowHarvestModal(false);
   };
 
+  const handleSampling = () => {
+    if (selectedCell && mortalityRate >= 0) {
+      const newEntry = {
+        date: new Date().toISOString(),
+        action: 'Échantillonnage',
+        details: samplingNotes || 'Pas de notes',
+        mortalityRate: mortalityRate,
+        spat: {
+          name: table.oysterType,
+          batchNumber: `LOT-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
+        }
+      };
+
+      // Mise à jour de l'historique
+      const updatedHistory = [...(table.history || []), newEntry].sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+
+      // TODO: Mettre à jour l'état de la table avec le nouvel historique
+      console.log('Nouvel échantillonnage :', newEntry);
+      
+      // Réinitialisation des champs
+      setMortalityRate(0);
+      setSamplingNotes('');
+      setSelectedCell(null);
+      setShowCellModal(false);
+    }
+  };
+
   const fillColumn = (startIndex: number) => {
     const newCells = [...table.cells];
     for (let i = startIndex; i < startIndex + 10; i++) {
@@ -452,6 +608,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
           ropeCount: 10,
           spat: {
             name: "Naissain standard",
+            batchNumber: generateBatchNumber(),
             dateAdded: new Date().toISOString(),
           },
         };
@@ -469,33 +626,6 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
         },
       ],
     });
-  };
-
-  const handleSampling = () => {
-    const newHistory = [
-      ...table.history,
-      {
-        date: new Date().toISOString(),
-        action: 'Échantillonnage',
-        details: 'Contrôle de croissance effectué',
-      },
-    ];
-
-    onTableUpdate({
-      ...table,
-      sampling: {
-        ...table.sampling,
-        lastCheckDate: new Date().toISOString(),
-        nextCheckDate: new Date(
-          Date.now() + 7 * 24 * 60 * 60 * 1000
-        ).toISOString(), // +7 jours
-        mortalityRate: Math.round(Math.random() * 5), // 0-5%
-        currentSize: (Math.round(70 + Math.random() * 30)).toString() // 70-100mm
-      },
-      history: newHistory,
-    });
-
-    setShowSamplingModal(false);
   };
 
   const handleCellClick = (cell: TableCell) => {
@@ -609,7 +739,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
             <div className="space-y-4">
               <button
                 onClick={() => setShowExondationModal(true)}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border transition-all duration-200 ${
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border transition-colors ${
                   table.exondation?.isExonded 
                     ? 'bg-orange-500/20 border-orange-500/30 hover:bg-orange-500/30' 
                     : 'bg-white/5 border-white/10 hover:bg-white/10'
@@ -692,15 +822,54 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
         {showCellModal && selectedCell && (
           <CellModal
             cell={selectedCell}
-            onClose={() => setShowCellModal(false)}
-            onSave={handleCellUpdate}
-          />
+            onClose={onClose}
+          >
+            <div className="space-y-6">
+              <div>
+                <label className="block text-white mb-2" htmlFor="mortality-rate">
+                  Taux de mortalité (%)
+                </label>
+                <input
+                  type="number"
+                  id="mortality-rate"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  className="w-full h-[44px] bg-white/5 rounded-lg px-4 text-white border border-white/10 hover:border-cyan-400/30 focus:border-cyan-500/30 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                  value={mortalityRate}
+                  onChange={(e) => setMortalityRate(Number(e.target.value))}
+                />
+              </div>
+
+              <div>
+                <label className="block text-white mb-2" htmlFor="sampling-notes">
+                  Notes d'échantillonnage
+                </label>
+                <textarea
+                  id="sampling-notes"
+                  rows={3}
+                  className="w-full bg-white/5 rounded-lg px-4 py-2 text-white border border-white/10 hover:border-cyan-400/30 focus:border-cyan-500/30 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                  value={samplingNotes}
+                  onChange={(e) => setSamplingNotes(e.target.value)}
+                  placeholder="Observations sur la croissance, l'état sanitaire..."
+                />
+              </div>
+
+              <button
+                className="w-full h-[44px] flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
+                onClick={handleSampling}
+              >
+                <ClipboardCheck size={20} className="relative top-[1px]" aria-hidden="true" />
+                <span>Enregistrer l'échantillonnage</span>
+              </button>
+            </div>
+          </CellModal>
         )}
 
         {showHarvestModal && selectedCell && (
           <HarvestModal
             cell={selectedCell}
-            onClose={() => setShowHarvestModal(false)}
+            onClose={onClose}
             onSave={handleHarvest}
           />
         )}
@@ -712,7 +881,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
             <div className="bg-gray-900/95 backdrop-blur-sm p-8 rounded-xl w-[600px] border border-white/10">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-cyan-200 bg-clip-text text-transparent">
-                  Historique
+                  Historique des échantillonnages
                 </h3>
                 <button
                   onClick={() => setShowHistory(false)}
@@ -734,27 +903,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
                   </svg>
                 </button>
               </div>
-              <div className="space-y-4">
-                {table.history.map((entry, i) => (
-                  <div key={i} className="p-4 bg-gray-800/50 rounded-lg border border-white/5">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-cyan-400 font-medium">
-                        {new Date(entry.date).toLocaleDateString()}
-                      </span>
-                      <span className="text-gray-400 text-sm">
-                        {entry.action}
-                      </span>
-                    </div>
-                    <p className="text-gray-300">{entry.details}</p>
-                    {entry.spat && (
-                      <div className="mt-2 text-sm text-gray-400">
-                        Naissain : {entry.spat.name}
-                        {entry.spat.batchNumber && ` (Lot ${entry.spat.batchNumber})`}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <HistorySection history={table.history} />
             </div>
           </div>
         )}

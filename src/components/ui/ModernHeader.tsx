@@ -80,19 +80,11 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
           >
             <div className="absolute inset-0 bg-white/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
             
-            {/* Remplacement des 3 traits par l'icône vagues */}
-            <div style={{ width: '24px', height: '24px' }} className="relative flex items-center justify-center">
-              <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{
-                filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.4))',
-                opacity: 1,
-                width: '100%',
-                height: '100%'
-              }}>
-                <path d="M15 20 Q25 12, 35 20 T55 20 T75 20 T95 20" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                <path d="M15 40 Q25 32, 35 40 T55 40 T75 40 T95 40" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                <path d="M15 60 Q25 52, 35 60 T55 60 T75 60 T95 60" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                <path d="M15 80 Q25 72, 35 80 T55 80 T75 80 T95 80" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
-              </svg>
+            {/* Remplacement des vagues par 3 traits horizontaux */}
+            <div style={{ width: '24px', height: '24px' }} className="relative flex flex-col justify-center gap-2">
+              <div className="h-0.5 w-6 bg-current rounded-full"></div>
+              <div className="h-0.5 w-6 bg-current rounded-full"></div>
+              <div className="h-0.5 w-6 bg-current rounded-full"></div>
             </div>
           </button>
           <div 
@@ -130,17 +122,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
               >
                 <div className="flex flex-col items-center relative">
                   <div style={{ width: '4.5rem', height: '4rem', transform: 'translateX(2px)' }} className="relative flex items-center justify-center">
-                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{
-                      filter: 'drop-shadow(0 8px 8px rgba(0,0,0,0.4))',
-                      opacity: 1,
-                      width: '100%',
-                      height: '100%'
-                    }}>
-                      <path d="M15 20 Q25 12, 35 20 T55 20 T75 20 T95 20" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                      <path d="M15 40 Q25 32, 35 40 T55 40 T75 40 T95 40" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                      <path d="M15 60 Q25 52, 35 60 T55 60 T75 60 T95 60" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                      <path d="M15 80 Q25 72, 35 80 T55 80 T75 80 T95 80" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                    </svg>
+                    {/* Logo sans vagues */}
                   </div>
                 </div>
               </motion.div>

@@ -221,10 +221,6 @@ const CaliberGauge = ({ currentSize, targetSize, tableName }: { currentSize: str
                 />
               ))}
             </div>
-            <div
-              className="h-full bg-gray-500/20 transition-all duration-300"
-              style={{ width: '100%' }}
-            />
           </div>
           <div className="flex justify-between px-1 text-sm font-medium">
             {CALIBER_SCALE.map((caliber) => (

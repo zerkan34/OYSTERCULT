@@ -12,22 +12,22 @@ interface Comment {
   };
   timestamp: string;
   type: 'comment' | 'rating';
-  attachments?: {
-    name: string;
-    url: string;
-    type: 'image' | 'document';
-  }[];
   rating?: {
     overall: number;
-    freshness: number;
-    quality: number;
-    packaging: number;
+    details: {
+      quality: number;
+      delivery: number;
+      communication: number;
+    };
   };
+  attachments?: Array<{
+    name: string;
+    url?: string;
+  }>;
 }
 
 interface PurchaseCommentsProps {
-  purchase: any;
-  onClose: () => void;
+  orderId: string;
 }
 
 const mockComments: Comment[] = [
@@ -50,278 +50,269 @@ const mockComments: Comment[] = [
     type: 'rating',
     rating: {
       overall: 4.5,
-      freshness: 5,
-      quality: 4,
-      packaging: 4.5
+      details: {
+        quality: 5,
+        delivery: 4,
+        communication: 4.5
+      }
     }
   }
 ];
 
-export function PurchaseComments({ purchase, onClose }: PurchaseCommentsProps) {
-  const [activeTab, setActiveTab] = useState<'comments' | 'ratings'>('comments');
-  const [message, setMessage] = useState('');
-  const [rating, setRating] = useState({
+export function PurchaseComments({ orderId }: PurchaseCommentsProps) {
+  const [newComment, setNewComment] = useState('');
+  const [comments, setComments] = useState<Comment[]>(mockComments);
+  const [showRating, setShowRating] = useState(false);
+  const [rating, setRating] = useState<{
+    overall: number;
+    quality: number;
+    delivery: number;
+    communication: number;
+  }>({
     overall: 0,
-    freshness: 0,
     quality: 0,
-    packaging: 0
+    delivery: 0,
+    communication: 0
   });
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
-    // TODO: Implement message sending
-    setMessage('');
+    if (!newComment.trim()) return;
+
+    const comment: Comment = {
+      id: Date.now().toString(),
+      content: newComment,
+      author: {
+        name: 'Utilisateur',
+        avatar: 'https://i.pravatar.cc/40?img=3'
+      },
+      timestamp: new Date().toISOString(),
+      type: 'comment'
+    };
+
+    setComments([...comments, comment]);
+    setNewComment('');
   };
 
-  const handleRatingChange = (category: keyof typeof rating, value: number) => {
-    setRating(prev => ({
-      ...prev,
-      [category]: value
-    }));
-  };
+  const handleRatingSubmit = () => {
+    const ratingComment: Comment = {
+      id: Date.now().toString(),
+      content: 'Note ajoutée',
+      author: {
+        name: 'Utilisateur',
+        avatar: 'https://i.pravatar.cc/40?img=3'
+      },
+      timestamp: new Date().toISOString(),
+      type: 'rating',
+      rating: {
+        overall: rating.overall,
+        details: {
+          quality: rating.quality,
+          delivery: rating.delivery,
+          communication: rating.communication
+        }
+      }
+    };
 
-  const handleRatingSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Implement rating submission
-  };
-
-  const renderStars = (value: number, onChange?: (value: number) => void) => {
-    return (
-      <div className="flex items-center space-x-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            onClick={() => onChange?.(star)}
-            className={`text-lg ${
-              star <= value
-                ? 'text-yellow-400'
-                : 'text-white/20'
-            }`}
-          >
-            ★
-          </button>
-        ))}
-      </div>
-    );
+    setComments([...comments, ratingComment]);
+    setShowRating(false);
   };
 
   return (
-    <div className="space-y-6">
-      {/* Onglets */}
-      <div className="flex space-x-4 border-b border-white/10">
+    <div className="p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-white">Commentaires</h3>
         <button
-          onClick={() => setActiveTab('comments')}
-          className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'comments'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
-          }`}
+          onClick={() => setShowRating(!showRating)}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 transition-colors"
+          aria-label="Ajouter une note"
         >
-          <div className="flex items-center">
-            <MessageCircle size={16} className="mr-2" />
-            Commentaires
-          </div>
-        </button>
-        <button
-          onClick={() => setActiveTab('ratings')}
-          className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'ratings'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
-          }`}
-        >
-          <div className="flex items-center">
-            <Star size={16} className="mr-2" />
-            Évaluation
-          </div>
+          <Star className="w-4 h-4" />
+          <span className="text-sm">Noter</span>
         </button>
       </div>
 
-      {activeTab === 'comments' && (
-        <>
-          {/* Liste des commentaires */}
-          <div className="space-y-4">
-            {mockComments
-              .filter(comment => comment.type === 'comment')
-              .map((comment) => (
-                <div 
-                  key={comment.id}
-                  className="p-4 rounded-lg bg-white/5"
+      {showRating && (
+        <div className="bg-white/5 rounded-lg p-4 mb-4 space-y-4">
+          <div>
+            <label className="text-sm text-white/60 block mb-2">Note globale</label>
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => setRating({ ...rating, overall: star })}
+                  className={`text-xl ${
+                    star <= rating.overall ? 'text-yellow-400' : 'text-gray-400'
+                  } hover:text-yellow-400 transition-colors`}
+                  aria-label={`Note de ${star} étoiles`}
                 >
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 bg-brand-burgundy rounded-full flex items-center justify-center">
-                      {comment.author.avatar ? (
-                        <img
-                          src={comment.author.avatar}
-                          alt={comment.author.name}
-                          className="w-full h-full rounded-full"
-                        />
-                      ) : (
-                        <span className="text-white text-sm font-medium">
-                          {comment.author.name.charAt(0)}
-                        </span>
-                      )}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="font-medium text-white">
-                            {comment.author.name}
-                          </span>
-                          <span className="text-white/60 text-sm ml-2">
-                            {format(new Date(comment.timestamp), 'PPp', { locale: fr })}
-                          </span>
-                        </div>
-                      </div>
-
-                      <p className="text-white/80 mt-2">{comment.content}</p>
-
-                      {comment.attachments && comment.attachments.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-3">
-                          {comment.attachments.map((attachment, index) => (
-                            <a
-                              key={index}
-                              href={attachment.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center px-3 py-1 bg-white/5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
-                            >
-                              <Image size={16} className="mr-2" />
-                              {attachment.name}
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-            ))}
+                  ★
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Formulaire de commentaire */}
-          <form onSubmit={handleSendMessage} className="space-y-4">
-            <div className="relative">
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Ajouter un commentaire..."
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 resize-none"
-                rows={3}
-              />
-              <div className="absolute bottom-3 right-3 flex items-center space-x-2">
-                <button
-                  type="button"
-                  className="p-2 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                >
-                  <Smile size={20} />
-                </button>
-                <button
-                  type="submit"
-                  disabled={!message.trim()}
-                  className="p-2 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Send size={20} />
-                </button>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="text-sm text-white/60 block mb-1">Qualité</label>
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => setRating({ ...rating, quality: star })}
+                    className={`text-sm ${
+                      star <= rating.quality ? 'text-yellow-400' : 'text-gray-400'
+                    } hover:text-yellow-400 transition-colors`}
+                    aria-label={`Note de qualité: ${star} étoiles`}
+                  >
+                    ★
+                  </button>
+                ))}
               </div>
             </div>
-          </form>
-        </>
-      )}
 
-      {activeTab === 'ratings' && (
-        <div className="space-y-6">
-          {/* Évaluations existantes */}
-          <div className="space-y-4">
-            {mockComments
-              .filter(comment => comment.type === 'rating')
-              .map((comment) => (
-                <div 
-                  key={comment.id}
-                  className="p-4 rounded-lg bg-white/5"
-                >
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 bg-brand-burgundy rounded-full flex items-center justify-center">
-                      {comment.author.avatar ? (
-                        <img
-                          src={comment.author.avatar}
-                          alt={comment.author.name}
-                          className="w-full h-full rounded-full"
-                        />
-                      ) : (
-                        <span className="text-white text-sm font-medium">
-                          {comment.author.name.charAt(0)}
-                        </span>
-                      )}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="font-medium text-white">
-                            {comment.author.name}
-                          </span>
-                          <span className="text-white/60 text-sm ml-2">
-                            {format(new Date(comment.timestamp), 'PPp', { locale: fr })}
-                          </span>
-                        </div>
-                      </div>
+            <div>
+              <label className="text-sm text-white/60 block mb-1">Livraison</label>
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => setRating({ ...rating, delivery: star })}
+                    className={`text-sm ${
+                      star <= rating.delivery ? 'text-yellow-400' : 'text-gray-400'
+                    } hover:text-yellow-400 transition-colors`}
+                    aria-label={`Note de livraison: ${star} étoiles`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+            </div>
 
-                      <div className="mt-3 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-white/60">Note globale</span>
-                          {renderStars(comment.rating?.overall || 0)}
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-white/60">Fraîcheur</span>
-                          {renderStars(comment.rating?.freshness || 0)}
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-white/60">Qualité</span>
-                          {renderStars(comment.rating?.quality || 0)}
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-white/60">Emballage</span>
-                          {renderStars(comment.rating?.packaging || 0)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-            ))}
+            <div>
+              <label className="text-sm text-white/60 block mb-1">Communication</label>
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => setRating({ ...rating, communication: star })}
+                    className={`text-sm ${
+                      star <= rating.communication ? 'text-yellow-400' : 'text-gray-400'
+                    } hover:text-yellow-400 transition-colors`}
+                    aria-label={`Note de communication: ${star} étoiles`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Formulaire d'évaluation */}
-          <form onSubmit={handleRatingSubmit} className="bg-white/5 rounded-lg p-4 space-y-4">
-            <h4 className="text-white font-medium">Nouvelle évaluation</h4>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-white/60">Note globale</span>
-                {renderStars(rating.overall, (value) => handleRatingChange('overall', value))}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-white/60">Fraîcheur</span>
-                {renderStars(rating.freshness, (value) => handleRatingChange('freshness', value))}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-white/60">Qualité</span>
-                {renderStars(rating.quality, (value) => handleRatingChange('quality', value))}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-white/60">Emballage</span>
-                {renderStars(rating.packaging, (value) => handleRatingChange('packaging', value))}
-              </div>
-            </div>
-            <button
-              type="submit"
-              className="w-full px-4 py-2 bg-brand-burgundy rounded-lg text-white hover:bg-brand-burgundy/90 transition-colors"
-            >
-              Enregistrer l'évaluation
-            </button>
-          </form>
+          <button
+            onClick={handleRatingSubmit}
+            className="w-full px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors text-sm"
+            disabled={rating.overall === 0}
+          >
+            Enregistrer la note
+          </button>
         </div>
       )}
+
+      <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+        {comments.map((comment) => (
+          <div
+            key={comment.id}
+            className="bg-white/5 rounded-lg p-3"
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                {comment.author.avatar ? (
+                  <img
+                    src={comment.author.avatar}
+                    alt={comment.author.name}
+                    className="w-8 h-8 rounded-full"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                    <User className="w-5 h-5 text-white/60" />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex-grow min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-medium text-white text-sm">{comment.author.name}</span>
+                  <span className="text-xs text-white/60">
+                    {format(new Date(comment.timestamp), "d MMM yyyy 'à' HH:mm", { locale: fr })}
+                  </span>
+                </div>
+
+                {comment.type === 'rating' && comment.rating && (
+                  <div className="mb-2">
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                          key={star}
+                          className={`text-sm ${
+                            star <= comment.rating.overall ? 'text-yellow-400' : 'text-gray-400'
+                          }`}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                    {comment.rating.details && (
+                      <div className="grid grid-cols-3 gap-2 mt-1 text-xs text-white/60">
+                        <div>Qualité: {comment.rating.details.quality}/5</div>
+                        <div>Livraison: {comment.rating.details.delivery}/5</div>
+                        <div>Communication: {comment.rating.details.communication}/5</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <p className="text-white/90 text-sm break-words">{comment.content}</p>
+
+                {comment.attachments && comment.attachments.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {comment.attachments.map((attachment, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-1 bg-white/10 rounded px-2 py-0.5 text-xs"
+                      >
+                        <Image className="w-3 h-3" />
+                        <span>{attachment.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <form onSubmit={handleSubmit} className="mt-4 flex gap-2">
+        <div className="flex-grow">
+          <input
+            type="text"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Ajouter un commentaire..."
+            className="w-full px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-cyan-500/40 text-white text-sm placeholder-white/40"
+            aria-label="Nouveau commentaire"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={!newComment.trim()}
+          className="flex items-center gap-1 px-3 py-1.5 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+          aria-label="Envoyer le commentaire"
+        >
+          <Send className="w-4 h-4" />
+          <span>Envoyer</span>
+        </button>
+      </form>
     </div>
   );
 }
