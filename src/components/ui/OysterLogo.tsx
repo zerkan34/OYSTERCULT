@@ -22,46 +22,36 @@ export const OysterLogo: React.FC<OysterLogoProps> = ({ onClick, className = '',
         <motion.span
           className="text-white tracking-wider"
           style={{
-            fontSize: "2rem",
-            fontFamily: '"TT Modernoir", sans-serif',
-            fontWeight: 400,
-            letterSpacing: "0.04em",
-            lineHeight: 0.9,
+            fontSize: "1.5rem",
+            fontFamily: "'TT Modernoir', sans-serif",
+            fontWeight: 300,
+            letterSpacing: "0.08em",
+            lineHeight: "0.8",
             display: "block",
             transform: "translate3d(0, 0, 0)",
-            willChange: "transform",
-            textShadow: "rgba(255,255,255,0.3) 0px 0px 20px, rgba(255,255,255,0.1) 0px 0px 40px",
-            WebkitFontSmoothing: "subpixel-antialiased",
-            backfaceVisibility: "hidden",
-            filter: "drop-shadow(0px 0px 30px rgba(255,255,255,0.2))"
+            willChange: "transform"
           }}
         >
-          O Y S T E R
+          OYSTER
         </motion.span>
         
         <motion.span
           className="text-white tracking-wider"
           style={{
-            fontSize: "2rem",
-            fontFamily: '"TT Modernoir", sans-serif',
-            fontWeight: 400,
-            letterSpacing: "0.04em",
-            lineHeight: 0.9,
+            fontSize: "0.75rem",
+            fontFamily: "'TT Modernoir', sans-serif",
+            fontWeight: 100,
+            letterSpacing: "0.2em",
             display: "block",
-            transform: "translate3d(2.5rem, -0.2rem, 0)",
-            willChange: "transform",
-            textShadow: "rgba(255,255,255,0.3) 0px 0px 20px, rgba(255,255,255,0.1) 0px 0px 40px",
-            WebkitFontSmoothing: "subpixel-antialiased",
-            backfaceVisibility: "hidden",
-            filter: "drop-shadow(0px 0px 30px rgba(255,255,255,0.2))"
+            transform: "translate3d(-0.05rem, -0.2rem, -2cm)",
+            willChange: "transform"
           }}
         >
-          C&nbsp;&nbsp;U&nbsp;&nbsp;L&nbsp;&nbsp;T
+          CULT
         </motion.span>
 
-        <div className="relative w-12 h-12 mt-2">
-          <div className="absolute inset-0 blur-md opacity-80 bg-gradient-radial from-white/60 to-transparent" />
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10 w-full h-full">
+        <div className="relative w-8 h-8 mt-1">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10 w-full h-full" style={{ transform: "translate3d(-0.6rem, 0, 0)" }}>
             <path d="M15 20 Q25 12, 35 20 T55 20 T75 20 T95 20" stroke="white" strokeWidth="5" strokeLinecap="round" fill="none"/>
             <path d="M15 40 Q25 32, 35 40 T55 40 T75 40 T95 40" stroke="white" strokeWidth="5" strokeLinecap="round" fill="none"/>
             <path d="M15 60 Q25 52, 35 60 T55 60 T75 60 T95 60" stroke="white" strokeWidth="5" strokeLinecap="round" fill="none"/>

@@ -188,24 +188,18 @@ function PoolDetail({ pool, onClose }: PoolDetailProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
+        className="fixed inset-0 flex items-start justify-center z-50 p-8 pt-[15vh]"
       >
         <motion.div
           key="modal"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="modal-container bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg w-full max-w-2xl shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] border border-white/10"
+          className="bg-[rgba(15,23,42,0.45)] backdrop-blur-[16px] p-8 rounded-xl w-[1200px] h-[calc(100vh-4rem)] border border-white/10 modal-style flex flex-col"
           onClick={(e) => e.stopPropagation()}
           ref={modalRef}
-          style={{
-            background: "linear-gradient(135deg, rgb(0, 10, 40) 0%, rgb(0, 128, 128) 100%)",
-            boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 150, 255, 0.1) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
-            opacity: 1,
-            transform: "translate3d(0px, 0px, 0px)"
-          }}
         >
-          <div className="flex flex-col max-h-[80vh] overflow-hidden">
+          <div className="flex flex-col h-full">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">{pool.name}</h2>
               <button
@@ -661,7 +655,7 @@ export function PurificationPools() {
           <div
             key={pool.id}
             onClick={() => setSelectedPool(pool)}
-            className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg cursor-pointer hover:from-[rgba(15,23,42,0.4)] hover:to-[rgba(20,100,100,0.4)] transition-all duration-300"
+            className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] p-6 rounded-lg cursor-pointer hover:from-[rgba(15,23,42,0.4)] hover:to-[rgba(20,100,100,0.4)] transition-all duration-300"
           >
             <div className="flex items-start justify-between mb-4">
               <div>
@@ -818,7 +812,7 @@ export function PurificationPools() {
 
       {showConfirmationModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center" onClick={handleConfirmationClose}>
-          <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-[rgba(15,23,42,0.45)] backdrop-blur-[16px] p-6 rounded-lg w-full max-w-md" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-white">Lot ajouté avec succès</h2>
               <button onClick={handleConfirmationClose} className="text-white/60 hover:text-white">

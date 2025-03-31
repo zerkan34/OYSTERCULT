@@ -127,52 +127,45 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
                 </div>
               </motion.div>
 
-              <motion.span 
-                className="text-[4rem] relative header-title"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-                style={{ 
-                  fontFamily: "'TT Modernoir', sans-serif",
-                  fontWeight: 200,
-                  letterSpacing: '0.08em',
-                  display: 'block',
-                  color: 'white',
-                  textShadow: '0 2px 10px rgba(0,0,0,0.5), 0 0 40px rgba(255,255,255,0.2), 0 0 80px rgba(255,255,255,0.1)',
-                  filter: 'drop-shadow(0 8px 8px rgba(0,0,0,0.4))',
-                  opacity: 1,
-                  willChange: 'transform',
-                  backfaceVisibility: 'hidden',
-                  transform: 'translateZ(0)',
-                  WebkitFontSmoothing: 'antialiased',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                OYSTER
-              </motion.span>
+              <div className="flex flex-row items-center space-x-2 relative">
+                <motion.span 
+                  className="text-[4rem] relative header-title"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                  style={{ 
+                    fontFamily: "'TT Modernoir', sans-serif",
+                    fontWeight: 300,
+                    letterSpacing: '0.08em',
+                    display: 'block',
+                    color: 'white',
+                    willChange: 'transform',
+                    transform: 'translateZ(0)',
+                    WebkitFontSmoothing: 'antialiased',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  OYSTER
+                </motion.span>
 
-              <motion.span 
-                className="text-[4rem] relative header-title"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-                style={{
-                  fontFamily: '"TT Modernoir", sans-serif',
-                  fontWeight: 400,
-                  letterSpacing: "0.1em",
-                  display: "block",
-                  color: 'white',
-                  textShadow: '0 2px 10px rgba(0,0,0,0.5), 0 0 40px rgba(255,255,255,0.2), 0 0 80px rgba(255,255,255,0.1)',
-                  filter: 'drop-shadow(0 8px 8px rgba(0,0,0,0.4))',
-                  opacity: 1,
-                  willChange: "transform",
-                  backfaceVisibility: "hidden",
-                  transform: 'translateZ(0)',
-                  WebkitFontSmoothing: 'antialiased',
-                  marginLeft: '1rem',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                CULT
-              </motion.span>
+                <motion.span 
+                  className="text-[2rem] absolute header-title"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                  style={{
+                    fontFamily: "'TT Modernoir', sans-serif",
+                    fontWeight: 100,
+                    letterSpacing: "0.2em",
+                    color: 'white',
+                    willChange: "transform",
+                    WebkitFontSmoothing: 'antialiased',
+                    whiteSpace: 'nowrap',
+                    top: '35px',
+                    left: '165px'
+                  }}
+                >
+                  CULT
+                </motion.span>
+              </div>
             </div>
           </motion.div>
         </motion.div>
@@ -228,7 +221,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
                     letterSpacing: '0.08em',
                     display: 'block',
                     color: 'white',
-                    textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                    textShadow: 'rgba(0,0,0,0.5) 0px 2px 10px',
                     filter: 'drop-shadow(0 8px 8px rgba(0,0,0,0.4))',
                     opacity: 1,
                     willChange: 'transform',
@@ -236,7 +229,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
                     transform: 'translateZ(0)',
                     WebkitFontSmoothing: 'antialiased',
                     whiteSpace: 'nowrap',
-                    lineHeight: '1'
+                    lineHeight: 1
                   }}
                 >
                   OYSTER
@@ -247,20 +240,20 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
                   style={{
-                    fontFamily: '"TT Modernoir", sans-serif',
+                    fontFamily: "'TT Modernoir', sans-serif",
                     fontWeight: 400,
                     letterSpacing: "0.1em",
                     display: "block",
                     color: 'white',
-                    textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                    textShadow: 'rgba(0,0,0,0.5) 0px 2px 10px',
                     filter: 'drop-shadow(0 8px 8px rgba(0,0,0,0.4))',
                     opacity: 1,
                     willChange: "transform",
                     backfaceVisibility: "hidden",
-                    transform: 'translateZ(0)',
+                    transform: 'translate3d(0, 45px, 0)',
                     WebkitFontSmoothing: 'antialiased',
                     whiteSpace: 'nowrap',
-                    lineHeight: '1'
+                    lineHeight: 1
                   }}
                 >
                   CULT
