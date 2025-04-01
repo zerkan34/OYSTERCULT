@@ -441,7 +441,7 @@ export function PurchasesPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6">
         {/* Panneau de gauche - Liste des commandes */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-12 space-y-6">
           {/* Barre d'actions */}
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex-1 min-w-[280px] relative">
@@ -638,85 +638,6 @@ export function PurchasesPage() {
                 </div>
               </ModernCardBase>
             ))}
-          </div>
-        </div>
-
-        {/* Panneau de droite - Détails et statistiques */}
-        <div className="lg:col-span-4 space-y-6">
-          {/* Statistiques */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <ModernCardBase className="relative overflow-hidden">
-              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur-lg"></div>
-              <div className="relative p-6 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-lg bg-cyan-500/20">
-                    <Euro className="w-6 h-6 text-cyan-400" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">Total des achats du mois</h3>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                    {getMonthlyStats().totalMonthValue.toLocaleString()}€
-                  </span>
-                  <span className="text-sm text-white/60">
-                    ce mois
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-white/60">
-                  <span>Moyenne par commande :</span>
-                  <span className="text-cyan-400">{getMonthlyStats().averageValue.toLocaleString()}€</span>
-                </div>
-              </div>
-            </ModernCardBase>
-
-            <ModernCardBase className="relative overflow-hidden">
-              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur-lg"></div>
-              <div className="relative p-6 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-lg bg-cyan-500/20">
-                    <Shell className="w-6 h-6 text-cyan-400" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">Volume total</h3>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                    {getMonthlyStats().totalMonthQuantity.toLocaleString()} kg
-                  </span>
-                  <span className="text-sm text-white/60">
-                    ce mois
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-white/60">
-                  <span>Commandes en cours :</span>
-                  <span className="text-cyan-400">{orders.filter(o => o.status === 'pending' || o.status === 'processing').length}</span>
-                </div>
-              </div>
-            </ModernCardBase>
-
-            <ModernCardBase className="relative overflow-hidden">
-              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur-lg"></div>
-              <div className="relative p-6 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-lg bg-cyan-500/20">
-                    <Star className="w-6 h-6 text-cyan-400" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">Satisfaction fournisseurs</h3>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                    {(orders.filter(o => o.rating > 0).reduce((acc, curr) => acc + curr.rating, 0) / 
-                      orders.filter(o => o.rating > 0).length || 0).toFixed(1)}
-                  </span>
-                  <span className="text-sm text-white/60">
-                    / 5
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-white/60">
-                  <span>Commandes évaluées :</span>
-                  <span className="text-cyan-400">{orders.filter(o => o.rating > 0).length}</span>
-                </div>
-              </div>
-            </ModernCardBase>
           </div>
         </div>
       </div>
