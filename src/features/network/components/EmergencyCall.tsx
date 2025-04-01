@@ -8,7 +8,7 @@ interface EmergencyCallProps {
 }
 
 // Composant pour la notification de confirmation
-function ConfirmationModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+function ConfirmationModal({ isOpen, onClose, onFalseAlert }: { isOpen: boolean; onClose: () => void; onFalseAlert: () => void }) {
   const currentTime = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   return (
@@ -47,13 +47,10 @@ function ConfirmationModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
           </div>
         </div>
 
-        <div className="flex flex-col mt-8">
+        <div className="flex flex-col gap-4 mt-8">
           <button
-            onClick={() => {
-              // Logique pour signaler une fausse alerte
-              onClose();
-            }}
-            className="w-full px-8 py-5 bg-white rounded-full text-red-500 text-xl hover:bg-white/90 focus:ring-2 focus:ring-red-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transform hover:-translate-y-1"
+            onClick={onFalseAlert}
+            className="w-full px-8 py-5 bg-green-600 rounded-full text-white text-xl hover:bg-green-700 focus:ring-2 focus:ring-green-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transform hover:-translate-y-1"
           >
             Fausse alerte - Tout va bien
           </button>
@@ -70,7 +67,7 @@ function ConfirmationModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
 }
 
 // Composant pour la modale de panne
-function BreakdownModal({ isOpen, onClose, onSignalSent }: { isOpen: boolean; onClose: () => void; onSignalSent: () => void }) {
+function BreakdownModal({ isOpen, onClose, onSignalSent, onFalseAlert }: { isOpen: boolean; onClose: () => void; onSignalSent: () => void; onFalseAlert: () => void }) {
   return (
     <Modal
       isOpen={isOpen}
@@ -94,21 +91,23 @@ function BreakdownModal({ isOpen, onClose, onSignalSent }: { isOpen: boolean; on
         </div>
 
         <div className="flex justify-end gap-4">
-          <button
-            onClick={onClose}
-            className="px-6 py-3 text-white/70 hover:text-white transition-colors"
-          >
-            Annuler
-          </button>
-          <button
-            onClick={() => {
-              onSignalSent();
-              onClose();
-            }}
-            className="px-6 py-3 bg-cyan-500/20 text-cyan-400 rounded-full hover:bg-cyan-500/30 transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] transform hover:-translate-y-1"
-          >
-            Envoyer le signal
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={onClose}
+              className="px-6 py-3 text-white/70 hover:text-white transition-colors"
+            >
+              Annuler
+            </button>
+            <button
+              onClick={() => {
+                onSignalSent();
+                onClose();
+              }}
+              className="px-6 py-3 bg-cyan-500/20 text-cyan-400 rounded-full hover:bg-cyan-500/30 transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] transform hover:-translate-y-1"
+            >
+              Envoyer le signal
+            </button>
+          </div>
         </div>
       </div>
     </Modal>
@@ -123,7 +122,7 @@ function FalseAlertConfirmModal({ isOpen, onClose, onConfirm }: { isOpen: boolea
       onClose={onClose}
       title="Confirmation"
       size="sm"
-      className="!bg-gradient-to-br !from-cyan-900/95 !to-brand-dark/95"
+      className="!bg-gradient-to-br !from-cyan-900/95 !to-brand-dark/95 !z-[100]"
     >
       <div className="p-6 space-y-6">
         <div className="flex items-start gap-4">
@@ -164,7 +163,7 @@ export function EmergencyCall({ isOpen, onClose }: EmergencyCallProps) {
   const [emergencyType, setEmergencyType] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
-  const [countdown, setCountdown] = useState<number>(8);
+  const [countdown, setCountdown] = useState<number>(5);
   const [isCountdownActive, setIsCountdownActive] = useState<boolean>(true);
   const [showDangerButton, setShowDangerButton] = useState<boolean>(false);
   const [showBreakdownModal, setShowBreakdownModal] = useState<boolean>(false);
@@ -209,7 +208,7 @@ export function EmergencyCall({ isOpen, onClose }: EmergencyCallProps) {
   // Réinitialiser le compte à rebours quand la modale s'ouvre
   useEffect(() => {
     if (isOpen) {
-      setCountdown(8);
+      setCountdown(5);
       setIsCountdownActive(true);
       setShowDangerButton(false);
       setShowEmergencyMessage(false);
@@ -234,65 +233,87 @@ export function EmergencyCall({ isOpen, onClose }: EmergencyCallProps) {
     onClose();
   }, [onClose]);
 
+  const handleFalseAlert = useCallback(() => {
+    setShowFalseAlertModal(true);
+  }, []);
+
+  const handleFalseAlertConfirm = useCallback(() => {
+    setShowFalseAlertModal(false);
+    setShowConfirmationModal(false);
+    setShowBreakdownModal(false);
+    setShowEmergencyMessage(false);
+    onClose();
+  }, [onClose]);
+
   // Si le message d'urgence est affiché, afficher un écran plein page
   if (showEmergencyMessage) {
     return (
-      <div className="fixed inset-0 bg-red-900 z-50 flex flex-col items-center justify-center p-8">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white mb-4">
-            {emergencyType === 'boatIssue' ? (
-              <Ship className="text-red-600 h-12 w-12" />
-            ) : (
-              <AlertTriangle className="text-red-600 h-12 w-12" />
-            )}
+      <>
+        <div className="fixed inset-0 bg-red-900 z-50 flex flex-col items-center justify-center p-8">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white mb-4">
+              {emergencyType === 'boatIssue' ? (
+                <Ship className="text-red-600 h-12 w-12" />
+              ) : (
+                <AlertTriangle className="text-red-600 h-12 w-12" />
+              )}
+            </div>
+            <h1 className="text-3xl font-bold text-white mb-2">
+              {emergencyType === 'boatIssue' 
+                ? 'Appel d\'aide en mer envoyé' 
+                : 'Appel d\'urgence activé'}
+            </h1>
+            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+              {emergencyType === 'boatIssue' 
+                ? 'Une notification a été envoyée aux producteurs à proximité et aux services de secours. Quelqu\'un viendra vous prêter main forte rapidement.' 
+                : 'Des notifications ont été envoyées aux producteurs à proximité et aux services de secours.'}
+            </p>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            {emergencyType === 'boatIssue' 
-              ? 'Appel d\'aide en mer envoyé' 
-              : 'Appel d\'urgence activé'}
-          </h1>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto">
-            {emergencyType === 'boatIssue' 
-              ? 'Une notification a été envoyée aux producteurs à proximité et aux services de secours. Quelqu\'un viendra vous prêter main forte rapidement.' 
-              : 'Des notifications ont été envoyées aux producteurs à proximité et aux services de secours.'}
-          </p>
-        </div>
 
-        <div className="p-6 bg-white/10 rounded-lg max-w-2xl w-full mb-8">
-          <div className="flex items-center mb-4">
-            <MapPin className="text-white mr-3" size={24} />
-            <div>
-              <h3 className="text-lg font-medium text-white">Localisation</h3>
-              <p className="text-white/70">
-                {location || 'Position GPS transmise automatiquement'}
-              </p>
+          <div className="p-6 bg-white/10 rounded-lg max-w-2xl w-full mb-8">
+            <div className="flex items-center mb-4">
+              <MapPin className="text-white mr-3" size={24} />
+              <div>
+                <h3 className="text-lg font-medium text-white">Localisation</h3>
+                <p className="text-white/70">
+                  {location || 'Position GPS transmise automatiquement'}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <Clock className="text-white mr-3" size={24} />
+              <div>
+                <h3 className="text-lg font-medium text-white">Heure de l'appel</h3>
+                <p className="text-white/70">{new Date().toLocaleTimeString()}</p>
+              </div>
             </div>
           </div>
-          
-          <div className="flex items-center">
-            <Clock className="text-white mr-3" size={24} />
-            <div>
-              <h3 className="text-lg font-medium text-white">Heure de l'appel</h3>
-              <p className="text-white/70">{new Date().toLocaleTimeString()}</p>
-            </div>
+
+          <div className="flex flex-col">
+            <button
+              onClick={handleFalseAlert}
+              className="w-full px-8 py-5 bg-green-600 rounded-full text-white text-xl hover:bg-green-700 focus:ring-2 focus:ring-green-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transform hover:-translate-y-1"
+            >
+              Fausse alerte - Tout va bien
+            </button>
+            <div className="h-2"></div>
+            <button
+              onClick={handleCloseEmergencyMessage}
+              className="w-full px-8 py-5 bg-white/5 rounded-full text-white/70 text-xl hover:bg-white/10 focus:ring-2 focus:ring-cyan-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transform hover:-translate-y-1"
+            >
+              Fermer
+            </button>
           </div>
         </div>
-
-        <div className="flex flex-col gap-4">
-          <button
-            onClick={() => setShowFalseAlertModal(true)}
-            className="w-full px-8 py-5 bg-white rounded-full text-red-500 text-xl hover:bg-white/90 focus:ring-2 focus:ring-red-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transform hover:-translate-y-1"
-          >
-            Fausse alerte - Tout va bien
-          </button>
-          <button
-            onClick={handleCloseEmergencyMessage}
-            className="w-full px-8 py-5 bg-white/5 rounded-full text-white/70 text-xl hover:bg-white/10 focus:ring-2 focus:ring-cyan-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transform hover:-translate-y-1"
-          >
-            Fermer
-          </button>
-        </div>
-      </div>
+        
+        {/* Modale de confirmation de fausse alerte (z-index plus élevé pour apparaître au-dessus) */}
+        <FalseAlertConfirmModal
+          isOpen={showFalseAlertModal}
+          onClose={() => setShowFalseAlertModal(false)}
+          onConfirm={handleFalseAlertConfirm}
+        />
+      </>
     );
   }
 
@@ -361,23 +382,21 @@ export function EmergencyCall({ isOpen, onClose }: EmergencyCallProps) {
         isOpen={showBreakdownModal} 
         onClose={() => setShowBreakdownModal(false)}
         onSignalSent={() => setShowConfirmationModal(true)}
+        onFalseAlert={handleFalseAlert}
       />
 
       {/* Modale de confirmation */}
       <ConfirmationModal
         isOpen={showConfirmationModal}
         onClose={() => setShowConfirmationModal(false)}
+        onFalseAlert={handleFalseAlert}
       />
 
       {/* Modale de confirmation de fausse alerte */}
       <FalseAlertConfirmModal
         isOpen={showFalseAlertModal}
         onClose={() => setShowFalseAlertModal(false)}
-        onConfirm={() => {
-          handleCloseEmergencyMessage();
-          setShowFalseAlertModal(false);
-          onClose();
-        }}
+        onConfirm={handleFalseAlertConfirm}
       />
     </>
   );
