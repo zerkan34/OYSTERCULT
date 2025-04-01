@@ -38,7 +38,6 @@ import {
 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import { Modal } from '../../../components/Modal';
-import { ExondationModal } from './ExondationModal';
 
 interface TableCell {
   id: string;
@@ -123,12 +122,6 @@ interface ExcelImportModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-interface ExondationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onExondation: (option: 'all' | 'right' | 'left' | 'custom', cells?: number[]) => void;
 }
 
 const generateBatchNumber = () => {
@@ -289,7 +282,6 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ cell, onClose, onSave }) =>
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
         className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg w-[480px] shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] border border-white/10"
       >
         <div className="relative">
@@ -798,54 +790,48 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, table }) =
                 </div>
 
                 {/* Liste d'historique */}
-                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                  <h4 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-                    <TableIcon size={20} className="text-cyan-400" />
-                    Exemple de format
-                  </h4>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full">
-                      <thead>
-                        <tr>
-                          <th className="text-left text-white/70 px-4 py-2">ropeCount</th>
-                          <th className="text-left text-white/70 px-4 py-2">spatName</th>
-                          <th className="text-left text-white/70 px-4 py-2">batchNumber</th>
-                          <th className="text-left text-white/70 px-4 py-2">dateAdded</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td className="text-white px-4 py-2">10</td>
-                          <td className="text-white px-4 py-2">Naissain exemple</td>
-                          <td className="text-white px-4 py-2">2503-001</td>
-                          <td className="text-white px-4 py-2">2025-04-01</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                <div className="bg-gray-800/50 rounded-lg border border-white/5 divide-y divide-white/5">
+                  {[1, 2, 3].map((_, index) => (
+                    <div key={index} className="group p-5 first:rounded-t-lg last:rounded-b-lg hover:bg-white/5 transition-colors">
+                      <div className="flex items-start justify-between">
+                        {/* Info principale */}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-400/20">
+                              <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.3)]" />
+                              <span className="text-sm font-medium text-cyan-400">Naissain Premium</span>
+                            </div>
+                            <div className="h-3.5 w-[1px] bg-white/10" />
+                            <span className="text-sm text-white/70">
+                              {format(new Date(2025, 3 - index, 1), 'dd/MM/yyyy')}
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center gap-4 text-sm">
+                            <div className="flex items-center gap-2 text-white/70">
+                              <MapPin size={14} className="text-cyan-400" />
+                              <span className="font-medium">Lot T15-{1000 + index}</span>
+                            </div>
+                            <div className="h-3.5 w-[1px] bg-white/10" />
+                            <span className="text-white/70">Bretagne Sud</span>
+                          </div>
+                        </div>
 
-                <div className="flex flex-col gap-4">
-                  <button
-                    onClick={handleExportHistoryPDF}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 hover:border-cyan-400/50 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                  >
-                    <Download size={20} />
-                    Télécharger le modèle Excel
-                  </button>
-
-                  <label className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
-                  >
-                    <Upload size={20} className="text-cyan-400" />
-                    <span className="text-white">Importer un fichier Excel</span>
-                    <input
-                      type="file"
-                      accept=".xlsx,.xls"
-                      onChange={(e) => console.log(e)}
-                      className="hidden"
-                      aria-label="Importer un fichier Excel"
-                    />
-                  </label>
+                        {/* Stats */}
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-400/20">
+                            <Activity size={14} className="text-emerald-400" />
+                            <span className="text-sm font-medium text-emerald-400">
+                              Mortalité: {14 + index}%
+                            </span>
+                          </div>
+                          <div className="h-5 w-5 rounded-full bg-emerald-500/20 border border-emerald-400/20 flex items-center justify-center shadow-[0_0_15px_rgba(52,211,153,0.2)]">
+                            <div className="h-2 w-2 rounded-full bg-emerald-400" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </motion.div>
@@ -955,7 +941,7 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose, on
                   <div className="flex flex-col gap-4">
                     <button
                       onClick={generateExcelTemplate}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 hover:border-cyan-400/50 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 hover:border-cyan-400/50 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
                     >
                       <Download size={20} />
                       Télécharger le modèle Excel
@@ -1075,7 +1061,9 @@ const FillTableModal: React.FC<{
               <div className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-white/70 mb-2">Numéro de lot</label>
+                    <label className="block text-sm font-medium text-white/70 mb-2">
+                      Numéro de lot
+                    </label>
                     <input
                       type="text"
                       value={lotNumber}
@@ -1084,7 +1072,9 @@ const FillTableModal: React.FC<{
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-white/70 mb-2">Provenance du naissain</label>
+                    <label className="block text-sm font-medium text-white/70 mb-2">
+                      Provenance du naissain
+                    </label>
                     <input
                       type="text"
                       value={naissainOrigin}
@@ -1119,95 +1109,68 @@ const FillTableModal: React.FC<{
 export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTableUpdate }) => {
   const [selectedCell, setSelectedCell] = useState<TableCell | null>(null);
   const [showCellModal, setShowCellModal] = useState(false);
-  const [showHarvestModal, setShowHarvestModal] = useState(false);
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [showExcelModal, setShowExcelModal] = useState(false);
   const [showExondationModal, setShowExondationModal] = useState(false);
   const [showSamplingModal, setShowSamplingModal] = useState(false);
-  const [showFillTableModal, setShowFillTableModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showExcelModal, setShowExcelModal] = useState(false);
+  const [showHarvestModal, setShowHarvestModal] = useState(false);
   const [selectedExondationOption, setSelectedExondationOption] = useState<'all' | 'right' | 'left' | 'custom'>('all');
   const [selectedCells, setSelectedCells] = useState<number[]>([]);
   const [showExportModal, setShowExportModal] = useState(false);
-
-  const hasActiveExondation = table.cells.some(cell => cell.exondation?.isExonded);
+  const [showFillTableModal, setShowFillTableModal] = useState(false);
 
   const handleFillColumn = (option: 'left' | 'right' | 'all', naissainInfo: { origin: string; lotNumber: string }) => {
     const now = new Date().toISOString();
-    const updatedCells = table.cells.map((cell, index) => {
-      if (option === 'left' && index < 3) {
+
+    const updatedCells = table.cells.map((cell) => {
+      const cellId = parseInt(cell.id);
+      if (
+        (option === 'left' && cellId <= 8) ||
+        (option === 'right' && cellId >= 9) ||
+        option === 'all'
+      ) {
         return {
           ...cell,
-          filled: true,
-          ropeCount: 10,
-          spat: {
-            name: naissainInfo.origin,
-            batchNumber: naissainInfo.lotNumber,
-            dateAdded: now
-          },
-          history: [...(cell.history || []), {
-            date: now,
-            action: 'Remplissage',
-            details: `Remplissage de la colonne gauche`,
-            naissain: naissainInfo.origin,
-            lotNumber: naissainInfo.lotNumber,
-            mortalityRate: 0,
-            notes: '',
-            type: 'fill'
-          }]
+          naissain: {
+            ...naissainInfo,
+            date: now
+          }
         };
-      } else if (option === 'right' && index >= 3) {
-        return {
-          ...cell,
-          filled: true,
-          ropeCount: 10,
-          spat: {
-            name: naissainInfo.origin,
-            batchNumber: naissainInfo.lotNumber,
-            dateAdded: now
-          },
-          history: [...(cell.history || []), {
-            date: now,
-            action: 'Remplissage',
-            details: `Remplissage de la colonne droite`,
-            naissain: naissainInfo.origin,
-            lotNumber: naissainInfo.lotNumber,
-            mortalityRate: 0,
-            notes: '',
-            type: 'fill'
-          }]
-        };
-      } else if (option === 'all') {
-        return {
-          ...cell,
-          filled: true,
-          ropeCount: 10,
-          spat: {
-            name: naissainInfo.origin,
-            batchNumber: naissainInfo.lotNumber,
-            dateAdded: now
-          },
-          history: [...(cell.history || []), {
-            date: now,
-            action: 'Remplissage',
-            details: `Remplissage de la table`,
-            naissain: naissainInfo.origin,
-            lotNumber: naissainInfo.lotNumber,
-            mortalityRate: 0,
-            notes: '',
-            type: 'fill'
-          }]
-        };
-      } else {
-        return cell;
       }
+      return cell;
     });
 
     onTableUpdate({
       ...table,
-      cells: updatedCells
+      cells: updatedCells,
+      history: [
+        ...table.history || [],
+        {
+          date: now,
+          action: `Remplissage ${option === 'left' ? 'colonne gauche' : option === 'right' ? 'colonne droite' : 'table entière'}`,
+          naissain: naissainInfo.origin,
+          lotNumber: naissainInfo.lotNumber
+        }
+      ]
     });
   };
 
+  // Initialiser les cellules avec les cellules 9 et 17 remplies
+  React.useEffect(() => {
+    if (table.id === '1' && onTableUpdate) {  // Table A-12 et onTableUpdate existe
+      const newCells = [...table.cells];
+      if (newCells[3]) newCells[3] = { ...newCells[3], filled: true, ropeCount: 7 };  // Cellule 4 (1.75 sur 2)
+      if (newCells[8]) newCells[8] = { ...newCells[8], filled: true };  // Cellule 9
+      if (newCells[16]) newCells[16] = { ...newCells[16], filled: true };  // Cellule 17
+      
+      onTableUpdate({
+        ...table,
+        cells: newCells
+      });
+    }
+  }, [table.id, onTableUpdate]);  // Ajouter les dépendances
+
+  // Fonction pour gérer l'exondation
   const handleExondation = (option: 'all' | 'right' | 'left' | 'custom', cells?: number[]) => {
     const now = new Date().toISOString();
     const newExondationCount = (table.exondationCount || 0) + 1;
@@ -1215,7 +1178,12 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
     const historyEntry = {
       date: now,
       action: 'Exondation',
-      details: `Exondation #${newExondationCount}`,
+      details: `Exondation #${newExondationCount} - ${
+        option === 'all' ? 'Table complète' :
+        option === 'right' ? 'Colonne droite' :
+        option === 'left' ? 'Colonne gauche' :
+        'Cellules spécifiques'
+      }`,
       naissain: '',
       lotNumber: '',
       mortalityRate: 0,
@@ -1267,15 +1235,127 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
       history: [...(table.history || []), historyEntry]
     });
 
-    // Notification de rappel toutes les 12h
-    const reminder = () => {
-      alert('⚠️ Rappel : Des huîtres sont en cours d\'exondation !');
-    };
-    
-    setTimeout(reminder, 12 * 60 * 60 * 1000); // Premier rappel après 12h
-    setTimeout(reminder, 24 * 60 * 60 * 1000); // Deuxième rappel après 24h
+    setTimeout(() => {
+      const exondedCells = updatedCells.filter(cell => cell.exondation?.isExonded);
+      if (exondedCells.length > 0) {
+        alert('⚠️ ATTENTION : Des huîtres sont exondées depuis plus de 24 heures !');
+      }
+    }, 24 * 60 * 60 * 1000);
 
-    setShowExondationModal(false);
+    setShowExcelModal(false);
+  };
+
+  const handleCellUpdate = (updatedCell: TableCell) => {
+    const newCells = [...table.cells];
+    const index = newCells.findIndex((c) => c.id === updatedCell.id);
+    if (index !== -1) {
+      newCells[index] = updatedCell;
+
+      const historyEntry = {
+        date: new Date().toISOString(),
+        action: 'Mise à jour cellule',
+        details: `Cellule ${index + 1} mise à jour avec ${updatedCell.ropeCount} cordes`,
+        naissain: updatedCell.spat?.name || '',
+        lotNumber: updatedCell.spat?.batchNumber || '',
+        mortalityRate: 0,
+        notes: '',
+        type: 'update',
+        ropes: updatedCell.ropeCount,
+        tonnage: updatedCell.ropeCount * 0.5 // Tonnage estimé
+      };
+
+      onTableUpdate({
+        ...table,
+        cells: newCells,
+        history: [...table.history, historyEntry],
+      });
+    }
+    setShowCellModal(false);
+  };
+
+  const handleHarvest = (updatedCell: TableCell) => {
+    const newCells = [...table.cells];
+    const index = newCells.findIndex((c) => c.id === updatedCell.id);
+    if (index !== -1) {
+      newCells[index] = updatedCell;
+
+      const historyEntry = {
+        date: new Date().toISOString(),
+        action: 'Récolte de cordes',
+        details: `Cellule ${index + 1} récoltée`,
+        naissain: updatedCell.spat?.name || '',
+        lotNumber: updatedCell.spat?.batchNumber || '',
+        mortalityRate: 0,
+        notes: '',
+        type: 'harvest',
+        ropes: updatedCell.ropeCount,
+        tonnage: updatedCell.ropeCount * 0.5 // Tonnage estimé
+      };
+
+      onTableUpdate({
+        ...table,
+        cells: newCells,
+        history: [...table.history, historyEntry],
+      });
+    }
+    setShowHarvestModal(false);
+  };
+
+  const getCellStyle = (cell: TableCell) => {
+    if (typeof cell.filled === 'number') {
+      return {
+        background: `linear-gradient(to left, rgba(34, 197, 94, 0.2) ${cell.filled * 100}%, transparent ${cell.filled * 100}%)`,
+        borderColor: 'rgba(34, 197, 94, 0.3)'
+      };
+    } else if (cell.filled) {
+      return {
+        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+        borderColor: 'rgba(34, 197, 94, 0.3)'
+      };
+    }
+    return {};
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet) as Array<{
+          ropeCount?: number;
+          spatName?: string;
+          batchNumber?: string;
+          dateAdded?: string;
+        }>;
+
+        // Mise à jour de la table avec les données importées
+        if (jsonData.length > 0) {
+          const updatedTable = {
+            ...table,
+            cells: table.cells.map((cell, index) => {
+              const excelRow = jsonData[index];
+              if (excelRow) {
+                return {
+                  ...cell,
+                  ropeCount: excelRow.ropeCount || cell.ropeCount,
+                  spat: excelRow.spatName ? {
+                    name: excelRow.spatName,
+                    batchNumber: excelRow.batchNumber || generateBatchNumber(),
+                    dateAdded: excelRow.dateAdded || new Date().toISOString()
+                  } : cell.spat
+                };
+              }
+              return cell;
+            })
+          };
+          onTableUpdate(updatedTable);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
   };
 
   const handleCellClick = (cell: TableCell) => {
@@ -1287,64 +1367,36 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
     }
   };
 
-  const handleCellUpdate = (updatedCell: TableCell) => {
-    const newCells = [...table.cells];
-    const index = newCells.findIndex((c) => c.id === updatedCell.id);
-    if (index !== -1) {
-      newCells[index] = updatedCell;
-      onTableUpdate({
-        ...table,
-        cells: newCells
-      });
-    }
-    setShowCellModal(false);
-  };
-
-  const handleHarvest = (updatedCell: TableCell) => {
-    const newCells = [...table.cells];
-    const index = newCells.findIndex((c) => c.id === updatedCell.id);
-    if (index !== -1) {
-      newCells[index] = updatedCell;
-      onTableUpdate({
-        ...table,
-        cells: newCells
-      });
-    }
-    setShowHarvestModal(false);
-  };
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        // Traitement des données...
-      };
-      reader.readAsArrayBuffer(file);
-    }
+  const handleExportTablePDF = () => {
+    const doc = new jsPDF();
+    
+    // En-tête
+    doc.setFontSize(20);
+    doc.text(`Table ${table.name} - Bouzigues`, 20, 20);
+    
+    // Informations générales
+    doc.setFontSize(12);
+    doc.text("Informations générales:", 20, 40);
+    doc.text(`Huîtres creuses • Calibre en cours N°2`, 20, 50);
+    doc.text(`Temps de croissance: ${table.growthTime || "1 an et 44 jours"}`, 20, 60);
+    doc.text(`Dernier échantillonnage: ${table.lastSampling?.date || "17/03/25"}`, 20, 70);
+    doc.text(`Mortalité: ${table.lastSampling?.mortality || "18%"}`, 20, 80);
+    doc.text(`Température: ${table.temperature || "12°C"}`, 20, 90);
+    doc.text(`Nombre d'exondations: ${table.exondationCount || "29"} fois`, 20, 100);
+    doc.text(`Provenance naissain: ${table.origin || "France naissain"}`, 20, 110);
+    
+    // Sauvegarde
+    doc.save(`table_${table.name}_details.pdf`);
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex flex-col z-50">
-      {hasActiveExondation && (
-        <div className="bg-orange-100/90 text-orange-800 px-4 py-2 flex items-center gap-2 justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-waves">
-            <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
-            <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
-            <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
-          </svg>
-          <span>Exondation en cours - Timer actif</span>
-        </div>
-      )}
+    <>
+      {/* Modale principale */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="flex-1 overflow-auto"
+        className="fixed inset-0 z-50 flex items-center justify-center"
       >
         <div className="absolute inset-0 bg-black/90" onClick={onClose} />
         <motion.div
@@ -1366,14 +1418,12 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
                   <span className="text-white/80 font-semibold">Bouzigues</span>
                 </div>
               </div>
-              <p className="text-white/70 text-sm mt-1">
-                Huîtres creuses • Calibre en cours N°2
-              </p>
+              <p className="text-white/70 text-sm mt-1">Huîtres creuses • Calibre en cours N°2</p>
             </div>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setShowExcelModal(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 hover:border-cyan-400/50 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 hover:border-cyan-400/50 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
               >
                 <Upload size={20} />
                 <span>Importer depuis Excel</span>
@@ -1428,10 +1478,10 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
                     <span className="text-gray-300">Dernier échantillonnage</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="px-2.5 py-1 rounded-lg bg-cyan-500/5 border border-cyan-400/20 shadow-[0_2px_5px_rgba(0,0,0,0.1),0_0_10px_rgba(0,210,200,0.1)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.15),0_0_12px_rgba(0,210,200,0.2)]">
+                    <div className="px-2.5 py-1 rounded-lg bg-cyan-500/5 border border-cyan-400/20 shadow-[0_2px_5px_rgba(0,0,0,0.1),0_0_10px_rgba(34,211,238,0.1)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.15),0_0_12px_rgba(34,211,238,0.2)] transition-all duration-300">
                       <span className="text-cyan-400 font-medium">17/03/25</span>
                     </div>
-                    <div className="px-2.5 py-1 rounded-lg bg-emerald-500/5 border border-emerald-400/20 shadow-[0_2px_5px_rgba(0,0,0,0.1),0_0_10px_rgba(52,211,153,0.1)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.15),0_0_12px_rgba(52,211,153,0.2)]">
+                    <div className="px-2.5 py-1 rounded-lg bg-emerald-500/5 border border-emerald-400/20 shadow-[0_2px_5px_rgba(0,0,0,0.1),0_0_10px_rgba(52,211,153,0.1)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.15),0_0_12px_rgba(52,211,153,0.2)] transition-all duration-300">
                       <span className="text-emerald-400 font-medium">18% mortalité</span>
                     </div>
                   </div>
@@ -1482,7 +1532,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
                 >
                   <span className="flex items-center">
                     <Droplets className={table.exondation?.isExonded ? 'text-orange-400' : 'text-cyan-400'} size={20} />
-                    {table.exondation?.isExonded ? 'Exondé' : 'Exonder'}
+                    <span className="ml-3 text-white">{table.exondation?.isExonded ? 'Exondé' : 'Exonder'}</span>
                   </span>
                   <ChevronRight size={20} className={table.exondation?.isExonded ? 'text-orange-400' : 'text-cyan-400'} />
                 </button>
@@ -1654,11 +1704,111 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
       )}
       {/* Modale d'exondation */}
       {showExondationModal && (
-        <ExondationModal
-          isOpen={showExondationModal}
-          onClose={() => setShowExondationModal(false)}
-          onExondation={handleExondation}
-        />
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50" onClick={(e) => {
+          if (e.target === e.currentTarget) setShowExondationModal(false);
+        }}>
+          <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] p-6 rounded-lg w-96 shadow-xl border border-white/10" onClick={e => e.stopPropagation()}>
+            <h3 className="text-xl font-semibold text-cyan-500 mb-4">Sélectionner la zone à exonder</h3>
+            <div className="space-y-4 mb-6">
+              <button
+                onClick={() => setSelectedExondationOption('all')}
+                className={`w-full flex items-center px-4 py-3 rounded-lg border transition-colors ${
+                  selectedExondationOption === 'all'
+                    ? 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400'
+                    : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                }`}
+              >
+                Table complète
+              </button>
+              <button
+                onClick={() => setSelectedExondationOption('right')}
+                className={`w-full flex items-center px-4 py-3 rounded-lg border transition-colors ${
+                  selectedExondationOption === 'right'
+                    ? 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400'
+                    : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                }`}
+              >
+                Colonne droite
+              </button>
+              <button
+                onClick={() => setSelectedExondationOption('left')}
+                className={`w-full flex items-center px-4 py-3 rounded-lg border transition-colors ${
+                  selectedExondationOption === 'left'
+                    ? 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400'
+                    : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                }`}
+              >
+                Colonne gauche
+              </button>
+              <button
+                onClick={() => setSelectedExondationOption('custom')}
+                className={`w-full flex items-center px-4 py-3 rounded-lg border transition-colors ${
+                  selectedExondationOption === 'custom'
+                    ? 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400'
+                    : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                }`}
+              >
+                Sélection personnalisée
+              </button>
+            </div>
+
+            {selectedExondationOption === 'custom' && (
+              <div className="mb-6">
+                <div className="grid grid-cols-10 gap-1 mb-4">
+                  {table.cells.map((cell, index) => (
+                    <div
+                      key={cell.id}
+                      onClick={() => {
+                        setSelectedCells(prev => 
+                          prev.includes(index)
+                            ? prev.filter(i => i !== index)
+                            : [...prev, index]
+                        );
+                      }}
+                      className={`w-8 h-8 rounded-sm border cursor-pointer transition-colors flex items-center justify-center relative ${
+                        selectedCells.includes(index)
+                          ? 'bg-cyan-500/50 border-cyan-400'
+                          : index < 3 
+                            ? 'bg-white/5 border-white/10 hover:bg-white/10' 
+                            : index === 3
+                              ? 'bg-cyan-500/20 border-cyan-500/30 hover:bg-cyan-500/30'
+                              : 'bg-cyan-500/40 border-cyan-500/30 hover:bg-cyan-500/50'
+                      }`}
+                    >
+                      <div className="absolute bottom-1 right-1 text-[10px] text-white/40 flex items-center justify-center relative">
+                        {index + 1}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-white/70 text-sm">
+                  Sélectionnez les cellules à exonder
+                </p>
+              </div>
+            )}
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowExondationModal(false)}
+                className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-white/70"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => {
+                  if (selectedExondationOption === 'custom') {
+                    handleExondation('custom', selectedCells);
+                  } else {
+                    handleExondation(selectedExondationOption);
+                  }
+                }}
+                className="px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors"
+              >
+                Confirmer
+              </button>
+            </div>
+          </div>
+        </div>
       )}
       <FillTableModal
         isOpen={showFillTableModal}
@@ -1669,22 +1819,6 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
           setShowFillTableModal(false);
         }}
       />
-      <AnimatePresence>
-        {showExondationModal && (
-          <ExondationModal
-            isOpen={showExondationModal}
-            onClose={() => setShowExondationModal(false)}
-            onExondation={handleExondation}
-          />
-        )}
-        {showSamplingModal && (
-          <SamplingModal
-            isOpen={showSamplingModal}
-            onClose={() => setShowSamplingModal(false)}
-            onSave={handleSampling}
-          />
-        )}
-      </AnimatePresence>
     </>
   );
 };
