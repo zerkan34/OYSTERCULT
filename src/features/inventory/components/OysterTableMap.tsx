@@ -158,7 +158,7 @@ const initialTables: Table[] = [
     type: 'Vide',
     status: 'optimal',
     cells: Array(20).fill(null).map((_, i) => ({ id: `${i}`, filled: false })),
-    currentSize: 'Vide',
+    currentSize: 'Jauge vide',
     targetSize: 'Vide',
     startDate: 'Vide',
     lastUpdate: 'Vide',
@@ -204,35 +204,24 @@ const getCaliberColorC04 = (currentCaliber: string) => {
 };
 
 const getCaliberColorD15 = (currentCaliber: string) => {
-  return 'bg-gray-500/20';
+  return 'bg-gray-600/20 border-gray-500/30';
 };
 
 const CaliberGauge = ({ currentSize, targetSize, tableName }: { currentSize: string; targetSize: string; tableName: string }) => {
-  if (currentSize === 'Vide' || targetSize === 'Vide') {
+  if (currentSize === 'Vide' || targetSize === 'Vide' || currentSize === 'Jauge vide') {
     if (tableName === 'Table D-15') {
       return (
         <div className="space-y-2">
           <div className="relative h-4 bg-white/5 rounded-lg overflow-hidden">
             <div className="absolute inset-0 flex">
-              <div className="h-full relative" style={{ width: '16.7%' }}>
-                <div className="absolute inset-0 bg-gradient-to-b from-[#0d9488]/75 to-[#0d9488]/90 transition-all duration-500"></div>
+              <div className="h-full relative" style={{ width: '100%' }}>
+                <div className="absolute inset-0 bg-gradient-to-b from-gray-600/30 to-gray-700/40 transition-all duration-500"></div>
                 <div className="absolute left-1/2 bottom-4 transform -translate-x-1/2 z-20">
                   <div className="flex flex-col items-center">
-                    <div className="bg-white/10 backdrop-blur-md px-1.5 py-0.5 rounded-md border border-brand-burgundy/30 mb-1 shadow-lg">
-                      <span className="text-white text-xs font-semibold">N°3</span>
+                    <div className="bg-white/10 backdrop-blur-md px-1.5 py-0.5 rounded-md border border-gray-500/30 mb-1 shadow-lg">
+                      <span className="text-white text-xs font-semibold">Jauge vide</span>
                     </div>
-                    <div className="text-xs text-white font-medium">500kg</div>
-                  </div>
-                </div>
-              </div>
-              <div className="h-full relative" style={{ width: '10%' }}>
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-500/75 to-blue-600/90 transition-all duration-500" style={{ boxShadow: 'rgba(37, 99, 235, 0.2) 0px 0px 20px' }}></div>
-                <div className="absolute left-1/2 bottom-4 transform -translate-x-1/2 z-20">
-                  <div className="flex flex-col items-center">
-                    <div className="bg-white/10 backdrop-blur-md px-1.5 py-0.5 rounded-md border border-blue-500/30 mb-1 shadow-lg">
-                      <span className="text-white text-xs font-semibold">N°2</span>
-                    </div>
-                    <div className="text-xs text-white font-medium">300kg</div>
+                    <div className="text-xs text-white font-medium">0kg</div>
                   </div>
                 </div>
               </div>
