@@ -1111,6 +1111,35 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
   const [selectedExondationOption, setSelectedExondationOption] = useState<'all' | 'right' | 'left' | 'custom'>('all');
   const [selectedCells, setSelectedCells] = useState<number[]>([]);
   const [showFillTableModal, setShowFillTableModal] = useState(false);
+  const [isExondationActive, setIsExondationActive] = useState(false);
+  const [showConfirmExondation, setShowConfirmExondation] = useState(false);
+  const [exondationEndTime, setExondationEndTime] = useState<Date | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState<string>('');
+
+  // Timer effect
+  useEffect(() => {
+    if (isExondationActive && exondationEndTime) {
+      const timer = setInterval(() => {
+        const now = new Date();
+        const end = new Date(exondationEndTime);
+        const diff = end.getTime() - now.getTime();
+
+        if (diff <= 0) {
+          setIsExondationActive(false);
+          setExondationEndTime(null);
+          setTimeRemaining('');
+          clearInterval(timer);
+          return;
+        }
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        setTimeRemaining(`${hours}h ${minutes}m`);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [isExondationActive, exondationEndTime]);
 
   const handleFillColumn = (option: 'left' | 'right' | 'all', naissainInfo: { origin: string; lotNumber: string }) => {
     const now = new Date().toISOString();
@@ -1916,7 +1945,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
               </div>
             )}
 
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowExondationModal(false)}
                 className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-white/70"
@@ -1924,12 +1953,39 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
                 Annuler
               </button>
               <button
+                onClick={() => setShowConfirmExondation(true)}
+                className="px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors"
+              >
+                Confirmer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmation d'exondation */}
+      {showConfirmExondation && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50" onClick={(e) => {
+          if (e.target === e.currentTarget) setShowConfirmExondation(false);
+        }}>
+          <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] p-6 rounded-lg w-96 shadow-xl border border-white/10" onClick={e => e.stopPropagation()}>
+            <h3 className="text-xl font-semibold text-cyan-500 mb-4">Confirmation d'exondation</h3>
+            <div className="space-y-4 mb-6 text-white/70">
+              <p>Un timer de 24h sera lancé à partir de la confirmation.</p>
+              <p>Une notification de rappel sera envoyée toutes les 12h pour éviter d'oublier les huîtres hors de l'eau.</p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowConfirmExondation(false)}
+                className="px-4 py-2 rounded-lg bg-white/5 text-white hover:bg-white/10 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
                 onClick={() => {
-                  if (selectedExondationOption === 'custom') {
-                    handleExondation('custom', selectedCells);
-                  } else {
-                    handleExondation(selectedExondationOption);
-                  }
+                  setIsExondationActive(true);
+                  setShowConfirmExondation(false);
+                  setShowExondationModal(false);
                 }}
                 className="px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors"
               >
@@ -1939,15 +1995,18 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
           </div>
         </div>
       )}
-      <FillTableModal
-        isOpen={showFillTableModal}
-        onClose={() => setShowFillTableModal(false)}
-        table={table}
-        onFill={(option, naissainInfo) => {
-          handleFillColumn(option, naissainInfo);
-          setShowFillTableModal(false);
-        }}
-      />
+
+      {/* Bandeau d'exondation actif */}
+      {isExondationActive && timeRemaining && (
+        <div className="fixed top-0 left-0 right-0 bg-orange-500/20 border-b border-orange-500/30 text-orange-300 px-4 py-2 flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-waves">
+            <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
+            <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
+            <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
+          </svg>
+          Exondation en cours - {timeRemaining} restant
+        </div>
+      )}
     </>
   );
 };
