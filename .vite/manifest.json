@@ -12,7 +12,7 @@
     "name": "vendor"
   },
   "index.html": {
-    "file": "assets/js/index-DmlyEMJ8.js",
+    "file": "assets/js/index-Q-ucyCRT.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -31,7 +31,7 @@
     ]
   },
   "node_modules/canvg/lib/index.es.js": {
-    "file": "assets/js/index.es-CirZZE8S.js",
+    "file": "assets/js/index.es-BUY7rU4b.js",
     "name": "index.es",
     "src": "node_modules/canvg/lib/index.es.js",
     "isDynamicEntry": true,
