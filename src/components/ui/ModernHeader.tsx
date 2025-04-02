@@ -147,24 +147,63 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
                   OYSTER
                 </motion.span>
 
-                <motion.span 
+                <motion.div 
                   className="text-[2rem] absolute header-title"
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
                   style={{
-                    fontFamily: "'TT Modernoir', sans-serif",
-                    fontWeight: 100,
-                    letterSpacing: "0.2em",
-                    color: 'white',
-                    willChange: "transform",
-                    WebkitFontSmoothing: 'antialiased',
-                    whiteSpace: 'nowrap',
-                    top: '35px',
-                    left: '165px'
+                    position: 'relative',
+                    top: '0px',
+                    left: '5px',
+                    display: 'inline-block',
+                    marginLeft: '0.2em'
                   }}
                 >
-                  CULT
-                </motion.span>
+                  {/* Fond blanc */}
+                  <div 
+                    className="absolute bg-white rounded border-2 border-white"
+                    style={{
+                      boxShadow: "inset 0 1px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.4), 0 0 15px rgba(255, 255, 255, 0.2)",
+                      transform: "translateZ(0)",
+                      zIndex: 0,
+                      top: "10px",
+                      bottom: "10px",
+                      left: 0,
+                      right: 0
+                    }}
+                  />
+                  
+                  {/* Texte au-dessus */}
+                  <div
+                    style={{
+                      fontFamily: "'TT Modernoir', sans-serif",
+                      fontWeight: 600,
+                      letterSpacing: "0.1em",
+                      willChange: "transform",
+                      WebkitFontSmoothing: 'antialiased',
+                      whiteSpace: 'nowrap',
+                      padding: "0.15rem 0.6rem",
+                      position: "relative",
+                      zIndex: 1,
+                      background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      textShadow: "0px 1px 2px rgba(0,0,0,0.2)",
+                      filter: "drop-shadow(0px -1px 1px rgba(255,255,255,0.3)) drop-shadow(0px 1px 1px rgba(0,0,0,0.15))",
+                      transform: "translateY(8px) scale(1.6)",
+                      transformOrigin: "center",
+                      fontStretch: "ultra-expanded",
+                      fontSize: "3.5rem",
+                      mixBlendMode: "multiply"
+                    }}
+                  >
+                    <span style={{ marginRight: "0.02em", fontStretch: "200%", display: "inline-block", transform: "scaleX(1.25) translateZ(-2px)", fontWeight: 600, fontSize: "1em" }}>C</span>
+                    <span style={{ marginRight: "0.02em", fontStretch: "200%", display: "inline-block", transform: "scaleX(1.25) translateZ(-2px)", fontWeight: 600, fontSize: "1em" }}>U</span>
+                    <span style={{ marginRight: "0.02em", fontStretch: "200%", display: "inline-block", transform: "scaleX(1.25) translateZ(-2px)", fontWeight: 600, fontSize: "1em" }}>L</span>
+                    <span style={{ fontStretch: "200%", display: "inline-block", transform: "scaleX(1.25) translateZ(-2px)", fontWeight: 600, fontSize: "1em" }}>T</span>
+                  </div>
+                </motion.div>
               </div>
             </div>
           </motion.div>
