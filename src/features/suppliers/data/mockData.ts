@@ -1,36 +1,47 @@
 export const mockSuppliers = [
   {
-    id: '1',
-    name: 'CDB - Coquillages De Bretagne',
-    email: 'contact@cdb-bretagne.fr',
-    phone: '02 97 56 XX XX',
-    address: 'Zone Conchylicole, 56950 Crac\'h',
-    friend_code: 'CDB56CR',
+    id: 'HBC',
+    name: 'Huîtres Bouzigues.com',
+    email: 'contact@huitres-bouzigues.com',
+    phone: '04 67 43 XX XX',
+    address: 'Zone Conchylicole, 34140 Bouzigues',
+    friend_code: 'HBC34BZ',
     is_friend: true,
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z'
   },
   {
-    id: '2',
-    name: 'HUITRES GILLARDEAU',
-    email: 'contact@gillardeau.fr',
-    phone: '05 46 85 XX XX',
-    address: 'Baie de Marennes Oléron, 17560 Bourcefranc-le-Chapus',
-    friend_code: 'HG17BOU',
+    id: 'EW',
+    name: 'ERWEMA',
+    email: 'contact@erwema.fr',
+    phone: '04 67 46 XX XX',
+    address: 'Port de pêche, 34200 Sète',
+    friend_code: 'EW34SE',
     is_friend: true,
     created_at: '2025-01-02T00:00:00Z',
     updated_at: '2025-01-02T00:00:00Z'
   },
   {
-    id: '3',
-    name: 'TARBOURIECH',
-    email: 'contact@tarbouriech.fr',
-    phone: '04 67 77 XX XX',
-    address: 'Lagune de Thau, 34340 Marseillan',
-    friend_code: 'HT34MAR',
+    id: 'CDB',
+    name: 'Société CDB',
+    email: 'contact@societe-cdb.fr',
+    phone: '02 97 56 XX XX',
+    address: 'Zone Conchylicole, 56950 Crac\'h',
+    friend_code: 'CDB56CR',
     is_friend: true,
     created_at: '2025-01-03T00:00:00Z',
     updated_at: '2025-01-03T00:00:00Z'
+  },
+  {
+    id: 'TB',
+    name: 'Tarbouriech',
+    email: 'contact@tarbouriech.fr',
+    phone: '04 67 77 XX XX',
+    address: 'Lagune de Thau, 34340 Marseillan',
+    friend_code: 'TB34MA',
+    is_friend: true,
+    created_at: '2025-01-04T00:00:00Z',
+    updated_at: '2025-01-04T00:00:00Z'
   }
 ];
 

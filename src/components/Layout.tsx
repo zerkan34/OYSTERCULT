@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './layout/Sidebar';
 import { Bell, Settings, User } from 'lucide-react';
+import { Countdown } from './ui/Countdown';
 
 export function Layout() {
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
@@ -22,6 +23,7 @@ export function Layout() {
           <div className="h-full flex items-center justify-between px-8">
             <div className="flex-1 flex items-center">
               <div className="h-10 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent mr-8 hidden md:block"></div>
+              <Countdown />
             </div>
             
             <div className="flex-1 flex justify-center">

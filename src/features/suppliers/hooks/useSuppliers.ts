@@ -5,61 +5,49 @@ import { generateFriendCode } from '@/utils/friendCode';
 // Données de test temporaires
 const mockSuppliers = [
   {
-    id: '1',
-    name: 'Huîtres Marennes Oléron',
-    email: 'contact@huitres-mo.fr',
-    phone: '05 46 85 12 34',
-    address: '12 Route des Claires, 17320 Marennes',
-    friend_code: 'HMO17320',
+    id: 'HBC',
+    name: 'Huîtres Bouzigues.com',
+    email: 'contact@huitres-bouzigues.com',
+    phone: '04 67 43 XX XX',
+    address: 'Zone Conchylicole, 34140 Bouzigues',
+    friend_code: 'HBC34BZ',
     is_friend: true,
     deleted: false,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   },
   {
-    id: '2',
-    name: 'Les Parcs de l\'Estuaire',
-    email: 'commandes@parcs-estuaire.fr',
-    phone: '05 46 36 45 78',
-    address: '8 Quai des Ostréiculteurs, 17390 La Tremblade',
-    friend_code: 'LPE17390',
+    id: 'EW',
+    name: 'ERWEMA',
+    email: 'contact@erwema.fr',
+    phone: '04 67 46 XX XX',
+    address: 'Port de pêche, 34200 Sète',
+    friend_code: 'EW34SE',
     is_friend: true,
     deleted: false,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   },
   {
-    id: '3',
-    name: 'Atlantique Coquillages',
-    email: 'ventes@atlantique-coq.fr',
-    phone: '02 51 68 23 45',
-    address: '45 Avenue du Port, 85230 Bouin',
-    friend_code: 'ACQ85230',
-    is_friend: false,
-    deleted: false,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '4',
-    name: 'Cancale Premium',
-    email: 'service@cancale-premium.fr',
-    phone: '02 99 89 67 89',
-    address: '23 Rue du Port, 35260 Cancale',
-    friend_code: 'CAN35260',
+    id: 'CDB',
+    name: 'Société CDB',
+    email: 'contact@societe-cdb.fr',
+    phone: '02 97 56 XX XX',
+    address: 'Zone Conchylicole, 56950 Crac\'h',
+    friend_code: 'CDB56CR',
     is_friend: true,
     deleted: false,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   },
   {
-    id: '5',
-    name: 'Arcachon Huîtres',
-    email: 'pro@arcachon-huitres.com',
-    phone: '05 57 72 34 56',
-    address: '56 Boulevard de la Plage, 33120 Arcachon',
-    friend_code: 'ARC33120',
-    is_friend: false,
+    id: 'TB',
+    name: 'Tarbouriech',
+    email: 'contact@tarbouriech.fr',
+    phone: '04 67 77 XX XX',
+    address: 'Lagune de Thau, 34340 Marseillan',
+    friend_code: 'TB34MA',
+    is_friend: true,
     deleted: false,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
@@ -68,10 +56,10 @@ const mockSuppliers = [
 
 // Données de test pour les produits
 const mockProducts = {
-  '1': [
+  'HBC': [
     {
       id: '1',
-      supplier_id: '1',
+      supplier_id: 'HBC',
       name: 'Huîtres Spéciales N°3',
       description: 'Huîtres charnues de qualité supérieure, affinées en claire pendant 2 mois minimum',
       price: 8.50,
@@ -86,7 +74,7 @@ const mockProducts = {
     },
     {
       id: '2',
-      supplier_id: '1',
+      supplier_id: 'HBC',
       name: 'Huîtres Fines de Claire N°2',
       description: 'Huîtres raffinées, affinées en claire pendant 3 semaines minimum',
       price: 9.50,
@@ -100,10 +88,10 @@ const mockProducts = {
       updated_at: new Date().toISOString()
     }
   ],
-  '2': [
+  'EW': [
     {
       id: '3',
-      supplier_id: '2',
+      supplier_id: 'EW',
       name: 'Huîtres Spéciales N°2',
       description: 'Huîtres de qualité supérieure',
       price: 10.50,
@@ -117,10 +105,10 @@ const mockProducts = {
       updated_at: new Date().toISOString()
     }
   ],
-  '3': [
+  'CDB': [
     {
       id: '4',
-      supplier_id: '3',
+      supplier_id: 'CDB',
       name: 'Huîtres Plates de Belon',
       description: 'Huîtres plates de Belon, goût unique et iodé',
       price: 14.50,
@@ -134,10 +122,10 @@ const mockProducts = {
       updated_at: new Date().toISOString()
     }
   ],
-  '4': [
+  'TB': [
     {
       id: '5',
-      supplier_id: '4',
+      supplier_id: 'TB',
       name: 'Huîtres Label Rouge',
       description: 'Huîtres labellisées Label Rouge, qualité supérieure garantie',
       price: 12.00,
@@ -147,23 +135,6 @@ const mockProducts = {
       available: true,
       stock: 400,
       minOrder: 4,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
-  ],
-  '5': [
-    {
-      id: '6',
-      supplier_id: '5',
-      name: 'Huîtres Gillardeau',
-      description: 'Les célèbres huîtres Gillardeau, reconnues mondialement',
-      price: 24.00,
-      unit: 'douzaine',
-      category: 'Premium',
-      image: '/placeholder.jpg',
-      available: true,
-      stock: 100,
-      minOrder: 1,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }
