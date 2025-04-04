@@ -1,33 +1,33 @@
 export const mockSuppliers = [
   {
     id: '1',
-    name: 'REGIS ROQUE LE BOGOSS',
-    email: 'regis.roque@huitres-bouzigues.fr',
-    phone: '04 67 43 XX XX',
-    address: '23 Quai du Port, 34140 Bouzigues',
-    friend_code: 'RR34BOU',
+    name: 'CDB - Coquillages De Bretagne',
+    email: 'contact@cdb-bretagne.fr',
+    phone: '02 97 56 XX XX',
+    address: 'Zone Conchylicole, 56950 Crac\'h',
+    friend_code: 'CDB56CR',
     is_friend: true,
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z'
   },
   {
     id: '2',
-    name: 'Les Parcs de Mèze',
-    email: 'contact@parcs-meze.fr',
-    phone: '04 67 43 XX XX',
-    address: '12 Quai Baptiste Guitard, 34140 Mèze',
-    friend_code: 'PM34MEZ',
+    name: 'HUITRES GILLARDEAU',
+    email: 'contact@gillardeau.fr',
+    phone: '05 46 85 XX XX',
+    address: 'Baie de Marennes Oléron, 17560 Bourcefranc-le-Chapus',
+    friend_code: 'HG17BOU',
     is_friend: true,
     created_at: '2025-01-02T00:00:00Z',
     updated_at: '2025-01-02T00:00:00Z'
   },
   {
     id: '3',
-    name: 'Coquillages Marseillanais',
-    email: 'commandes@coquillages-marseillan.fr',
+    name: 'TARBOURIECH',
+    email: 'contact@tarbouriech.fr',
     phone: '04 67 77 XX XX',
-    address: '5 Port de Marseillan, 34340 Marseillan',
-    friend_code: 'CM34MAR',
+    address: 'Lagune de Thau, 34340 Marseillan',
+    friend_code: 'HT34MAR',
     is_friend: true,
     created_at: '2025-01-03T00:00:00Z',
     updated_at: '2025-01-03T00:00:00Z'
@@ -35,56 +35,56 @@ export const mockSuppliers = [
 ];
 
 export const mockProducts = [
-  // Produits de REGIS ROQUE LE BOGOSS
+  // Produits de CDB - Coquillages De Bretagne
   {
     id: '1',
     supplier_id: '1',
-    name: 'Huîtres Spéciales de Bouzigues N°2',
-    description: 'Huîtres charnues de l\'étang de Thau, calibre 2',
+    name: 'Huîtres Spéciales de Bretagne N°2',
+    description: 'Huîtres charnues de Bretagne Sud, calibre 2',
     price: 12.50,
     unit: 'douzaine',
     category: 'Huîtres',
-    min_order_quantity: 2,
-    stock: 500,
-    image: '/products/huitres-speciales.jpg',
+    stock: 150,
+    min_order: 5,
+    image_url: '/images/products/huitres-speciales.jpg',
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z'
   },
   {
     id: '2',
     supplier_id: '1',
-    name: 'Huîtres Fines de Bouzigues N°3',
-    description: 'Huîtres fines et délicates, calibre 3',
+    name: 'Huîtres Fines de Bretagne N°3',
+    description: 'Huîtres fines de Bretagne Sud, calibre 3',
     price: 9.50,
     unit: 'douzaine',
     category: 'Huîtres',
-    min_order_quantity: 2,
-    stock: 800,
-    image: '/products/huitres-fines.jpg',
+    stock: 200,
+    min_order: 5,
+    image_url: '/images/products/huitres-fines.jpg',
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z'
   },
   {
     id: '3',
     supplier_id: '1',
-    name: 'Plateau Dégustation Premium',
-    description: 'Assortiment de nos meilleures huîtres (24 pièces)',
-    price: 38.00,
-    unit: 'plateau',
-    category: 'Plateaux',
-    min_order_quantity: 1,
+    name: 'Palourdes de Bretagne',
+    description: 'Palourdes sauvages de la baie de Quiberon',
+    price: 18.00,
+    unit: 'kilo',
+    category: 'Coquillages',
     stock: 50,
-    image: '/products/plateau-premium.jpg',
+    min_order: 2,
+    image_url: '/images/products/palourdes.jpg',
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z'
   },
 
-  // Produits des Parcs de Mèze
+  // Produits de HUITRES GILLARDEAU
   {
     id: '4',
     supplier_id: '2',
-    name: 'Moules de l\'étang',
-    description: 'Moules fraîches de l\'étang de Thau',
+    name: 'Moules de la Charente',
+    description: 'Moules fraîches de la Charente',
     price: 6.50,
     unit: 'kilo',
     category: 'Moules',
@@ -98,7 +98,7 @@ export const mockProducts = [
     id: '5',
     supplier_id: '2',
     name: 'Palourdes sauvages',
-    description: 'Palourdes pêchées dans l\'étang de Thau',
+    description: 'Palourdes pêchées dans la Charente',
     price: 15.00,
     unit: 'kilo',
     category: 'Coquillages',
@@ -123,7 +123,7 @@ export const mockProducts = [
     updated_at: '2025-01-02T00:00:00Z'
   },
 
-  // Produits de Coquillages Marseillanais
+  // Produits de TARBOURIECH
   {
     id: '7',
     supplier_id: '3',
@@ -176,7 +176,7 @@ export const mockOrders = [
     products: [
       {
         id: '1',
-        name: 'Huîtres Spéciales de Bouzigues N°3',
+        name: 'Huîtres Spéciales de Cadoret N°3',
         quantity: 10,
         price: 8.50
       }

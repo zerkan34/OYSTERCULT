@@ -1153,10 +1153,24 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
       ) {
         return {
           ...cell,
-          naissain: {
-            ...naissainInfo,
-            date: now
-          }
+          filled: true,
+          spat: {
+            name: naissainInfo.origin,
+            batchNumber: naissainInfo.lotNumber,
+            dateAdded: now
+          },
+          history: [
+            ...(cell.history || []),
+            {
+              date: now,
+              action: 'Remplissage',
+              details: `Ajout de naissain ${naissainInfo.origin}`,
+              naissain: naissainInfo.origin,
+              lotNumber: naissainInfo.lotNumber,
+              mortalityRate: 0,
+              notes: ''
+            }
+          ]
         };
       }
       return cell;
@@ -1733,7 +1747,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
                     <FileText className="text-cyan-400" size={20} />
                     <span className="ml-3 text-white">Exporter</span>
                   </span>
-                  <ChevronRight size={20} className="text-cyan-400" />
+                  <ChevronRight size={20} className="text-cyan-400" />nz"
                 </button>
               </div>
             </div>

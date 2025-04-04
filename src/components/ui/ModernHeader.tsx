@@ -6,6 +6,7 @@ import { OysterLogo } from './OysterLogo';
 import { modalAnimation, glassEffectStyle, ProgressBar } from './CommonStyles';
 import { UserCircle } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
+import { Waves } from 'lucide-react';
 
 interface ModernHeaderProps {
   onShowMobileMenu: () => void;
@@ -128,82 +129,94 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
               </motion.div>
 
               <div className="flex flex-row items-center space-x-2 relative">
-                <motion.span 
-                  className="text-[4rem] relative header-title"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.3 }}
-                  style={{ 
-                    fontFamily: "'TT Modernoir', sans-serif",
-                    fontWeight: 300,
-                    letterSpacing: '0.08em',
-                    display: 'block',
-                    color: 'white',
-                    willChange: 'transform',
-                    transform: 'translateZ(0)',
-                    WebkitFontSmoothing: 'antialiased',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  OYSTER
-                </motion.span>
-
-                <motion.div 
-                  className="text-[2rem] absolute header-title"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.3 }}
-                  style={{
-                    position: 'relative',
-                    top: '0px',
-                    left: '5px',
-                    display: 'inline-block',
-                    marginLeft: '0.2em'
-                  }}
-                >
-                  {/* Fond blanc */}
-                  <div 
-                    className="absolute bg-white rounded border-2 border-white"
-                    style={{
-                      boxShadow: "inset 0 1px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.4), 0 0 15px rgba(255, 255, 255, 0.2)",
-                      transform: "translateZ(0)",
-                      zIndex: 0,
-                      top: "10px",
-                      bottom: "10px",
-                      left: 0,
-                      right: 0
+                <div className="flex items-center relative py-1.5 px-8 border border-white/20 rounded-lg">
+                  {/* Icon */}
+                  <motion.div
+                    className="relative mr-2"
+                    animate={{ 
+                      rotate: [0, 10, -10, 10, 0]
                     }}
-                  />
-                  
-                  {/* Texte au-dessus */}
-                  <div
-                    style={{
-                      fontFamily: "'TT Modernoir', sans-serif",
-                      fontWeight: 600,
-                      letterSpacing: "0.1em",
-                      willChange: "transform",
-                      WebkitFontSmoothing: 'antialiased',
-                      whiteSpace: 'nowrap',
-                      padding: "0.15rem 0.6rem",
-                      position: "relative",
-                      zIndex: 1,
-                      background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                      textShadow: "0px 1px 2px rgba(0,0,0,0.2)",
-                      filter: "drop-shadow(0px -1px 1px rgba(255,255,255,0.3)) drop-shadow(0px 1px 1px rgba(0,0,0,0.15))",
-                      transform: "translateY(8px) scale(1.6)",
-                      transformOrigin: "center",
-                      fontStretch: "ultra-expanded",
-                      fontSize: "3.5rem",
-                      mixBlendMode: "multiply"
+                    transition={{ 
+                      duration: 5,
+                      repeat: Infinity,
+                      ease: "linear"
                     }}
                   >
-                    <span style={{ marginRight: "0.02em", fontStretch: "200%", display: "inline-block", transform: "scaleX(1.25) translateZ(-2px)", fontWeight: 600, fontSize: "1em" }}>C</span>
-                    <span style={{ marginRight: "0.02em", fontStretch: "200%", display: "inline-block", transform: "scaleX(1.25) translateZ(-2px)", fontWeight: 600, fontSize: "1em" }}>U</span>
-                    <span style={{ marginRight: "0.02em", fontStretch: "200%", display: "inline-block", transform: "scaleX(1.25) translateZ(-2px)", fontWeight: 600, fontSize: "1em" }}>L</span>
-                    <span style={{ fontStretch: "200%", display: "inline-block", transform: "scaleX(1.25) translateZ(-2px)", fontWeight: 600, fontSize: "1em" }}>T</span>
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.1, 1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <Waves 
+                        size={56} 
+                        className="text-cyan-400"
+                        style={{
+                          opacity: 0.9,
+                          transform: 'translateY(2px)'
+                        }}
+                      />
+                    </motion.div>
+                  </motion.div>
+
+                  <div className="flex items-center">
+                    {/* OYSTER */}
+                    <motion.div 
+                      className="relative"
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    >
+                      <span 
+                        className="text-6xl tracking-widest"
+                        style={{ 
+                          fontFamily: "'TT Modernoir', sans-serif",
+                          fontWeight: 500,
+                          background: 'linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.85) 100%)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          letterSpacing: '0.1em',
+                          lineHeight: '1'
+                        }}
+                      >
+                        OYSTER
+                      </span>
+                    </motion.div>
+
+                    {/* CULT */}
+                    <motion.div 
+                      className="relative ml-1"
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    >
+                      <span 
+                        className="text-6xl"
+                        style={{ 
+                          fontFamily: "'TT Modernoir', sans-serif",
+                          fontWeight: 300,
+                          background: 'linear-gradient(135deg, rgb(34,211,238) 0%, rgb(56,189,248) 100%)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          lineHeight: '1'
+                        }}
+                      >
+                        CULT
+                      </span>
+                    </motion.div>
                   </div>
-                </motion.div>
+
+                  {/* Subtle background effect */}
+                  <div
+                    className="absolute inset-0 -z-10 opacity-40"
+                    style={{
+                      background: 'radial-gradient(circle at 50% 50%, rgba(56,189,248,0.08), transparent 70%)',
+                      filter: 'blur(20px)',
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </motion.div>

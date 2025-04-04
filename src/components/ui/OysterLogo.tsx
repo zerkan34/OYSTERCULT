@@ -35,20 +35,29 @@ export const OysterLogo: React.FC<OysterLogoProps> = ({ onClick, className = '',
           OYSTER
         </motion.span>
         
-        <motion.span
-          className="text-white tracking-wider"
+        <motion.div
+          className="px-2 py-0.5 bg-white rounded"
           style={{
-            fontSize: "0.75rem",
-            fontFamily: "'TT Modernoir', sans-serif",
-            fontWeight: 100,
-            letterSpacing: "0.2em",
-            display: "block",
             transform: "translate3d(-0.05rem, -0.2rem, -2cm)",
             willChange: "transform"
           }}
         >
-          CULT
-        </motion.span>
+          <motion.span
+            style={{
+              fontSize: "0.85rem",
+              fontFamily: "'TT Modernoir', sans-serif",
+              fontWeight: 50,
+              letterSpacing: "0.25em",
+              display: "block",
+              background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text"
+            }}
+          >
+            CULT
+          </motion.span>
+        </motion.div>
 
         <div className="relative w-8 h-8 mt-1">
           <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10 w-full h-full" style={{ transform: "translate3d(-0.6rem, 0, 0)" }}>
