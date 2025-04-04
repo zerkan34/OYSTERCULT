@@ -136,9 +136,9 @@ export function AuthPage() {
                         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-white">
                           <User2 
                             size={18} 
-                            className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]"
+                            className="text-white"
                             color="white"
-                            strokeWidth={2.5}
+                            strokeWidth={2}
                           />
                         </div>
                         <input
@@ -153,9 +153,9 @@ export function AuthPage() {
                         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-white">
                           <Lock 
                             size={18} 
-                            className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]"
+                            className="text-white"
                             color="white"
-                            strokeWidth={2.5}
+                            strokeWidth={2}
                           />
                         </div>
                         <input
