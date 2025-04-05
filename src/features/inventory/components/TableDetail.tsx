@@ -1747,7 +1747,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
                     <FileText className="text-cyan-400" size={20} />
                     <span className="ml-3 text-white">Exporter</span>
                   </span>
-                  <ChevronRight size={20} className="text-cyan-400" />nz"
+                  <ChevronRight size={20} className="text-cyan-400" />
                 </button>
               </div>
             </div>
