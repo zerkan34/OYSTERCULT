@@ -46,6 +46,8 @@ import SurveillancePage from '@/features/surveillance/pages/SurveillancePage';
 import { AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { MessageList } from '@/features/network/components/MessageList';
+// Importer les styles globaux
+import '@/features/auth/pages/auth-responsive.css';
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
 

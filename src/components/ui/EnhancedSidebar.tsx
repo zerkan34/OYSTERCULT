@@ -462,7 +462,7 @@ export function EnhancedSidebar({
               <motion.button
                 onClick={toggleSidebar}
                 className={`
-                  rounded-lg hidden lg:flex items-center justify-center transition-all duration-300 relative z-10
+                  rounded-lg lg:flex items-center justify-center transition-all duration-300 relative z-10
                   ${collapsed ? 
                     "p-2.5 bg-white/15 hover:bg-white/25 border border-white/20" : 
                     "p-2.5 bg-white/15 hover:bg-white/25 border border-white/20"
