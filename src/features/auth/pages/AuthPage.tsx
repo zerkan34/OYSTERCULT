@@ -53,7 +53,7 @@ export function AuthPage() {
   };
 
   // Ajuster la taille du logo en fonction de la taille de l'écran
-  const logoSize = windowWidth < 480 ? 180 : windowWidth < 768 ? 250 : 350;
+  const logoSize = windowWidth < 431 ? 100 : windowWidth < 480 ? 150 : windowWidth < 768 ? 200 : 350;
 
   return (
     <div className="auth-page">

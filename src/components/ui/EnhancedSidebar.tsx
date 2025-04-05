@@ -244,14 +244,14 @@ export function EnhancedSidebar({
   }, []);
   
   // Fermer le menu lors des changements de page si la résolution est entre 1024px et 1690px
-  useEffect(() => {
-    const width = window.innerWidth;
-    // Uniquement pour les résolutions entre 1024px et 1690px
-    if (width >= 1024 && width <= 1690) {
-      setCollapsed(true);
-    }
-    // Ne rien faire pour les résolutions > 1690px, préserver le choix de l'utilisateur
-  }, [location.pathname]);
+  // useEffect(() => {
+  //   const width = window.innerWidth;
+  //   // Uniquement pour les résolutions entre 1024px et 1690px
+  //   if (width >= 1024 && width <= 1690) {
+  //     setCollapsed(true);
+  //   }
+  //   // Ne rien faire pour les résolutions > 1690px, préserver le choix de l'utilisateur
+  // }, [location.pathname]);
 
   // Détecter les changements de taille d'écran
   useEffect(() => {
@@ -270,10 +270,10 @@ export function EnhancedSidebar({
       }
       
       // Pour les résolutions entre 1024px et 1690px, fermer automatiquement le menu
-      const width = window.innerWidth;
-      if (width >= 1024 && width <= 1690) {
-        setCollapsed(true);
-      }
+      // const width = window.innerWidth;
+      // if (width >= 1024 && width <= 1690) {
+      //   setCollapsed(true);
+      // }
     };
 
     window.addEventListener('resize', handleResize);
@@ -369,7 +369,7 @@ export function EnhancedSidebar({
     mobileVisible: {
       transform: "translateX(0)",
       width: "85vw", // Utiliser une largeur relative à l'écran sur mobile
-      maxWidth: "300px", // Mais avec une taille maximale
+      maxWidth: window.innerWidth < 468 ? "100%" : "300px", // Mais avec une taille maximale
       transition: {
         type: "spring",
         stiffness: 400,
@@ -752,7 +752,7 @@ export function EnhancedSidebar({
             backdropFilter: "blur(8px)"
           }}
         >
-          <div className="absolute inset-y-0 left-0 w-full max-w-xs">
+          <div className="absolute inset-y-0 left-0 w-full">
             <motion.div 
               className="h-full overflow-y-auto rounded-tr-3xl rounded-br-3xl"
               initial={{ x: -300 }}
@@ -765,7 +765,8 @@ export function EnhancedSidebar({
                 backdropFilter: "blur(20px)",
                 boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
                 borderRight: "none",
-                zIndex: 60
+                zIndex: 60,
+                width: window.innerWidth < 468 ? "100%" : undefined
               }}
             >
               {/* Contenu de la sidebar mobile */}

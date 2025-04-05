@@ -249,7 +249,8 @@
 
 .auth-input {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+  padding-left: 2.5rem !important;
   background: rgba(0, 180, 255, 0.15);
   border-radius: 0.5rem;
   outline: none;
@@ -335,12 +336,57 @@
   }
   
   .auth-input {
-    padding: 0.625rem 0.75rem 0.625rem 2.25rem;
+    padding: 0.625rem 2rem 0.625rem 2.25rem;
+    padding-left: 2rem !important;
     font-size: 0.875rem;
   }
   
   .auth-submit-button {
     padding: 0.625rem 1.25rem;
     font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .auth-content {
+    gap: 1rem;
+    margin-top: -1rem;
+  }
+  
+  .auth-logo-container {
+    transform: scale(0.8);
+    margin-bottom: 0;
+  }
+  
+  .auth-welcome-text {
+    font-size: 1rem;
+  }
+  
+  .auth-button {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.8125rem;
+  }
+  
+  .auth-form {
+    padding: 1rem;
+  }
+  
+  .auth-form-title {
+    font-size: 1rem;
+  }
+  
+  .auth-form-inner {
+    gap: 1rem;
+  }
+  
+  .auth-input {
+    padding: 0.5rem 2rem 0.5rem 2rem;
+    padding-left: 1.8rem !important;
+    font-size: 0.8125rem;
+  }
+  
+  .auth-submit-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
   }
 }

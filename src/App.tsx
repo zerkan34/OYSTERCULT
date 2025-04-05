@@ -211,17 +211,45 @@ function AppContent() {
   const navigate = useNavigate();
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   
+  // Réinitialiser la position de défilement à chaque changement de page
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    
+    // Réinitialiser également toutes les barres de défilement internes
+    document.querySelectorAll('.overflow-auto, .overflow-y-auto, .overflow-x-auto, [style*="overflow"]').forEach(el => {
+      if (el instanceof HTMLElement) {
+        el.scrollTop = 0;
+        el.scrollLeft = 0;
+      }
+    });
+    
+    // Forcer le dézoom maximum sur mobile à chaque changement de page
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        viewport.setAttribute('content', 'width=1920, initial-scale=0.1, maximum-scale=1.0, user-scalable=no');
+        
+        // Réappliquer après un court délai pour s'assurer que ça prend effet
+        setTimeout(() => {
+          viewport.setAttribute('content', 'width=1920, initial-scale=0.1, maximum-scale=1.0, user-scalable=no');
+        }, 300);
+      }
+    }
+  }, [location.pathname]);
+  
   // Permettre l'accès direct à la page de surveillance simple sans authentification
   const isDirectSurveillanceAccess = location.pathname === '/surveillance/simple';
 
   return (
     <div className="min-h-screen w-screen h-screen fixed inset-0 overflow-hidden">
       <Routes>
+        {/* Route racine qui redirige toujours vers /auth */}
+        <Route path="/" element={<Navigate to="/auth" replace />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/surveillance/simple" element={<SurveillanceSimplePage />} />
         {isAuthenticated ? (
           <Route element={<MainLayout />}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/stocks" element={<InventoryPage />} />
             <Route path="/stock/:id" element={<StockPage />} />
