@@ -1,0 +1,28 @@
+/* Styles pour masquer les barres de défilement tout en permettant le défilement */
+
+/* Masquer les barres de défilement pour tous les éléments */
+* {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE et Edge */
+}
+
+/* Masquer les barres de défilement pour WebKit (Chrome, Safari, etc.) */
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* S'assurer que le défilement est toujours possible */
+html, body, #root, #app, .auth-page, .auth-content-wrapper {
+  overflow-y: auto !important;
+}
+
+/* Styles spécifiques pour la page d'authentification */
+@media (max-width: 768px) {
+  .auth-content-wrapper {
+    min-height: 810px !important; /* 75% de 1080px */
+    height: 810px !important;
+    max-height: 810px !important;
+  }
+}

@@ -1,10 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../../lib/store';
+import useViewportReset from '../../../hooks/useViewportReset';
 
 export function AuthForm() {
   const navigate = useNavigate();
   const { setSession } = useStore();
+
+  // Utiliser le hook personnalisé pour réinitialiser la position de défilement et appliquer les paramètres du viewport
+  useViewportReset();
 
   const handleLogin = () => {
     // Session de démo avec tous les droits
@@ -20,6 +24,8 @@ export function AuthForm() {
       token: 'demo-token',
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24h
     });
+    
+    // Naviguer vers la page d'inventaire
     navigate('/inventory');
   };
 

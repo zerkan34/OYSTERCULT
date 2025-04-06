@@ -1,0 +1,46 @@
+/* Styles responsives pour la barre latérale */
+
+/* Style par défaut pour la barre latérale */
+.sidebar, .side-nav, .side-menu, .main-sidebar {
+  width: var(--sidebar-width, 18rem);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  z-index: 100;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Styles pour les écrans de taille moyenne (tablettes) */
+@media screen and (min-width: 769px) and (max-width: 1023px) {
+  .sidebar, .side-nav, .side-menu, .main-sidebar {
+    width: 240px; /* Taille réduite pour les tablettes */
+    display: flex !important; /* Force l'affichage */
+    transform: translateX(0) !important; /* Assure que la barre n'est pas déplacée hors écran */
+  }
+  
+  /* Ajustement du contenu principal pour laisser de la place à la barre latérale */
+  .main-content, .content, .dashboard-content, .page-content {
+    margin-left: 240px !important;
+    width: calc(100% - 240px) !important;
+  }
+}
+
+/* Styles pour les petits écrans (mobiles) */
+@media screen and (max-width: 768px) {
+  .sidebar, .side-nav, .side-menu, .main-sidebar {
+    transform: translateX(-100%); /* Cache la barre latérale */
+    width: 100%; /* Pleine largeur pour mobile */
+  }
+  
+  /* Classe pour afficher la barre latérale sur mobile quand nécessaire */
+  .sidebar.show, .side-nav.show, .side-menu.show, .main-sidebar.show {
+    transform: translateX(0);
+  }
+  
+  /* Contenu principal en pleine largeur sur mobile */
+  .main-content, .content, .dashboard-content, .page-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}

@@ -7,6 +7,8 @@
 @import './styles/compatibility.css';
 @import './styles/text-handling.css';
 @import './styles/globals.css';
+@import './styles/hide-scrollbars.css';
+@import './styles/sidebar-responsive.css';
 
 :root {
   --primary-color: #22d3ee;
@@ -125,10 +127,20 @@ html, body {
   width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE et Edge */
 }
 
 html {
   font-size: calc(16px * (100vw / var(--viewport-width)));
+}
+
+/* Masquer les barres de défilement pour WebKit (Chrome, Safari, etc.) */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 body {
@@ -137,6 +149,8 @@ body {
   transform-origin: top left;
   transform: scale(calc(100vw / var(--viewport-width)));
   overflow-x: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE et Edge */
 }
 
 #root, #app {

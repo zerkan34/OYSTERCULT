@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { NewAuthLogo } from '../../../components/ui/NewAuthLogo';
 import { User2, Lock } from 'lucide-react';
 import './auth.css';
+import useViewportReset from '../../../hooks/useViewportReset';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -41,6 +42,9 @@ export function AuthPage() {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  // Utiliser le hook personnalisé pour réinitialiser la position de défilement et appliquer les paramètres du viewport
+  useViewportReset();
 
   const handleDemoAccess = () => {
     setShowAuth(true);

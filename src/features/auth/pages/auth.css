@@ -367,26 +367,9 @@
     font-size: 0.8125rem;
   }
   
-  .auth-form {
-    padding: 1rem;
-  }
-  
-  .auth-form-title {
-    font-size: 1rem;
-  }
-  
-  .auth-form-inner {
-    gap: 1rem;
-  }
-  
-  .auth-input {
-    padding: 0.5rem 2rem 0.5rem 2rem;
-    padding-left: 1.8rem !important;
-    font-size: 0.8125rem;
-  }
-  
-  .auth-submit-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.8125rem;
+  .auth-content-wrapper {
+    min-height: 810px !important;
+    height: 810px !important;
+    max-height: 810px !important;
   }
 }

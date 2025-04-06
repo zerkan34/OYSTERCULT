@@ -230,7 +230,7 @@ export function EnhancedSidebar({
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isFirstRender, setIsFirstRender] = useState(true);
 
   // Marquer la fin du premier rendu
@@ -243,11 +243,11 @@ export function EnhancedSidebar({
     return () => clearTimeout(timer);
   }, []);
   
-  // Fermer le menu lors des changements de page si la résolution est entre 1024px et 1690px
+  // Fermer le menu lors des changements de page si la résolution est entre 768px et 1690px
   // useEffect(() => {
   //   const width = window.innerWidth;
-  //   // Uniquement pour les résolutions entre 1024px et 1690px
-  //   if (width >= 1024 && width <= 1690) {
+  //   // Uniquement pour les résolutions entre 768px et 1690px
+  //   if (width >= 768 && width <= 1690) {
   //     setCollapsed(true);
   //   }
   //   // Ne rien faire pour les résolutions > 1690px, préserver le choix de l'utilisateur
@@ -256,22 +256,27 @@ export function EnhancedSidebar({
   // Détecter les changements de taille d'écran
   useEffect(() => {
     const handleResize = () => {
-      const newIsMobile = window.innerWidth < 1024;
+      const newIsMobile = window.innerWidth < 768;
       setIsMobile(newIsMobile);
       
       // Si on passe du mode mobile au mode desktop, réinitialiser l'état collapsed
       if (isMobile && !newIsMobile) {
-        setCollapsed(false);
-        setIsAnimating(false);
-        // Fermer le menu mobile si ouvert
-        if (showMobileMenu) {
-          onCloseMobileMenu();
+        // Seulement si on était en mode mobile et qu'on passe en desktop
+        if (collapsed) {
+          // Réinitialiser l'état collapsed seulement si c'était fermé
+          setCollapsed(false);
         }
       }
       
-      // Pour les résolutions entre 1024px et 1690px, fermer automatiquement le menu
+      // Forcer la mise à jour des éléments qui utilisent window.innerWidth directement
+      const toggleButton = document.querySelector('.sidebar-toggle-button');
+      if (toggleButton) {
+        (toggleButton as HTMLElement).style.display = window.innerWidth < 768 ? 'none' : '';
+      }
+      
+      // Pour les résolutions entre 768px et 1690px, fermer automatiquement le menu
       // const width = window.innerWidth;
-      // if (width >= 1024 && width <= 1690) {
+      // if (width >= 768 && width <= 1690) {
       //   setCollapsed(true);
       // }
     };
@@ -405,7 +410,7 @@ export function EnhancedSidebar({
         className={`
           fixed inset-y-0 left-0 z-50 overflow-x-hidden
           transition-all duration-300 ease-in-out rounded-tr-3xl rounded-br-3xl
-          ${isMobile ? 'hidden lg:block' : ''}
+          ${isMobile ? 'hidden md:block' : ''}
           sidebar-auto-collapse
         `}
         initial={isFirstRender ? false : true}
@@ -462,6 +467,7 @@ export function EnhancedSidebar({
               <motion.button
                 onClick={toggleSidebar}
                 className={`
+                  sidebar-toggle-button
                   rounded-lg lg:flex items-center justify-center transition-all duration-300 relative z-10
                   ${collapsed ? 
                     "p-2.5 bg-white/15 hover:bg-white/25 border border-white/20" : 
@@ -470,9 +476,9 @@ export function EnhancedSidebar({
                 `}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                disabled={isAnimating || isMobile}
+                disabled={isAnimating}
                 aria-label={collapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
-                style={{ display: isMobile ? 'none' : '' }}
+                style={{ display: window.innerWidth < 768 ? 'none' : '' }}
               >
                 <div className="flex items-center">
                   {collapsed ? (

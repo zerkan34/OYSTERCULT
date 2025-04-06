@@ -28,6 +28,13 @@
   .auth-logo {
     transform: scale(0.8);
   }
+  
+  /* Ajustement de la hauteur du wrapper sur mobile en tenant compte du viewport fixe */
+  .auth-content-wrapper {
+    min-height: 810px !important; /* 75% de 1080px */
+    height: 810px !important;
+    max-height: 810px !important;
+  }
 }
 
 /* Ajustements spécifiques pour les très petits écrans */
@@ -53,8 +60,11 @@
     font-size: 0.9rem;
   }
   
-  .auth-button {
-    padding: 0.75rem;
+  /* Maintenir la hauteur réduite sur les très petits écrans */
+  .auth-content-wrapper {
+    min-height: 810px !important; /* 75% de 1080px */
+    height: 810px !important;
+    max-height: 810px !important;
   }
 }
 

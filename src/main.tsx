@@ -8,6 +8,7 @@ import './styles/vendor-fixes.css';
 
 // Fonction pour réinitialiser la position de défilement
 const resetScrollPosition = () => {
+  // Forcer le défilement en haut à gauche
   window.scrollTo(0, 0);
   
   // Réinitialiser également toutes les barres de défilement internes
@@ -17,24 +18,45 @@ const resetScrollPosition = () => {
       el.scrollLeft = 0;
     }
   });
+  
+  // S'assurer que le corps du document est également réinitialisé
+  if (document.body) {
+    document.body.scrollTop = 0;
+    document.body.scrollLeft = 0;
+  }
+  
+  // S'assurer que l'élément HTML est également réinitialisé
+  if (document.documentElement) {
+    document.documentElement.scrollTop = 0;
+    document.documentElement.scrollLeft = 0;
+  }
 };
 
 // Fonction pour forcer le dézoom sur mobile
 const forceMaximumZoomOut = () => {
-  // Vérifier si c'est un appareil mobile
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  
-  if (isMobile) {
-    // Forcer le dézoom en définissant une largeur de viewport fixe
-    const viewport = document.querySelector('meta[name="viewport"]');
-    if (viewport) {
-      viewport.setAttribute('content', 'width=1920, initial-scale=0.1, maximum-scale=1.0, user-scalable=no');
+  // Appliquer sur tous les appareils pour garantir la cohérence
+  const viewport = document.querySelector('meta[name="viewport"]');
+  if (viewport) {
+    // Appliquer les paramètres de viewport souhaités - ne pas modifier ces valeurs
+    viewport.setAttribute('content', 'width=1920, initial-scale=0.25, user-scalable=yes');
+    
+    // Réinitialiser la position de défilement
+    window.scrollTo(0, 0);
+    
+    // Réappliquer après un court délai pour s'assurer que ça prend effet
+    setTimeout(() => {
+      // Maintenir les mêmes paramètres
+      viewport.setAttribute('content', 'width=1920, initial-scale=0.25, user-scalable=yes');
       
-      // Réappliquer après un court délai pour s'assurer que ça prend effet
+      // Réappliquer la réinitialisation de la position
+      resetScrollPosition();
+      
+      // Appliquer une troisième fois après un délai plus long (pour les appareils plus lents)
       setTimeout(() => {
-        viewport.setAttribute('content', 'width=1920, initial-scale=0.1, maximum-scale=1.0, user-scalable=no');
+        viewport.setAttribute('content', 'width=1920, initial-scale=0.25, user-scalable=yes');
+        window.scrollTo(0, 0);
       }, 300);
-    }
+    }, 100);
   }
 };
 
@@ -56,6 +78,30 @@ if (sessionStorage.getItem('pageRefreshing') === 'true') {
 
 // Appliquer le dézoom maximum au chargement initial
 forceMaximumZoomOut();
+
+// Ajouter un écouteur d'événement pour réinitialiser la position et les paramètres du viewport lors du chargement complet
+window.addEventListener('load', () => {
+  // Réinitialiser la position de défilement
+  resetScrollPosition();
+  
+  // Forcer le dézoom maximum
+  forceMaximumZoomOut();
+  
+  // Appliquer à nouveau après un court délai
+  setTimeout(() => {
+    resetScrollPosition();
+    window.scrollTo(0, 0);
+  }, 500);
+});
+
+// Ajouter un écouteur d'événement pour réinitialiser la position lors de la navigation avec l'historique
+window.addEventListener('popstate', () => {
+  // Réinitialiser la position de défilement
+  resetScrollPosition();
+  
+  // Forcer le dézoom maximum
+  forceMaximumZoomOut();
+});
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
 
