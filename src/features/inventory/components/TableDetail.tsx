@@ -174,7 +174,7 @@ const CellModal: React.FC<CellModalProps> = ({ cell, onClose, onSave }) => {
         <div className="relative">
           <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur-lg"></div>
           <div className="relative">
-            <h3 className="text-3xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            <h3 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
               Ajouter des cordes
             </h3>
             <div className="space-y-5">
@@ -288,7 +288,7 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ cell, onClose, onSave }) =>
         <div className="relative">
           <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur-lg"></div>
           <div className="relative">
-            <h3 className="text-3xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            <h3 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
               Récolter des cordes
             </h3>
             <div className="space-y-5">
@@ -1564,12 +1564,12 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center"
       >
-        <div className="absolute inset-0 bg-black/90" onClick={onClose} />
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-md" onClick={onClose} />
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="relative bg-gray-900/95 p-6 rounded-xl max-w-4xl w-full border border-white/10"
+          className="relative bg-[rgba(15,23,42,0.45)] backdrop-blur-[16px] p-6 rounded-xl max-w-4xl w-full border border-white/10"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-between items-start mb-8">
@@ -1584,7 +1584,9 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
                   <span className="text-white/80 font-semibold">Bouzigues</span>
                 </div>
               </div>
-              <p className="text-white/70 text-sm mt-1">Huîtres creuses • Calibre en cours N°2</p>
+              <p className="text-white/70 text-sm mt-1">
+                Huîtres creuses • Calibre en cours N°2
+              </p>
             </div>
             <div className="flex items-center gap-4">
               <button
@@ -1979,11 +1981,11 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
 
       {/* Modal de confirmation d'exondation */}
       {showConfirmExondation && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50" onClick={(e) => {
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50" onClick={(e) => {
           if (e.target === e.currentTarget) setShowConfirmExondation(false);
         }}>
-          <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] p-6 rounded-lg w-96 shadow-xl border border-white/10" onClick={e => e.stopPropagation()}>
-            <h3 className="text-xl font-semibold text-cyan-500 mb-4">Confirmation d'exondation</h3>
+          <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-blur-[10px] p-6 rounded-lg w-96 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] border border-white/10 hover:border-white/20 transition-all duration-300" onClick={e => e.stopPropagation()}>
+            <h3 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">Confirmation d'exondation</h3>
             <div className="space-y-4 mb-6 text-white/70">
               <p>Un timer de 24h sera lancé à partir de la confirmation.</p>
               <p>Une notification de rappel sera envoyée toutes les 12h pour éviter d'oublier les huîtres hors de l'eau.</p>
@@ -1991,7 +1993,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowConfirmExondation(false)}
-                className="px-4 py-2 rounded-lg bg-white/5 text-white hover:bg-white/10 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
               >
                 Annuler
               </button>
@@ -2000,8 +2002,11 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
                   setIsExondationActive(true);
                   setShowConfirmExondation(false);
                   setShowExondationModal(false);
+                  const now = new Date();
+                  const end = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+                  setExondationEndTime(end);
                 }}
-                className="px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 hover:border-cyan-400/50 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
               >
                 Confirmer
               </button>

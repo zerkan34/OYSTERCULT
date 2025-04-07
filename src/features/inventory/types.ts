@@ -3,11 +3,23 @@ export interface Table {
   name: string;
   tableNumber: string;
   oysterType: string;
-  temperature: number;
-  salinity: number;
+  temperature?: number;
+  salinity?: number;
   lastUpdate: string;
   cells: TableCell[];
   history: HistoryEntry[];
+  location: string;
+  type: string;
+  status: string;
+  currentSize: string;
+  targetSize: string;
+  startDate: string;
+  timeProgress: number;
+  sizeProgress: number;
+  layers: number;
+  density: string;
+  alert: boolean;
+  value: number;
   exondation?: Exondation;
   sampling?: {
     lastCheckDate: string;
@@ -15,11 +27,20 @@ export interface Table {
     mortalityRate: number;
     currentSize: string;
   };
+  currentBatch?: {
+    size: string;
+    currentSize: string;
+    quantity: number;
+    startDate: string;
+    estimatedHarvestDate: string;
+    oysterType: string;
+    caliber: string;
+  };
 }
 
 export interface TableCell {
   id: string;
-  filled: boolean;
+  filled: boolean | number;
   ropeCount?: number;
   spat?: {
     name: string;

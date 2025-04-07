@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TableDetail } from './TableDetail';
-import { Table } from '../types';
+import type { Table as TableType } from '../types';
 import { 
   Droplets, 
   ThermometerSun,
@@ -35,56 +35,16 @@ import {
   CalendarDays,
   CalendarCheck
 } from 'lucide-react';
-import { Dialog } from '@headlessui/react';
 
 interface OysterTableMapProps {
-  onTableSelect: (table: Table) => void;
-  onTableHover?: (table: Table | null) => void;
-  hoveredTable?: Table | null;
-  selectedTable?: Table | null;
-  onTableUpdate: (table: Table) => void;
+  onTableSelect: (table: TableType) => void;
+  onTableHover?: (table: TableType | null) => void;
+  hoveredTable?: TableType | null;
+  selectedTable?: TableType | null;
+  onTableUpdate: (table: TableType) => void;
 }
 
-interface Table {
-  id: string;
-  name: string;
-  location: string;
-  type: string;
-  status: string;
-  cells: { id: string; filled: boolean | number }[];
-  currentSize: string;
-  targetSize: string;
-  startDate: string;
-  lastUpdate: string;
-  timeProgress: number;
-  sizeProgress: number;
-  layers: number;
-  density: string;
-  alert: boolean;
-  value: number;
-  history: any[];
-  oysterType: string;
-  tableNumber: string;
-  temperature?: number;
-  salinity?: number;
-  sampling?: {
-    lastCheckDate: string;
-    nextCheckDate: string;
-    mortalityRate: number;
-    currentSize: string;
-  };
-  currentBatch?: {
-    size: string;
-    currentSize: string;
-    quantity: number;
-    startDate: string;
-    estimatedHarvestDate: string;
-    oysterType: string;
-    caliber: string;
-  };
-}
-
-const initialTables: Table[] = [
+const initialTables: TableType[] = [
   {
     id: '1',
     name: 'Table Nord #128',
@@ -215,29 +175,52 @@ const CaliberGauge = ({ currentSize, targetSize, tableName }: { currentSize: str
           <div className="relative h-4 bg-white/5 rounded-lg overflow-hidden">
             <div className="absolute inset-0 flex">
               <div className="h-full relative" style={{ width: '100%' }}>
-                <div className="absolute inset-0 bg-gradient-to-b from-gray-600/30 to-gray-700/40 transition-all duration-500"></div>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="absolute inset-0 bg-gradient-to-b from-gray-600/30 to-gray-700/40"
+                />
                 <div className="absolute left-1/2 bottom-4 transform -translate-x-1/2 z-20">
-                  <div className="flex flex-col items-center">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+                    className="flex flex-col items-center"
+                  >
                     <div className="bg-white/10 backdrop-blur-md px-1.5 py-0.5 rounded-md border border-gray-500/30 mb-1 shadow-lg">
                       <span className="text-white text-xs font-semibold">Jauge vide</span>
                     </div>
                     <div className="text-xs text-white font-medium">0kg</div>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/5 to-transparent pointer-events-none" style={{ opacity: 0 }}></div>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="absolute inset-0 bg-gradient-to-r from-brand-primary/5 to-transparent pointer-events-none"
+            />
           </div>
-          <div className="flex justify-between px-1 text-sm font-medium">
-            {CALIBER_SCALE.map((caliber) => (
-              <span
+          <motion.div 
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="flex justify-between px-1 text-sm font-medium"
+          >
+            {CALIBER_SCALE.map((caliber, index) => (
+              <motion.span
                 key={caliber}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
                 className="text-white/30"
               >
                 {caliber}
-              </span>
+              </motion.span>
             ))}
-          </div>
+          </motion.div>
         </div>
       );
     }
@@ -251,34 +234,47 @@ const CaliberGauge = ({ currentSize, targetSize, tableName }: { currentSize: str
     <div className="space-y-2">
       <div className="relative h-4 bg-white/5 rounded-lg overflow-hidden">
         <div className="absolute inset-0 flex">
-          {CALIBER_SCALE.map((caliber) => (
-            <div
+          {CALIBER_SCALE.map((caliber, index) => (
+            <motion.div
               key={caliber}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
               className="flex-1 border-r border-white/10 last:border-r-0"
             />
           ))}
         </div>
-        <div
+        <motion.div
+          initial={{ width: 0, scale: 0.95 }}
+          animate={{ width: `${progress}%`, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className={`h-full ${
             tableName === 'Table A-12' 
               ? getCaliberColorA12(currentSize) 
               : tableName === 'Table C-04'
                 ? getCaliberColorC04(currentSize)
                 : getCaliberColor(currentSize)
-          } transition-all duration-300`}
-          style={{ width: `${progress}%` }}
+          }`}
         />
       </div>
-      <div className="flex justify-between px-1 text-sm font-medium">
-        {CALIBER_SCALE.map((caliber) => (
-          <span
+      <motion.div 
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="flex justify-between px-1 text-sm font-medium"
+      >
+        {CALIBER_SCALE.map((caliber, index) => (
+          <motion.span
             key={caliber}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
             className={caliber === 'N°3' ? 'text-cyan-400 border border-cyan-400/50 px-1 rounded' : 'text-white/60'}
           >
             {caliber}
-          </span>
+          </motion.span>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 };
@@ -292,7 +288,7 @@ const fadeInUp = {
   }
 };
 
-const TableCellsDisplay = ({ table, onCellClick }: { table: Table; onCellClick?: (index: number) => void }) => {
+const TableCellsDisplay = ({ table, onCellClick }: { table: TableType; onCellClick?: (index: number) => void }) => {
   return (
     <div className="space-y-1">
       {[0, 1].map((row) => (
@@ -328,7 +324,7 @@ const TableCellsDisplay = ({ table, onCellClick }: { table: Table; onCellClick?:
   );
 };
 
-const TableHeader = ({ table, onEdit }: { table: Table; onEdit: (table: Table, newName: string) => void }) => {
+const TableHeader = ({ table, onEdit }: { table: TableType; onEdit: (table: TableType, newName: string) => void }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(table.name);
 
