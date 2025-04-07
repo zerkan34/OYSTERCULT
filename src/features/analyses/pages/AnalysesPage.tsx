@@ -353,16 +353,14 @@ export const AnalysesPage: React.FC = () => {
               {analyses?.map((analyse) => (
                 <div 
                   key={analyse.id}
-                  className={`p-4 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 transition-all duration-300 ${
-                    selectedAnalyse === analyse.id ? 'shadow-[0_4px_15px_rgba(0,210,200,0.2)]' : 'shadow-[0_2px_10px_rgba(0,0,0,0.2)]'
-                  }`}
+                  className={`p-4 rounded-lg bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] border border-white/10 hover:border-cyan-400/30 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300 transform hover:-translate-y-1`}
                 >
                   <div 
                     className="flex justify-between items-start cursor-pointer"
                     onClick={() => setSelectedAnalyse(selectedAnalyse === analyse.id ? null : analyse.id)}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`px-3 py-1 rounded-full text-sm ${getStatusColor(analyse.status)}`}>
+                      <div className={`px-3 py-1 rounded-full text-sm ${getStatusColor(analyse.status)} backdrop-filter backdrop-blur-[8px] border border-white/10 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]`}>
                         {analyse.status.charAt(0).toUpperCase() + analyse.status.slice(1)}
                       </div>
                       <div>
@@ -375,7 +373,7 @@ export const AnalysesPage: React.FC = () => {
                     </div>
                     <button
                       aria-label={selectedAnalyse === analyse.id ? "Masquer les détails" : "Afficher les détails"}
-                      className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                      className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
                     >
                       {selectedAnalyse === analyse.id ? (
                         <ChevronDown className="w-5 h-5 text-white/60" aria-hidden="true" />
@@ -396,7 +394,7 @@ export const AnalysesPage: React.FC = () => {
                       <h4 className="font-medium text-white mb-3">Paramètres analysés</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         {analyse.parameters.map((param, index) => (
-                          <div key={index} className="bg-white/5 rounded-lg p-3 flex justify-between items-center">
+                          <div key={index} className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] rounded-lg p-3 border border-white/10 hover:border-cyan-400/30 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px] transition-all duration-300 flex justify-between items-center">
                             <div>
                               <p className="text-sm text-white/80">{param.name}</p>
                               <p className={`text-lg font-medium ${getParameterStatusColor(param.status)}`}>

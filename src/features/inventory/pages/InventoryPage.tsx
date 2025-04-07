@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Plus, Filter, Search, BarChart2, Package, AlertTriangle, Droplets, ShoppingCart, Map, X, Thermometer, DollarSign, Upload, Camera, History, Eye, FileText, Boxes } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { OysterTableMap, Table } from '../components/OysterTableMap';
+import { OysterTableMap } from '../components/OysterTableMap';
 import { PurificationPools } from '../components/PurificationPools';
 import { TrempeTables } from '../components/TrempeTables';
 import { useStore } from '@/lib/store';
@@ -20,8 +20,8 @@ type TabType = 'tables' | 'pools' | 'trempe' | 'autres' | 'achats' | 'charges';
 export const InventoryPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('tables');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTable, setSelectedTable] = useState<Table | null>(null);
-  const [hoveredTable, setHoveredTable] = useState<Table | null>(null);
+  const [selectedTable, setSelectedTable] = useState<any | null>(null);
+  const [hoveredTable, setHoveredTable] = useState<any | null>(null);
   const [showNewItem, setShowNewItem] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showNewStorageLocation, setShowNewStorageLocation] = useState(false);
@@ -185,12 +185,44 @@ export const InventoryPage: React.FC = () => {
   };
 
   // Touch gesture handling
-  const { handlers, isRefreshing } = useTouchGestures(
-    async () => {
-      // Refresh data
-      await new Promise(resolve => setTimeout(resolve, 1000));
+  const [touchStartX, setTouchStartX] = useState<number>(0);
+  const [touchStartY, setTouchStartY] = useState<number>(0);
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchStartX(e.touches[0].clientX);
+    setTouchStartY(e.touches[0].clientY);
+  };
+
+  const handleTouchMove = async (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!drawerRef.current) return;
+    
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+    const deltaX = touchStartX - touchX;
+    const deltaY = touchStartY - touchY;
+
+    // Only handle horizontal swipes
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      e.preventDefault();
+      drawerRef.current.style.transform = `translateX(${-deltaX}px)`;
     }
-  );
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!drawerRef.current) return;
+    
+    const touchEndX = e.changedTouches[0].clientX;
+    const deltaX = touchStartX - touchEndX;
+
+    // Reset transform
+    drawerRef.current.style.transform = '';
+
+    // If swipe distance is significant, close the drawer
+    if (deltaX > 50) {
+      setSelectedStorageLocation(null);
+    }
+  };
 
   const getTitleByTab = () => {
     switch (activeTab) {
@@ -264,7 +296,6 @@ export const InventoryPage: React.FC = () => {
     <div 
       ref={pageRef} 
       className="p-6 space-y-6"
-      {...handlers}
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -291,100 +322,88 @@ export const InventoryPage: React.FC = () => {
       <div className="flex items-center space-x-4 border-b border-white/10">
         <button
           onClick={() => setActiveTab('tables')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
             activeTab === 'tables'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <Package size={16} className="mr-2" />
-            Tables
-          </div>
+          <Package size={16} aria-hidden="true" />
+          Tables
         </button>
         <button
           onClick={() => setActiveTab('trempe')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
             activeTab === 'trempe'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <Droplets size={16} className="mr-2" />
-            Tables de trempe
-          </div>
+          <Droplets size={16} aria-hidden="true" />
+          Tables de trempe
         </button>
         <button
           onClick={() => setActiveTab('pools')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
             activeTab === 'pools'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <AlertTriangle size={16} className="mr-2" />
-            Bassins
-          </div>
+          <AlertTriangle size={16} aria-hidden="true" />
+          Bassins
         </button>
         <button
           onClick={() => setActiveTab('autres')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
             activeTab === 'autres'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <Map size={16} className="mr-2" />
-            Autres emplacements
-          </div>
+          <Map size={16} aria-hidden="true" />
+          Autres emplacements
         </button>
         <button
           onClick={() => setActiveTab('achats')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
             activeTab === 'achats'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <ShoppingCart size={16} className="mr-2" />
-            Achats
-          </div>
+          <ShoppingCart size={16} aria-hidden="true" />
+          Achats
         </button>
         <button
           onClick={() => setActiveTab('charges')}
-          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
             activeTab === 'charges'
-              ? 'border-brand-primary text-white'
-              : 'border-transparent text-white/60 hover:text-white'
+              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <div className="flex items-center">
-            <DollarSign size={16} className="mr-2" />
-            Charges
-          </div>
+          <DollarSign size={16} aria-hidden="true" />
+          Charges
         </button>
       </div>
 
       <div className="flex items-center space-x-4">
         <div className="flex-1 relative">
-          <Search size={20} className="absolute left-3 transform -translate-y-1/2 text-white/40" style={{top: '24%'}} aria-label="Search icon" />
+          <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" aria-hidden="true" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Rechercher..."
-            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40"
+            className="w-full pl-10 pr-4 py-2 bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] border border-white/10 hover:border-cyan-400/30 rounded-lg text-white placeholder-white/40 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300"
           />
         </div>
         <button 
           onClick={() => setShowFilters(true)}
-          className="flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 text-white"
         >
-          <Filter size={20} className="mr-2" />
+          <Filter size={20} aria-hidden="true" />
           Filtres
         </button>
       </div>
@@ -393,6 +412,10 @@ export const InventoryPage: React.FC = () => {
         <OysterTableMap
           onTableSelect={setSelectedTable}
           onTableHover={setHoveredTable}
+          onTableUpdate={(table) => {
+            // Implement table update logic here
+            console.log('Table updated:', table);
+          }}
           hoveredTable={hoveredTable}
           selectedTable={selectedTable}
         />
@@ -428,7 +451,7 @@ export const InventoryPage: React.FC = () => {
             style={{
               background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
               backdropFilter: "blur(20px)",
-              boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 0, 0, 0.3) 5px 5px 20px -5px, rgba(255, 255, 255, 0.15) 0px -1px 5px 0px inset, rgba(0, 210, 200, 0.25) 0px 0px 20px inset, rgba(0, 0, 0, 0.3) 0px 0px 15px inset",
+              boxShadow: "rgba(0, 0, 0, 0.45) 10px 0px 30px -5px, rgba(0, 210, 200, 0.15) 0px -1px 5px 0px inset, rgba(0, 65, 255, 0.05) 0px 0px 8px inset, rgba(0, 0, 0, 0.05) 0px 0px 1px inset",
               padding: "1.5rem",
               borderRadius: "0.75rem",
               border: "1px solid rgba(255, 255, 255, 0.1)"
@@ -437,21 +460,17 @@ export const InventoryPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Frigo 1 */}
               <div 
-                className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
+                className="p-4 rounded-lg bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] border border-white/10 hover:border-cyan-400/30 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
                 onClick={() => setSelectedStorageLocation('Frigo 1')}
-                style={{
-                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
-                  boxShadow: "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px"
-                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-md bg-blue-500/20 flex items-center justify-center mr-3">
-                      <Droplets size={18} className="text-blue-400" />
+                    <div className="w-8 h-8 rounded-md bg-cyan-500/20 flex items-center justify-center mr-3 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]">
+                      <Droplets size={18} className="text-cyan-400" aria-hidden="true" />
                     </div>
-                    <h3 className="text-white font-medium">Frigo 1</h3>
+                    <h3 className="text-xl font-medium bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">Frigo 1</h3>
                   </div>
-                  <div className="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded-full">
+                  <div className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm border border-white/10 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]">
                     Frigo
                   </div>
                 </div>
@@ -464,10 +483,10 @@ export const InventoryPage: React.FC = () => {
                     <span className="text-white/60">Occupation</span>
                     <span className="text-white">65%</span>
                   </div>
-                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2">
-                    <div className="bg-blue-400 h-full rounded-full" style={{ width: '65%' }}></div>
+                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2 shadow-[0_2px_4px_rgba(0,0,0,0.2)_inset]">
+                    <div className="bg-cyan-400 h-full rounded-full shadow-[0_0_10px_rgba(0,210,200,0.3)]" style={{ width: '65%' }}></div>
                   </div>
-                  <div className="hidden group-hover:block mt-3">
+                  <div className="mt-3">
                     <p className="text-xs text-white/70 italic">Cliquez pour voir les produits stockés</p>
                   </div>
                 </div>
@@ -475,21 +494,17 @@ export const InventoryPage: React.FC = () => {
 
               {/* Frigo 2 */}
               <div 
-                className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
+                className="p-4 rounded-lg bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] border border-white/10 hover:border-cyan-400/30 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
                 onClick={() => setSelectedStorageLocation('Frigo 2')}
-                style={{
-                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
-                  boxShadow: "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px"
-                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-md bg-blue-500/20 flex items-center justify-center mr-3">
-                      <Droplets size={18} className="text-blue-400" />
+                    <div className="w-8 h-8 rounded-md bg-cyan-500/20 flex items-center justify-center mr-3 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]">
+                      <Droplets size={18} className="text-cyan-400" aria-hidden="true" />
                     </div>
-                    <h3 className="text-white font-medium">Frigo 2</h3>
+                    <h3 className="text-xl font-medium bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">Frigo 2</h3>
                   </div>
-                  <div className="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded-full">
+                  <div className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm border border-white/10 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]">
                     Frigo
                   </div>
                 </div>
@@ -502,10 +517,10 @@ export const InventoryPage: React.FC = () => {
                     <span className="text-white/60">Occupation</span>
                     <span className="text-white">30%</span>
                   </div>
-                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2">
-                    <div className="bg-blue-400 h-full rounded-full" style={{ width: '30%' }}></div>
+                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2 shadow-[0_2px_4px_rgba(0,0,0,0.2)_inset]">
+                    <div className="bg-cyan-400 h-full rounded-full shadow-[0_0_10px_rgba(0,210,200,0.3)]" style={{ width: '30%' }}></div>
                   </div>
-                  <div className="hidden group-hover:block mt-3">
+                  <div className="mt-3">
                     <p className="text-xs text-white/70 italic">Cliquez pour voir les produits stockés</p>
                   </div>
                 </div>
@@ -513,21 +528,17 @@ export const InventoryPage: React.FC = () => {
 
               {/* Congélateur 1 */}
               <div 
-                className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
+                className="p-4 rounded-lg bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] border border-white/10 hover:border-cyan-400/30 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
                 onClick={() => setSelectedStorageLocation('Congélateur 1')}
-                style={{
-                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
-                  boxShadow: "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px"
-                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-md bg-cyan-500/20 flex items-center justify-center mr-3">
-                      <Thermometer size={18} className="text-cyan-400" />
+                    <div className="w-8 h-8 rounded-md bg-cyan-500/20 flex items-center justify-center mr-3 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]">
+                      <Thermometer size={18} className="text-cyan-400" aria-hidden="true" />
                     </div>
-                    <h3 className="text-white font-medium">Congélateur 1</h3>
+                    <h3 className="text-xl font-medium bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">Congélateur 1</h3>
                   </div>
-                  <div className="bg-cyan-500/20 text-cyan-400 text-xs px-2 py-1 rounded-full">
+                  <div className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm border border-white/10 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]">
                     Congélateur
                   </div>
                 </div>
@@ -540,10 +551,10 @@ export const InventoryPage: React.FC = () => {
                     <span className="text-white/60">Occupation</span>
                     <span className="text-white">85%</span>
                   </div>
-                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2">
-                    <div className="bg-cyan-400 h-full rounded-full" style={{ width: '85%' }}></div>
+                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2 shadow-[0_2px_4px_rgba(0,0,0,0.2)_inset]">
+                    <div className="bg-cyan-400 h-full rounded-full shadow-[0_0_10px_rgba(0,210,200,0.3)]" style={{ width: '85%' }}></div>
                   </div>
-                  <div className="hidden group-hover:block mt-3">
+                  <div className="mt-3">
                     <p className="text-xs text-white/70 italic">Cliquez pour voir les produits stockés</p>
                   </div>
                 </div>
@@ -551,21 +562,17 @@ export const InventoryPage: React.FC = () => {
 
               {/* Congélateur 2 */}
               <div 
-                className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
+                className="p-4 rounded-lg bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] border border-white/10 hover:border-cyan-400/30 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
                 onClick={() => setSelectedStorageLocation('Congélateur 2')}
-                style={{
-                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
-                  boxShadow: "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px"
-                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-md bg-cyan-500/20 flex items-center justify-center mr-3">
-                      <Thermometer size={18} className="text-cyan-400" />
+                    <div className="w-8 h-8 rounded-md bg-cyan-500/20 flex items-center justify-center mr-3 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]">
+                      <Thermometer size={18} className="text-cyan-400" aria-hidden="true" />
                     </div>
-                    <h3 className="text-white font-medium">Congélateur 2</h3>
+                    <h3 className="text-xl font-medium bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">Congélateur 2</h3>
                   </div>
-                  <div className="bg-cyan-500/20 text-cyan-400 text-xs px-2 py-1 rounded-full">
+                  <div className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm border border-white/10 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]">
                     Congélateur
                   </div>
                 </div>
@@ -578,10 +585,10 @@ export const InventoryPage: React.FC = () => {
                     <span className="text-white/60">Occupation</span>
                     <span className="text-white">40%</span>
                   </div>
-                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2">
-                    <div className="bg-cyan-400 h-full rounded-full" style={{ width: '40%' }}></div>
+                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2 shadow-[0_2px_4px_rgba(0,0,0,0.2)_inset]">
+                    <div className="bg-cyan-400 h-full rounded-full shadow-[0_0_10px_rgba(0,210,200,0.3)]" style={{ width: '40%' }}></div>
                   </div>
-                  <div className="hidden group-hover:block mt-3">
+                  <div className="mt-3">
                     <p className="text-xs text-white/70 italic">Cliquez pour voir les produits stockés</p>
                   </div>
                 </div>
@@ -589,21 +596,17 @@ export const InventoryPage: React.FC = () => {
 
               {/* Remise */}
               <div 
-                className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
+                className="p-4 rounded-lg bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] border border-white/10 hover:border-cyan-400/30 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
                 onClick={() => setSelectedStorageLocation('Remise')}
-                style={{
-                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
-                  boxShadow: "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px"
-                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-md bg-amber-500/20 flex items-center justify-center mr-3">
-                      <Package size={18} className="text-amber-400" />
+                    <div className="w-8 h-8 rounded-md bg-amber-500/20 flex items-center justify-center mr-3 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]">
+                      <Package size={18} className="text-amber-400" aria-hidden="true" />
                     </div>
-                    <h3 className="text-white font-medium">Remise</h3>
+                    <h3 className="text-xl font-medium bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">Remise</h3>
                   </div>
-                  <div className="bg-amber-500/20 text-amber-400 text-xs px-2 py-1 rounded-full">
+                  <div className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-sm border border-white/10 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]">
                     Remise
                   </div>
                 </div>
@@ -616,10 +619,10 @@ export const InventoryPage: React.FC = () => {
                     <span className="text-white/60">Occupation</span>
                     <span className="text-white">55%</span>
                   </div>
-                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2">
-                    <div className="bg-amber-400 h-full rounded-full" style={{ width: '55%' }}></div>
+                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2 shadow-[0_2px_4px_rgba(0,0,0,0.2)_inset]">
+                    <div className="bg-amber-400 h-full rounded-full shadow-[0_0_10px_rgba(0,210,200,0.3)]" style={{ width: '55%' }}></div>
                   </div>
-                  <div className="hidden group-hover:block mt-3">
+                  <div className="mt-3">
                     <p className="text-xs text-white/70 italic">Cliquez pour voir les produits stockés</p>
                   </div>
                 </div>
@@ -627,21 +630,17 @@ export const InventoryPage: React.FC = () => {
 
               {/* Cave */}
               <div 
-                className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
+                className="p-4 rounded-lg bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] border border-white/10 hover:border-cyan-400/30 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
                 onClick={() => setSelectedStorageLocation('Cave')}
-                style={{
-                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%)",
-                  boxShadow: "rgba(0, 0, 0, 0.25) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px inset, rgba(0, 0, 0, 0.3) 0px 2px 5px inset, rgba(255, 255, 255, 0.1) 0px 0px 10px"
-                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-md bg-purple-500/20 flex items-center justify-center mr-3">
-                      <Map size={18} className="text-purple-400" />
+                    <div className="w-8 h-8 rounded-md bg-purple-500/20 flex items-center justify-center mr-3 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]">
+                      <Map size={18} className="text-purple-400" aria-hidden="true" />
                     </div>
-                    <h3 className="text-white font-medium">Cave</h3>
+                    <h3 className="text-xl font-medium bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">Cave</h3>
                   </div>
-                  <div className="bg-purple-500/20 text-purple-400 text-xs px-2 py-1 rounded-full">
+                  <div className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-sm border border-white/10 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]">
                     Remise
                   </div>
                 </div>
@@ -654,10 +653,10 @@ export const InventoryPage: React.FC = () => {
                     <span className="text-white/60">Occupation</span>
                     <span className="text-white">25%</span>
                   </div>
-                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2">
-                    <div className="bg-purple-400 h-full rounded-full" style={{ width: '25%' }}></div>
+                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-2 shadow-[0_2px_4px_rgba(0,0,0,0.2)_inset]">
+                    <div className="bg-purple-400 h-full rounded-full shadow-[0_0_10px_rgba(0,210,200,0.3)]" style={{ width: '25%' }}></div>
                   </div>
-                  <div className="hidden group-hover:block mt-3">
+                  <div className="mt-3">
                     <p className="text-xs text-white/70 italic">Cliquez pour voir les produits stockés</p>
                   </div>
                 </div>
@@ -671,6 +670,10 @@ export const InventoryPage: React.FC = () => {
         <TableDetail
           table={selectedTable}
           onClose={() => setSelectedTable(null)}
+          onTableUpdate={(updatedTable) => {
+            // Implement table update logic here
+            console.log('Table updated:', updatedTable);
+          }}
         />
       )}
 
@@ -692,6 +695,11 @@ export const InventoryPage: React.FC = () => {
         <InventoryFilters
           isOpen={showFilters}
           onClose={() => setShowFilters(false)}
+          onApplyFilters={(filters) => {
+            // Implement filter logic here
+            console.log('Filters applied:', filters);
+            setShowFilters(false);
+          }}
         />
       )}
 
@@ -1263,14 +1271,16 @@ export const InventoryPage: React.FC = () => {
         </Modal>
       )}
 
-      {/* Loading overlay for refresh */}
-      {isRefreshing && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white/5 rounded-full p-4">
-            <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
-          </div>
-        </div>
-      )}
+      {/* Drawer with correct event handlers */}
+      <div
+        ref={drawerRef}
+        className="fixed inset-y-0 right-0 w-full md:w-96 bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.9)] backdrop-filter backdrop-blur-[20px] shadow-2xl transform transition-transform duration-300 z-50"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Drawer content */}
+      </div>
     </div>
   );
 }

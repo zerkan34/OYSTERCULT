@@ -11,23 +11,31 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(145deg, rgba(10, 20, 30, 0.6) 0%, rgba(20, 40, 60, 0.6) 100%);
-  border: none;
-  border-radius: 1.25rem;
+  background: linear-gradient(to bottom right, rgba(15,23,42,0.3), rgba(20,100,100,0.3));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
   overflow: hidden;
   position: relative;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   box-shadow: 
-    0 10px 30px -10px rgba(0, 0, 0, 0.5),
-    0 20px 25px -5px rgba(0, 0, 0, 0.3);
-  will-change: transform;
+    rgba(0,0,0,0.2) 0px 10px 20px -5px,
+    rgba(0,150,255,0.1) 0px 8px 16px -8px,
+    rgba(255,255,255,0.07) 0px -1px 2px 0px inset,
+    rgba(0,65,255,0.05) 0px 0px 8px inset,
+    rgba(0,0,0,0.05) 0px 0px 1px inset;
+  transition: all 0.3s ease;
+  transform: translate3d(0,0,0);
+  will-change: transform, box-shadow;
 }
 
 .task-card:hover {
+  border-color: rgba(34, 211, 238, 0.3);
   box-shadow: 
-    0 15px 30px -12px rgba(0, 0, 0, 0.5),
-    0 25px 30px -8px rgba(0, 0, 0, 0.3);
+    0 6px 15px rgba(0,0,0,0.3),
+    0 0 20px rgba(0,210,200,0.25),
+    0 0 5px rgba(0,0,0,0.2) inset;
+  transform: translateY(-4px);
 }
 
 /* En-tête de carte avec barre latérale colorée */
@@ -37,7 +45,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 1;
 }
 
@@ -95,13 +103,23 @@
   border-radius: 1rem;
   font-size: 0.75rem;
   font-weight: 500;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    rgba(0, 0, 0, 0.2) 0px 4px 8px -2px, 
-    rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
-  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
-  background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 
+    rgba(0, 0, 0, 0.2) 0px 4px 10px -2px,
+    rgba(0, 150, 255, 0.1) 0px 2px 4px -1px,
+    rgba(255, 255, 255, 0.05) 0px -1px 2px 0px inset;
+  transition: all 0.3s ease;
+}
+
+.priority-badge:hover, .status-badge:hover {
+  border-color: rgba(34, 211, 238, 0.3);
+  box-shadow: 
+    rgba(0, 0, 0, 0.25) 0px 6px 12px -2px,
+    rgba(0, 210, 200, 0.2) 0px 0px 15px,
+    rgba(0, 0, 0, 0.1) 0px 0px 5px inset;
+  transform: translateY(-1px);
 }
 
 /* Corps de la carte */
@@ -125,6 +143,12 @@
 
 /* Description de la tâche */
 .task-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.75);
   margin-bottom: 1rem;
@@ -396,7 +420,6 @@
   .task-description {
     font-size: 0.8rem;
     margin-bottom: 0.75rem;
-    -webkit-line-clamp: 2;
   }
 
   .task-metadata-grid {
