@@ -243,6 +243,25 @@ export const InventoryPage: React.FC = () => {
     }
   };
 
+  const getTabIcon = (tab: TabType) => {
+    switch (tab) {
+      case 'tables':
+        return <Package size={20} className="text-cyan-400" aria-hidden="true" />;
+      case 'trempe':
+        return <Droplets size={20} className="text-cyan-400" aria-hidden="true" />;
+      case 'pools':
+        return <AlertTriangle size={20} className="text-cyan-400" aria-hidden="true" />;
+      case 'autres':
+        return <Map size={20} className="text-cyan-400" aria-hidden="true" />;
+      case 'achats':
+        return <ShoppingCart size={20} className="text-cyan-400" aria-hidden="true" />;
+      case 'charges':
+        return <DollarSign size={20} className="text-cyan-400" aria-hidden="true" />;
+      default:
+        return <Package size={20} className="text-cyan-400" aria-hidden="true" />;
+    }
+  };
+
   const [showNewChargeModal, setShowNewChargeModal] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
@@ -297,10 +316,11 @@ export const InventoryPage: React.FC = () => {
       ref={pageRef} 
       className="p-6 space-y-6"
     >
+      {/* 1. Titre Inventaire */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center mb-8"
+        className="flex items-center mb-12 -ml-[10px] w-[calc(100%+40px)]"
       >
         <div className="relative mr-4">
           <div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,128,128,0.9)] to-[rgba(0,160,160,0.7)] blur-xl opacity-70 rounded-full" />
@@ -312,130 +332,170 @@ export const InventoryPage: React.FC = () => {
           Inventaire
         </h1>
       </motion.div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">{getTitleByTab()}</h1>
-        <div className="flex items-center space-x-3">
-          {/* Bouton Nouveau Lot supprimé */}
-        </div>
-      </div>
 
-      <div className="flex items-center space-x-4 border-b border-white/10">
-        <button
-          onClick={() => setActiveTab('tables')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
-            activeTab === 'tables'
-              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
-              : 'text-white/60 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <Package size={16} aria-hidden="true" />
-          Tables
-        </button>
-        <button
-          onClick={() => setActiveTab('trempe')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
-            activeTab === 'trempe'
-              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
-              : 'text-white/60 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <Droplets size={16} aria-hidden="true" />
-          Tables de trempe
-        </button>
-        <button
-          onClick={() => setActiveTab('pools')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
-            activeTab === 'pools'
-              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
-              : 'text-white/60 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <AlertTriangle size={16} aria-hidden="true" />
-          Bassins
-        </button>
-        <button
-          onClick={() => setActiveTab('autres')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
-            activeTab === 'autres'
-              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
-              : 'text-white/60 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <Map size={16} aria-hidden="true" />
-          Autres emplacements
-        </button>
-        <button
-          onClick={() => setActiveTab('achats')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
-            activeTab === 'achats'
-              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
-              : 'text-white/60 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <ShoppingCart size={16} aria-hidden="true" />
-          Achats
-        </button>
-        <button
-          onClick={() => setActiveTab('charges')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
-            activeTab === 'charges'
-              ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
-              : 'text-white/60 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <DollarSign size={16} aria-hidden="true" />
-          Charges
-        </button>
-      </div>
+      {/* Conteneur pour les onglets et la recherche */}
+      <div className="mb-10 -ml-[10px] w-[calc(100%+40px)]">
+        <div className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] px-8 py-7 rounded-lg border border-white/10 hover:border-white/20 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px]">
+          {/* 2. Navigation par onglets */}
+          <div className="flex items-center space-x-4 border-b border-white/10 mb-7">
+            <button
+              onClick={() => setActiveTab('tables')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
+                activeTab === 'tables'
+                  ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Package size={16} aria-hidden="true" />
+              Tables
+            </button>
+            <button
+              onClick={() => setActiveTab('trempe')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
+                activeTab === 'trempe'
+                  ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Droplets size={16} aria-hidden="true" />
+              Tables de trempe
+            </button>
+            <button
+              onClick={() => setActiveTab('pools')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
+                activeTab === 'pools'
+                  ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <AlertTriangle size={16} aria-hidden="true" />
+              Bassins
+            </button>
+            <button
+              onClick={() => setActiveTab('autres')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
+                activeTab === 'autres'
+                  ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Map size={16} aria-hidden="true" />
+              Autres emplacements
+            </button>
+            <button
+              onClick={() => setActiveTab('achats')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
+                activeTab === 'achats'
+                  ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <ShoppingCart size={16} aria-hidden="true" />
+              Achats
+            </button>
+            <button
+              onClick={() => setActiveTab('charges')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${
+                activeTab === 'charges'
+                  ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)]'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <DollarSign size={16} aria-hidden="true" />
+              Charges
+            </button>
+          </div>
 
-      <div className="flex items-center space-x-4">
-        <div className="flex-1 relative">
-          <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" aria-hidden="true" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher..."
-            className="w-full pl-10 pr-4 py-2 bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] border border-white/10 hover:border-cyan-400/30 rounded-lg text-white placeholder-white/40 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300"
-          />
+          {/* 3. Zone de recherche et filtres */}
+          <div className="flex items-center space-x-4">
+            <div className="flex-1 relative flex items-center bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Rechercher..."
+                className="w-full bg-transparent border-none p-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 rounded-lg"
+              />
+            </div>
+            <button 
+              onClick={() => setShowFilters(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
+            >
+              <Filter size={16} aria-hidden="true" />
+              <span>Filtres</span>
+            </button>
+          </div>
         </div>
-        <button 
-          onClick={() => setShowFilters(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 text-white"
-        >
-          <Filter size={20} aria-hidden="true" />
-          Filtres
-        </button>
       </div>
 
       {activeTab === 'tables' && (
-        <OysterTableMap
-          onTableSelect={setSelectedTable}
-          onTableHover={setHoveredTable}
-          onTableUpdate={(table) => {
-            // Implement table update logic here
-            console.log('Table updated:', table);
-          }}
-          hoveredTable={hoveredTable}
-          selectedTable={selectedTable}
-        />
+        <div className="space-y-6">
+          <div className="mb-10 -ml-[10px] w-[calc(100%+40px)] pl-6">
+            <h1 className="inline-flex items-center gap-3 text-2xl font-bold px-4 py-2 rounded-lg bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] border border-white/10 backdrop-filter backdrop-blur-[10px]">
+              {getTabIcon(activeTab)}
+              <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                {getTitleByTab()}
+              </span>
+            </h1>
+          </div>
+          <OysterTableMap
+            onTableSelect={setSelectedTable}
+            onTableHover={setHoveredTable}
+            onTableUpdate={(table) => {
+              // Implement table update logic here
+              console.log('Table updated:', table);
+            }}
+            hoveredTable={hoveredTable}
+            selectedTable={selectedTable}
+          />
+        </div>
       )}
       {activeTab === 'trempe' && (
-        <TrempeTables
-          onTableSelect={(table) => {
-            // Handle trempe table selection
-          }}
-          onTableHover={(table) => {
-            // Handle trempe table hover
-          }}
-          onTableUpdate={(table) => {
-            // Handle trempe table update
-          }}
-        />
+        <div className="space-y-6">
+          <div className="mb-10 -ml-[10px] w-[calc(100%+40px)] pl-6">
+            <h1 className="inline-flex items-center gap-3 text-2xl font-bold px-4 py-2 rounded-lg bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] border border-white/10 backdrop-filter backdrop-blur-[10px]">
+              {getTabIcon(activeTab)}
+              <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                {getTitleByTab()}
+              </span>
+            </h1>
+          </div>
+          <TrempeTables
+            onTableSelect={(table) => {
+              // Handle trempe table selection
+            }}
+            onTableHover={(table) => {
+              // Handle trempe table hover
+            }}
+            onTableUpdate={(table) => {
+              // Handle trempe table update
+            }}
+          />
+        </div>
       )}
-      {activeTab === 'pools' && <PurificationPools />}
+      {activeTab === 'pools' && (
+        <div className="space-y-6">
+          <div className="mb-10 -ml-[10px] w-[calc(100%+40px)] pl-6">
+            <h1 className="inline-flex items-center gap-3 text-2xl font-bold px-4 py-2 rounded-lg bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] border border-white/10 backdrop-filter backdrop-blur-[10px]">
+              {getTabIcon(activeTab)}
+              <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                {getTitleByTab()}
+              </span>
+            </h1>
+          </div>
+          <PurificationPools />
+        </div>
+      )}
       {activeTab === 'autres' && (
         <div className="space-y-6">
+          <div className="mb-10 -ml-[10px] w-[calc(100%+40px)] pl-6">
+            <h1 className="inline-flex items-center gap-3 text-2xl font-bold px-4 py-2 rounded-lg bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] border border-white/10 backdrop-filter backdrop-blur-[10px]">
+              {getTabIcon(activeTab)}
+              <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                {getTitleByTab()}
+              </span>
+            </h1>
+          </div>
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-medium text-white">Lieux de stockage alternatifs</h2>
             <button
@@ -1270,17 +1330,6 @@ export const InventoryPage: React.FC = () => {
           </div>
         </Modal>
       )}
-
-      {/* Drawer with correct event handlers */}
-      <div
-        ref={drawerRef}
-        className="fixed inset-y-0 right-0 w-full md:w-96 bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.9)] backdrop-filter backdrop-blur-[20px] shadow-2xl transform transition-transform duration-300 z-50"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* Drawer content */}
-      </div>
     </div>
   );
 }
