@@ -67,7 +67,7 @@ export function TableDetailModal({ table, onClose }: TableDetailModalProps) {
   return (
     <motion.div
       {...modalAnimation.overlay}
-      className="absolute inset-0 flex items-center justify-center p-4 bg-black/50"
+      className="fixed inset-0 flex items-center justify-center bg-black/20 backdrop-blur-lg"
       style={{ zIndex: 100 }}
       onClick={onClose}
     >
@@ -75,9 +75,9 @@ export function TableDetailModal({ table, onClose }: TableDetailModalProps) {
         ref={modalRef}
         {...modalAnimation.content}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-3xl rounded-2xl shadow-2xl border border-white/10 backdrop-blur-sm"
+        className="w-full max-w-3xl mx-auto my-4 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-sm"
         style={{
-          background: "rgba(var(--color-brand-dark), 0.3)",
+          background: "linear-gradient(135deg, rgba(10, 30, 50, 0.95) 0%, rgba(20, 100, 100, 0.85) 100%)",
           WebkitBackdropFilter: "blur(16px)",
           backdropFilter: "blur(16px)",
           border: "1px solid rgba(255, 255, 255, 0.1)",
@@ -90,7 +90,7 @@ export function TableDetailModal({ table, onClose }: TableDetailModalProps) {
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-white">{table.name}</h2>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">{table.name}</h2>
               <p className="text-white/60">{table.type}</p>
             </div>
             <button 

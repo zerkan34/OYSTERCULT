@@ -181,7 +181,7 @@ export function PoolDetailModal({ pool, onClose }: PoolDetailModalProps) {
   return (
     <motion.div
       {...modalAnimation.overlay}
-      className="absolute inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 flex items-center justify-center bg-black/20 backdrop-blur-lg z-50"
       style={{ 
         WebkitBackdropFilter: "blur(10px)",
         backdropFilter: "blur(10px)",
@@ -190,17 +190,21 @@ export function PoolDetailModal({ pool, onClose }: PoolDetailModalProps) {
       <motion.div
         ref={modalRef}
         {...modalAnimation.content}
-        className="w-full max-w-3xl rounded-xl bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-md p-0 shadow-2xl border border-white/10"
+        className="w-full max-w-3xl mx-auto my-4 rounded-xl shadow-2xl border border-white/10"
         style={{
-          WebkitBackdropFilter: "blur(10px)",
-          backdropFilter: "blur(10px)",
+          background: "linear-gradient(135deg, rgba(10, 30, 50, 0.95) 0%, rgba(20, 100, 100, 0.85) 100%)",
+          WebkitBackdropFilter: "blur(16px)",
+          backdropFilter: "blur(16px)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          transition: "border-color 0.2s ease",
+          willChange: "transform, border-color",
           boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2), 0 -1px 2px 0 rgba(255, 255, 255, 0.05) inset"
         }}
       >
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-white">{pool.name}</h2>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">{pool.name}</h2>
               <p className="text-white/60">Bassin de purification</p>
             </div>
             <button
