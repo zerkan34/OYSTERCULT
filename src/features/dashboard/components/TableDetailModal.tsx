@@ -56,6 +56,11 @@ const modalAnimation = {
       opacity: 0, 
       transform: "translateY(30px)"
     }
+  },
+  item: {
+    initial: { opacity: 0, transform: "translateY(10px)" },
+    animate: { opacity: 1, transform: "translateY(0)" },
+    transition: { duration: 0.5, delay: 0.4 }
   }
 };
 
@@ -108,18 +113,25 @@ export function TableDetailModal({ table, onClose }: TableDetailModalProps) {
           {/* Visualisation de progression avancée - Seulement si nous avons des données de taille */}
           {table.currentSize && table.targetSize && (
             <motion.div 
-              initial={{ opacity: 0, transform: "translateY(10px)" }}
-              animate={{ opacity: 1, transform: "translateY(0)" }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="glass-effect rounded-xl p-6 space-y-4"
+              variants={modalAnimation.item}
+              initial="initial"
+              animate="animate"
+              whileHover={{ 
+                scale: 1.02,
+                boxShadow: "0 0 20px rgba(56, 189, 248, 0.3), 0 0 40px rgba(56, 189, 248, 0.1)",
+                transition: { duration: 0.2 }
+              }}
+              className="relative overflow-hidden rounded-xl border border-white/10 p-6 transition-all duration-200"
+              style={{
+                background: "linear-gradient(135deg, rgba(25, 45, 65, 0.5) 0%, rgba(15, 35, 55, 0.7) 100%)",
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(56, 189, 248, 0.1), 0 0 2px rgba(56, 189, 248, 0.2)",
+                transform: "translateZ(0)",
+              }}
             >
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-white flex items-center">
-                  <LineChart size={18} className="mr-2 text-blue-400" />
-                  Progression du calibre
-                </h3>
-              </div>
-              
+              <div className="absolute inset-0 bg-gradient-to-r from-sky-500/10 to-cyan-500/10 opacity-50"></div>
+              <h3 className="text-lg font-semibold text-white mb-4 relative">Progression du calibre</h3>
               {/* Visualisation interactive de progression */}
               <div className="relative py-6">
                 <div className="absolute top-1/2 left-0 w-full h-0.5 bg-white/10"></div>
@@ -204,15 +216,25 @@ export function TableDetailModal({ table, onClose }: TableDetailModalProps) {
 
           {/* État global de la table */}
           <motion.div 
-            initial={{ opacity: 0, transform: "translateY(10px)" }}
-            animate={{ opacity: 1, transform: "translateY(0)" }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="glass-effect rounded-xl p-6"
+            variants={modalAnimation.item}
+            initial="initial"
+            animate="animate"
+            whileHover={{ 
+              scale: 1.02,
+              boxShadow: "0 0 20px rgba(56, 189, 248, 0.3), 0 0 40px rgba(56, 189, 248, 0.1)",
+              transition: { duration: 0.2 }
+            }}
+            className="relative overflow-hidden rounded-xl border border-white/10 p-6 transition-all duration-200"
+            style={{
+              background: "linear-gradient(135deg, rgba(25, 45, 65, 0.5) 0%, rgba(15, 35, 55, 0.7) 100%)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(56, 189, 248, 0.1), 0 0 2px rgba(56, 189, 248, 0.2)",
+              transform: "translateZ(0)",
+            }}
           >
-            <h3 className="text-lg font-medium text-white flex items-center">
-              <Waves size={18} className="mr-2 text-blue-400" />
-              État global de la table
-            </h3>
+            <div className="absolute inset-0 bg-gradient-to-r from-sky-500/10 to-cyan-500/10 opacity-50"></div>
+            <h3 className="text-lg font-semibold text-white mb-4 relative">État global de la table</h3>
             
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Graphique du remplissage en cercle */}
