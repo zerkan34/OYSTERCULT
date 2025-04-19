@@ -33,7 +33,8 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     {
       label: 'COMMERCIAL',
       items: [
-        { icon: Network, label: 'Commandes', href: '/orders' },
+        { icon: Network, label: 'Achats', href: '/orders' },
+        { icon: FileText, label: 'Commandes', href: '/commandes' },
         { icon: FileText, label: 'Factures', href: '/invoices' },
       ],
     },
