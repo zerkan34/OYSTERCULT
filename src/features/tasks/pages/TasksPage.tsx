@@ -12,6 +12,7 @@ import { fr } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import '../components/modals.css';
+// import { LotsEnCoursPanel } from '@/components/ui/LotsEnCoursPanel';
 
 // Définition du type Task pour la page
 interface Task {
@@ -103,6 +104,7 @@ export function TasksPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTable, setSelectedTable] = useState<any | null>(null);
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
+  // const [showLotsPanel, setShowLotsPanel] = useState(true);
   const { session } = useStore();
   const isAdmin = session?.user?.role === 'admin';
 
@@ -137,7 +139,7 @@ export function TasksPage() {
   const highPriorityTasks = exampleTasks.filter(task => task.priority === 'high').length;
 
   return (
-    <div className="task-page-wrapper">
+    <div className="relative">
       {/* Premier conteneur: En-tête et statistiques */}
       <div className="bg-gradient-to-br from-[rgb(15,23,42)] to-[rgb(20,100,100)] p-4 sm:p-6 rounded-lg shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] border border-white/10 hover:border-white/20 transition-all duration-300 mb-6 task-page-header">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 task-page-header">
@@ -339,6 +341,9 @@ export function TasksPage() {
           </button>
         </div>
       </div>
+
+      {/* Ajout du panel */}
+      {/* {showLotsPanel && <LotsEnCoursPanel />} */}
 
       {/* Modal pour afficher les détails de la table */}
       <AnimatePresence>

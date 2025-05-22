@@ -65,8 +65,8 @@ export const OnboardingFlow: React.FC = () => {
           <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
         </button>
       )}
-      {/* Flèche suivant si on est revenu en arrière */}
-      {step < maxStepReached && step < 6 && (
+      {/* Flèche suivant si on est revenu en arrière (pas sur la première étape) */}
+      {step > 0 && step < maxStepReached && step < 6 && (
         <button
           className="absolute top-8 right-8 z-20 flex items-center gap-2 text-cyan-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 bg-white/10 rounded-full p-2 shadow"
           onClick={() => setStep(step + 1)}
@@ -75,7 +75,7 @@ export const OnboardingFlow: React.FC = () => {
           <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevron-right" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       )}
-      {step === 0 && <SlideQuestion onSelect={handleZone} />}
+      {step === 0 && <SlideQuestion onSelect={handleZone} onSkip={() => navigate('/dashboard')} />}
       {step === 1 && (
         <div
           className="flex flex-col items-center justify-center min-h-[440px] py-1.5 px-12 border border-white/10 rounded-lg relative w-full max-w-5xl mx-auto animate-fade-in"

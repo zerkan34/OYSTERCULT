@@ -1,0 +1,46 @@
+/* Styles personnalisés pour les barres de défilement */
+
+/* Barre de défilement pour WebKit (Chrome, Safari, etc.) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.3);
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 189, 248, 0.5);
+  background-clip: padding-box;
+}
+
+/* Masquer les barres de défilement tout en permettant le défilement */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE et Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari et Opera */
+}
+
+/* Activer le défilement fluide sur iOS */
+.ios-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Support des préférences de mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(56, 189, 248, 0.3);
+  }
+}

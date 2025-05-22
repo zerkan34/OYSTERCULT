@@ -9,7 +9,11 @@ import { useClickOutside } from '@/lib/hooks';
 interface TaskDetailModalProps {
   task: Task;
   onClose: () => void;
+  onEdit?: (task: Task) => void;
 }
+
+// Define a type for the comment author which can be either a string or an object with a name property
+type CommentAuthor = string | { name: string; [key: string]: any };
 
 const modalAnimation = {
   overlay: {
@@ -213,8 +217,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose 
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white font-medium text-sm">
                         {typeof comment.author === 'string' 
                           ? comment.author.substring(0, 1) 
-                          : typeof comment.author === 'object' && comment.author !== null && comment.author.name 
-                            ? comment.author.name.substring(0, 1) 
+                          : typeof comment.author === 'object' && comment.author !== null && 'name' in comment.author 
+                            ? (comment.author as { name: string }).name.substring(0, 1) 
                             : '?'}
                       </div>
                     </div>
@@ -223,8 +227,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose 
                         <p className="text-sm font-medium text-white">
                           {typeof comment.author === 'string' 
                             ? comment.author 
-                            : typeof comment.author === 'object' && comment.author !== null && comment.author.name
-                              ? comment.author.name
+                            : typeof comment.author === 'object' && comment.author !== null && 'name' in comment.author
+                              ? (comment.author as { name: string }).name
                               : 'Utilisateur'}
                         </p>
                         <p className="text-xs text-white/40">

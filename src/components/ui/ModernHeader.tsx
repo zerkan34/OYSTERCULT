@@ -4,10 +4,10 @@ import { useStore } from '@/lib/store';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { OysterLogo } from './OysterLogo';
 import { modalAnimation, glassEffectStyle, ProgressBar } from './CommonStyles';
-import { UserCircle } from 'lucide-react';
+import { UserCircle, Waves, Boxes } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
-import { Waves } from 'lucide-react';
 import { Countdown } from './Countdown';
+import { LotsEnCoursModal } from './LotsEnCoursModal';
 
 interface ModernHeaderProps {
   onShowMobileMenu: () => void;
@@ -30,6 +30,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const [previousPath, setPreviousPath] = useState<string>('/dashboard');
+  const [isLotsModalOpen, setIsLotsModalOpen] = useState(false);
 
   // Mettre à jour le chemin précédent quand on change de page
   useEffect(() => {
@@ -55,6 +56,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
   };
 
   return (
+    <>
     <div className="fixed top-0 left-0 right-0 z-50">
       <div
         className="absolute inset-0 flex items-center justify-between px-4 md:px-6 lg:px-8 w-full transition-all duration-300"
@@ -185,6 +187,25 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
 
             {/* Boutons de notifications et messagerie */}
             <div className="flex items-center space-x-4 ml-4">
+              {/* Bouton Lots en Cours */}
+              <button 
+                className="
+                  inline-flex items-center justify-center font-medium rounded-lg transition-all
+                  text-white hover:text-white hover:bg-white/20
+                  p-3 relative group
+                  will-change-transform
+                  shadow-[0_0_15px_rgba(255,255,255,0.3)]
+                  border border-white/30 bg-white/10
+                  min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40
+                "
+                onClick={() => setIsLotsModalOpen(true)}
+                aria-label="Lots en cours"
+                title="Lots en cours"
+                style={{ transform: 'translate3d(0,0,0)' }}
+              >
+                <div className="absolute inset-0 bg-white/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <Boxes className="w-6 h-6 text-cyan-400 group-hover:text-cyan-300 transition-colors duration-200" aria-hidden="true" />
+              </button>
               <button 
                 className="
                   inline-flex items-center justify-center font-medium rounded-lg transition-all
@@ -259,5 +280,15 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
         </div>
       </div>
     </div>
+    
+    {/* Modal Lots en Cours */}
+    <LotsEnCoursModal
+      isOpen={isLotsModalOpen}
+      onClose={() => setIsLotsModalOpen(false)}
+      onMarkAsRead={(id) => console.log('Marquer comme lu:', id)}
+      onMarkAllAsRead={() => console.log('Tout marquer comme lu')}
+      onToggleImportant={(id) => console.log('Marquer comme important:', id)}
+    />
+    </>
   );
 };

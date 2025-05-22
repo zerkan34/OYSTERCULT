@@ -37,6 +37,7 @@ import {
   PieChart
 } from 'lucide-react';
 import { Modal } from './Modal';
+import LotsEnCoursPanel from './LotsEnCoursPanel';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -201,10 +202,11 @@ interface LotItemProps {
   selectedLotId: string | null;
   setSelectedLotId: (id: string | null) => void;
   onOpenValidationModal: (lot: Lot) => void;
+  onOpenInfoModal: (lot: Lot) => void;
 }
 
 const LotItem = React.forwardRef<HTMLDivElement, LotItemProps>((props, ref) => {
-  const { lot, onMarkAsRead, onToggleImportant, selectedLotId, setSelectedLotId, onOpenValidationModal } = props;
+  const { lot, onMarkAsRead, onToggleImportant, selectedLotId, setSelectedLotId, onOpenValidationModal, onOpenInfoModal } = props;
   const { icon: StatusIcon, color: statusColor, textColor, bgColor, label: statusLabel } = getStatusInfo(lot.statut);
   const isSelected = selectedLotId === lot.id;
   const formattedDate = lot.datePrevue 
@@ -215,8 +217,8 @@ const LotItem = React.forwardRef<HTMLDivElement, LotItemProps>((props, ref) => {
     if (!lot.read) {
       onMarkAsRead(lot.id);
     }
-    // Ouvrir le modal de validation
-    onOpenValidationModal(lot);
+    // Ouvrir le modal d'information détaillé quand on clique sur le lot
+    onOpenInfoModal(lot);
   };
 
   return (
@@ -293,7 +295,15 @@ const LotItem = React.forwardRef<HTMLDivElement, LotItemProps>((props, ref) => {
             <div className="grid grid-cols-2 gap-4 text-sm w-full">
               {/* Origine (sans préfixe "Naissain") */}
               {lot.metadata?.naissain && (
-                <div className="flex items-center bg-white/5 rounded-lg p-3 border border-white/10 hover:border-cyan-400/20 transition-colors duration-300">
+                <div 
+                  className="flex items-center bg-white/5 rounded-lg p-3 border border-white/10 hover:border-cyan-400/20 transition-colors duration-300 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Empêcher la propagation du clic au parent
+                    // Ne rien faire ici car le handleItemClick du parent va s'occuper d'ouvrir le modal
+                  }}
+                  role="button"
+                  aria-label={`Voir les détails de l'origine: ${lot.metadata.naissain}`}
+                >
                   <MapPin className="w-4 h-4 mr-3 text-cyan-400 flex-shrink-0" aria-hidden="true" />
                   <span className="truncate" title={`Origine: ${lot.metadata.naissain}`}>{lot.metadata.naissain}</span>
                 </div>
@@ -301,14 +311,30 @@ const LotItem = React.forwardRef<HTMLDivElement, LotItemProps>((props, ref) => {
 
               {/* Contenant (cordes) avec icône adaptée */}
               {lot.metadata?.contenant && (
-                <div className="flex items-center bg-white/5 rounded-lg p-3 border border-white/10 hover:border-cyan-400/20 transition-colors duration-300">
+                <div 
+                  className="flex items-center bg-white/5 rounded-lg p-3 border border-white/10 hover:border-cyan-400/20 transition-colors duration-300 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Empêcher la propagation du clic au parent
+                    // Ne rien faire ici car le handleItemClick du parent va s'occuper d'ouvrir le modal
+                  }}
+                  role="button"
+                  aria-label={`Voir les détails du contenant: ${lot.metadata.contenant}`}
+                >
                   <ArrowRight className="w-4 h-4 mr-3 text-cyan-400 flex-shrink-0" aria-hidden="true" />
                   <span className="truncate" title={`${lot.metadata.contenant}`}>{lot.metadata.contenant}</span>
                 </div>
               )}
               
               {/* Numéro de lot - Troisième élément */}
-              <div className="flex items-center bg-white/5 rounded-lg p-3 border border-white/10 hover:border-cyan-400/20 transition-colors duration-300">
+              <div 
+                className="flex items-center bg-white/5 rounded-lg p-3 border border-white/10 hover:border-cyan-400/20 transition-colors duration-300 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation(); // Empêcher la propagation du clic au parent
+                  // Ne rien faire ici car le handleItemClick du parent va s'occuper d'ouvrir le modal
+                }}
+                role="button"
+                aria-label={`Voir les détails du lot: ${lot.numeroLot}`}
+              >
                 <Info className="w-4 h-4 mr-3 text-cyan-400 flex-shrink-0" aria-hidden="true" />
                 <span className="truncate" title={`${lot.numeroLot}`}>{lot.numeroLot}</span>
               </div>
@@ -387,16 +413,44 @@ export const LotsEnCoursModal: React.FC<LotsEnCoursModalProps> = ({
   const [showSearch, setShowSearch] = useState(false);
   const [selectedLotId, setSelectedLotId] = useState<string | null>(null);
   const [showValidationModal, setShowValidationModal] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
   const [lotToValidate, setLotToValidate] = useState<Lot | null>(null);
-  const [confirmationStep, setConfirmationStep] = useState(1); // 1 = initial, 2 = confirmation
+  const [lotToShow, setLotToShow] = useState<Lot | null>(null);
+  const [estimationRemplissage, setEstimationRemplissage] = useState<number | undefined>();
+  const [confirmationStep, setConfirmationStep] = useState(1);
+  const [showFlash, setShowFlash] = useState(false);
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [successMessage, setSuccessMessage] = useState({ title: '', message: '' });
+
+  // Aucune référence ou gestionnaire de clic ici - nous laissons simplement les modals ouverts jusqu'à ce qu'on clique sur le bouton de fermeture X
+  
+  // Réinitialiser les états des modals à chaque ouverture/fermeture du panel principal
+  useEffect(() => {
+    if (!isOpen) {
+      // Réinitialiser les états des modals lorsque le panel principal est fermé
+      setShowValidationModal(false);
+      setShowInfoModal(false);
+      setLotToValidate(null);
+      setLotToShow(null);
+      setConfirmationStep(1);
+    }
+  }, [isOpen]);
 
   const lotsEnCoursCount = useMemo(() => {
     return lots.filter(lot => !lot.read && STATUTS_EN_COURS.includes(lot.statut)).length;
   }, [lots]);
   
+  // Fonction pour ouvrir le modal d'information détaillé
+  const openInfoModal = (lot: Lot) => {
+    setLotToShow(lot);
+    setShowInfoModal(true);
+  };
+  
   // Fonction pour ouvrir le modal de validation
   const openValidationModal = (lot: Lot) => {
     setLotToValidate(lot);
+    setEstimationRemplissage(lot.metadata?.estimationRemplissage);
+    setConfirmationStep(1); // S'assurer que nous démarrons toujours à l'étape 1
     setShowValidationModal(true);
   };
   
@@ -406,10 +460,18 @@ export const LotsEnCoursModal: React.FC<LotsEnCoursModalProps> = ({
     setLotToValidate(null);
   };
   
-  // Fonction pour passer à l'étape de confirmation
+  // Fonction pour passer à l'étape de confirmation avec effet visuel
   const showTransitConfirmation = () => {
     console.log('Passage à l\'étape de confirmation');
-    setConfirmationStep(2);
+    
+    // Activer l'effet de flash
+    setShowFlash(true);
+    
+    // Attendre un court moment puis passer à l'étape suivante
+    setTimeout(() => {
+      setShowFlash(false);
+      setConfirmationStep(2);
+    }, 300);
   };
   
   // Fonction pour revenir à l'étape initiale
@@ -422,18 +484,25 @@ export const LotsEnCoursModal: React.FC<LotsEnCoursModalProps> = ({
   const handleValidateTransit = () => {
     if (!lotToValidate) return;
     
-    // Créer une copie du lot avec le statut mis à jour
+    // Afficher un effet visuel pendant le traitement
+    setShowFlash(true);
+    
+    // Créer une copie du lot avec le statut mis à jour et l'estimation modifiée
     const updatedLot = {
       ...lotToValidate,
       statut: 'TERMINE' as LotStatus,
       read: true, // Marquer comme lu automatiquement
       dernierEvenement: `Arrivé à ${lotToValidate.metadata?.destination || 'destination'}`,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      metadata: {
+        ...lotToValidate.metadata,
+        estimationRemplissage: estimationRemplissage // Utiliser la valeur modifiée
+      }
     };
 
     // Simuler la mise à jour de l'inventaire et de l'historique
     console.log('Lot arrivé à destination:', updatedLot);
-    console.log('Inventaire mis à jour');
+    console.log('Inventaire mis à jour avec l\'estimation:', estimationRemplissage);
     console.log('Historique de traçabilité mis à jour');
     
     // Dans un cas réel, vous appelleriez ici des fonctions pour :
@@ -441,10 +510,22 @@ export const LotsEnCoursModal: React.FC<LotsEnCoursModalProps> = ({
     // 2. Mettre à jour l'inventaire des stocks
     // 3. Ajouter une entrée dans l'historique de traçabilité
     
-    // Afficher une notification de succès (simulée)
+    // Préparer le message de succès avec des informations détaillées
+    const title = "Validation réussie";
+    const message = `Le lot ${lotToValidate.nom} est maintenant enregistré comme arrivé à ${lotToValidate.metadata?.destination || 'destination'} avec une estimation finale de ${estimationRemplissage} ${lotToValidate.metadata?.unite || 'unités'}. L'inventaire et l'historique de traçabilité ont été mis à jour.`;
+    
+    setSuccessMessage({ title, message });
+    
+    // Simuler un temps de traitement puis afficher la notification de succès
     setTimeout(() => {
-      alert(`Arrivée du lot ${lotToValidate.nom} validée avec succès.`);
-    }, 500);
+      setShowFlash(false);
+      setShowSuccessNotification(true);
+      
+      // Fermer automatiquement la notification après quelques secondes
+      setTimeout(() => {
+        setShowSuccessNotification(false);
+      }, 5000);
+    }, 800);
     
     // Réinitialiser l'étape de confirmation et fermer le modal
     setConfirmationStep(1);
@@ -523,7 +604,7 @@ export const LotsEnCoursModal: React.FC<LotsEnCoursModalProps> = ({
   return (
     <>
       <div
-        className="lots-en-cours-panel fixed top-16 bottom-0 right-0 z-50 md:rounded-l-xl flex flex-col focus:outline-none bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-blur-[10px] border border-white/10 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset] focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+        className="lots-en-cours-panel fixed top-16 bottom-0 right-0 z-50 md:rounded-l-xl flex flex-col focus:outline-none bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] border border-white/10 shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset] focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
         role="dialog"
         aria-modal="true"
         aria-labelledby="lots-en-cours-title"
@@ -603,6 +684,7 @@ export const LotsEnCoursModal: React.FC<LotsEnCoursModalProps> = ({
                     selectedLotId={selectedLotId}
                     setSelectedLotId={setSelectedLotId}
                     onOpenValidationModal={openValidationModal}
+                    onOpenInfoModal={openInfoModal}
                   />
                 ))
                : 
@@ -619,10 +701,45 @@ export const LotsEnCoursModal: React.FC<LotsEnCoursModalProps> = ({
           </div>
         </div>
       </div>
+      {/* Effet de flash visuel */}
+      {showFlash && (
+        <div className="fixed inset-0 z-[99999] bg-green-500/10 pointer-events-none animate-pulse" />
+      )}
+      
+      {/* Notification de succès */}
+      {showSuccessNotification && (
+        <div className="fixed bottom-6 right-6 z-[99999] max-w-md transform transition-all duration-500 ease-in-out animate-slideInRight">
+          <div className="bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.95)] backdrop-filter backdrop-blur-[10px] rounded-xl shadow-[rgba(0,0,0,0.4)_0px_10px_30px,rgba(0,150,255,0.2)_0px_0px_20px] border border-green-400/30 p-5 flex items-start gap-4">
+            <div className="rounded-full bg-gradient-to-r from-green-500 to-emerald-500 p-2 flex-shrink-0">
+              <CheckCheck size={24} className="text-white" />
+            </div>
+            <div className="flex-1">
+              <h4 className="text-xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent mb-2">
+                {successMessage.title}
+              </h4>
+              <p className="text-white text-sm">
+                {successMessage.message}
+              </p>
+              <div className="mt-3 flex justify-end">
+                <button 
+                  onClick={() => setShowSuccessNotification(false)}
+                  className="text-white/60 hover:text-white text-sm transition-colors duration-300"
+                >
+                  Fermer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Modal de validation - style exportation de données */}
       {showValidationModal && lotToValidate && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div className="bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.95)] backdrop-filter backdrop-blur-[10px] rounded-xl shadow-[rgba(0,0,0,0.4)_0px_10px_30px,rgba(0,150,255,0.2)_0px_0px_20px] transform-gpu scale-100 border border-white/10 hover:border-white/20 transition-all duration-300 animate-fadeIn overflow-hidden" style={{ position: 'fixed', top: '50%', left: 'calc(50% - 1000px)', transform: 'translate(-50%, -50%)', margin: '0 auto', width: '28.5vw', maxWidth: '600px', maxHeight: '90vh' }}>
+          <div 
+            className={`validation-modal bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.95)] backdrop-filter backdrop-blur-[10px] rounded-xl shadow-[rgba(0,0,0,0.4)_0px_10px_30px,rgba(0,150,255,0.2)_0px_0px_20px] transform-gpu scale-100 border border-white/10 hover:border-white/20 transition-all duration-300 animate-fadeIn overflow-hidden ${confirmationStep === 2 ? 'ring-2 ring-green-500/30' : ''}` } 
+            style={{ position: 'fixed', top: '50%', left: 'calc(50% - 1000px)', transform: 'translate(-50%, -50%)', margin: '0 auto', width: '28.5vw', maxWidth: '600px', maxHeight: '90vh' }}
+          >
             <div className="p-6 pb-0">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Valider l'arrivée du lot</h3>
@@ -635,9 +752,36 @@ export const LotsEnCoursModal: React.FC<LotsEnCoursModalProps> = ({
                 </button>
               </div>
               
-              <p className="text-white mb-6">
+              <p className="text-white mb-4">
                 Voulez-vous confirmer l'arrivée du lot <span className="font-semibold">{lotToValidate.nom}</span> à destination ? Cette action mettra à jour l'inventaire, l'historique et la traçabilité.
               </p>
+              
+              {/* Champ modifiable pour l'estimation de remplissage */}
+              <div className="mb-6 bg-gradient-to-r from-green-500/10 to-green-400/5 rounded-lg p-4 border border-green-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,200,100,0.2)]">
+                <h4 className="text-green-400 font-medium mb-3 flex items-center">
+                  <PercentIcon size={18} className="mr-2" />
+                  Estimation de remplissage
+                </h4>
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <input
+                      type="number"
+                      value={estimationRemplissage || ''}
+                      onChange={(e) => setEstimationRemplissage(e.target.value === '' ? undefined : parseFloat(e.target.value))}
+                      className="w-full bg-white/10 border border-white/20 focus:border-green-400/50 rounded-lg p-3 text-white text-xl font-medium transition-all duration-300 focus:ring-2 focus:ring-green-400/30 focus:outline-none"
+                      placeholder="Entrez l'estimation"
+                    />
+                  </div>
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-3 text-white text-xl min-w-[80px] text-center">
+                    {lotToValidate.metadata?.unite || 'unités'}
+                  </div>
+                </div>
+                
+                <p className="text-white/60 text-sm mt-2">
+                  Valeur initiale: {lotToValidate.metadata?.estimationRemplissage || '-'} {lotToValidate.metadata?.unite || 'unités'}
+                </p>
+              </div>
               
               <div className="bg-cyan-500/10 border border-cyan-400/20 rounded-lg p-4 mb-6">
                 <h4 className="text-cyan-400 font-medium mb-2 flex items-center">
@@ -667,14 +811,14 @@ export const LotsEnCoursModal: React.FC<LotsEnCoursModalProps> = ({
                 <>
                   <button
                     onClick={closeValidationModal}
-                    className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 text-white transition-all duration-300 min-w-[100px]"
+                    className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 text-white transition-all duration-300"
                     aria-label="Annuler la validation"
                   >
                     Annuler
                   </button>
                   <button
                     onClick={showTransitConfirmation}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300 min-w-[100px] font-medium"
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300 font-medium"
                     aria-label="Confirmer l'arrivée du lot"
                   >
                     Confirmer
@@ -685,16 +829,17 @@ export const LotsEnCoursModal: React.FC<LotsEnCoursModalProps> = ({
                 <>
                   <button
                     onClick={cancelConfirmation}
-                    className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 text-white transition-all duration-300 min-w-[100px]"
+                    className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 text-white transition-all duration-300"
                     aria-label="Revenir à l'étape précédente"
                   >
                     Annuler
                   </button>
                   <button
                     onClick={handleValidateTransit}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,200,100,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,200,100,0.25)] transition-all duration-300 min-w-[100px] font-medium animate-pulse"
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,200,100,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,200,100,0.25)] transition-all duration-300 font-medium animate-pulse flex items-center justify-center gap-2"
                     aria-label="Confirmer définitivement l'arrivée du lot"
                   >
+                    <CheckCheck size={18} />
                     Confirmer définitivement
                   </button>
                 </>
@@ -703,7 +848,343 @@ export const LotsEnCoursModal: React.FC<LotsEnCoursModalProps> = ({
           </div>
         </div>
       )}
-      </>
+      {/* Modal d'information détaillé qui ne se ferme QUE par le bouton X */}
+      {showInfoModal && lotToShow && (
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Overlay qui ne réagit pas aux clics */}
+          <div className="absolute inset-0 bg-black/60" onClick={(e) => e.stopPropagation()} />          
+          
+          {/* Contenu du modal */}
+          <div 
+            onClick={(e) => e.stopPropagation()} 
+            className="relative bg-gradient-to-br from-[rgba(15,23,42,0.95)] to-[rgba(20,100,100,0.95)] backdrop-filter backdrop-blur-[10px] rounded-xl shadow-[rgba(0,0,0,0.4)_0px_10px_30px,rgba(0,150,255,0.2)_0px_0px_20px] transform-gpu scale-100 border border-white/10 hover:border-white/20 transition-all duration-300 animate-fadeIn overflow-hidden max-w-4xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar"
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Détails des lots en cours</h3>
+                <button
+                  onClick={() => setShowInfoModal(false)}
+                  className="text-white/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40 rounded-full p-1"
+                  aria-label="Fermer"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              
+              {/* Lot spécifique mis en évidence */}
+              <div className="mb-8 p-5 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-lg border border-cyan-400/30 shadow-[0_4px_15px_rgba(0,0,0,0.25),0_0_20px_rgba(0,210,200,0.2)_inset]">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h4 className="text-xl font-bold text-white mb-2">{lotToShow.nom}</h4>
+                    <div className="flex items-center gap-3">
+                      <div className="px-3 py-1.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-cyan-400/30 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+                        <span className="text-sm font-medium text-cyan-400">En transit</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/5 rounded-md px-3 py-2 border border-white/10">
+                    <Package className="w-5 h-5 text-cyan-400" aria-hidden="true" />
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2 text-base mb-4">
+                  <span className="text-white/70">{lotToShow.metadata?.origine || '-'}</span>
+                  <ArrowRight size={18} className="text-cyan-400" />
+                  <span className="text-cyan-400 font-medium">{lotToShow.metadata?.destination || '-'}</span>
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                    <div className="text-xs text-white/60 mb-1">Origine</div>
+                    <div className="text-base font-medium">{lotToShow.metadata?.naissain || '-'}</div>
+                  </div>
+                  
+                  <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                    <div className="text-xs text-white/60 mb-1">Contenant</div>
+                    <div className="text-base font-medium">{lotToShow.metadata?.contenant || '-'}</div>
+                  </div>
+                  
+                  <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                    <div className="text-xs text-white/60 mb-1">Numéro de lot</div>
+                    <div className="text-base font-medium">{lotToShow.numeroLot}</div>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-green-500/20 to-green-400/10 rounded-lg p-3 border border-green-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,200,100,0.2)]">
+                    <div className="text-xs text-white/70 mb-1">Estimation remplissage</div>
+                    <div className="text-base font-medium">
+                      {lotToShow.metadata?.estimationRemplissage || '-'} <span className="text-green-400">{lotToShow.metadata?.unite || ''}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  {/* Mortalité */}
+                  {lotToShow.metadata?.mortalite !== undefined && (
+                    <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+                      <div className="flex items-center justify-between w-full mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                          <h4 className="text-sm font-medium text-white">Mortalité</h4>
+                        </div>
+                        <span className="text-base font-medium text-green-400">{lotToShow.metadata.mortalite}%</span>
+                      </div>
+                      
+                      <div className="relative h-4 w-full bg-gray-700/50 rounded-md overflow-hidden">
+                        <div 
+                          className="absolute top-0 left-0 h-full bg-green-500"
+                          style={{ width: `${Math.min(lotToShow.metadata.mortalite, 100)}%` }}
+                        ></div>
+                        
+                        {/* Marqueurs de seuil */}
+                        <div className="absolute top-0 bottom-0 left-[10%] w-px bg-white/20"></div>
+                        <div className="absolute top-0 bottom-0 left-[15%] w-px bg-white/20"></div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Date prévue */}
+                  {lotToShow.datePrevue && (
+                    <div className="bg-white/5 p-4 rounded-lg border border-white/10 flex items-center">
+                      <Calendar className="w-6 h-6 mr-3 text-cyan-400" aria-hidden="true" />
+                      <div>
+                        <div className="text-xs text-white/60 mb-1">Date prévue</div>
+                        <div className="text-base font-medium">
+                          {format(new Date(lotToShow.datePrevue), 'd MMM yyyy, HH:mm', { locale: fr })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+
+              </div>
+              
+              {/* Actions pour le lot en cours */}
+              <div className="flex justify-end gap-3 mb-6">
+                <button
+                  onClick={() => {
+                    setShowInfoModal(false);
+                  }}
+                  className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 text-white transition-all duration-300"
+                >
+                  Retour aux lots
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setShowInfoModal(false);
+                    openValidationModal(lotToShow);
+                  }}
+                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300 font-medium"
+                >
+                  Valider l'arrivée
+                </button>
+              </div>
+              
+              {/* Liste de tous les autres lots */}
+              <h4 className="text-lg font-semibold text-white mb-4">Tous les lots en cours</h4>
+              
+              <div className="space-y-6">
+                {/* Premier lot */}
+                <div 
+                  className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 rounded-lg p-4 border border-white/10 hover:border-cyan-400/20 transition-all duration-300 shadow-[0_5px_15px_rgba(0,0,0,0.2)] cursor-pointer"
+                  onClick={() => {
+                    // Simuler un clic sur le lot NORD-101
+                    const lot101 = lots.find(l => l.id === 'n1');
+                    if (lot101) {
+                      setLotToShow(lot101);
+                    }
+                  }}
+                  role="button"
+                  aria-label="Voir les détails du lot NORD-101"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h5 className="text-lg font-medium text-white">Lot Huîtres Triploïdes #NORD-101</h5>
+                    <div className="px-2 py-1 rounded-full bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-cyan-400/30 flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></div>
+                      <span className="text-xs font-medium text-cyan-400">En transit</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-sm mb-3">
+                    <span className="text-white/70">Table B-07 Bouzigues</span>
+                    <ArrowRight size={14} className="text-cyan-400" />
+                    <span className="text-cyan-400 font-medium">Trempe</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-2 text-sm mb-2">
+                    <div>
+                      <span className="text-white/60">Origine:</span>
+                      <span className="text-white ml-1">Charente Maritime</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60">Contenant:</span>
+                      <span className="text-white ml-1">10 cordes</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60">N°:</span>
+                      <span className="text-white ml-1">03-0545</span>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-2 text-sm mb-2">
+                    <div>
+                      <span className="text-white/60">Remplissage:</span>
+                      <span className="text-green-400 ml-1">15 pochons</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60">Mortalité:</span>
+                      <span className="text-green-400 ml-1">16.9%</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60">Date:</span>
+                      <span className="text-white ml-1">2 mai 2025, 11:00</span>
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-white/60 mt-2">Huîtres N°3</div>
+                </div>
+                
+                {/* Deuxième lot */}
+                <div 
+                  className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 rounded-lg p-4 border border-white/10 hover:border-cyan-400/20 transition-all duration-300 shadow-[0_5px_15px_rgba(0,0,0,0.2)] cursor-pointer"
+                  onClick={() => {
+                    // Simuler un clic sur le lot NORD-202
+                    const lot202 = lots.find(l => l.id === 'n2');
+                    if (lot202) {
+                      setLotToShow(lot202);
+                    }
+                  }}
+                  role="button"
+                  aria-label="Voir les détails du lot NORD-202"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h5 className="text-lg font-medium text-white">Lot Huîtres Triploïdes #NORD-202</h5>
+                    <div className="px-2 py-1 rounded-full bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-cyan-400/30 flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></div>
+                      <span className="text-xs font-medium text-cyan-400">En transit</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-sm mb-3">
+                    <span className="text-white/70">Table Nord #128</span>
+                    <ArrowRight size={14} className="text-cyan-400" />
+                    <span className="text-cyan-400 font-medium">Trempe</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-2 text-sm mb-2">
+                    <div>
+                      <span className="text-white/60">Origine:</span>
+                      <span className="text-white ml-1">Arcachon</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60">Contenant:</span>
+                      <span className="text-white ml-1">8 cordes</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60">N°:</span>
+                      <span className="text-white ml-1">03-0782</span>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-2 text-sm mb-2">
+                    <div>
+                      <span className="text-white/60">Remplissage:</span>
+                      <span className="text-green-400 ml-1">12 pochons</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60">Mortalité:</span>
+                      <span className="text-green-400 ml-1">15.7%</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60">Date:</span>
+                      <span className="text-white ml-1">2 mai 2025, 13:00</span>
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-white/60 mt-2">Huîtres N°3</div>
+                </div>
+                
+                {/* Troisième lot */}
+                <div 
+                  className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 rounded-lg p-4 border border-white/10 hover:border-cyan-400/20 transition-all duration-300 shadow-[0_5px_15px_rgba(0,0,0,0.2)] cursor-pointer"
+                  onClick={() => {
+                    // Simuler un clic sur le lot TREMPE-301
+                    const lot301 = lots.find(l => l.id === 't1');
+                    if (lot301) {
+                      setLotToShow(lot301);
+                    }
+                  }}
+                  role="button"
+                  aria-label="Voir les détails du lot TREMPE-301"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h5 className="text-lg font-medium text-white">Lot Huîtres Triploïdes #TREMPE-301</h5>
+                    <div className="px-2 py-1 rounded-full bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-cyan-400/30 flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></div>
+                      <span className="text-xs font-medium text-cyan-400">En transit</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-sm mb-3">
+                    <span className="text-white/70">Trempe</span>
+                    <ArrowRight size={14} className="text-cyan-400" />
+                    <span className="text-cyan-400 font-medium">Bassins</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-2 text-sm mb-2">
+                    <div>
+                      <span className="text-white/60">Origine:</span>
+                      <span className="text-white ml-1">Arcachon</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60">Contenant:</span>
+                      <span className="text-white ml-1">15 Pochons</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60">N°:</span>
+                      <span className="text-white ml-1">03-0614</span>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-2 text-sm mb-2">
+                    <div>
+                      <span className="text-white/60">Remplissage:</span>
+                      <span className="text-green-400 ml-1">130 kg</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60">Mortalité:</span>
+                      <span className="text-green-400 ml-1">24%</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60">Date:</span>
+                      <span className="text-white ml-1">2 mai 2025, 15:00</span>
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-white/60 mt-2">Huîtres N°3</div>
+                </div>
+              </div>
+              
+              {/* Boutons d'action */}
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={() => setShowInfoModal(false)}
+                  className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 text-white transition-all duration-300"
+                >
+                  Fermer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}    
+    </>
   );
 };
 
