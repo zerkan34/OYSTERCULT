@@ -9,7 +9,7 @@ export function Layout() {
 
   return (
     <div 
-      className="min-h-screen"
+      className="flex min-h-screen"
       style={{
         background: "linear-gradient(135deg, rgba(0, 10, 40, 0.97) 0%, rgba(0, 90, 90, 0.95) 100%)",
         WebkitBackdropFilter: "blur(20px)",
@@ -18,7 +18,7 @@ export function Layout() {
     >
       <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
       
-      <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
         <header className="h-20 bg-[rgb(var(--color-brand-surface)_/_var(--glass-opacity))] backdrop-blur-md shadow-[rgba(0,0,0,0.2)_0px_5px_20px_-5px,rgba(0,200,200,0.1)_0px_5px_12px_-5px,rgba(255,255,255,0.07)_0px_-1px_3px_0px_inset,rgba(0,200,200,0.05)_0px_0px_12px_inset,rgba(0,0,0,0.1)_0px_0px_8px_inset]">
           <div className="h-full flex items-center justify-between px-8">
             <div className="flex-1 flex items-center">
@@ -45,7 +45,7 @@ export function Layout() {
           </div>
         </header>
 
-        <main className="p-6">
+        <main className="flex-1 p-6">
           <Outlet />
         </main>
       </div>

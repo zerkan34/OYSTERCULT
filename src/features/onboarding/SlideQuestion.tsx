@@ -91,7 +91,6 @@ export const SlideQuestion: React.FC<SlideQuestionProps> = ({ onSelect, onSkip }
           </div>
           <h2 id="slide-question-title" className="relative text-4xl md:text-5xl font-bold text-transparent bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-center mb-0 whitespace-nowrap animate-gradient-x" style={{ letterSpacing: '0.04em' }}>
             Où se situe votre production&nbsp;?
-            <div className="absolute -inset-x-20 top-1/2 h-px bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent transform -translate-y-1/2" />
           </h2>
           <p className="text-white/70 text-xl md:text-2xl text-center mb-4 max-w-3xl mx-auto whitespace-nowrap bg-gradient-to-r from-white/70 via-cyan-200/50 to-white/70 bg-clip-text">
             Cette information personnalisera votre expérience sur la plateforme.

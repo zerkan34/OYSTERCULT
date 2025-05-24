@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { NewAuthLogo } from '../../../components/ui/NewAuthLogo';
 import { User2, Lock } from 'lucide-react';
 import { OnboardingFlow } from '../../onboarding/OnboardingFlow';
+import { Footer } from '../../../components/ui/Footer';
 import './auth.css';
 import useViewportReset from '../../../hooks/useViewportReset';
 
@@ -63,7 +64,7 @@ export function AuthPage() {
   const logoSize = windowWidth < 431 ? 100 : windowWidth < 480 ? 150 : windowWidth < 768 ? 200 : 350;
 
   return (
-    <div className="auth-page">
+    <div className="auth-page flex flex-col min-h-screen">
       {/* Barre de chargement */}
       <div className="wave-loading" />
 
@@ -72,7 +73,7 @@ export function AuthPage() {
         <div className="wave" />
       </div>
 
-      <div className="auth-content-wrapper">
+      <div className="auth-content-wrapper flex-grow">
         <motion.div
           className="auth-content"
           variants={containerVariants}
@@ -80,7 +81,14 @@ export function AuthPage() {
           animate="visible"
         >
           {/* Logo */}
-          <motion.div variants={itemVariants} className="auth-logo-container">
+          <motion.div 
+            variants={itemVariants} 
+            className="auth-logo-container" 
+            style={{ 
+              transform: 'translateY(30vh)',
+              marginTop: '-20vh'
+            }}
+          >
             <NewAuthLogo size={logoSize} />
           </motion.div>
 
@@ -210,6 +218,7 @@ export function AuthPage() {
           </div>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 }

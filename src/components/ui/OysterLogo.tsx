@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { WaveIcon } from './WaveIcon';
 
 interface OysterLogoProps {
   onClick?: () => void;
@@ -19,21 +20,24 @@ export const OysterLogo: React.FC<OysterLogoProps> = ({ onClick, className = '',
       <div className="flex flex-col items-center relative">
         <div className="absolute w-full h-full bg-gradient-radial from-blue-500/20 via-blue-400/10 to-transparent blur-[80px] animate-[pulse_4s_ease-in-out_infinite]" />
         
-        <motion.span
-          className="text-white tracking-wider"
-          style={{
-            fontSize: "1.5rem",
-            fontFamily: "'TT Modernoir', sans-serif",
-            fontWeight: 300,
-            letterSpacing: "0.08em",
-            lineHeight: "0.8",
-            display: "block",
-            transform: "translate3d(0, 0, 0)",
-            willChange: "transform"
-          }}
-        >
-          OYSTER
-        </motion.span>
+        <div className="flex items-center gap-2">
+          <motion.span
+            className="text-white tracking-wider"
+            style={{
+              fontSize: "1.5rem",
+              fontFamily: "'TT Modernoir', sans-serif",
+              fontWeight: 300,
+              letterSpacing: "0.08em",
+              lineHeight: "0.8",
+              display: "block",
+              transform: "translate3d(0, 0, 0)",
+              willChange: "transform"
+            }}
+          >
+            OYSTER
+          </motion.span>
+          <WaveIcon size={24} className="transform translate-y-1" />
+        </div>
         
         <motion.div
           className="px-2 py-0.5 bg-white rounded"

@@ -45,6 +45,7 @@ import SurveillanceSimplePage from '@/features/surveillance/pages/SurveillanceSi
 import SurveillancePage from '@/features/surveillance/pages/SurveillancePage';
 import { AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import { Footer } from '@/components/ui/Footer';
 import { MessageList } from '@/features/network/components/MessageList';
 // Importer les styles globaux
 import '@/features/auth/pages/auth-responsive.css';
@@ -162,6 +163,7 @@ function MainLayout() {
             px-4 md:px-6 lg:px-8
             ml-0 lg:ml-[4.5rem] transition-all duration-300
             min-h-screen
+            flex flex-col
           "
           style={{
             background: "linear-gradient(135deg, rgba(0, 10, 40, 0.95) 0%, rgba(0, 128, 128, 0.9) 100%)",
@@ -176,18 +178,18 @@ function MainLayout() {
             overflow: isResponsive && location.pathname.endsWith('/dashboard') ? "hidden" : "auto"
           }}
         >
-          <main className={`flex-1 p-6 pt-12 ${
+          <main className={`flex-1 p-6 pt-12 pb-40 ${
             location.pathname.endsWith('/dashboard') 
               ? 'h-full' 
               : 'h-[calc(100%-80px)]'
           } ${isResponsive && location.pathname.endsWith('/dashboard') ? 'overflow-hidden' : ''}`}>
             <div className={`max-w-7xl mx-auto h-full outlet-container ${
               location.pathname.includes('/tasks') && !isResponsive ? 'mt-[50px]' : ''
-            }`} style={{ minHeight: 'calc(100% - 40px)' }}>
+            }`} style={{ minHeight: 'calc(100% - 80px)' }}>
               <Outlet />
-              <div style={{ height: '40px' }}></div>
             </div>
           </main>
+          <Footer />
         </div>
       </div>
 

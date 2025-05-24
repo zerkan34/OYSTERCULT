@@ -12,3 +12,42 @@
   letter-spacing: 0.05em;
   line-height: 1;
 }
+
+.auth-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 0;
+  margin-top: -60vh;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+.auth-logo-container {
+  margin-bottom: 2rem;
+}
+
+.auth-welcome {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-form-area {
+  width: 100%;
+  max-width: 400px;
+}
+
+@media (max-width: 768px) {
+  .auth-content {
+    margin-top: -45vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-content {
+    margin-top: -30vh;
+  }
+}

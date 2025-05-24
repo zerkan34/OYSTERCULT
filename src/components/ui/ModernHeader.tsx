@@ -4,7 +4,8 @@ import { useStore } from '@/lib/store';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { OysterLogo } from './OysterLogo';
 import { modalAnimation, glassEffectStyle, ProgressBar } from './CommonStyles';
-import { UserCircle, Waves, Boxes } from 'lucide-react';
+import { UserCircle, Boxes } from 'lucide-react';
+import { WaveIcon } from './WaveIcon';
 import React, { useState, useEffect } from 'react';
 import { Countdown } from './Countdown';
 import { LotsEnCoursModal } from './LotsEnCoursModal';
@@ -81,38 +82,12 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
             transition={{ duration: 0.3 }}
             onClick={handleLogoClick}
           >
-            <div className="flex items-center relative py-1.5 px-8 border border-white/20 rounded-lg">
-              <motion.div
-                className="relative mr-2"
-                animate={{ 
-                  rotate: [0, 10, -10, 10, 0]
-                }}
-                transition={{ 
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
-              >
-                <motion.div
-                  animate={{
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <Waves 
-                    size={56} 
-                    className="text-cyan-400"
-                    style={{
-                      opacity: 0.9,
-                      transform: 'translateY(2px)'
-                    }}
-                  />
-                </motion.div>
-              </motion.div>
+            <div className="flex items-center relative py-1.5 px-8 border border-white/20 rounded-lg group">
+              <div className="-ml-2 mr-2 relative rounded-xl w-14 h-14 bg-brand-primary/10 border-brand-primary/20 border flex items-center justify-center group-hover:shadow-neon transition-all duration-300">
+                <div className="text-brand-primary">
+                  <WaveIcon size={48} />
+                </div>
+              </div>
 
               <div className="flex items-center">
                 {/* OYSTER */}
