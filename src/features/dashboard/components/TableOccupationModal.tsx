@@ -139,7 +139,7 @@ export function TableOccupationModal({ table, onClose }: TableOccupationModalPro
           {currentView === 'main' && (
             <>
               {/* Métriques principales avec animations */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 whitespace-nowrap overflow-hidden text-ellipsis">
                 <motion.div 
                   initial={{ opacity: 0, transform: "translateY(20px)" }}
                   animate={{ opacity: 1, transform: "translateY(0)" }}
@@ -147,7 +147,7 @@ export function TableOccupationModal({ table, onClose }: TableOccupationModalPro
                   className="glass-effect rounded-xl p-4 flex items-center justify-between"
                 >
                   <div>
-                    <div className="text-white/60 mb-1 text-sm">Occupation</div>
+                    <div className="text-white/60 mb-1 text-sm whitespace-nowrap overflow-hidden text-ellipsis">Occupation</div>
                     <div className="text-2xl font-bold text-white flex items-baseline">
                       {table.value}%
                       <span className="text-sm text-white/40 ml-1">capacité</span>

@@ -45,9 +45,10 @@ export function StocksPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col h-full max-w-7xl mx-auto">
+      {/* Header - Fixed */}
+      <div className="flex-none p-6 space-y-8 bg-[rgba(0,10,40,0.97)]">
+        <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
           Gestion des Stocks
         </h1>
@@ -60,7 +61,7 @@ export function StocksPage() {
         </button>
       </div>
 
-      {/* Search and Filter Bar */}
+        {/* Search and Filter Bar */}
       <div className="flex gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60" size={20} />
@@ -80,8 +81,10 @@ export function StocksPage() {
         </button>
       </div>
 
-      {/* Stocks Grid */}
-      <div className="relative h-full grid grid-cols-2 grid-rows-10 gap-1 p-8 transform rotate-0">
+      </div>
+      {/* Stocks Grid - Scrollable */}
+      <div className="flex-1 overflow-y-auto p-6 pb-96">
+        <div className="relative grid grid-cols-2 gap-4 transform rotate-0">
         {filteredStocks.map((stock, index) => (
           <button
             key={stock._id}
@@ -109,6 +112,9 @@ export function StocksPage() {
             </div>
           </button>
         ))}
+        </div>
+        {/* Spacer pour forcer le défilement */}
+        <div className="h-[200vh]"></div>
       </div>
 
       {/* Modal de visualisation */}

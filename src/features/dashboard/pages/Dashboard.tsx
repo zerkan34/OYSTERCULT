@@ -28,7 +28,7 @@ const itemVariants = {
 
 export function Dashboard() {
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 h-auto overflow-visible">
       <motion.div 
         initial="hidden"
         animate="visible"
@@ -319,6 +319,9 @@ export function Dashboard() {
           <PoolHealthSection />
         </motion.div>
       </motion.div>
+
+      {/* Espace équivalent à la hauteur du footer */}
+      <div className="h-[35rem]"></div>
     </div>
   );
 }

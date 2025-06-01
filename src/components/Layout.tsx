@@ -4,6 +4,7 @@ import { Sidebar } from './layout/Sidebar';
 import { Bell, Settings, User } from 'lucide-react';
 import { Countdown } from './ui/Countdown';
 
+
 export function Layout() {
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
 
@@ -45,9 +46,10 @@ export function Layout() {
           </div>
         </header>
 
-        <main className="flex-1 p-6">
+        <main className="flex-1 px-6 pt-6">
           <Outlet />
         </main>
+
       </div>
     </div>
   );

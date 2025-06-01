@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
 import { MapPin, Waves } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface SlideQuestionProps {
   onSkip: () => void;
   onSelect: (value: 'MEDITERRANEE' | 'ATLANTIQUE') => void;
+}
+
+interface ProductionOption {
+  label: string;
+  value: 'MEDITERRANEE' | 'ATLANTIQUE';
+  color: string;
+  desc: string;
+  features: string[];
+  icon: React.ElementType;
 }
 
 const options = [
@@ -11,14 +21,16 @@ const options = [
     label: 'MÉDITERRANÉE',
     value: 'MEDITERRANEE',
     color: 'from-cyan-400 to-blue-500',
-    desc: '',
+    desc: 'Zone caractérisée par des eaux chaudes et une faible amplitude des marées',
+    features: ['Température moyenne: 18-25°C', 'Salinité élevée', 'Faible marnage'],
     icon: MapPin,
   },
   {
     label: 'ATLANTIQUE',
     value: 'ATLANTIQUE',
     color: 'from-blue-400 to-cyan-500',
-    desc: '',
+    desc: 'Zone marquée par des marées importantes et des eaux plus fraîches',
+    features: ['Température moyenne: 8-22°C', 'Salinité modérée', 'Fort marnage'],
     icon: Waves,
   },
 ];
@@ -89,52 +101,80 @@ export const SlideQuestion: React.FC<SlideQuestionProps> = ({ onSelect, onSkip }
               </div>
             </div>
           </div>
-          <h2 id="slide-question-title" className="relative text-4xl md:text-5xl font-bold text-transparent bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-center mb-0 whitespace-nowrap animate-gradient-x" style={{ letterSpacing: '0.04em' }}>
+          <motion.h2 
+            id="slide-question-title" 
+            className="relative text-4xl md:text-5xl font-bold text-transparent bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-center mb-0 whitespace-nowrap animate-gradient-x" 
+            style={{ letterSpacing: '0.04em' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
             Où se situe votre production&nbsp;?
-          </h2>
-          <p className="text-white/70 text-xl md:text-2xl text-center mb-4 max-w-3xl mx-auto whitespace-nowrap bg-gradient-to-r from-white/70 via-cyan-200/50 to-white/70 bg-clip-text">
-            Cette information personnalisera votre expérience sur la plateforme.
-          </p>
+          </motion.h2>
+          <motion.p 
+            className="text-white/70 text-xl md:text-2xl text-center mb-4 max-w-3xl mx-auto whitespace-nowrap bg-gradient-to-r from-white/70 via-cyan-200/50 to-white/70 bg-clip-text"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+          >
+            Sélectionnez votre zone de production pour une expérience adaptée à votre environnement.
+          </motion.p>
         </div>
         <div className="flex flex-col gap-6 w-full max-w-lg mx-auto mb-12">
           <div className="grid grid-cols-2 gap-6">
-          {options.map((opt) => {
-            const Icon = opt.icon;
-            const isSelected = selected === opt.value;
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                className={`group relative flex flex-col items-center justify-center gap-4 px-6 py-8 rounded-2xl bg-gradient-to-br from-white/[0.075] to-white/[0.035] backdrop-blur-sm border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_24px_rgba(0,0,0,0.24),0_0_16px_rgba(0,210,200,0.16)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.28),0_0_24px_rgba(0,210,200,0.24)] min-w-[44px] min-h-[56px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 text-2xl font-medium overflow-hidden ${isSelected ? 'bg-gradient-to-br from-cyan-500/20 to-blue-500/20 text-cyan-300 shadow-[0_6px_24px_rgba(0,0,0,0.3),0_0_28px_rgba(0,210,200,0.28)]' : 'text-white/90 hover:text-cyan-200'}`}
-                aria-label={`Production en ${opt.label}`}
-                aria-pressed={isSelected}
-                tabIndex={0}
-                onClick={() => handleSelect(opt.value as 'MEDITERRANEE' | 'ATLANTIQUE')}
-              >
-                {/* Effet de brillance au survol */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent animate-shimmer" style={{ '--shimmer-speed': '2.5s' } as any} />
-                </div>
-                
-                {/* Icône avec effet de glow */}
-                <div className="relative">
-                  <Icon className="text-cyan-400 transition-transform duration-300 group-hover:scale-110" aria-hidden="true" size={32} />
-                  <div className="absolute inset-0 bg-cyan-400/30 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-                
-                {/* Texte avec effet de transition */}
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <span className="relative">
-                    <span className="relative z-10 bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent group-hover:from-cyan-200 group-hover:to-white transition-all duration-300">
-                      {opt.label}
+            {options.map((opt, index) => {
+              const Icon = opt.icon;
+              const isSelected = selected === opt.value;
+              return (
+                <motion.button
+                  key={opt.value}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
+                  type="button"
+                  className={`group relative flex flex-col items-center justify-center gap-4 px-8 py-10 rounded-2xl h-full bg-gradient-to-br from-white/[0.075] to-white/[0.035] backdrop-blur-sm border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_24px_rgba(0,0,0,0.24),0_0_16px_rgba(0,210,200,0.16)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.28),0_0_24px_rgba(0,210,200,0.24)] min-w-[44px] min-h-[56px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 text-2xl font-medium overflow-hidden ${isSelected ? 'bg-gradient-to-br from-cyan-500/20 to-blue-500/20 text-cyan-300 shadow-[0_6px_24px_rgba(0,0,0,0.3),0_0_28px_rgba(0,210,200,0.28)]' : 'text-white/90 hover:text-cyan-200'}`}
+                  aria-label={`Production en ${opt.label}`}
+                  aria-pressed={isSelected}
+                  tabIndex={0}
+                  onClick={() => handleSelect(opt.value as 'MEDITERRANEE' | 'ATLANTIQUE')}
+                >
+                  {/* Effet de brillance au survol */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent animate-shimmer" style={{ '--shimmer-speed': '2.5s' } as any} />
+                  </div>
+                  
+                  {/* Icône avec effet de glow */}
+                  <div className="relative">
+                    <Icon className="text-cyan-400 transition-transform duration-300 group-hover:scale-110" aria-hidden="true" size={32} />
+                    <div className="absolute inset-0 bg-cyan-400/30 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  
+                  {/* Texte avec effet de transition */}
+                  <div className="flex flex-col items-center gap-4 text-center h-full">
+                    <span className="relative">
+                      <span className="relative z-10 bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent group-hover:from-cyan-200 group-hover:to-white transition-all duration-300 text-2xl font-medium">
+                        {opt.label}
+                      </span>
                     </span>
-                  </span>
-                </div>
-              </button>
-            );
-          })}
+                    <p className="text-sm text-white/70 group-hover:text-white/90 transition-colors duration-300 max-w-[200px]">
+                      {opt.desc}
+                    </p>
+                    <ul className="mt-2 space-y-1">
+                      {opt.features.map((feature, i) => (
+                        <li key={i} className="text-xs text-white/60 group-hover:text-white/80 transition-colors duration-300">
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.button>
+              );
+            })}
           </div>
-          <button
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.5 }}
             onClick={onSkip}
             className="group relative w-full max-w-lg mx-auto flex items-center justify-center gap-3 px-8 py-3.5 text-cyan-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 rounded-xl backdrop-blur-sm border border-cyan-400/20 hover:border-cyan-400/30 shadow-[0_4px_12px_rgba(0,0,0,0.1),0_0_8px_rgba(0,210,200,0.1)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.15),0_0_12px_rgba(0,210,200,0.2)] transition-all duration-300 transform hover:-translate-y-0.5 bg-gradient-to-r from-cyan-500/[0.08] to-blue-500/[0.08] hover:from-cyan-500/10 hover:to-blue-500/10 overflow-hidden"
             aria-label="Passer la configuration"
@@ -153,7 +193,7 @@ export const SlideQuestion: React.FC<SlideQuestionProps> = ({ onSelect, onSkip }
             
             {/* Effet de glow sur le hover */}
             <div className="absolute inset-0 bg-cyan-400/5 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
-          </button>
+          </motion.button>
         </div>
       </div>
     </div>

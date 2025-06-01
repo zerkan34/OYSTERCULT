@@ -64,7 +64,7 @@ export function AuthPage() {
   const logoSize = windowWidth < 431 ? 100 : windowWidth < 480 ? 150 : windowWidth < 768 ? 200 : 350;
 
   return (
-    <div className="auth-page flex flex-col min-h-screen">
+    <div className="auth-page flex flex-col">
       {/* Barre de chargement */}
       <div className="wave-loading" />
 
@@ -85,8 +85,7 @@ export function AuthPage() {
             variants={itemVariants} 
             className="auth-logo-container" 
             style={{ 
-              transform: 'translateY(30vh)',
-              marginTop: '-20vh'
+              transform: 'translateY(10vh)'
             }}
           >
             <NewAuthLogo size={logoSize} />
@@ -209,6 +208,15 @@ export function AuthPage() {
                         >
                           Se connecter
                         </button>
+                        <div className="mt-4 text-center">
+                          <button
+                            type="button"
+                            onClick={() => alert('Fonctionnalité à venir')}
+                            className="text-sm text-white transition-colors"
+                          >
+                            Mot de passe oublié ?
+                          </button>
+                        </div>
                       </form>
                     </div>
                   </div>

@@ -81,11 +81,11 @@ export function TableOccupationDashboard() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 h-auto">
       <h2 className="text-2xl font-bold text-white">Occupation des tables</h2>
       <p className="text-white/70">Visualisez et gérez l'occupation des tables d'huîtres</p>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr">
         {demoTables.map((table, index) => (
           <motion.div
             key={table.id}

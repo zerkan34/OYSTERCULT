@@ -5,7 +5,7 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="sticky bottom-0 left-0 right-0 w-full glass-effect border-t border-white/10 py-8 px-6 z-50 shadow-[0_-8px_16px_-6px_rgba(0,0,0,0.2)] bg-black/40" style={{ transform: 'translateZ(0)', willChange: 'transform' }}>
+    <footer className="mt-auto w-full glass-effect border-t border-white/10 py-8 px-6 z-50 shadow-[0_-8px_16px_-6px_rgba(0,0,0,0.2)] bg-black/40" style={{ transform: 'translateZ(0)', willChange: 'transform' }}>
       <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/10 via-brand-secondary/10 to-brand-tertiary/10 animate-gradient-x" />
       <div className="relative max-w-7xl mx-auto">
         {/* Grille principale */}
@@ -53,7 +53,7 @@ export const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-white/60">
                 <Phone size={16} />
-                <span className="text-sm">+33 (0)2 40 00 00 00</span>
+                <span className="text-sm">+33 (0)6 51 94 48 44</span>
               </div>
               <div className="flex items-center gap-2 text-white/60">
                 <Mail size={16} />
@@ -61,7 +61,7 @@ export const Footer = () => {
               </div>
               <div className="flex items-start gap-2 text-white/60">
                 <MapPin size={16} className="mt-1 flex-shrink-0" />
-                <span className="text-sm">123 Avenue des Huîtres<br />44000 Nantes, France</span>
+                <span className="text-sm">123 chemin du mas d'argent<br />34140 Bouzigues, France</span>
               </div>
               <div className="flex items-center gap-2 text-white/60">
                 <Globe size={16} />

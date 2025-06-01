@@ -45,7 +45,7 @@ import SurveillanceSimplePage from '@/features/surveillance/pages/SurveillanceSi
 import SurveillancePage from '@/features/surveillance/pages/SurveillancePage';
 import { AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import { Footer } from '@/components/ui/Footer';
+
 import { MessageList } from '@/features/network/components/MessageList';
 // Importer les styles globaux
 import '@/features/auth/pages/auth-responsive.css';
@@ -189,7 +189,7 @@ function MainLayout() {
               <Outlet />
             </div>
           </main>
-          <Footer />
+
         </div>
       </div>
 

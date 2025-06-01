@@ -187,28 +187,38 @@ export function OysterTables() {
                   {/* Effet de réflexion */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent" />
                 </div>
-                
-                {/* Contenu */}
-                <div className="absolute inset-0 p-4 rotate-45">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-lg font-medium text-white">{table.name}</h3>
-                      <p className="text-sm text-white/60">
-                        {table.oysterType} N°{table.caliber}
-                      </p>
-                    </div>
-                    <div className={`text-xl font-bold ${
-                      getOccupancyColor(getOccupancyPercentage(table))
-                    }`}>
-                      {getOccupancyPercentage(table)}%
-                    </div>
-                  </div>
-                </div>
 
-                {/* Effet de vagues */}
-                <div className="absolute inset-0 water-waves opacity-50" />
-              </motion.div>
-            ))}
+                <div className="flex-grow space-y-4">
+                  <div className="flex items-center justify-between text-white/70">
+                    <span>Occupation:</span>
+                    <span className={getOccupancyColor(getOccupancyPercentage(table))}>
+                      {getOccupancyPercentage(table)}%
+                    </span>
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-white/70">
+                        <span>Quantité:</span>
+                        <span className="whitespace-nowrap">
+                          {table.currentQuantity}/{table.maxCapacity}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-white/70">
+                        <span>Dernier contrôle:</span>
+                        <span className="whitespace-nowrap">
+                          {new Date(table.lastCheck).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    <button className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 border border-cyan-400/30 hover:border-cyan-400/50 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1">
+                      Voir détails
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       ) : (
@@ -217,7 +227,7 @@ export function OysterTables() {
             <div
               key={table.id}
               onClick={() => setSelectedTable(table)}
-              className="bg-white/5 border border-white/10 rounded-lg p-6 hover:bg-white/10 transition-colors cursor-pointer"
+              className="relative bg-[rgba(15,23,42,0.3)] backdrop-blur-[10px] rounded-lg border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] transition-all duration-300 flex flex-col min-h-[280px] p-4 group cursor-pointer"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-4">
@@ -233,11 +243,11 @@ export function OysterTables() {
                     } />
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium text-white">{table.name}</h3>
-                    <p className="text-sm text-white/60 mt-1">
+                    <h3 className="text-lg font-semibold text-white whitespace-nowrap overflow-hidden text-ellipsis">{table.name}</h3>
+                    <p className="text-sm text-white/60 mt-1 whitespace-nowrap overflow-hidden text-ellipsis">
                       {table.oysterType} N°{table.caliber}
                     </p>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
+                    <div className="grid grid-cols-1 gap-4 auto-rows-fr mt-4">
                       <div>
                         <div className="text-sm text-white/60">Occupation</div>
                         <div className="text-white">
@@ -273,7 +283,7 @@ export function OysterTables() {
             </div>
 
             <div className="space-y-6">
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 auto-rows-fr mt-4">
                 <div className="bg-white/5 rounded-lg p-4">
                   <div className="text-sm text-white/60">Occupation</div>
                   <div className="text-2xl font-bold text-white">

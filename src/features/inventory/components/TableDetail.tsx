@@ -967,15 +967,15 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose, on
 const FillTableModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  onFill: (option: 'left' | 'right' | 'all', naissainInfo: { origin: string; lotNumber: string }) => void;
+  onFill: (option: 'all', naissainInfo: { origin: string; lotNumber: string }) => void;
   table: Table;
 }> = ({ isOpen, onClose, onFill, table }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<'left' | 'right' | 'all' | null>(null);
+  const [selectedOption, setSelectedOption] = useState<'all' | null>(null);
   const [lotNumber, setLotNumber] = useState('');
   const [naissainOrigin, setNaissainOrigin] = useState('France naissain');
 
-  const handleOptionClick = (option: 'left' | 'right' | 'all') => {
+  const handleOptionClick = (option: 'all') => {
     setSelectedOption(option);
     setLotNumber(generateBatchNumber());
     setShowConfirmation(true);
@@ -1018,27 +1018,7 @@ const FillTableModal: React.FC<{
             {/* Options de remplissage */}
             {!showConfirmation ? (
               <div className="grid gap-4">
-                <button
-                  onClick={() => handleOptionClick('left')}
-                  className="w-full flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] transition-all duration-300"
-                >
-                  <span className="flex items-center">
-                    <ArrowLeft className="text-cyan-400" size={20} />
-                    <span className="ml-3 text-white">Remplir colonne gauche</span>
-                  </span>
-                  <ChevronRight size={20} className="text-cyan-400" />
-                </button>
 
-                <button
-                  onClick={() => handleOptionClick('right')}
-                  className="w-full flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] transition-all duration-300"
-                >
-                  <span className="flex items-center">
-                    <ArrowRight className="text-cyan-400" size={20} />
-                    <span className="ml-3 text-white">Remplir colonne droite</span>
-                  </span>
-                  <ChevronRight size={20} className="text-cyan-400" />
-                </button>
 
                 <button
                   onClick={() => handleOptionClick('all')}
@@ -1108,7 +1088,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showExcelModal, setShowExcelModal] = useState(false);
   const [showHarvestModal, setShowHarvestModal] = useState(false);
-  const [selectedExondationOption, setSelectedExondationOption] = useState<'all' | 'right' | 'left' | 'custom'>('all');
+  const [selectedExondationOption, setSelectedExondationOption] = useState<'all' | 'custom'>('all');
   const [selectedCells, setSelectedCells] = useState<number[]>([]);
   const [showFillTableModal, setShowFillTableModal] = useState(false);
   const [isExondationActive, setIsExondationActive] = useState(false);
@@ -1141,16 +1121,13 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
     }
   }, [isExondationActive, exondationEndTime]);
 
-  const handleFillColumn = (option: 'left' | 'right' | 'all', naissainInfo: { origin: string; lotNumber: string }) => {
+  const handleFillColumn = (option: 'all', naissainInfo: { origin: string; lotNumber: string }) => {
     const now = new Date().toISOString();
 
     const updatedCells = table.cells.map((cell) => {
       const cellId = parseInt(cell.id);
-      if (
-        (option === 'left' && cellId <= 8) ||
-        (option === 'right' && cellId >= 9) ||
-        option === 'all'
-      ) {
+
+      if (option === 'all') {
         return {
           ...cell,
           filled: true,
@@ -1183,7 +1160,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
         ...table.history || [],
         {
           date: now,
-          action: `Remplissage ${option === 'left' ? 'colonne gauche' : option === 'right' ? 'colonne droite' : 'table entière'}`,
+          action: 'Remplissage table entière',
           naissain: naissainInfo.origin,
           lotNumber: naissainInfo.lotNumber
         }
@@ -1207,7 +1184,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
   }, [table.id, onTableUpdate]);  // Ajouter les dépendances
 
   // Fonction pour gérer l'exondation
-  const handleExondation = (option: 'all' | 'right' | 'left' | 'custom', cells?: number[]) => {
+  const handleExondation = (option: 'all' | 'custom', cells?: number[]) => {
     const now = new Date().toISOString();
     const newExondationCount = (table.exondationCount || 0) + 1;
     
@@ -1215,10 +1192,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
       date: now,
       action: 'Exondation',
       details: `Exondation #${newExondationCount} - ${
-        option === 'all' ? 'Table complète' :
-        option === 'right' ? 'Colonne droite' :
-        option === 'left' ? 'Colonne gauche' :
-        'Cellules spécifiques'
+        option === 'all' ? 'Table complète' : 'Cellules spécifiques'
       }`,
       naissain: '',
       lotNumber: '',
@@ -1236,22 +1210,7 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
           exondationCount: newExondationCount
         };
       });
-    } else if (option === 'right') {
-      updatedCells.slice(50).forEach(cell => {
-        cell.exondation = {
-          startTime: now,
-          isExonded: true,
-          exondationCount: newExondationCount
-        };
-      });
-    } else if (option === 'left') {
-      updatedCells.slice(0, 50).forEach(cell => {
-        cell.exondation = {
-          startTime: now,
-          isExonded: true,
-          exondationCount: newExondationCount
-        };
-      });
+
     } else if (cells) {
       cells.forEach(index => {
         if (updatedCells[index]) {
@@ -1890,28 +1849,6 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
                 }`}
               >
                 Table complète
-              </button>
-
-              <button
-                onClick={() => setSelectedExondationOption('right')}
-                className={`w-full flex items-center px-4 py-3 rounded-lg border transition-colors ${
-                  selectedExondationOption === 'right'
-                    ? 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400'
-                    : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
-                }`}
-              >
-                Colonne droite
-              </button>
-
-              <button
-                onClick={() => setSelectedExondationOption('left')}
-                className={`w-full flex items-center px-4 py-3 rounded-lg border transition-colors ${
-                  selectedExondationOption === 'left'
-                    ? 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400'
-                    : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
-                }`}
-              >
-                Colonne gauche
               </button>
 
               <button

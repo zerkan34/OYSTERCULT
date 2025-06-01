@@ -23,8 +23,10 @@ import {
   MessageCircle,
   Shell,
   X,
-  Camera
+  Camera,
+  PhoneCall
 } from 'lucide-react';
+import { AdBanner } from './AdBanner';
 import { useStore } from '@/lib/store';
 import { ThemeToggle } from './ThemeToggle';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -105,6 +107,10 @@ const categories = {
   "Surveillance": {
     color: "from-red-500/30 to-red-600/10",
     textColor: "text-red-300"
+  },
+  "Publicité": {
+    color: "from-indigo-500/30 to-indigo-600/10",
+    textColor: "text-indigo-300"
   }
 };
 
@@ -213,6 +219,10 @@ const navItems: NavGroup[] = [
         ariaLabel: "Accéder à la surveillance vidéo"
       }
     ]
+  },
+  {
+    category: "Publicité",
+    items: []
   }
 ];
 
@@ -526,6 +536,10 @@ export function EnhancedSidebar({
                       </motion.div>
                     )}
                   </AnimatePresence>
+                  {/* Afficher l'AdBanner juste après la catégorie Publicité */}
+                  {group.category === 'Publicité' && (
+                    <AdBanner isCollapsed={collapsed} />
+                  )}
                   <div className="space-y-2">
                     {group.items.map((item, itemIndex) => {
                       const isActive = location.pathname === item.path;
@@ -676,6 +690,7 @@ export function EnhancedSidebar({
                               />
                             )}
                           </Link>
+
                         </motion.div>
                       );
                     })}

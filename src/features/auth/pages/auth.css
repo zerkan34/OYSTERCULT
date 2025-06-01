@@ -1,3 +1,16 @@
+/* Reset CSS */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 /* Styles pour la page d'authentification */
 
 /* Animation de la vague */
@@ -31,9 +44,10 @@
   right: 0;
   bottom: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   background: linear-gradient(135deg, rgba(0, 20, 60, 0.95) 0%, rgba(0, 150, 150, 0.9) 100%);
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 /* Vague animée */
@@ -87,9 +101,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
   padding: 1rem;
+  overflow: hidden;
 }
 
 .auth-content {
@@ -99,7 +114,7 @@
   width: 100%;
   max-width: 500px;
   gap: 3rem;
-  margin-top: -2rem;
+  margin-top: 2rem;
 }
 
 /* Logo */
@@ -156,7 +171,7 @@
 /* Conteneur du formulaire */
 .auth-form-container {
   width: 100%;
-  max-width: 350px;
+  max-width: 600px;
   position: absolute;
 }
 
@@ -184,6 +199,8 @@
   background: linear-gradient(to bottom right, rgba(15, 23, 42, 0.2), rgba(20, 80, 100, 0.15), rgba(20, 100, 100, 0.2));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  padding: 1.5rem 2rem;
+  border-radius: 0.75rem;
   padding: 1.5rem;
   border-radius: 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -198,28 +215,33 @@
 .auth-form-inner {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 /* En-tête du formulaire */
 .auth-form-header {
   position: relative;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .auth-form-title {
-  font-size: 1.5rem;
-  font-weight: 300;
-  letter-spacing: 0.05em;
-  color: white;
+  font-size: 1.25rem;
+  font-weight: 200;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.85);
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.95), rgba(0, 209, 255, 0.8));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Champs de formulaire */
 .auth-form-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
 }
 
 .auth-input-group {

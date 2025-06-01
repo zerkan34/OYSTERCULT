@@ -64,6 +64,15 @@ export function AuthForm() {
         >
           Accéder à la démo
         </button>
+        
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => alert('Fonctionnalité à venir')}
+            className="text-sm text-gray-400 hover:text-white transition-colors"
+          >
+            Mot de passe oublié ?
+          </button>
+        </div>
       </div>
     </div>
   );

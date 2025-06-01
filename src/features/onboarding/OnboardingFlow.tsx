@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { SlideQuestion } from "./SlideQuestion";
 import { useNavigate } from "react-router-dom";
 import { Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
 // Types
 export type ZoneType = "MEDITERRANEE" | "ATLANTIQUE";
@@ -88,15 +89,32 @@ export const OnboardingFlow: React.FC = () => {
           <div className="absolute -inset-[1px] rounded-lg z-0" style={{ background: 'linear-gradient(90deg, rgba(34, 211, 238, 0.03), rgba(56, 189, 248, 0.05), rgba(34, 211, 238, 0.03))', boxShadow: 'rgba(34, 211, 238, 0.263) 0px 0px 3.25px, rgba(34, 211, 238, 0.263) 0px 0px 2.62px inset' }} aria-hidden="true" />
           <div className="flex flex-col items-center w-full relative z-10 py-6 md:py-10 px-4">
             <div className="w-full flex flex-col items-center gap-8 mb-10">
-              <span className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 shadow-xl animate-pop mb-2">
+              <motion.span 
+                className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 shadow-xl animate-pop mb-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
                 <Sparkles size={48} className="text-white drop-shadow-[0_0_16px_rgba(34,211,238,0.95)]" aria-hidden="true" />
-              </span>
-              <h2 id="tables-question-title" className="text-2xl md:text-3xl font-bold text-white drop-shadow-[0_0_24px_rgba(34,211,238,0.8)] text-center mb-0 whitespace-nowrap" style={{ letterSpacing: '0.04em' }}>
+              </motion.span>
+              <motion.h2 
+                id="tables-question-title" 
+                className="text-2xl md:text-3xl font-bold text-white drop-shadow-[0_0_24px_rgba(34,211,238,0.8)] text-center mb-0 whitespace-nowrap" 
+                style={{ letterSpacing: '0.04em' }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+              >
                 Combien de tables de production avez-vous&nbsp;?
-              </h2>
-              <p className="text-white/70 text-xl md:text-2xl text-center mb-4 max-w-3xl mx-auto whitespace-nowrap">
+              </motion.h2>
+              <motion.p 
+                className="text-white/70 text-xl md:text-2xl text-center mb-4 max-w-3xl mx-auto whitespace-nowrap"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.3 }}
+              >
                 Indiquez le nombre total de tables actives sur votre site.
-              </p>
+              </motion.p>
             </div>
             <div className="flex items-center gap-2 mb-4">
               <button
@@ -164,24 +182,29 @@ export const OnboardingFlow: React.FC = () => {
             </div>
             <div className="flex flex-wrap gap-3 justify-center mb-4">
               {Array.from({ length: nbTables }).map((_, i) => (
-                <button
-                  key={i}
+                <motion.button
                   type="button"
                   className={`w-14 h-20 rounded-lg border-2 transition-all duration-200 flex items-center justify-center text-base font-bold select-none focus:outline-none focus:ring-2 focus:ring-cyan-400/40 shadow-md ${tablesSelected[i] ? 'bg-cyan-400/30 border-cyan-400 text-cyan-900 shadow-lg scale-105' : 'bg-white/10 border-white/30 text-white/70 hover:border-cyan-400/40'}`}
                   aria-pressed={tablesSelected[i]}
                   aria-label={`Table ${i + 1}`}
                   onClick={() => handleTableToggle(i)}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 + i * 0.1 }}
                 >
                   Table {i + 1}
-                </button>
+                </motion.button>
               ))}
             </div>
-            <button
+            <motion.button
               className="mt-2 px-6 py-2 rounded-full bg-cyan-500/20 text-cyan-400 font-semibold shadow focus:outline-none focus:ring-2 focus:ring-cyan-400/40 text-base transition-all duration-300"
               onClick={() => setStep(3)}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.5 }}
             >
               Suivant
-            </button>
+            </motion.button>
           </div>
         </div>
       )}

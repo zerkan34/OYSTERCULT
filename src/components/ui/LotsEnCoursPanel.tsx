@@ -19,6 +19,9 @@ interface Lot {
 }
 
 const LotsEnCoursPanel = () => {
+  const containerStyle = {
+    paddingBottom: '60rem' // Ajoute beaucoup d'espace en bas
+  };
   // Données de démonstration
   const demoLots: Lot[] = [
     {
@@ -142,8 +145,8 @@ const LotsEnCoursPanel = () => {
           </div>
 
           {/* Liste des lots */}
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-6" style={{ overflowX: 'hidden', position: 'relative' }}>
-            <div className="space-y-8">
+          <div className="flex-1 p-6" style={{ position: 'relative' }}>
+            <div className="space-y-4" style={containerStyle}>
               {demoLots.map((lot) => (
                 <LotItem key={lot.id} lot={lot} />
               ))}

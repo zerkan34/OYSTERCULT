@@ -34,26 +34,20 @@ export function ProfileInfo() {
         </div>
 
         <div className="flex-1">
-          <h2 className="text-xl font-bold text-white">Jean Dupont</h2>
+          <h2 className="text-xl font-bold text-white">Nikko DURAND</h2>
           <p className="text-white/60">Responsable Production</p>
           
           <div className="mt-4 grid grid-cols-2 gap-4">
             <div className="flex items-center text-white/60">
               <Mail size={16} className="mr-2" />
-              jean.dupont@example.com
+              nikkodurand@gmail.com
             </div>
             <div className="flex items-center text-white/60">
               <Phone size={16} className="mr-2" />
-              06 12 34 56 78
+              06 51 94 48 44
             </div>
-            <div className="flex items-center text-white/60">
-              <Building2 size={16} className="mr-2" />
-              Zone Nord
-            </div>
-            <div className="flex items-center text-white/60">
-              <Calendar size={16} className="mr-2" />
-              Embauché le 15/01/2024
-            </div>
+
+
           </div>
         </div>
 
@@ -74,7 +68,7 @@ export function ProfileInfo() {
               </label>
               <input
                 type="text"
-                defaultValue="Jean"
+                defaultValue="Nikko"
                 className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
               />
             </div>
@@ -84,7 +78,7 @@ export function ProfileInfo() {
               </label>
               <input
                 type="text"
-                defaultValue="Dupont"
+                defaultValue="DURAND"
                 className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
               />
             </div>
@@ -94,7 +88,7 @@ export function ProfileInfo() {
               </label>
               <input
                 type="email"
-                defaultValue="jean.dupont@example.com"
+                defaultValue="nikkodurand@gmail.com"
                 className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
               />
             </div>
@@ -104,7 +98,7 @@ export function ProfileInfo() {
               </label>
               <input
                 type="tel"
-                defaultValue="06 12 34 56 78"
+                defaultValue="06 51 94 48 44"
                 className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
               />
             </div>
@@ -116,7 +110,7 @@ export function ProfileInfo() {
             </label>
             <textarea
               rows={3}
-              defaultValue="123 Rue de la Mer, 34140 Bouzigues"
+              defaultValue="126 chemin du mas d'argent, 34140 Bouzigues"
               className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
             />
           </div>
@@ -144,12 +138,7 @@ export function ProfileInfo() {
           <div className="space-y-4">
             <div>
               <div className="text-sm text-white/60">Adresse</div>
-              <div className="text-white mt-1">123 Rue de la Mer, 34140 Bouzigues</div>
-            </div>
-            
-            <div>
-              <div className="text-sm text-white/60">Contact d'urgence</div>
-              <div className="text-white mt-1">Marie Dupont - 06 98 76 54 32</div>
+              <div className="text-white mt-1">126 chemin du mas d'argent, 34140 Bouzigues</div>
             </div>
             
             <div>

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/lib/store';
 import toast from 'react-hot-toast';
 
-interface BaseUser {
+interface UserBase {
   firstName: string;
   lastName: string;
   email: string;
@@ -19,11 +19,13 @@ interface BaseUser {
   password?: string;
 }
 
-interface User extends BaseUser {
+interface User extends UserBase {
   id: string;
 }
 
-type UserFormData = BaseUser;
+interface UserWithId extends User {}
+
+type UserFormData = UserBase;
 
 interface Role {
   id: string;
@@ -35,6 +37,13 @@ interface Role {
 
 interface FormErrors {
   [key: string]: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  position?: string;
+  startDate?: string;
+  employeeId?: string;
 }
 
 const initialFormData: UserFormData = {
@@ -142,7 +151,7 @@ const modalVariants = {
 };
 
 export function UserRoles() {
-  const { addUser, deleteUser, updateUser, users } = useStore();
+  const { addUser, deleteUser, updateUser, users } = useStore() as unknown as { addUser: (user: UserFormData) => void, deleteUser: (id: string) => void, updateUser: (id: string, user: UserFormData) => void, users: User[] };
   const [showNewUser, setShowNewUser] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
@@ -237,7 +246,7 @@ export function UserRoles() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const errors: UserFormData = {};
+    const errors: FormErrors = {};
     if (!formData.firstName) {
       errors.firstName = 'Le prénom est obligatoire';
     }
@@ -324,10 +333,10 @@ export function UserRoles() {
             variants={itemVariants}
             className="rounded-xl overflow-hidden"
             style={{
-              background: "linear-gradient(135deg, rgba(0, 10, 40, 0.85) 0%, rgba(0, 100, 120, 0.8) 100%)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              boxShadow: "rgba(0, 0, 0, 0.35) 0px 10px 20px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset, rgba(0, 200, 200, 0.2) 0px 0px 15px inset"
+              background: "linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              boxShadow: "rgba(0, 0, 0, 0.2) 0px 10px 20px -5px, rgba(255, 255, 255, 0.1) 0px -1px 3px 0px inset"
             }}
           >
             <div className="p-6">

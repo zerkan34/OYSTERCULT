@@ -357,12 +357,24 @@ export default function CommandesPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent flex items-center gap-3">
-          <ClipboardList size={22} className="text-cyan-400" aria-hidden="true"/>
-          Commandes
-        </h1>
+    <div className="relative pb-[35rem]">
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent flex items-center gap-3">
+            <ClipboardList size={22} className="text-cyan-400" aria-hidden="true"/>
+            Commandes
+          </h1>
+          <div className="flex gap-2">
+            <button className="flex items-center gap-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 text-cyan-400 font-semibold shadow min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
+              onClick={() => setModalNouvelleTournee(true)}
+            >
+              <PlusCircle size={18} className="mr-1"/>Créer nouvelle tournée
+            </button>
+            <button className="flex items-center gap-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 text-cyan-400 font-semibold shadow min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
+              onClick={() => setModalNouveauMarche(true)}
+            >
+              <PlusCircle size={18} className="mr-1"/>Nouveau marché
+            </button>
         <div className="flex gap-2">
           <button className="flex items-center gap-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 text-cyan-400 font-semibold shadow min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
             onClick={() => setModalNouvelleTournee(true)}

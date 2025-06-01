@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserCircle, Mail, Phone, Key, Download, Bell, Shield, History, Users, Settings } from 'lucide-react';
+import { UserCircle, Mail, Phone, Key, Download, Bell, Shield, History, Users, Settings, FileText } from 'lucide-react';
 import { ProfileInfo } from '../components/ProfileInfo';
 import { SecuritySettings } from '../components/SecuritySettings';
 import { ActivityHistory } from '../components/ActivityHistory';
@@ -8,9 +8,10 @@ import { FriendCode } from '../components/FriendCode';
 import { motion } from 'framer-motion';
 import { PageTitle } from '@/components/ui/PageTitle';
 import { ConfigPage } from '@/features/config/pages/ConfigPage';
+import { ActionLog } from '../components/ActionLog';
 
 export function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<'info' | 'friend-code' | 'security' | 'activity' | 'export' | 'config'>('info');
+  const [activeTab, setActiveTab] = useState<'info' | 'action-log' | 'friend-code' | 'security' | 'activity' | 'export' | 'config'>('info');
 
   return (
     <motion.div
@@ -50,6 +51,19 @@ export function ProfilePage() {
           <div className="flex items-center">
             <UserCircle size={16} className="mr-2" />
             Informations
+          </div>
+        </button>
+        <button
+          onClick={() => setActiveTab('action-log')}
+          className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'action-log'
+              ? 'border-brand-burgundy text-white'
+              : 'border-transparent text-white/60 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center">
+            <FileText size={16} className="mr-2" />
+            Journal d'actions
           </div>
         </button>
         <button
@@ -107,6 +121,7 @@ export function ProfilePage() {
       </div>
 
       {activeTab === 'info' && <ProfileInfo />}
+      {activeTab === 'action-log' && <ActionLog />}
       {activeTab === 'friend-code' && <FriendCode />}
       {activeTab === 'security' && <SecuritySettings />}
       {activeTab === 'activity' && <ActivityHistory />}

@@ -7,8 +7,11 @@ import {
   FileText,
   Lock,
   MessageCircle,
-  Users
+  Users,
+  PhoneCall,
+  Eye
 } from 'lucide-react';
+import { AdBanner } from '../ui/AdBanner';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -38,6 +41,8 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     { path: '/network', icon: MessageCircle, label: 'Messagerie', notifications: 3 },
     { path: '/analytics', icon: Package, label: 'Analyses' },
     { path: '/company', icon: Package, label: 'Entreprise' },
+    { path: '/surveillance', icon: Eye, label: 'Surveillance' },
+    { path: '/emergency', icon: PhoneCall, label: 'Appel d\'urgence' },
     { path: '/digital-vault', icon: Lock, label: 'Coffre fort numérique' },
     { category: "PARAMETRES", path: '/settings', icon: Package, label: 'Configuration' },
   ];
@@ -70,6 +75,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             const isActive = location.pathname === item.path;
             return (
               <React.Fragment key={item.path}>
+                {/* Insertion de la publicité après la surveillance */}
+                {item.path === '/surveillance' && (
+                  <li className="my-2">
+                    <AdBanner isCollapsed={!isOpen} />
+                  </li>
+                )}
                 {item.category && isOpen && (
                   <li className="px-4 py-2">
                     <span className="text-xs font-semibold tracking-wider text-brand-blue/80 uppercase">
