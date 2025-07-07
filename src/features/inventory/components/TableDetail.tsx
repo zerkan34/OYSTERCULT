@@ -34,7 +34,10 @@ import {
   Table as TableIcon,
   Scale,
   FileSpreadsheet,
-  Activity
+  Activity,
+  Hash,
+  Package,
+  Percent as PercentIcon
 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
@@ -95,6 +98,22 @@ interface Table {
   zone?: string;
 }
 
+type LotStatus = 'EN_TRANSIT' | 'TERMINE' | 'PROBLEME';
+
+interface Lot {
+  id: string;
+  nom: string;
+  numeroLot: string;
+  statut: LotStatus;
+  origine?: string;
+  destination?: string;
+  quantite?: number;
+  estimationRemplissage?: number;
+  unite?: string;
+  mortalite?: number;
+  datePrevue?: string;
+}
+
 interface TableDetailProps {
   table: Table;
   onClose: () => void;
@@ -125,18 +144,67 @@ interface ExcelImportModalProps {
   onUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const generateBatchNumber = () => {
+const generateBatchNumber = (type: string = '', size: string = '') => {
   const date = new Date();
   const year = date.getFullYear().toString().slice(-2);
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  return `${year}${month}-${random}`;
+  const typePrefix = type ? (type === 'triploide' ? 'T' : 'D') : '';
+  const sizeCode = size || '';
+  return `${year}${month}-${typePrefix}${sizeCode}-${random}`;
 };
 
 const CellModal: React.FC<CellModalProps> = ({ cell, onClose, onSave }) => {
   const [ropeCount, setRopeCount] = useState<number>(cell.ropeCount || 0);
-  const [spatName, setSpatName] = useState(cell.spat?.name || '');
-  const [batchNumber, setBatchNumber] = useState(cell.spat?.batchNumber || generateBatchNumber());
+  const [naissainOrigin, setNaissainOrigin] = useState(cell.spat?.name || 'France naissain');
+  const [oysterType, setOysterType] = useState(OYSTER_TYPES[0].id);
+  const [oysterSize, setOysterSize] = useState(OYSTER_SIZES[0].id);
+  const [batchNumber, setBatchNumber] = useState(cell.spat?.batchNumber || generateBatchNumber(oysterType, oysterSize));
+  const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
+
+  // Données de démonstration des lots en cours
+  const demoLots: Lot[] = [
+    {
+      id: '1',
+      nom: 'Lot Huîtres Triploïdes #NORD-101',
+      numeroLot: 'NORD-101',
+      statut: 'EN_TRANSIT',
+      origine: 'Charente Maritime',
+      destination: 'Trempe',
+      quantite: 10,
+      estimationRemplissage: 15,
+      unite: 'pochons',
+      mortalite: 16.9,
+      datePrevue: '2025-05-02T11:00:00'
+    },
+    {
+      id: '2',
+      nom: 'Lot Huîtres Plates #SUD-202',
+      numeroLot: 'SUD-202',
+      statut: 'EN_TRANSIT',
+      origine: 'Arcachon',
+      destination: 'Trempe',
+      quantite: 8,
+      estimationRemplissage: 12,
+      unite: 'pochons',
+      mortalite: 12.5,
+      datePrevue: '2025-05-03T14:00:00'
+    }
+  ];
+
+  // Effet pour mettre à jour les valeurs quand un lot est sélectionné
+  useEffect(() => {
+    if (selectedLot) {
+      setBatchNumber(selectedLot.numeroLot);
+      setNaissainOrigin(selectedLot.origine || 'France naissain');
+      // Détecter le type d'huître à partir du nom du lot
+      if (selectedLot.nom.toLowerCase().includes('triploïde')) {
+        setOysterType('triploide');
+      } else if (selectedLot.nom.toLowerCase().includes('diploïde')) {
+        setOysterType('diploide');
+      }
+    }
+  }, [selectedLot]);
 
   const handleSave = () => {
     const now = new Date().toISOString();
@@ -144,7 +212,7 @@ const CellModal: React.FC<CellModalProps> = ({ cell, onClose, onSave }) => {
       date: now,
       action: 'Ajout de cordes',
       details: `${ropeCount} cordes ajoutées`,
-      naissain: spatName,
+      naissain: naissainOrigin,
       lotNumber: batchNumber,
       mortalityRate: 0,
       notes: '',
@@ -155,7 +223,7 @@ const CellModal: React.FC<CellModalProps> = ({ cell, onClose, onSave }) => {
       ...cell,
       ropeCount: (cell.ropeCount || 0) + ropeCount,
       spat: {
-        name: spatName,
+        name: naissainOrigin,
         batchNumber: batchNumber,
         dateAdded: new Date().toISOString()
       },
@@ -165,11 +233,13 @@ const CellModal: React.FC<CellModalProps> = ({ cell, onClose, onSave }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50" onClick={(e) => {
+      if (e.target === e.currentTarget) onClose();
+    }}>
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg w-[480px] shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] border border-white/10"
+        className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-xl w-[580px] shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset] border border-white/10 hover:border-white/20 transition-all duration-300" onClick={e => e.stopPropagation()}
       >
         <div className="relative">
           <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur-lg"></div>
@@ -177,26 +247,117 @@ const CellModal: React.FC<CellModalProps> = ({ cell, onClose, onSave }) => {
             <h3 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
               Ajouter des cordes
             </h3>
+
+            {/* Sélection du lot en cours */}
+            <div className="mt-4 mb-6">
+              <label className="block text-sm font-medium mb-2 text-white/70">Lot en cours</label>
+              <div className="grid gap-3">
+                {demoLots.map(lot => (
+                  <button
+                    key={lot.id}
+                    onClick={() => setSelectedLot(lot)}
+                    className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-300 ${selectedLot?.id === lot.id 
+                      ? 'bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-cyan-400/50'
+                      : 'bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] border-white/10 hover:border-cyan-400/30'
+                    }`}
+                  >
+                    <div className="flex flex-col gap-1">
+                      <span className="text-white font-medium">{lot.nom}</span>
+                      <div className="flex items-center gap-2 text-sm text-white/60">
+                        <MapPin size={14} />
+                        <span>{lot.origine}</span>
+                        <ArrowRight size={14} />
+                        <span>{lot.destination}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 text-white/60">
+                      <div className="flex items-center gap-1">
+                        <Package size={14} />
+                        <span>{lot.quantite} {lot.unite}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <PercentIcon size={14} />
+                        <span>{lot.mortalite}%</span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="space-y-5">
               <div>
                 <label className="block text-sm font-medium mb-2 text-white/70">Nombre de cordes</label>
-                <input
-                  type="number"
-                  value={ropeCount}
-                  onChange={(e) => setRopeCount(Number(e.target.value))}
-                  className="w-full bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-3 rounded-lg border border-white/10 hover:border-cyan-400/30 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 text-white min-h-[44px] transition-all duration-300"
-                  min="0"
-                />
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={ropeCount}
+                    onChange={(e) => setRopeCount(Number(e.target.value))}
+                    className="w-full bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-3 rounded-lg border border-white/10 hover:border-cyan-400/30 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 text-white min-h-[44px] transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)]"
+                    min="0"
+                    placeholder="Nombre de cordes"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-400/40">
+                    <Hash size={20} />
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-2 text-white/70">Naissain</label>
-                <input
-                  type="text"
-                  value={spatName}
-                  onChange={(e) => setSpatName(e.target.value)}
-                  className="w-full bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-3 rounded-lg border border-white/10 hover:border-cyan-400/30 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 text-white min-h-[44px] transition-all duration-300"
-                  placeholder="Nom du naissain"
-                />
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-white/70">Type d'huître</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {OYSTER_TYPES.map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => {
+                          setOysterType(type.id);
+                          if (!batchNumber) {
+                            setBatchNumber(generateBatchNumber(type.id, oysterSize));
+                          }
+                        }}
+                        className={`flex items-center justify-center px-4 py-2 rounded-lg border transition-all duration-300 transform hover:-translate-y-1 ${oysterType === type.id
+                          ? 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)]'
+                          : 'bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)]'
+                          }`}
+                      >
+                        {type.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-white/70">Taille</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {OYSTER_SIZES.map((size) => (
+                      <button
+                        key={size.id}
+                        onClick={() => {
+                          setOysterSize(size.id);
+                          if (!batchNumber) {
+                            setBatchNumber(generateBatchNumber(oysterType, size.id));
+                          }
+                        }}
+                        className={`flex items-center justify-center px-4 py-2 rounded-lg border transition-all duration-300 transform hover:-translate-y-1 ${oysterSize === size.id
+                          ? 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)]'
+                          : 'bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)]'
+                          }`}
+                      >
+                        {size.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-white/70">Provenance du naissain</label>
+                  <input
+                    type="text"
+                    value={naissainOrigin}
+                    onChange={(e) => setNaissainOrigin(e.target.value)}
+                    className="w-full bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-3 rounded-lg border border-white/10 hover:border-cyan-400/30 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 text-white min-h-[44px] transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)]"
+                    placeholder="Provenance du naissain"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2 text-white/70">Numéro de lot</label>
@@ -205,7 +366,7 @@ const CellModal: React.FC<CellModalProps> = ({ cell, onClose, onSave }) => {
                     type="text"
                     value={batchNumber}
                     onChange={(e) => setBatchNumber(e.target.value)}
-                    className="w-full bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-3 rounded-lg border border-white/10 hover:border-cyan-400/30 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 text-white min-h-[44px] transition-all duration-300"
+                    className="w-full bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-3 rounded-lg border border-white/10 hover:border-cyan-400/30 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 text-white min-h-[44px] transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)]"
                     placeholder="Numéro de lot"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40">
@@ -216,13 +377,13 @@ const CellModal: React.FC<CellModalProps> = ({ cell, onClose, onSave }) => {
               <div className="flex justify-end gap-3 mt-8">
                 <button
                   onClick={onClose}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-white/40 transition-all duration-300 transform hover:-translate-y-1 text-white/70 hover:text-white"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1 text-white/70 hover:text-white"
                 >
                   Annuler
                 </button>
                 <button
                   onClick={handleSave}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 hover:border-cyan-400/50 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-400/30 hover:border-cyan-400/50 shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25)] min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <Check size={20} />
                   Enregistrer
@@ -279,11 +440,13 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ cell, onClose, onSave }) =>
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50" onClick={(e) => {
+      if (e.target === e.currentTarget) onClose();
+    }}>
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-lg w-[480px] shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset,rgba(0,0,0,0.05)_0px_0px_1px_inset] border border-white/10"
+        className="bg-gradient-to-br from-[rgba(15,23,42,0.3)] to-[rgba(20,100,100,0.3)] backdrop-filter backdrop-blur-[10px] p-6 rounded-xl w-[580px] shadow-[rgba(0,0,0,0.2)_0px_10px_20px_-5px,rgba(0,150,255,0.1)_0px_8px_16px_-8px,rgba(255,255,255,0.07)_0px_-1px_2px_0px_inset,rgba(0,65,255,0.05)_0px_0px_8px_inset] border border-white/10 hover:border-white/20 transition-all duration-300" onClick={e => e.stopPropagation()}
       >
         <div className="relative">
           <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur-lg"></div>
@@ -964,20 +1127,45 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose, on
   );
 };
 
+const OYSTER_TYPES = [
+  { id: 'triploide', label: 'Triploïde' },
+  { id: 'diploide', label: 'Diploïde' }
+];
+
+const OYSTER_SIZES = [
+  { id: 'T5', label: 'T5' },
+  { id: 'T10', label: 'T10' },
+  { id: 'T15', label: 'T15' },
+  { id: 'T30', label: 'T30' },
+  { id: 'N4', label: 'N°4' },
+  { id: 'N3', label: 'N°3' },
+  { id: 'N2', label: 'N°2' },
+  { id: 'N1', label: 'N°1' }
+];
+
 const FillTableModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  onFill: (option: 'all', naissainInfo: { origin: string; lotNumber: string }) => void;
+  onFill: (option: 'all', naissainInfo: { 
+    origin: string; 
+    lotNumber: string;
+    type: string;
+    size: string;
+  }) => void;
   table: Table;
 }> = ({ isOpen, onClose, onFill, table }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedOption, setSelectedOption] = useState<'all' | null>(null);
   const [lotNumber, setLotNumber] = useState('');
   const [naissainOrigin, setNaissainOrigin] = useState('France naissain');
+  const [oysterType, setOysterType] = useState(OYSTER_TYPES[0].id);
+  const [oysterSize, setOysterSize] = useState(OYSTER_SIZES[0].id);
 
   const handleOptionClick = (option: 'all') => {
     setSelectedOption(option);
-    setLotNumber(generateBatchNumber());
+    if (!lotNumber) {
+      setLotNumber(generateBatchNumber(oysterType, oysterSize));
+    }
     setShowConfirmation(true);
   };
 
@@ -985,7 +1173,9 @@ const FillTableModal: React.FC<{
     if (selectedOption) {
       onFill(selectedOption, {
         origin: naissainOrigin,
-        lotNumber: lotNumber
+        lotNumber: lotNumber,
+        type: oysterType,
+        size: oysterSize
       });
       setShowConfirmation(false);
       onClose();
@@ -1041,8 +1231,9 @@ const FillTableModal: React.FC<{
                     <input
                       type="text"
                       value={lotNumber}
-                      readOnly
-                      className="w-full p-2 rounded-lg bg-white/5 border border-white/10 text-white"
+                      onChange={(e) => setLotNumber(e.target.value)}
+                      placeholder="Généré automatiquement si vide"
+                      className="w-full p-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-cyan-400/30 focus:ring-1 focus:ring-cyan-400/30 transition-colors"
                     />
                   </div>
                   <div>
@@ -1053,8 +1244,46 @@ const FillTableModal: React.FC<{
                       type="text"
                       value={naissainOrigin}
                       onChange={(e) => setNaissainOrigin(e.target.value)}
-                      className="w-full p-2 rounded-lg bg-white/5 border border-white/10 text-white"
+                      className="w-full p-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-cyan-400/30 focus:ring-1 focus:ring-cyan-400/30 transition-colors"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-white/70 mb-2">
+                      Type d'huître
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {OYSTER_TYPES.map((type) => (
+                        <button
+                          key={type.id}
+                          onClick={() => setOysterType(type.id)}
+                          className={`p-2 rounded-lg border ${oysterType === type.id 
+                            ? 'bg-cyan-500/20 border-cyan-400/30 text-cyan-300' 
+                            : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'} 
+                            transition-colors`}
+                        >
+                          {type.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-white/70 mb-2">
+                      Taille
+                    </label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {OYSTER_SIZES.map((size) => (
+                        <button
+                          key={size.id}
+                          onClick={() => setOysterSize(size.id)}
+                          className={`p-2 rounded-lg border ${oysterSize === size.id 
+                            ? 'bg-cyan-500/20 border-cyan-400/30 text-cyan-300' 
+                            : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'} 
+                            transition-colors`}
+                        >
+                          {size.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
                 <div className="flex justify-end gap-4">
@@ -1951,6 +2180,14 @@ export const TableDetail: React.FC<TableDetailProps> = ({ table, onClose, onTabl
           </div>
         </div>
       )}
+
+      {/* Modal de remplissage de table */}
+      <FillTableModal
+        isOpen={showFillTableModal}
+        onClose={() => setShowFillTableModal(false)}
+        onFill={handleFillColumn}
+        table={table}
+      />
 
       {/* Bandeau d'exondation actif */}
       {isExondationActive && timeRemaining && (

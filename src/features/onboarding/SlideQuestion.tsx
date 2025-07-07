@@ -103,7 +103,7 @@ export const SlideQuestion: React.FC<SlideQuestionProps> = ({ onSelect, onSkip }
           </div>
           <motion.h2 
             id="slide-question-title" 
-            className="relative text-4xl md:text-5xl font-bold text-transparent bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-center mb-0 whitespace-nowrap animate-gradient-x" 
+            className="relative text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-center mb-0 whitespace-nowrap animate-gradient-x" 
             style={{ letterSpacing: '0.04em' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -112,7 +112,7 @@ export const SlideQuestion: React.FC<SlideQuestionProps> = ({ onSelect, onSkip }
             Où se situe votre production&nbsp;?
           </motion.h2>
           <motion.p 
-            className="text-white/70 text-xl md:text-2xl text-center mb-4 max-w-3xl mx-auto whitespace-nowrap bg-gradient-to-r from-white/70 via-cyan-200/50 to-white/70 bg-clip-text"
+            className="text-white/70 text-lg md:text-xl text-center mb-4 max-w-3xl mx-auto whitespace-nowrap bg-gradient-to-r from-white/70 via-cyan-200/50 to-white/70 bg-clip-text"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.2 }}

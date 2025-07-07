@@ -37,13 +37,12 @@ import { MobileNavigation } from './MobileNavigation';
 
 // Types locaux pour les fonctionnalités ajoutées
 interface ExtendedOysterTable extends OysterTable {
-  id: string;
-  occupancyRate: number;
-  lastUpdated: string;
-  oysterType: string;
-  lastHarvest: string;
-  quality: number;
-  avgSize: number;
+  occupancyRate: number; // Alias pour value
+  lastUpdated: string; // Alias pour lastUpdate
+  oysterType: string; // Alias pour type
+  lastHarvest: string; // Alias pour harvest
+  quality: number; // Nouvelle propriété
+  avgSize: number; // Calculé à partir de currentSize
 }
 
 interface ExtendedPoolHealth extends Omit<PoolHealth, 'status'> {
@@ -69,11 +68,21 @@ const slideInVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.3 } }
 };
 
+interface MobileDashboardProps {
+  tableOccupancyData: OysterTable[];
+  poolData: PoolHealth[];
+  poolDisplayData: Pool[];
+}
+
 // Composant MobileDashboard
-export const MobileDashboard: React.FC = () => {
+export const MobileDashboard: React.FC<MobileDashboardProps> = ({ 
+  tableOccupancyData,
+  poolData,
+  poolDisplayData
+}) => {
   // États
   const [activeSection, setActiveSection] = useState<SectionType>('overview');
-  const [selectedTable, setSelectedTable] = useState<ExtendedOysterTable | null>(null);
+  const [selectedTable, setSelectedTable] = useState<OysterTable | null>(null);
   const [selectedPool, setSelectedPool] = useState<ExtendedPoolHealth | null>(null);
   const [visibleTableIndex, setVisibleTableIndex] = useState(0);
   const [visiblePoolIndex, setVisiblePoolIndex] = useState(0);
@@ -146,104 +155,19 @@ export const MobileDashboard: React.FC = () => {
     return 'text-cyan-400';
   };
 
-  // Données pour les tables
-  const tableOccupancyData: ExtendedOysterTable[] = [
-    {
-      id: 'table1',
-      name: 'Table Nord-Est',
-      value: 78,
-      color: '#38bdf8',
-      type: 'Spéciale de Claire',
-      plates: '45/60',
-      currentSize: '6.5 cm',
-      targetSize: '9 cm',
-      timeProgress: 65,
-      startDate: '10/01/2023',
-      harvest: '30/06/2023',
-      mortality: 8.5,
-      alert: null,
-      status: 'active',
-      occupiedUnits: 45,
-      totalUnits: 60,
-      location: 'Secteur Nord-Est',
-      area: 120,
-      waterHeight: 1.2,
-      lastInspection: '15/05/2023',
-      currentConditions: 'Optimales',
-      lastUpdate: 'Il y a 2h',
-      // Extensions pour l'affichage mobile
-      occupancyRate: 78,
-      lastUpdated: 'Il y a 2h',
-      oysterType: 'Spéciale de Claire',
-      lastHarvest: '12/05/2023',
-      quality: 4.2,
-      avgSize: 7.8
-    },
-    {
-      id: 'table2',
-      name: 'Table Centrale',
-      value: 45,
-      color: '#22c55e',
-      type: 'Fine de Claire',
-      plates: '30/60',
-      currentSize: '5.8 cm',
-      targetSize: '8 cm',
-      timeProgress: 50,
-      startDate: '15/01/2023',
-      harvest: '15/07/2023',
-      mortality: 6.2,
-      status: 'active',
-      occupiedUnits: 30,
-      totalUnits: 60,
-      location: 'Secteur Central',
-      area: 110,
-      waterHeight: 1.1,
-      lastInspection: '12/05/2023',
-      currentConditions: 'Bonnes',
-      lastUpdate: 'Il y a 1h',
-      // Extensions pour l'affichage mobile
-      occupancyRate: 45,
-      lastUpdated: 'Il y a 1h',
-      oysterType: 'Fine de Claire',
-      lastHarvest: '15/05/2023',
-      quality: 3.8,
-      avgSize: 6.5
-    },
-    {
-      id: 'table3',
-      name: 'Table Ouest',
-      value: 92,
-      color: '#ef4444',
-      type: 'Spéciale de Claire',
-      plates: '55/60',
-      currentSize: '7.2 cm',
-      targetSize: '9 cm',
-      timeProgress: 80,
-      startDate: '05/01/2023',
-      harvest: '20/06/2023',
-      mortality: 9.8,
-      alert: 'Forte densité',
-      status: 'active',
-      occupiedUnits: 55,
-      totalUnits: 60,
-      location: 'Secteur Ouest',
-      area: 130,
-      waterHeight: 1.3,
-      lastInspection: '10/05/2023',
-      currentConditions: 'Densité élevée',
-      lastUpdate: 'Il y a 3h',
-      // Extensions pour l'affichage mobile
-      occupancyRate: 92,
-      lastUpdated: 'Il y a 3h',
-      oysterType: 'Spéciale de Claire',
-      lastHarvest: '10/05/2023',
-      quality: 4.5,
-      avgSize: 8.2
-    }
-  ];
+  // Transformation des données de tables pour le format mobile
+  const extendedTables: ExtendedOysterTable[] = tableOccupancyData.map(table => ({
+    ...table,
+    occupancyRate: table.value,
+    lastUpdated: table.lastUpdate || '',
+    oysterType: table.type,
+    lastHarvest: table.harvest,
+    quality: 4.0, // Valeur par défaut
+    avgSize: parseFloat(table.currentSize) || 0
+  }));
 
   // Données pour les bassins
-  const poolData: ExtendedPoolHealth[] = [
+  const extendedPoolData: ExtendedPoolHealth[] = [
     {
       id: 'pool1',
       name: 'Bassin Principal',
@@ -345,7 +269,7 @@ export const MobileDashboard: React.FC = () => {
                     <div className="mobile-carousel">
                       {tableOccupancyData.map((table, index) => (
                         <div
-                          key={table.id}
+                          key={table.name}
                           className={`mobile-carousel-item ${index === visibleTableIndex ? 'active' : ''}`}
                           onClick={() => setSelectedTable(table)}
                         >
@@ -388,7 +312,7 @@ export const MobileDashboard: React.FC = () => {
               <h1 className="text-2xl font-bold text-white mb-6">Tables ostréicoles</h1>
               {/* Contenu de la section tables */}
               {tableOccupancyData.map((table) => (
-                <OysterTableCard key={table.id} table={table} />
+                <OysterTableCard key={table.name} table={table} />
               ))}
             </motion.div>
           )}
@@ -432,7 +356,7 @@ export const MobileDashboard: React.FC = () => {
               <ul>
                 {tableOccupancyData.map((table) => (
                   table.alert && (
-                    <li key={table.id}>{table.name}: {table.alert}</li>
+                    <li key={table.name}>{table.name}: {table.alert}</li>
                   )
                 ))}
                 {poolData.map((pool) => (

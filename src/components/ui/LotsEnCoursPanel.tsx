@@ -1,6 +1,10 @@
 import React from 'react';
+import { useState } from 'react';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { motion } from 'framer-motion';
-import { X, Package, Calendar, MapPin, ArrowRight, Info, Percent as PercentIcon, History } from 'lucide-react';
+import { X, Package, Calendar, MapPin, ArrowRight, Info, Percent as PercentIcon, History, Plus } from 'lucide-react';
+import { Dialog } from '@/components/ui/dialog';
 
 type LotStatus = 'EN_TRANSIT' | 'TERMINE' | 'PROBLEME';
 
@@ -19,9 +23,231 @@ interface Lot {
 }
 
 const LotsEnCoursPanel = () => {
+  // Styles pour le modal
+  const modalStyles = {
+    overlay: {
+      backgroundColor: 'rgba(0, 20, 40, 0.8)',
+      backdropFilter: 'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)'
+    },
+    content: {
+      background: 'linear-gradient(145deg, rgba(0, 20, 40, 0.98) 0%, rgba(0, 80, 80, 0.95) 100%)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      borderRadius: '1rem',
+      padding: '2rem',
+      color: '#fff'
+    }
+  };
+
+  // Styles pour les éléments du modal
+  const styles = {
+    title: {
+      fontSize: '1.5rem',
+      fontWeight: 'bold',
+      background: 'linear-gradient(90deg, #3b82f6, #0d9488)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      marginBottom: '1.5rem'
+    },
+    lotCard: {
+      background: 'linear-gradient(145deg, rgba(37, 99, 235, 0.1) 0%, rgba(13, 148, 136, 0.05) 100%)',
+      borderRadius: '0.75rem',
+      padding: '1rem',
+      marginBottom: '1rem',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+    },
+    lotTitle: {
+      color: '#3b82f6',
+      fontWeight: 'bold',
+      marginBottom: '0.5rem'
+    },
+    lotInfo: {
+      color: 'rgba(255, 255, 255, 0.8)',
+      fontSize: '0.875rem'
+    },
+    mortalite: {
+      color: '#f59e0b',
+      fontWeight: 'bold'
+    },
+    section: {
+      marginBottom: '1.5rem'
+    },
+    label: {
+      color: '#94a3b8',
+      marginBottom: '0.5rem',
+      display: 'block'
+    },
+    input: {
+      width: '100%',
+      padding: '0.5rem',
+      borderRadius: '0.5rem',
+      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      color: '#fff',
+      marginBottom: '1rem'
+    },
+    radioGroup: {
+      display: 'flex',
+      gap: '1rem',
+      marginBottom: '1rem'
+    },
+    button: {
+      padding: '0.75rem 1.5rem',
+      borderRadius: '0.5rem',
+      fontWeight: 'bold',
+      transition: 'all 0.3s ease'
+    },
+    cancelButton: {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      color: '#fff',
+      '&:hover': {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)'
+      }
+    },
+    saveButton: {
+      background: 'linear-gradient(90deg, #3b82f6, #0d9488)',
+      color: '#fff',
+      boxShadow: '0 4px 6px rgba(59, 130, 246, 0.2)',
+      '&:hover': {
+        transform: 'translateY(-1px)'
+      }
+    }
+  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedType, setSelectedType] = useState('Triploïde');
+  const [selectedSize, setSelectedSize] = useState('T5');
+  const [numCordes, setNumCordes] = useState(0);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Traitement du formulaire ici
+    setIsModalOpen(false);
+  };
+
   const containerStyle = {
     paddingBottom: '60rem' // Ajoute beaucoup d'espace en bas
   };
+
+  const renderModal = () => (
+    <Dialog
+      open={isModalOpen}
+      onOpenChange={() => setIsModalOpen(false)}
+    >
+      <div className="bg-gradient-to-br from-[rgba(0,20,40,0.98)] to-[rgba(0,80,80,0.95)] p-8 rounded-xl border border-white/10 text-white">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-teal-500 bg-clip-text text-transparent">Ajouter des cordes</h2>
+          
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold bg-gradient-to-r from-blue-500 to-teal-500 bg-clip-text text-transparent">Lot en cours</h3>
+            
+            <div className="bg-gradient-to-br from-blue-500/10 to-teal-500/5 rounded-xl p-4 border border-white/10 shadow-lg">
+              <div className="text-blue-500 font-bold">Lot Huîtres Triploïdes #NORD-101</div>
+              <div className="text-white/80 text-sm">Charente Maritime</div>
+              <div className="text-white/80 text-sm">Trempe</div>
+              <div className="text-white/80 text-sm">10 pochons</div>
+              <div className="text-amber-500 font-bold">16.9%</div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-blue-500/10 to-teal-500/5 rounded-xl p-4 border border-white/10 shadow-lg">
+              <div className="text-blue-500 font-bold">Lot Huîtres Plates #SUD-202</div>
+              <div className="text-white/80 text-sm">Arcachon</div>
+              <div className="text-white/80 text-sm">Trempe</div>
+              <div className="text-white/80 text-sm">8 pochons</div>
+              <div className="text-amber-500 font-bold">12.5%</div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-slate-400 block">Nombre de cordes</label>
+            <input
+              type="number"
+              value={numCordes}
+              onChange={(e) => setNumCordes(parseInt(e.target.value))}
+              className="w-full p-2 rounded-lg bg-white/5 border border-white/10 text-white"
+              min="0"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-slate-400 block">Type d'huître</label>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  value="Triploïde"
+                  checked={selectedType === 'Triploïde'}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="text-blue-500"
+                />
+                <span className="text-white/80">Triploïde</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  value="Diploïde"
+                  checked={selectedType === 'Diploïde'}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="text-blue-500"
+                />
+                <span className="text-white/80">Diploïde</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-slate-400 block">Taille</label>
+            <select 
+              className="w-full p-2 rounded-lg bg-white/5 border border-white/10 text-white"
+              value={selectedSize} 
+              onChange={(e) => setSelectedSize(e.target.value)}
+            >
+              {['T5', 'T10', 'T15', 'T30', 'N°4', 'N°3', 'N°2', 'N°1'].map(size => (
+                <option key={size} value={size}>{size}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-slate-400 block">Provenance du naissain</label>
+            <input
+              type="text"
+              defaultValue="France naissain"
+              className="w-full p-2 rounded-lg bg-white/5 border border-white/10 text-white"
+              readOnly
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-slate-400 block">Numéro de lot</label>
+            <input
+              type="text"
+              defaultValue="2506-TT5-734"
+              className="w-full p-2 rounded-lg bg-white/5 border border-white/10 text-white"
+              readOnly
+            />
+          </div>
+
+          <div className="flex justify-end gap-4">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="px-6 py-3 rounded-lg bg-white/10 text-white font-bold hover:bg-white/20 transition-all"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-teal-500 text-white font-bold hover:translate-y-[-1px] transition-all shadow-lg shadow-blue-500/20"
+            >
+              Enregistrer
+            </button>
+          </div>
+        </form>
+      </div>
+    </Dialog>
+  );
+
   // Données de démonstration
   const demoLots: Lot[] = [
     {
@@ -147,6 +373,13 @@ const LotsEnCoursPanel = () => {
           {/* Liste des lots */}
           <div className="flex-1 p-6" style={{ position: 'relative' }}>
             <div className="space-y-4" style={containerStyle}>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="mb-4 px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-teal-500 text-white font-bold hover:translate-y-[-1px] transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2"
+              >
+                <Plus size={20} />
+                Ajouter des cordes
+              </button>
               {demoLots.map((lot) => (
                 <LotItem key={lot.id} lot={lot} />
               ))}

@@ -344,7 +344,7 @@ export function EmergencyCall({ isOpen, onClose }: EmergencyCallProps) {
             {isCountdownActive ? (
               <button 
                 onClick={handleStopCountdown}
-                className="w-full px-8 py-5 bg-cyan-500/20 text-cyan-400 rounded-full text-xl hover:bg-cyan-500/30 focus:ring-2 focus:ring-cyan-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25),0_0_15px_rgba(0,210,200,0.2),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3),0_0_20px_rgba(0,210,200,0.25),0_0_5px_rgba(0,0,0,0.2)_inset] transform hover:-translate-y-1"
+                className="w-full px-8 py-5 bg-cyan-500/60 text-cyan-100 rounded-full text-xl hover:bg-cyan-500/70 focus:ring-2 focus:ring-cyan-500/80 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.3),0_0_15px_rgba(0,210,200,0.4),0_0_5px_rgba(0,0,0,0.2)_inset] hover:shadow-[0_6px_15px_rgba(0,0,0,0.4),0_0_20px_rgba(0,210,200,0.45),0_0_5px_rgba(0,0,0,0.2)_inset] transform hover:-translate-y-1"
               >
                 Arrêter le compte à rebours
               </button>
@@ -368,7 +368,7 @@ export function EmergencyCall({ isOpen, onClose }: EmergencyCallProps) {
 
             <button
               onClick={onClose}
-              className="w-full mt-4 px-8 py-5 bg-white/5 rounded-full text-white/70 text-xl hover:bg-white/10 focus:ring-2 focus:ring-cyan-500/40 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)] transform hover:-translate-y-1"
+              className="w-full mt-4 px-8 py-5 bg-white/40 rounded-full text-white text-xl hover:bg-white/50 focus:ring-2 focus:ring-cyan-500/80 focus:outline-none transition-all duration-300 font-medium shadow-[0_4px_10px_rgba(0,0,0,0.4)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.5)] transform hover:-translate-y-1"
               aria-label="Fermer la modale d'urgence"
             >
               Annuler

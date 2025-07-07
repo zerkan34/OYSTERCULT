@@ -10,6 +10,13 @@ import { OysterOccupationStats } from '../components/OysterOccupationStats';
 import { OysterTable, Pool, WaterQuality, PoolHealth } from '../types';
 import { PageTitle } from '@/components/ui/PageTitle';
 import { OysterTableCard } from '../components/OysterTableCard';
+
+interface MobileDashboardProps {
+  tableOccupancyData: OysterTable[];
+  poolData: PoolHealth[];
+  poolDisplayData: Pool[];
+}
+
 import { MobileDashboard } from '../components/MobileDashboard';
 
 // Fonction pour calculer le nombre de jours restants
@@ -158,6 +165,11 @@ const glassCardStyles = {
     shadow-[rgba(0,0,0,0.2)_0px_5px_20px_-5px,rgba(0,200,200,0.1)_0px_5px_12px_-5px,rgba(255,255,255,0.07)_0px_-1px_3px_0px_inset,rgba(0,200,200,0.05)_0px_0px_12px_inset,rgba(0,0,0,0.1)_0px_0px_8px_inset]
     border-0
   `,
+  scrollbar: `
+    scrollbar-thin scrollbar-thumb-cyan-900 scrollbar-track-transparent
+    hover:scrollbar-thumb-cyan-800 transition-colors duration-200
+    scrollbar-thumb-rounded-full
+  `,
   heading: `
     text-lg font-medium 
     bg-gradient-to-r from-white to-cyan-100 bg-clip-text text-transparent
@@ -262,7 +274,7 @@ export function DashboardPage() {
       </motion.div>
 
       {/* Section principale avec 3 colonnes en grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full relative">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full relative h-[calc(100vh-12rem)]">
         {/* Les modales sont maintenant rendues dans cette section grid mais conservent leur positionnement absolu */}
         <div className="col-span-full">
           <AnimatePresence>
@@ -284,83 +296,121 @@ export function DashboardPage() {
         {/* Colonne 1: Statistiques */}
         <motion.div 
           variants={slideInVariants}
-          className={`${glassCardStyles.container} ${glassCardStyles.hoverEffect} p-5 space-y-4`}
+          className={`${glassCardStyles.container} ${glassCardStyles.hoverEffect} p-5 h-full flex flex-col overflow-hidden`}
         >
-          <h2 className={glassCardStyles.heading}>Statistiques globales</h2>
+          <h2 className={`${glassCardStyles.heading} mb-5 flex-shrink-0`}>Journal d'actions</h2>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-[rgba(0,40,80,0.2)] rounded-lg p-3 shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset]">
-              <div className="flex items-center justify-between">
-                <div className={glassCardStyles.subheading}>Taux production</div>
-                <div className="bg-green-500/20 text-green-300 text-xs px-2 py-1 rounded-full">
-                  +4.2%
+          <div className="flex-1 space-y-6 overflow-y-auto pr-2 custom-scrollbar" style={{ height: 'calc(100% - 3rem)' }}>
+            {/* Aujourd'hui */}
+            <div className="w-full">
+              <p className="text-white/60 text-sm mb-3">Aujourd'hui</p>
+              <div className="space-y-3 w-full">
+                <div className="w-full bg-[rgba(0,40,80,0.2)] rounded-lg p-4 shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset] hover:shadow-[rgba(0,0,0,0.25)_0px_8px_20px,rgba(0,210,200,0.15)_0px_0px_10px_inset] transition-all duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.3)]" />
+                      <p className="text-cyan-400 font-medium">Transfert de lots</p>
+                    </div>
+                    <span className="text-white/40 text-sm">11:05</span>
+                  </div>
+                  <p className="text-white/80 text-sm mt-2">Transfert du lot #L789 vers le bassin B12</p>
                 </div>
-              </div>
-              <div className="text-2xl font-bold text-white mt-2">97.8%</div>
-              <div className={glassCardStyles.progressBar}>
-                <motion.div 
-                  className="h-full bg-gradient-to-r from-green-500 to-cyan-400"
-                  initial={{ width: 0 }}
-                  animate={{ width: '97.8%' }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                />
+                <div className="w-full bg-[rgba(0,40,80,0.2)] rounded-lg p-4 shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset] hover:shadow-[rgba(0,0,0,0.25)_0px_8px_20px,rgba(0,210,200,0.15)_0px_0px_10px_inset] transition-all duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]" />
+                      <p className="text-emerald-400 font-medium">Tâche terminée</p>
+                    </div>
+                    <span className="text-white/40 text-sm">09:30</span>
+                  </div>
+                  <p className="text-white/80 text-sm mt-2">Nettoyage du bassin B05 complété</p>
+                </div>
               </div>
             </div>
-            
-            <div className="bg-[rgba(0,40,80,0.2)] rounded-lg p-3 shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset]">
-              <div className="flex items-center justify-between">
-                <div className={glassCardStyles.subheading}>Santé moyenne</div>
-                <div className="bg-blue-500/20 text-blue-300 text-xs px-2 py-1 rounded-full">
-                  Stable
+
+            {/* Hier */}
+            <div className="w-full">
+              <p className="text-white/60 text-sm mb-3">Hier</p>
+              <div className="space-y-3 w-full">
+                <div className="w-full bg-[rgba(0,40,80,0.2)] rounded-lg p-4 shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset] hover:shadow-[rgba(0,0,0,0.25)_0px_8px_20px,rgba(0,210,200,0.15)_0px_0px_10px_inset] transition-all duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.3)]" />
+                      <p className="text-amber-400 font-medium">Alerte météo</p>
+                    </div>
+                    <span className="text-white/40 text-sm">16:45</span>
+                  </div>
+                  <p className="text-white/80 text-sm mt-2">Température élevée détectée - Bassin B08</p>
                 </div>
-              </div>
-              <div className="text-2xl font-bold text-white mt-2">92.3%</div>
-              <div className={glassCardStyles.progressBar}>
-                <motion.div 
-                  className="h-full bg-gradient-to-r from-blue-500 to-indigo-400"
-                  initial={{ width: 0 }}
-                  animate={{ width: '92.3%' }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                />
+                <div className="w-full bg-[rgba(0,40,80,0.2)] rounded-lg p-4 shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset] hover:shadow-[rgba(0,0,0,0.25)_0px_8px_20px,rgba(0,210,200,0.15)_0px_0px_10px_inset] transition-all duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.3)]" />
+                      <p className="text-blue-400 font-medium">Nouveau document</p>
+                    </div>
+                    <span className="text-white/40 text-sm">14:20</span>
+                  </div>
+                  <p className="text-white/80 text-sm mt-2">Ajout du bon de livraison #BL456</p>
+                </div>
               </div>
             </div>
-            
-            <div className="bg-[rgba(0,40,80,0.2)] rounded-lg p-3 shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset]">
-              <div className="flex items-center justify-between">
-                <div className={glassCardStyles.subheading}>Taux mortalité</div>
-                <div className="bg-yellow-500/20 text-yellow-300 text-xs px-2 py-1 rounded-full">
-                  -0.5%
+
+            {/* Cette semaine */}
+            <div className="w-full">
+              <p className="text-white/60 text-sm mb-3">Cette semaine</p>
+              <div className="space-y-3 w-full">
+                <div className="w-full bg-[rgba(0,40,80,0.2)] rounded-lg p-4 shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset] hover:shadow-[rgba(0,0,0,0.25)_0px_8px_20px,rgba(0,210,200,0.15)_0px_0px_10px_inset] transition-all duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_10px_rgba(192,132,252,0.3)]" />
+                      <p className="text-purple-400 font-medium">Maintenance</p>
+                    </div>
+                    <span className="text-white/40 text-sm">Lundi 15:10</span>
+                  </div>
+                  <p className="text-white/80 text-sm mt-2">Mise à jour du système de filtration - Bassin B03</p>
                 </div>
-              </div>
-              <div className="text-2xl font-bold text-white mt-2">2.5%</div>
-              <div className={glassCardStyles.progressBar}>
-                <motion.div 
-                  className="h-full bg-gradient-to-r from-yellow-500 to-orange-400"
-                  initial={{ width: 0 }}
-                  animate={{ width: '25%' }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                />
+                <div className="w-full bg-[rgba(0,40,80,0.2)] rounded-lg p-4 shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset] hover:shadow-[rgba(0,0,0,0.25)_0px_8px_20px,rgba(0,210,200,0.15)_0px_0px_10px_inset] transition-all duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.3)]" />
+                      <p className="text-green-400 font-medium">Nouveau lot</p>
+                    </div>
+                    <span className="text-white/40 text-sm">Lundi 09:15</span>
+                  </div>
+                  <p className="text-white/80 text-sm mt-2">Création du lot #L790 - 5000 huîtres</p>
+                </div>
               </div>
             </div>
-            
-            <div className="bg-[rgba(0,40,80,0.2)] rounded-lg p-3 shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset]">
-              <div className="flex items-center justify-between">
-                <div className={glassCardStyles.subheading}>Récolte prévue</div>
-                <div className="bg-purple-500/20 text-purple-300 text-xs px-2 py-1 rounded-full">
-                  15 jours
+
+            {/* Le mois dernier */}
+            <div className="w-full">
+              <p className="text-white/60 text-sm mb-3">Le mois dernier</p>
+              <div className="space-y-3 w-full">
+                <div className="w-full bg-[rgba(0,40,80,0.2)] rounded-lg p-4 shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset] hover:shadow-[rgba(0,0,0,0.25)_0px_8px_20px,rgba(0,210,200,0.15)_0px_0px_10px_inset] transition-all duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_10px_rgba(251,113,133,0.3)]" />
+                      <p className="text-rose-400 font-medium">Inspection sanitaire</p>
+                    </div>
+                    <span className="text-white/40 text-sm">15 Mai</span>
+                  </div>
+                  <p className="text-white/80 text-sm mt-2">Inspection réussie - Conformité aux normes sanitaires</p>
                 </div>
-              </div>
-              <div className="text-2xl font-bold text-white mt-2">4.8t</div>
-              <div className={glassCardStyles.progressBar}>
-                <motion.div 
-                  className="h-full bg-gradient-to-r from-purple-500 to-pink-400"
-                  initial={{ width: 0 }}
-                  animate={{ width: '80%' }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                />
+                <div className="w-full bg-[rgba(0,40,80,0.2)] rounded-lg p-4 shadow-[rgba(0,0,0,0.15)_0px_5px_12px,rgba(0,210,200,0.05)_0px_0px_3px_inset] hover:shadow-[rgba(0,0,0,0.25)_0px_8px_20px,rgba(0,210,200,0.15)_0px_0px_10px_inset] transition-all duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-indigo-400 shadow-[0_0_10px_rgba(129,140,248,0.3)]" />
+                      <p className="text-indigo-400 font-medium">Formation</p>
+                    </div>
+                    <span className="text-white/40 text-sm">12 Mai</span>
+                  </div>
+                  <p className="text-white/80 text-sm mt-2">Formation sur les nouvelles procédures de traçabilité</p>
+                </div>
               </div>
             </div>
           </div>
+
+
         </motion.div>
         
         {/* Colonne 2: Occupation des tables */}
@@ -477,6 +527,84 @@ export function DashboardPage() {
                     </div>
                   </div>
                 </div>
+                {/* Métriques du bassin A2 */}
+                {pool.name === 'Bassin A2' && (
+                  <motion.div 
+                    className={`mt-6 ${glassCardStyles.container} p-5`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.2 }}
+                  >
+                    {/* En-tête de la section des métriques */}
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className={glassCardStyles.heading}>Métriques générales de production</h3>
+                      <div className="text-xs text-white/50 flex items-center gap-2">
+                        <Clock className="w-3 h-3" />
+                        Mis à jour il y a 5 min
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4">
+                      {/* Taux de mortalité */}
+                      <motion.div 
+                        className="bg-[rgba(0,40,80,0.3)] rounded-lg p-4 border border-amber-500/20 hover:border-amber-500/30 transition-all duration-200"
+                        whileHover={{ scale: 1.01, y: -1 }}
+                        transition={{ type: 'spring', stiffness: 400 }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="w-4 h-4 text-amber-400" />
+                            <div className="text-amber-400 font-medium">Taux mortalité</div>
+                          </div>
+                          <div className="bg-emerald-500/20 text-emerald-300 text-xs px-2 py-1 rounded-full font-medium">
+                            Stable cette semaine
+                          </div>
+                        </div>
+                        <div className="text-2xl font-bold text-white mt-2">17%</div>
+                        <div className={glassCardStyles.progressBar}>
+                          <motion.div 
+                            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                            initial={{ width: 0 }}
+                            animate={{ width: '17%' }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                          />
+                        </div>
+                        <div className="mt-2 text-xs text-white/60">
+                          Taux normal pour la saison
+                        </div>
+                      </motion.div>
+                      
+                      {/* Récolte prévue */}
+                      <motion.div 
+                        className="bg-[rgba(0,40,80,0.3)] rounded-lg p-4 border border-emerald-500/20 hover:border-emerald-500/30 transition-all duration-200"
+                        whileHover={{ scale: 1.01, y: -1 }}
+                        transition={{ type: 'spring', stiffness: 400 }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-emerald-400" />
+                            <div className="text-emerald-400 font-medium">Prochaine récolte prévue</div>
+                          </div>
+                          <div className="bg-emerald-500/20 text-emerald-300 text-xs px-2 py-1 rounded-full font-medium">
+                            Dans 15 jours
+                          </div>
+                        </div>
+                        <div className="text-2xl font-bold text-white mt-2">4.8t</div>
+                        <div className={glassCardStyles.progressBar}>
+                          <motion.div 
+                            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                            initial={{ width: 0 }}
+                            animate={{ width: '80%' }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                          />
+                        </div>
+                        <div className="mt-2 text-xs text-white/60">
+                          Croissance optimale
+                        </div>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
             ))}
           </div>

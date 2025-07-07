@@ -358,7 +358,7 @@ const mockHistory: HistoryItem[] = [
 ];
 
 export function TraceabilityPage() {
-  const [activeTab, setActiveTab] = useState('lots');
+  const [activeTab, setActiveTab] = useState('bassins');
   const [editingItem, setEditingItem] = useState<EditableItem | null>(null);
   const [editedValues, setEditedValues] = useState<any>({});
   const [showFilterModal, setShowFilterModal] = useState(false);
@@ -1288,12 +1288,6 @@ export function TraceabilityPage() {
   };
 
   const tabs: TabData[] = [
-    {
-      id: 'lots',
-      label: 'Lots en cours',
-      icon: <Package size={20} />,
-      count: 28
-    },
     {
       id: 'bassins',
       label: 'Bassins',

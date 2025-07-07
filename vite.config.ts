@@ -2,16 +2,9 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-// Déterminer la base en fonction de l'environnement de déploiement
-const getBase = () => {
-  const deployTarget = process.env.VITE_DEPLOY_TARGET;
-  // Pour Firebase, on utilise la racine
-  return '/';
-};
-
 export default defineConfig({
   plugins: [react()],
-  base: getBase(),
+  base: './',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
