@@ -171,11 +171,15 @@ const glassCardStyles = {
     scrollbar-thumb-rounded-full
   `,
   heading: `
-    text-lg font-medium 
-    bg-gradient-to-r from-white to-cyan-100 bg-clip-text text-transparent
+    text-2xl font-semibold 
+    bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent
   `,
   subheading: `
     text-sm text-white/70
+  `,
+  subheadingLarge: `
+    text-xl font-semibold 
+    bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent
   `,
   hoverEffect: `
     transition-all duration-200
@@ -343,7 +347,7 @@ export function DashboardPage() {
             </div>
           </div>
           
-          <h3 className={`${glassCardStyles.heading} text-base mb-4 flex-shrink-0`}>Journal d'actions</h3>
+          <h3 className={`${glassCardStyles.subheadingLarge} mb-4 flex-shrink-0`}>Journal d'actions</h3>
           
           <div className="flex-1 space-y-6 overflow-y-auto pr-2 custom-scrollbar" style={{ height: 'calc(100% - 3rem)' }}>
             {/* Aujourd'hui */}
