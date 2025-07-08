@@ -3,7 +3,7 @@ import { TableOccupationDashboard } from '../components/TableOccupationDashboard
 import { PoolHealthSection } from '../components/PoolHealthSection';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { motion } from 'framer-motion';
-import { Activity, AlertTriangle, BarChart3, Cloud, Layers, ThermometerSun, TrendingUp } from 'lucide-react';
+import { Activity, AlertTriangle, BarChart3, CheckCircle, Clock, Droplets, ThermometerSun, TrendingUp, Waves } from 'lucide-react';
 
 interface StyleObject extends React.CSSProperties {
   background?: string;
@@ -19,7 +19,6 @@ interface StyleObject extends React.CSSProperties {
   backgroundImage?: string;
 }
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { 
@@ -83,136 +82,225 @@ const Dashboard = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 p-2"
     >
-      {/* Section des tables */}
       <motion.div
         variants={itemVariants}
-        className="md:col-span-2 lg:col-span-3"
+        className="md:col-span-2 lg:col-span-4"
         style={{
           ...baseGlassStyle,
-          padding: "1.5rem",
+          maxHeight: "400px",
+          overflowY: "auto",
+          padding: "0.8rem",
+          borderRadius: "1rem"
+        }}
+      >
+        <WeatherWidget />
+      </motion.div>
+
+      <motion.div
+        variants={itemVariants}
+        className="col-span-1 md:col-span-2 lg:col-span-2"
+        style={{
+          ...baseGlassStyle,
+          padding: "0.8rem",
           borderRadius: "1rem"
         }}
       >
         <TableOccupationDashboard />
       </motion.div>
 
-      {/* Section météo */}
       <motion.div
         variants={itemVariants}
-        className="md:col-span-3 lg:col-span-4"
+        className="col-span-1 md:col-span-1 lg:col-span-1"
         style={{
           ...baseGlassStyle,
-          maxHeight: "400px",
-          overflowY: "auto",
-          padding: "1.5rem"
+          padding: "0.8rem",
+          borderRadius: "1rem"
         }}
       >
-        <WeatherWidget />
+        <div className="flex items-center mb-2">
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center mr-2"
+            style={iconContainerStyle}
+          >
+            <ThermometerSun className="text-cyan-400" size={18} />
+          </div>
+          <h2 className="text-lg font-medium text-white">Santé des Bassins</h2>
+        </div>
+        <PoolHealthSection />
       </motion.div>
 
-      {/* Section Aperçu des Opérations */}
       <motion.div
         variants={itemVariants}
-        className="md:col-span-3 lg:col-span-3 rounded-xl p-5"
-        style={baseGlassStyle}
+        className="col-span-1 md:col-span-1 lg:col-span-1"
+        style={{
+          ...baseGlassStyle,
+          padding: "0.8rem",
+          borderRadius: "1rem"
+        }}
       >
-        <div className="flex items-center mb-4">
-          <Activity className="w-6 h-6 text-cyan-400 mr-2" />
+        <div className="flex items-center mb-2">
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center mr-2"
+            style={iconContainerStyle}
+          >
+            <BarChart3 className="text-cyan-400" size={18} />
+          </div>
+          <h2 className="text-lg font-medium text-white">Métriques générales de production</h2>
+        </div>
+        <div className="text-xs text-white/60 mb-3">Mis à jour il y a 5 min</div>
+        
+        <div className="space-y-3">
+          <div className="p-2 rounded-lg" style={miniWidgetStyle}>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-white/80 text-xs">Taux mortalité</span>
+              <span className="text-green-400 text-xs">Stable cette semaine</span>
+            </div>
+            <div className="text-lg font-semibold text-white mb-1">17%</div>
+            <div className="text-xs text-white/60">Taux normal pour la saison</div>
+          </div>
+          
+          <div className="p-2 rounded-lg" style={miniWidgetStyle}>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-white/80 text-xs">Prochaine récolte prévue</span>
+              <span className="text-cyan-400 text-xs">Dans 15 jours</span>
+            </div>
+            <div className="text-lg font-semibold text-white mb-1">4.8t</div>
+            <div className="text-xs text-white/60">Croissance optimale</div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Nouveau conteneur spécialement pour le Bassin A2 */}
+      <motion.div
+        variants={itemVariants}
+        className="lg:col-span-1 col-span-1"
+        style={{
+          ...baseGlassStyle,
+          padding: "0.8rem",
+          borderRadius: "1rem"
+        }}
+      >
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center">
+            <Waves className="w-5 h-5 text-teal-400 mr-2" />
+            <h2 className="text-lg font-semibold text-white">Bassin A2</h2>
+          </div>
+          <div className="text-xs text-white/50 flex items-center gap-2">
+            <Clock className="w-3 h-3" />
+            Mis à jour il y a 2 min
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <div className="p-2 rounded-lg" style={miniWidgetStyle}>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-white/80 text-xs flex items-center gap-1">
+                <ThermometerSun className="w-3 h-3" />
+                Température
+              </span>
+              <span className="text-orange-400 text-xs">Élevée</span>
+            </div>
+            <div className="text-lg font-semibold text-white mb-1">13.2°C</div>
+            <div className="text-xs text-white/60">Surveillance requise</div>
+          </div>
+          
+          <div className="p-2 rounded-lg" style={miniWidgetStyle}>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-white/80 text-xs flex items-center gap-1">
+                <Droplets className="w-3 h-3" />
+                Oxygène
+              </span>
+              <span className="text-green-400 text-xs">Bon</span>
+            </div>
+            <div className="text-lg font-semibold text-white mb-1">88%</div>
+            <div className="text-xs text-white/60">Niveau optimal</div>
+          </div>
+          
+          <div className="p-2 rounded-lg" style={miniWidgetStyle}>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-white/80 text-xs flex items-center gap-1">
+                <Activity className="w-3 h-3" />
+                Capacité
+              </span>
+              <span className="text-yellow-400 text-xs">65%</span>
+            </div>
+            <div className="text-lg font-semibold text-white mb-1">650/1000</div>
+            <div className="text-xs text-white/60">Moules & Oursins</div>
+          </div>
+          
+          <div className="p-2 rounded-lg" style={miniWidgetStyle}>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-white/80 text-xs flex items-center gap-1">
+                <CheckCircle className="w-3 h-3" />
+                Qualité eau
+              </span>
+              <span className="text-emerald-400 text-xs">Excellente</span>
+            </div>
+            <div className="text-lg font-semibold text-white mb-1">92%</div>
+            <div className="text-xs text-white/60">pH: 8.0 - Salinité: 31.9</div>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        variants={itemVariants}
+        className="md:col-span-2 lg:col-span-4"
+        style={{
+          ...baseGlassStyle,
+          padding: "0.8rem",
+          borderRadius: "1rem"
+        }}
+      >
+        <div className="flex items-center mb-2">
+          <Activity className="w-5 h-5 text-cyan-400 mr-2" />
           <h2 className="text-lg font-semibold text-white">Aperçu des Opérations</h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {/* Mini widget 1 - Performance */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
           <motion.div
             variants={itemVariants}
-            className="rounded-lg p-4"
-            style={{
-              ...miniWidgetStyle,
-              order: 1
-            }}
+            className="rounded-lg p-2"
+            style={miniWidgetStyle}
           >
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-white text-sm font-medium">Performance</h3>
-              <TrendingUp className="text-cyan-400" size={18} />
+              <TrendingUp className="text-cyan-400" size={16} />
             </div>
-            <p className="text-2xl font-semibold text-white">92%</p>
+            <p className="text-xl font-semibold text-white">92%</p>
             <p className="text-xs text-cyan-300">+2.5% ce mois</p>
           </motion.div>
 
-          {/* Mini widget 2 - Occupation */}
           <motion.div
             variants={itemVariants}
-            className="rounded-lg p-4"
-            style={{
-              ...miniWidgetStyle,
-              order: 2
-            }}
+            className="rounded-lg p-2"
+            style={miniWidgetStyle}
           >
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-white text-sm font-medium">Occupation</h3>
-              <BarChart3 className="text-cyan-400" size={18} />
+              <BarChart3 className="text-cyan-400" size={16} />
             </div>
-            <p className="text-2xl font-semibold text-white">78%</p>
+            <p className="text-xl font-semibold text-white">78%</p>
             <p className="text-xs text-cyan-300">Capacité optimale</p>
           </motion.div>
 
-          {/* Mini widget 3 - Alertes */}
           <motion.div
             variants={itemVariants}
-            className="rounded-lg p-4"
-            style={{
-              ...miniWidgetStyle,
-              order: 3
-            }}
+            className="rounded-lg p-2"
+            style={miniWidgetStyle}
           >
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-white text-sm font-medium">Alertes</h3>
-              <AlertTriangle className="text-cyan-400" size={18} />
+              <AlertTriangle className="text-cyan-400" size={16} />
             </div>
-            <p className="text-2xl font-semibold text-white">2</p>
+            <p className="text-xl font-semibold text-white">2</p>
             <p className="text-xs text-cyan-300">Niveau faible</p>
           </motion.div>
         </div>
       </motion.div>
-
-      {/* Section Santé des Bassins */}
-      <motion.div
-        variants={itemVariants}
-        className="md:col-span-3 lg:col-span-3"
-        style={baseGlassStyle}
-      >
-        <div className="flex items-center mb-4">
-          <div
-            className="w-10 h-10 rounded-lg flex items-center justify-center mr-3"
-            style={iconContainerStyle}
-          >
-            <ThermometerSun className="text-cyan-400" size={22} />
-          </div>
-          <h2 className="text-xl font-medium text-white">Santé des Bassins</h2>
-        </div>
-        <PoolHealthSection />
-      </motion.div>
-    </motion.div>
-  );
-};
-
-      </div>
     </motion.div>
   );
 };
 
 export default Dashboard;
-            </div>
-            <h2 className="text-xl font-medium text-white">Santé des Bassins</h2>
-          </div>
-          <PoolHealthSection />
-        </motion.div>
-      </motion.div>
-
-      {/* Espace équivalent à la hauteur du footer */}
-      <div className="h-[35rem]"></div>
-    </div>
-  );
-}
